@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">@color/lightestOrangeColor</color>
+
+    <color name="redColor">#de3e3e</color>
+    <color name="greenColor">#6ca731</color>
+    <color name="blueColor">#388ecf</color>
+    <color name="bluePressedColor">#026cbc</color>
+    <color name="blueRippleColor">#388ecf</color>
+    <color name="whiteColor">#ffffff</color>
+    <color name="blackColor">#000000</color>
+    <color name="lightestGrayColor">#f0f0f0</color>
+    <color name="lightGrayColor">#d3d3d3</color>
+    <color name="darkGrayColor">#aaa</color>
+    <color name="listFragmentBackgroundColor">#f3f3f3</color>
+    <color name="chatPageFragmentGrayBackground">#f8f8f8</color>
+    <color name="shadowColor">#B3000000</color>
+    <color name="darkestGrayColor">#767676</color>
+    <color name="lightestOrangeColor">#ffb300</color>
+    <color name="lightOrangeColor">#ff9100</color>
+    <color name="darkOrangeColor">#ff6d00</color>
+    <color name="lightGreenColor">#1de9b6</color>
+    <color name="darkGreenColor">#00bfa5</color>
+
+    <color name="EditTextGrayHintColor">#b8b8b8</color>
+
+    <color name="black_20_transparent_background">#33000000</color>
+    <color name="black_40_transparent_background">#66000000</color>
+
+    <color name="transparentColor">#00000000</color>
+</resources>

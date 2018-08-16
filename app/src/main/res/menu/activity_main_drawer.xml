@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/baseline_dashboard_black_36"
+            android:title="Dashboard" />
+        <item
+            android:id="@+id/nav_home_network"
+            android:icon="@drawable/baseline_network_wifi_black_36"
+            android:title="Home Network" />
+    </group>
+
+    <item android:title="Locations">
+        <menu>
+            <item
+                android:id="@+id/nav_places"
+                android:icon="@drawable/floor_icon"
+                android:title="Places" />
+            <item
+                android:id="@+id/nav_floors"
+                android:icon="@drawable/floor_icon"
+                android:title="Floors" />
+            <item
+                android:id="@+id/nav_rooms"
+                android:icon="@drawable/door_icon"
+                android:title="Rooms" />
+        </menu>
+    </item>
+
+    <item android:title="Account">
+        <menu>
+            <item
+                android:id="@+id/log_out"
+                android:icon="@drawable/ic_keyboard_arrow_left_black_24dp"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

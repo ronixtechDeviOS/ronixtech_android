@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    tools:context=".fragments.AddDeviceFragmentSearch">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/whiteColor">
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/instructions_gif_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/access_point_activation_final"/>
+
+            <TextView
+                android:id="@+id/instructions_1_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/instructions_gif_imageview"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="1- Press and hold the 'LOCK' and 'UP' buttons at the same time for 3 seconds, until you hear a long beep."/>
+
+            <TextView
+                android:id="@+id/instructions_2_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/instructions_1_textview"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="2- After the beep, your phone will attempt to connect to the RonixTech Smart Controller to configure it to connect yo your home network."/>
+
+            <ProgressBar
+                android:id="@+id/loading_spinner"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/debug_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/loading_spinner"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"/>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+</ScrollView>

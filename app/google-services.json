@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "266469367160",
+    "firebase_url": "https://ronixhome-b9eb3.firebaseio.com",
+    "project_id": "ronixhome-b9eb3",
+    "storage_bucket": "ronixhome-b9eb3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266469367160:android:b14cd3b108be6543",
+        "android_client_info": {
+          "package_name": "com.ronixtech.ronixhome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266469367160-d3bjr1q3ncfbpvi0lddj59qureq312oo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ronixtech.ronixhome",
+            "certificate_hash": "57c6b93d7890bd0ad8b1d02a2ef94944644d2b12"
+          }
+        },
+        {
+          "client_id": "266469367160-9e7vrrj8s8vuce7ia7mdtai3di3s8r5h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgRx5ujQ70skrokwHBWDoCjhNFCbX9uWg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "266469367160-9e7vrrj8s8vuce7ia7mdtai3di3s8r5h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AddDeviceSelectLocationFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/whiteColor">
+
+        <Button
+            android:id="@+id/done_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/whiteColor"
+            android:background="@drawable/button_background_round_gray"
+            android:enabled="false"
+            android:text="@string/done"/>
+
+        <LinearLayout
+            android:id="@+id/location_selection_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/done_button"
+            android:orientation="horizontal">
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/select_floor_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/floor" />
+                <ListView
+                    android:id="@+id/floors_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/select_floor_textview"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    tools:listitem="@layout/list_item_floor"/>
+                <TextView
+                    android:id="@+id/no_floors_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/floors_listview"
+                    android:layout_marginTop="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="16sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/no_floors"/>
+                <Button
+                    android:id="@+id/add_new_floor_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/no_floors_textview"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/transparentColor"
+                    android:text="@string/add_a_floor"/>
+            </RelativeLayout>
+
+            <View android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/darkestGrayColor"/>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/select_room_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/room" />
+                <ListView
+                    android:id="@+id/rooms_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/select_room_textview"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    tools:listitem="@layout/list_item_room"/>
+                <TextView
+                    android:id="@+id/select_floor_first_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/select_room_textview"
+                    android:layout_marginTop="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="16sp"
+                    android:textColor="@color/redColor"
+                    android:text="@string/select_floor_first"/>
+                <TextView
+                    android:id="@+id/no_rooms_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rooms_listview"
+                    android:layout_marginTop="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="16sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/no_rooms"/>
+                <Button
+                    android:id="@+id/add_new_room_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/no_rooms_textview"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/transparentColor"
+                    android:text="@string/add_a_room"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</FrameLayout>

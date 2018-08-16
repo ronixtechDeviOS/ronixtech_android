@@ -1,0 +1,869 @@
+package com.ronixtech.ronixhome.adapters;
+
+import android.app.Activity;
+import android.graphics.Paint;
+import android.support.v7.widget.CardView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.HttpConnector;
+import com.ronixtech.ronixhome.MySettings;
+import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Line;
+
+import java.util.List;
+
+public class DeviceAdapter extends BaseSwipeAdapter {
+    private static final String TAG = DeviceAdapter.class.getSimpleName();
+
+    Activity activity ;
+    List<Device> devices;
+    ViewHolder vHolder = null;
+    SwipeLayout swipeLayout;
+
+    public DeviceAdapter(Activity activity, List devices){
+        //super(activity, R.layout.list_item_device, devices);
+        this.activity = activity;
+        this.devices = devices;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return devices.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getCount() {
+        return devices.size();
+    }
+
+    @Override
+    public int getSwipeLayoutResourceId(int position) {
+        return R.id.swipe;
+    }
+
+    @Override
+    public void fillValues(int position, View convertView){
+        Device item = (Device) devices.get(position);
+
+        //vHolder = new ViewHolder();
+        vHolder.deviceNameTextView = convertView.findViewById(R.id.device_name_textview);
+        vHolder.deviceLocationTextView = convertView.findViewById(R.id.device_location_textview);
+        vHolder.firstLineLayout = convertView.findViewById(R.id.first_line_layout);
+        vHolder.secondLineLayout = convertView.findViewById(R.id.second_line_layout);
+        vHolder.thirdLineLayout = convertView.findViewById(R.id.third_line_layout);
+        vHolder.firstLineTextView = convertView.findViewById(R.id.first_line_textvie);
+        vHolder.secondLineTextView = convertView.findViewById(R.id.second_line_textview);
+        vHolder.thirdLineTextView = convertView.findViewById(R.id.third_line_textview);
+        vHolder.removeDeviceLayout = convertView.findViewById(R.id.remove_device_layout);
+        vHolder.removeDeviceImageView = convertView.findViewById(R.id.remove_device_imageview);
+        vHolder.firstLineSeekBar = convertView.findViewById(R.id.first_line_seekbar);
+        vHolder.secondLineSeekBar = convertView.findViewById(R.id.second_line_seekbar);
+        vHolder.thirdLineSeekBar = convertView.findViewById(R.id.third_line_seekbar);
+        vHolder.firstLineDimmingCheckBox = convertView.findViewById(R.id.first_line_dimming_checkbox);
+        vHolder.secondLineDimmingCheckBox = convertView.findViewById(R.id.second_line_dimming_checkbox);
+        vHolder.thirdLineDimmingCheckBox = convertView.findViewById(R.id.third_line_dimming_checkbox);
+        vHolder.firstLineSwitch = convertView.findViewById(R.id.first_line_switch);
+        vHolder.secondLineSwitch = convertView.findViewById(R.id.second_line_switch);
+        vHolder.thirdLineSwitch = convertView.findViewById(R.id.third_line_switch);
+
+        vHolder.firstLineSeekBar.setMax(10);
+        vHolder.secondLineSeekBar.setMax(10);
+        vHolder.thirdLineSeekBar.setMax(10);
+
+        vHolder.deviceNameTextView.setText(""+item.getName()/* + " (" + item.getLines().size() + " lines)"*/);
+        vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
+
+        if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
+            vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+            vHolder.secondLineLayout.setVisibility(View.GONE);
+            vHolder.thirdLineLayout.setVisibility(View.GONE);
+
+            populateLineData(item);
+        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
+            vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+            vHolder.secondLineLayout.setVisibility(View.VISIBLE);
+            vHolder.thirdLineLayout.setVisibility(View.GONE);
+
+            populateLineData(item);
+        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+            vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+            vHolder.secondLineLayout.setVisibility(View.VISIBLE);
+            vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
+
+            populateLineData(item);
+        }
+
+        if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
+            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+            vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+            vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+            vHolder.firstLineSeekBar.setEnabled(false);
+            vHolder.secondLineSeekBar.setEnabled(false);
+            vHolder.thirdLineSeekBar.setEnabled(false);
+            vHolder.firstLineDimmingCheckBox.setEnabled(false);
+            vHolder.secondLineDimmingCheckBox.setEnabled(false);
+            vHolder.thirdLineDimmingCheckBox.setEnabled(false);
+            vHolder.firstLineSwitch.setEnabled(false);
+            vHolder.secondLineSwitch.setEnabled(false);
+            vHolder.thirdLineSwitch.setEnabled(false);
+        }else{
+            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+            vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+            vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+            vHolder.firstLineSeekBar.setEnabled(true);
+            vHolder.secondLineSeekBar.setEnabled(true);
+            vHolder.thirdLineSeekBar.setEnabled(true);
+            vHolder.firstLineDimmingCheckBox.setEnabled(true);
+            vHolder.secondLineDimmingCheckBox.setEnabled(true);
+            vHolder.thirdLineDimmingCheckBox.setEnabled(true);
+            vHolder.firstLineSwitch.setEnabled(true);
+            vHolder.secondLineSwitch.setEnabled(true);
+            vHolder.thirdLineSwitch.setEnabled(true);
+
+            populateLineData(item);
+
+            vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((Switch)view).isChecked();
+                    if(checked){
+                        //turn on this line
+                        toggleLine(item,0, Line.LINE_STATE_ON);
+                    }else{
+                        //turn off this line
+                        toggleLine(item, 0, Line.LINE_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.secondLineSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((Switch)view).isChecked();
+                    if(checked){
+                        //turn on this line
+                        toggleLine(item,1, Line.LINE_STATE_ON);
+                    }else{
+                        //turn off this line
+                        toggleLine(item, 1, Line.LINE_STATE_OFF);
+                    }
+                }
+
+            });
+            vHolder.thirdLineSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((Switch)view).isChecked();
+                    if(checked){
+                        //turn on this line
+                        toggleLine(item,2, Line.LINE_STATE_ON);
+                    }else{
+                        //turn off this line
+                        toggleLine(item, 2, Line.LINE_STATE_OFF);
+                    }
+                }
+            });
+
+            /*vHolder.firstLineLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
+                        //turn on this line
+                        toggleLine(item,0, Line.LINE_STATE_ON);
+                    }else if(item.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
+                        //turn off this line
+                        toggleLine(item, 0, Line.LINE_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.secondLineLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
+                        //turn on this line
+                        toggleLine(item,1, Line.LINE_STATE_ON);
+                    }else if(item.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
+                        //turn off this line
+                        toggleLine(item,1, Line.LINE_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.thirdLineLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF){
+                        //turn on this line
+                        toggleLine(item,2, Line.LINE_STATE_ON);
+                    }else if(item.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
+                        //turn off this line
+                        toggleLine(item,2, Line.LINE_STATE_OFF);
+                    }
+                }
+            });*/
+
+            vHolder.firstLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((CheckBox)view).isChecked();
+                    if(checked){
+                        toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                    }else{
+                        toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.secondLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((CheckBox)view).isChecked();
+                    if(checked){
+                        toggleDimming(item, 01, Line.DIMMING_STATE_ON);
+                    }else{
+                        toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.thirdLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((CheckBox)view).isChecked();
+                    if(checked){
+                        toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                    }else{
+                        toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                    }
+                }
+            });
+
+            /*vHolder.firstLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if(b){
+                        toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                    }else{
+                        toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.secondLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if(b){
+                        toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                    }else{
+                        toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                    }
+                }
+            });
+            vHolder.thirdLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if(b){
+                        toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                    }else{
+                        toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                    }
+                }
+            });*/
+
+            vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    if(b) {
+                        controlDimming(item, 0, i);
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+            vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    if(b) {
+                        controlDimming(item, 1, i);
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+            vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    if(b) {
+                        controlDimming(item, 2, i);
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+        }
+
+        vHolder.removeDeviceLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeDevice(item);
+            }
+        });
+        vHolder.removeDeviceImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeDevice(item);
+            }
+        });
+    }
+
+    private void populateLineData(Device item){
+        for (Line line : item.getLines()) {
+            if(line.getPosition() == 0){
+                vHolder.firstLineTextView.setText(line.getName());
+                if(line.getPowerState() == Line.LINE_STATE_ON){
+                    //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                    vHolder.firstLineSwitch.setChecked(true);
+                }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                    //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightGrayColor));
+                    vHolder.firstLineSwitch.setChecked(false);
+                }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
+                    //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                }
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    vHolder.firstLineDimmingCheckBox.setChecked(true);
+                    vHolder.firstLineDimmingCheckBox.setEnabled(true);
+                    vHolder.firstLineSeekBar.setEnabled(true);
+                    vHolder.firstLineSeekBar.setProgress(line.getDimmingVvalue());
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    vHolder.firstLineDimmingCheckBox.setChecked(false);
+                    vHolder.firstLineDimmingCheckBox.setEnabled(true);
+                    vHolder.firstLineSeekBar.setEnabled(false);
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
+                    vHolder.firstLineDimmingCheckBox.setEnabled(false);
+                    vHolder.firstLineSeekBar.setEnabled(false);
+                }
+            }else if(line.getPosition() == 1){
+                vHolder.secondLineTextView.setText(line.getName());
+                if(line.getPowerState() == Line.LINE_STATE_ON){
+                    //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                    vHolder.secondLineSwitch.setChecked(true);
+                }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                    //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightGrayColor));
+                    vHolder.secondLineSwitch.setChecked(false);
+                }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
+                    //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                }
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    vHolder.secondLineDimmingCheckBox.setChecked(true);
+                    vHolder.secondLineDimmingCheckBox.setEnabled(true);
+                    vHolder.secondLineSeekBar.setEnabled(true);
+                    vHolder.secondLineSeekBar.setProgress(line.getDimmingVvalue());
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    vHolder.secondLineDimmingCheckBox.setChecked(false);
+                    vHolder.secondLineDimmingCheckBox.setEnabled(true);
+                    vHolder.secondLineSeekBar.setEnabled(false);
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
+                    vHolder.secondLineDimmingCheckBox.setEnabled(false);
+                    vHolder.secondLineSeekBar.setEnabled(false);
+                }
+            }else if(line.getPosition() == 2){
+                vHolder.thirdLineTextView.setText(line.getName());
+                if(line.getPowerState() == Line.LINE_STATE_ON){
+                    //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                    vHolder.thirdLineSwitch.setChecked(true);
+                }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                    //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightGrayColor));
+                    vHolder.thirdLineSwitch.setChecked(false);
+                }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
+                    //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                }
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    vHolder.thirdLineDimmingCheckBox.setChecked(true);
+                    vHolder.thirdLineDimmingCheckBox.setEnabled(true);
+                    vHolder.thirdLineSeekBar.setEnabled(true);
+                    vHolder.thirdLineSeekBar.setProgress(line.getDimmingVvalue());
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    vHolder.thirdLineDimmingCheckBox.setChecked(false);
+                    vHolder.thirdLineDimmingCheckBox.setEnabled(true);
+                    vHolder.thirdLineSeekBar.setEnabled(false);
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
+                    vHolder.thirdLineDimmingCheckBox.setEnabled(false);
+                    vHolder.thirdLineSeekBar.setEnabled(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    public View generateView(int position, ViewGroup parent) {
+        View v = LayoutInflater.from(activity).inflate(R.layout.list_item_device, null);
+
+        vHolder = new ViewHolder();
+        vHolder.deviceNameTextView = v.findViewById(R.id.device_name_textview);
+        vHolder.deviceLocationTextView = v.findViewById(R.id.device_location_textview);
+        vHolder.firstLineLayout = v.findViewById(R.id.first_line_layout);
+        vHolder.secondLineLayout = v.findViewById(R.id.second_line_layout);
+        vHolder.thirdLineLayout = v.findViewById(R.id.third_line_layout);
+        vHolder.firstLineTextView = v.findViewById(R.id.first_line_textvie);
+        vHolder.secondLineTextView = v.findViewById(R.id.second_line_textview);
+        vHolder.thirdLineTextView = v.findViewById(R.id.third_line_textview);
+        vHolder.removeDeviceLayout = v.findViewById(R.id.remove_device_layout);
+        vHolder.removeDeviceImageView = v.findViewById(R.id.remove_device_imageview);
+        vHolder.firstLineSeekBar = v.findViewById(R.id.first_line_seekbar);
+        vHolder.secondLineSeekBar = v.findViewById(R.id.second_line_seekbar);
+        vHolder.thirdLineSeekBar = v.findViewById(R.id.third_line_seekbar);
+        vHolder.firstLineDimmingCheckBox = v.findViewById(R.id.first_line_dimming_checkbox);
+        vHolder.secondLineDimmingCheckBox = v.findViewById(R.id.second_line_dimming_checkbox);
+        vHolder.thirdLineDimmingCheckBox = v.findViewById(R.id.third_line_dimming_checkbox);
+        vHolder.firstLineSwitch = v.findViewById(R.id.first_line_switch);
+        vHolder.secondLineSwitch = v.findViewById(R.id.second_line_switch);
+        vHolder.thirdLineSwitch = v.findViewById(R.id.third_line_switch);
+
+
+        /*if(v == null){
+            LayoutInflater inflater = activity.getLayoutInflater();
+            v = inflater.inflate(R.layout.list_item_device, null);
+            vHolder = new ViewHolder();
+            vHolder.deviceNameTextView = v.findViewById(R.id.device_name_textview);
+            vHolder.deviceLocationTextView = v.findViewById(R.id.device_location_textview);
+            vHolder.firstLineButton = v.findViewById(R.id.first_line_button);
+            vHolder.secondLineButton = v.findViewById(R.id.second_line_button);
+            vHolder.thirdLineButton = v.findViewById(R.id.third_line_button);
+            v.setTag(vHolder);
+        }
+        else{
+            vHolder = (ViewHolder) v.getTag();
+        }*/
+
+        return v;
+    }
+
+    /*@Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        View rowView = convertView;
+        if(rowView == null){
+            LayoutInflater inflater = activity.getLayoutInflater();
+            rowView = inflater.inflate(R.layout.list_item_device, null);
+            vHolder = new ViewHolder();
+            vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+            vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
+            vHolder.firstLineButton = rowView.findViewById(R.id.first_line_button);
+            vHolder.secondLineButton = rowView.findViewById(R.id.second_line_button);
+            vHolder.thirdLineButton = rowView.findViewById(R.id.third_line_button);
+            rowView.setTag(vHolder);
+        }
+        else{
+            vHolder = (ViewHolder) rowView.getTag();
+        }
+
+        Device item = (Device) devices.get(position);
+
+        vHolder.deviceNameTextView.setText(""+item.getName() + " (" + item.getLines().size() + " lines)");
+        vHolder.deviceLocationTextView.setText("Room ID: "+item.getRoomID());
+
+        if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line){
+            vHolder.firstLineButton.setVisibility(View.VISIBLE);
+            vHolder.secondLineButton.setVisibility(View.INVISIBLE);
+            vHolder.thirdLineButton.setVisibility(View.INVISIBLE);
+            for (Line line : item.getLines()) {
+                if(line.getPosition() == 0){
+                    vHolder.firstLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }else if(line.getPosition() == 1){
+                    vHolder.secondLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }else if(line.getPosition() == 2){
+                    vHolder.thirdLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }
+            }
+        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines){
+            vHolder.firstLineButton.setVisibility(View.VISIBLE);
+            vHolder.secondLineButton.setVisibility(View.VISIBLE);
+            vHolder.thirdLineButton.setVisibility(View.INVISIBLE);
+            for (Line line : item.getLines()) {
+                if(line.getPosition() == 0){
+                    vHolder.firstLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }else if(line.getPosition() == 1){
+                    vHolder.secondLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }else if(line.getPosition() == 2){
+                    vHolder.thirdLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }
+            }
+        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines){
+            vHolder.firstLineButton.setVisibility(View.VISIBLE);
+            vHolder.secondLineButton.setVisibility(View.VISIBLE);
+            vHolder.thirdLineButton.setVisibility(View.VISIBLE);
+            for (Line line : item.getLines()) {
+                if(line.getPosition() == 0){
+                    vHolder.firstLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }else if(line.getPosition() == 1){
+                    vHolder.secondLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }else if(line.getPosition() == 2){
+                    vHolder.thirdLineButton.setText(line.getName());
+                    if(line.getPowerState() == Line.LINE_STATE_ON){
+                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
+                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
+                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
+                    }
+                }
+            }
+        }
+
+        vHolder.firstLineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
+                    //turn on this line
+                    toggleLine(item,0, Line.LINE_STATE_ON);
+                }else if(item.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
+                    //turn off this line
+                    toggleLine(item, 0, Line.LINE_STATE_OFF);
+                }
+            }
+        });
+        vHolder.secondLineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
+                    //turn on this line
+                    toggleLine(item,1, Line.LINE_STATE_ON);
+                }else if(item.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
+                    //turn off this line
+                    toggleLine(item,1, Line.LINE_STATE_OFF);
+                }
+            }
+        });
+        vHolder.thirdLineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF){
+                    //turn on this line
+                    toggleLine(item,2, Line.LINE_STATE_ON);
+                }else if(item.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
+                    //turn off this line
+                    toggleLine(item,2, Line.LINE_STATE_OFF);
+                }
+            }
+        });
+
+        return rowView;
+    }*/
+
+    private void removeDevice(Device device){
+        devices.remove(device);
+        MySettings.removeDevice(device);
+        notifyDataSetChanged();
+    }
+
+    private void toggleLine(Device device, int position, final int state){
+        String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+        if(position == 0){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "0");
+        }else if(position == 1){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "1");
+        }else if(position == 2){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "2");
+        }
+
+
+        Line line = device.getLines().get(position);
+        final int oldState = line.getPowerState();
+        /*line.setPowerState(Line.LINE_STATE_PROCESSING);
+        MySettings.updateLineState(line, Line.LINE_STATE_PROCESSING);
+        if(MainActivity.getInstance() != null) {
+            MainActivity.getInstance().updateDevicesList();
+        }*/
+        line.setPowerState(state);
+        MySettings.updateLineState(line, state);
+        if(MainActivity.getInstance() != null) {
+            MainActivity.getInstance().updateDevicesList();
+        }
+
+        Log.d(TAG,  "toggleLine URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "toggleLine response: " + response);
+
+                /*line.setPowerState(state);
+                MySettings.updateLineState(line, state);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }*/
+
+                //notifyDataSetChanged();
+                /*try{
+                    JSONObject jsonObject= new JSONObject(response);
+                    if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
+
+                    }
+                }catch (JSONException e){
+                    Log.d(TAG, "Json exception: " + e.getMessage());
+                }*/
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+                if(activity != null) {
+                    //Toast.makeText(activity, activity.getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                }
+                line.setPowerState(oldState);
+                MySettings.updateLineState(line, oldState);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }
+                //MySettings.scanNetwork();
+                //device.setIpAddress("");
+                //MySettings.updateDeviceIP(device, "");
+            }
+        });
+        request.setShouldCache(false);
+        request.setRetryPolicy(new DefaultRetryPolicy(250, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        HttpConnector.getInstance(activity).addToRequestQueue(request);
+    }
+
+    private void toggleDimming(Device device, int position, int state){
+        String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+        if(position == 0){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_STATE);
+        }else if(position == 1){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_SECOND_LINE_DIMMING_CONTROL_STATE);
+        }else if(position == 2){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_STATE);
+        }
+
+        Line line = device.getLines().get(position);
+        int oldState = line.getDimmingState();
+        /*line.setDimmingState(Line.DIMMING_STATE_PROCESSING);
+        MySettings.updateLineDimmingState(line, Line.DIMMING_STATE_PROCESSING);
+        if(MainActivity.getInstance() != null) {
+            MainActivity.getInstance().updateDevicesList();
+        }*/
+
+        line.setDimmingState(state);
+        MySettings.updateLineDimmingState(line, state);
+        if(MainActivity.getInstance() != null) {
+            MainActivity.getInstance().updateDevicesList();
+        }
+
+        url = url.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + state);
+
+        Log.d(TAG,  "toggleLineDimming URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "toggleLineDimming response: " + response);
+
+                line.setDimmingState(state);
+                MySettings.updateLineDimmingState(line, state);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }
+                //notifyDataSetChanged();
+                /*try{
+                    JSONObject jsonObject= new JSONObject(response);
+                    if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
+
+                    }
+                }catch (JSONException e){
+                    Log.d(TAG, "Json exception: " + e.getMessage());
+                }*/
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+                if(activity != null) {
+                    //Toast.makeText(activity, activity.getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                }
+                line.setDimmingState(oldState);
+                MySettings.updateLineDimmingState(line, oldState);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }
+                //MySettings.scanNetwork();
+                //device.setIpAddress("");
+                //MySettings.updateDeviceIP(device, "");
+            }
+        });
+        request.setShouldCache(false);
+        request.setRetryPolicy(new DefaultRetryPolicy(250, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        HttpConnector.getInstance(activity).addToRequestQueue(request);
+    }
+
+    private void controlDimming(Device device, int position, int value){
+        String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+        if(position == 0){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
+        }else if(position == 1){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_SECOND_LINE_DIMMING_CONTROL_VALUE);
+        }else if(position == 2){
+            url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_VALUE);
+        }
+
+        if(value == 10){
+            url = url.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + ":");
+        }else{
+            url = url.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + value);
+        }
+
+        Line line = device.getLines().get(position);
+        int oldValue = line.getDimmingVvalue();
+
+        line.setDimmingVvalue(value);
+        MySettings.updateLineDimmingValue(line, value);
+        if(MainActivity.getInstance() != null) {
+            MainActivity.getInstance().updateDevicesList();
+        }
+
+        Log.d(TAG,  "controlLineDimming URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "controlLineDimming response: " + response);
+
+                /*line.setDimmingVvalue(value);
+                MySettings.updateLineDimmingValue(line, value);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }*/
+                /*Line line = device.getLines().get(position);
+                line.setDimmingVvalue(value);
+                MySettings.updateLineDimmingValue(line, value);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }*/
+                //notifyDataSetChanged();
+                /*try{
+                    JSONObject jsonObject= new JSONObject(response);
+                    if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
+
+                    }
+                }catch (JSONException e){
+                    Log.d(TAG, "Json exception: " + e.getMessage());
+                }*/
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+                if(activity != null) {
+                    //Toast.makeText(activity, activity.getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                }
+                line.setDimmingVvalue(oldValue);
+                MySettings.updateLineDimmingValue(line, oldValue);
+                if(MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().updateDevicesList();
+                }
+                //MySettings.scanNetwork();
+                //device.setIpAddress("");
+                //MySettings.updateDeviceIP(device, "");
+            }
+        });
+        request.setShouldCache(false);
+        request.setRetryPolicy(new DefaultRetryPolicy(250, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        HttpConnector.getInstance(activity).addToRequestQueue(request);
+    }
+
+    public static class ViewHolder{
+        TextView deviceNameTextView, deviceLocationTextView;
+        TextView firstLineTextView, secondLineTextView, thirdLineTextView;
+        RelativeLayout removeDeviceLayout;
+        CardView firstLineLayout, secondLineLayout, thirdLineLayout;
+        ImageView removeDeviceImageView;
+        SeekBar firstLineSeekBar, secondLineSeekBar, thirdLineSeekBar;
+        CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
+        Switch firstLineSwitch, secondLineSwitch, thirdLineSwitch;
+    }
+}
