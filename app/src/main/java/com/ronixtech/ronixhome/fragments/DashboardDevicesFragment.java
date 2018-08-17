@@ -31,6 +31,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.github.clans.fab.FloatingActionButton;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.HttpConnectorDeviceStatus;
 import com.ronixtech.ronixhome.MySettings;
@@ -127,7 +128,7 @@ public class DashboardDevicesFragment extends Fragment {
         deviceAdapter = new DeviceAdapter(getActivity(), devices);
         devicesListView.setAdapter(deviceAdapter);
 
-        refreshDevices();
+        loadDevicesIntoMemory();
 
         devicesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -254,7 +255,7 @@ public class DashboardDevicesFragment extends Fragment {
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 750); //execute in every 1000 ms
+        timer.schedule(doAsynchronousTask, 0, 1000); //execute in every 1000 ms
 
         final TextView debugTextView = view.findViewById(R.id.debug_textview);
         Button testButton = view.findViewById(R.id.test_button);
@@ -378,7 +379,7 @@ public class DashboardDevicesFragment extends Fragment {
         this.room = room;
     }
 
-    public void refreshDevices(){
+    public void loadDevicesIntoMemory(){
         if(mHandler != null) {
             mHandler.post(new Runnable() {
                 @Override
@@ -395,7 +396,34 @@ public class DashboardDevicesFragment extends Fragment {
                             addDeviceButton.setVisibility(View.VISIBLE);
                         }
                         deviceAdapter.notifyDataSetChanged();
+                        DevicesInMemory.setDevices(devices);
                     }
+                }
+            });
+        }
+    }
+
+    public void refreshDevicesFromMemory(){
+        if(mHandler != null) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    /*if(devices != null) {
+                        devices.clear();
+                        if (MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
+                            devices.addAll(MySettings.getRoomDevices(room.getId()));
+                            emptyTextView.setVisibility(View.GONE);
+                            addDeviceButton.setVisibility(View.GONE);
+                        } else {
+                            emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below.");
+                            emptyTextView.setVisibility(View.VISIBLE);
+                            addDeviceButton.setVisibility(View.VISIBLE);
+                        }
+                        deviceAdapter.notifyDataSetChanged();
+                    }*/
+                    devices.clear();
+                    devices.addAll(DevicesInMemory.getDevices());
+                    deviceAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -411,33 +439,35 @@ public class DashboardDevicesFragment extends Fragment {
             public void onResponse(String response) {
                 Log.d(TAG, "getDeviceStatus response: " + response);
 
+                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
                 DataParser dataParser = new DataParser(device, response);
                 dataParser.execute();
 
-                device.setErrorCount(0);
+                //device.setErrorCount(0);
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "Volley Error: " + error.getMessage());
-                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                /*MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     MySettings.updateDeviceIP(device, "");
                     MySettings.updateDeviceErrorCount(device, 0);
                     MySettings.scanNetwork();
-                }
+                }*/
             }
         });
+        request.setTag("getStatusRequest");
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(200, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(300, -1, 0f));
         HttpConnectorDeviceStatus.getInstance(MainActivity.getInstance()).addToRequestQueue(request);
     }
 
     private void removeDevice(Device device){
         devices.remove(device);
         MySettings.removeDevice(device);
-        refreshDevices();
+        loadDevicesIntoMemory();
     }
 
     @Override
@@ -708,7 +738,8 @@ public class DashboardDevicesFragment extends Fragment {
                         }
                     }
                     device.setLines(lines);
-                    MySettings.addDevice(device);
+                    DevicesInMemory.updateDevice(device);
+                    //MySettings.addDevice(device);
                     if(MainActivity.getInstance() != null){
                         MainActivity.getInstance().updateDevicesList();
                     }

@@ -113,7 +113,16 @@ public class MainActivity extends AppCompatActivity
         if(fragmentManager != null) {
             DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
             if (fragment != null) {
-                fragment.refreshDevices();
+                fragment.refreshDevicesFromMemory();
+            }
+        }
+    }
+
+    public void updateDeviceListDatabase(){
+        if(fragmentManager != null) {
+            DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
+            if (fragment != null) {
+                fragment.loadDevicesIntoMemory();
             }
         }
     }

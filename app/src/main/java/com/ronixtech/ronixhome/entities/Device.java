@@ -21,7 +21,7 @@ public class Device {
     public static final int DEVICE_TYPE_wifi_1line_old = 100004;
     public static final int DEVICE_TYPE_wifi_2lines_old = 100005;
     public static final int DEVICE_TYPE_wifi_3lines_old = 100006;
-    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10;
+    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10000; //testing a high number to disable the re-scan feature when it fails temporarily
 
     @PrimaryKey(autoGenerate = true)
     long id;
@@ -127,7 +127,7 @@ public class Device {
         this.lines = lines;
     }
 
-    /*@Override
+    @Override
     public boolean equals(Object object){
         Device device = (Device) object;
         if(device.getId() == this.id){
@@ -135,5 +135,5 @@ public class Device {
         }else{
             return false;
         }
-    }*/
+    }
 }

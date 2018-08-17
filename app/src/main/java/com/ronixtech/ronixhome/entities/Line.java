@@ -138,4 +138,14 @@ public class Line {
     public void setLinePowerUsage(double linePowerUsage) {
         this.linePowerUsage = linePowerUsage;
     }
+
+    @Override
+    public boolean equals(Object object){
+        Line line= (Line) object;
+        if(line.getId() == this.id){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

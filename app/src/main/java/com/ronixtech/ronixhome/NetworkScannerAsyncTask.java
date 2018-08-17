@@ -175,7 +175,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                                     Utils.showNotification(device);
                                     MySettings.updateDeviceIP(device, ip);
                                     if(MainActivity.getInstance() != null) {
-                                        MainActivity.getInstance().updateDevicesList();
+                                        MainActivity.getInstance().updateDeviceListDatabase();
                                     }
                                 }
                             }else{

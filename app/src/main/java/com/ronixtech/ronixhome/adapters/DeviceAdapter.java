@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -301,9 +302,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    if(b) {
+                    /*if(b) {
                         controlDimming(item, 0, i);
-                    }
+                    }*/
                 }
 
                 @Override
@@ -313,15 +314,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-
+                    int i = vHolder.firstLineSeekBar.getProgress();
+                    controlDimming(item, 0, i);
                 }
             });
             vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    if(b) {
+                    /*if(b) {
                         controlDimming(item, 1, i);
-                    }
+                    }*/
                 }
 
                 @Override
@@ -331,15 +333,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-
+                    int i = vHolder.secondLineSeekBar.getProgress();
+                    controlDimming(item, 1, i);
                 }
             });
             vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    if(b) {
+                    /*if(b) {
                         controlDimming(item, 2, i);
-                    }
+                    }*/
                 }
 
                 @Override
@@ -349,7 +352,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-
+                    int i = vHolder.thirdLineSeekBar.getProgress();
+                    controlDimming(item, 2, i);
                 }
             });
         }
@@ -655,8 +659,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "2");
         }
 
-
-        Line line = device.getLines().get(position);
+        List<Line> lines = device.getLines();
+        Line line = lines.get(position);
         final int oldState = line.getPowerState();
         /*line.setPowerState(Line.LINE_STATE_PROCESSING);
         MySettings.updateLineState(line, Line.LINE_STATE_PROCESSING);
@@ -664,7 +668,11 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             MainActivity.getInstance().updateDevicesList();
         }*/
         line.setPowerState(state);
-        MySettings.updateLineState(line, state);
+        lines.remove(line);
+        lines.add(position, line);
+        device.setLines(lines);
+        DevicesInMemory.updateDevice(device);
+        //MySettings.updateLineState(line, state);
         if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
         }
@@ -675,6 +683,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             public void onResponse(String response) {
                 Log.d(TAG, "toggleLine response: " + response);
 
+                HttpConnector.getInstance(activity).getRequestQueue().cancelAll("controlRequest");
                 /*line.setPowerState(state);
                 MySettings.updateLineState(line, state);
                 if(MainActivity.getInstance() != null) {
@@ -699,7 +708,11 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     //Toast.makeText(activity, activity.getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 line.setPowerState(oldState);
-                MySettings.updateLineState(line, oldState);
+                lines.remove(line);
+                lines.add(position, line);
+                device.setLines(lines);
+                DevicesInMemory.updateDevice(device);
+                //MySettings.updateLineState(line, oldState);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
                 }
@@ -708,8 +721,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 //MySettings.updateDeviceIP(device, "");
             }
         });
+        request.setTag("controlRequest");
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(250, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(250, 4, 0f));
         HttpConnector.getInstance(activity).addToRequestQueue(request);
     }
 
@@ -723,7 +737,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_STATE);
         }
 
-        Line line = device.getLines().get(position);
+        List<Line> lines = device.getLines();
+        Line line = lines.get(position);
         int oldState = line.getDimmingState();
         /*line.setDimmingState(Line.DIMMING_STATE_PROCESSING);
         MySettings.updateLineDimmingState(line, Line.DIMMING_STATE_PROCESSING);
@@ -732,7 +747,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         }*/
 
         line.setDimmingState(state);
-        MySettings.updateLineDimmingState(line, state);
+
+        lines.remove(line);
+        lines.add(position, line);
+        device.setLines(lines);
+        DevicesInMemory.updateDevice(device);
+
+        //MySettings.updateLineDimmingState(line, state);
         if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
         }
@@ -745,11 +766,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             public void onResponse(String response) {
                 Log.d(TAG, "toggleLineDimming response: " + response);
 
-                line.setDimmingState(state);
+                HttpConnector.getInstance(activity).getRequestQueue().cancelAll("controlRequest");
+
+                /*line.setDimmingState(state);
                 MySettings.updateLineDimmingState(line, state);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
-                }
+                }*/
                 //notifyDataSetChanged();
                 /*try{
                     JSONObject jsonObject= new JSONObject(response);
@@ -768,7 +791,11 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     //Toast.makeText(activity, activity.getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 line.setDimmingState(oldState);
-                MySettings.updateLineDimmingState(line, oldState);
+                lines.remove(line);
+                lines.add(position, line);
+                device.setLines(lines);
+                DevicesInMemory.updateDevice(device);
+                //MySettings.updateLineDimmingState(line, oldState);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
                 }
@@ -777,8 +804,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 //MySettings.updateDeviceIP(device, "");
             }
         });
+        request.setTag("controlRequest");
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(250, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(250, 4, 0f));
         HttpConnector.getInstance(activity).addToRequestQueue(request);
     }
 
@@ -798,11 +826,18 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             url = url.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + value);
         }
 
-        Line line = device.getLines().get(position);
+        List<Line> lines = device.getLines();
+        Line line = lines.get(position);
         int oldValue = line.getDimmingVvalue();
 
         line.setDimmingVvalue(value);
-        MySettings.updateLineDimmingValue(line, value);
+
+        lines.remove(line);
+        lines.add(position, line);
+        device.setLines(lines);
+        DevicesInMemory.updateDevice(device);
+
+        //MySettings.updateLineDimmingValue(line, value);
         if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
         }
@@ -812,6 +847,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "controlLineDimming response: " + response);
+
+                HttpConnector.getInstance(activity).getRequestQueue().cancelAll("controlRequest");
 
                 /*line.setDimmingVvalue(value);
                 MySettings.updateLineDimmingValue(line, value);
@@ -842,7 +879,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     //Toast.makeText(activity, activity.getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 line.setDimmingVvalue(oldValue);
-                MySettings.updateLineDimmingValue(line, oldValue);
+
+                lines.remove(line);
+                lines.add(position, line);
+                device.setLines(lines);
+                DevicesInMemory.updateDevice(device);
+
+                //MySettings.updateLineDimmingValue(line, oldValue);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
                 }
@@ -851,8 +894,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 //MySettings.updateDeviceIP(device, "");
             }
         });
+        request.setTag("controlRequest");
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(250, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(250, 4, 0f));
         HttpConnector.getInstance(activity).addToRequestQueue(request);
     }
 
