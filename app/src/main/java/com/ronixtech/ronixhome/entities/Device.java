@@ -23,6 +23,16 @@ public class Device {
     public static final int DEVICE_TYPE_wifi_3lines_old = 100006;
     public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10000; //testing a high number to disable the re-scan feature when it fails temporarily
 
+    public static final int CONTROL_TIMEOUT = 250;
+    public static final int CONTROL_NUMBER_OF_RETRIES = 2;
+
+    public static final int REFRESH_RATE_MS = 1000;
+    public static final int REFRESH_TIMEOUT = 400;
+    public static final int REFRESH_NUMBER_OF_RETRIES = 0;
+
+    public static final int CONFIG_TIMEOUT = 200;
+    public static final int CONFIG_NUMBER_OF_RETRIES = 10;
+
     @PrimaryKey(autoGenerate = true)
     long id;
     @ColumnInfo(name = "name")

@@ -131,8 +131,10 @@ public class AddFloorFragment extends Fragment implements PickPlaceDialogFragmen
         selectedPlaceEditText = view.findViewById(R.id.floor_place_edittext);
         floorPlaceLayout = view.findViewById(R.id.floor_place_layout);
         if(MySettings.getCurrentPlace() != null){
-            floors = MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors();
-            floorsTitleTextView.setText(MySettings.getCurrentPlace().getName()+":");
+            if(MySettings.getCurrentPlace() != null){
+                floors = MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors();
+                floorsTitleTextView.setText(MySettings.getCurrentPlace().getName()+":");
+            }
         }else {
             floors = MySettings.getAllFloors();
         }

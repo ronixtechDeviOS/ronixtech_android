@@ -91,7 +91,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 => HTTP GET: "LOCAL_HOST/ronix/gettypeid"*/
         //debugTextView.append("Getting device type...\n");
         //volley request to device to send ssid/password and then get device info for next steps
-        String url = Constants.GET_DEVICE_TYPE_URL;
+        String url = Constants.DEVICE_URL + Constants.GET_DEVICE_TYPE_URL;
 
         Log.d(TAG,  "getDeviceType URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -135,7 +135,7 @@ public class AddDeviceFragmentGetData extends Fragment {
             }
         });
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(200, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(Device.CONFIG_TIMEOUT, Device.CONFIG_NUMBER_OF_RETRIES, 0f));
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
     }
 
@@ -147,7 +147,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 => HTTP GET: "LOCAL_HOST/ronix/gettypeid"*/
         //debugTextView.append("Getting chip id...\n");
         //volley request to device to send ssid/password and then get device info for next steps
-        String url = Constants.GET_CHIP_ID_URL;
+        String url = Constants.DEVICE_URL + Constants.GET_CHIP_ID_URL;
 
         Log.d(TAG,  "getChipID URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -205,7 +205,7 @@ public class AddDeviceFragmentGetData extends Fragment {
             }
         });
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(200, 10, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(Device.CONFIG_TIMEOUT, Device.CONFIG_NUMBER_OF_RETRIES, 0f));
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
     }
 

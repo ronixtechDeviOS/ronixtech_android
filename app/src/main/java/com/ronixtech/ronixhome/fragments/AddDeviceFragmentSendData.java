@@ -85,7 +85,7 @@ public class AddDeviceFragmentSendData extends Fragment {
         //debugTextView.append("Sending home network info to your RonixTech device...\n");
 
         //volley request to device to send ssid/password and then get device info for next steps
-        String url = Constants.SEND_SSID_PASSWORD_URL;
+        String url = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
         //?essid=%SSID%&passwd=%PASS%
 
         url = url.concat("?").concat(Constants.PARAMETER_SSID).concat("=").concat(MySettings.getHomeNetwork().getSsid())
@@ -127,7 +127,7 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
         });
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(Device.CONFIG_TIMEOUT, Device.CONFIG_NUMBER_OF_RETRIES, 0f));
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
     }
 

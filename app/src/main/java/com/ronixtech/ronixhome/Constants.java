@@ -9,9 +9,9 @@ public class Constants {
 
     //endpoint URLs
     public static final String DEVICE_URL = "http://192.168.4.1";
-    public static final String SEND_SSID_PASSWORD_URL = DEVICE_URL + "/ronix/wifi/connect";
-    public static final String GET_CHIP_ID_URL = DEVICE_URL + "/ronix/getchipid";
-    public static final String GET_DEVICE_TYPE_URL = DEVICE_URL + "/ronix/gettypeid";
+    public static final String SEND_SSID_PASSWORD_URL = "/ronix/wifi/connect";
+    public static final String GET_CHIP_ID_URL = "/ronix/getchipid";
+    public static final String GET_DEVICE_TYPE_URL = "/ronix/gettypeid";
     public static final String CONTROL_DEVICE_URL = "/ronix/control/command";
     public static final String GET_DEVICE_STATUS = "/ronix/status";
     public static final String GET_SSID_URL = "http://ronixtech.com/ronix_services/task/srv.php";

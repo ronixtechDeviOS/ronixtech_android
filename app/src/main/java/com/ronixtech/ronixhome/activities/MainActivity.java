@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
@@ -192,6 +193,9 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
             fragmentTransaction.addToBackStack("wifiInfoFragment");
             fragmentTransaction.commit();
+        } else if(id == R.id.nav_refresh_devices){
+            Toast.makeText(mInstance, "Refreshing devices", Toast.LENGTH_SHORT).show();
+            MySettings.scanNetwork();
         } else if (id == R.id.nav_places) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

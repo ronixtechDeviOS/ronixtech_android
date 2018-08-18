@@ -12,6 +12,10 @@
             android:id="@+id/nav_home_network"
             android:icon="@drawable/baseline_network_wifi_black_36"
             android:title="Home Network" />
+        <item
+            android:id="@+id/nav_refresh_devices"
+            android:icon="@drawable/baseline_refresh_black_48"
+            android:title="Refresh Devices" />
     </group>
 
     <item android:title="Locations">
