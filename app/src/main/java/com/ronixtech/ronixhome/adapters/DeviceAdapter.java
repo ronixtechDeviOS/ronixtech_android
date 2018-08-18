@@ -406,6 +406,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.firstLineSwitch.setChecked(false);
                     vHolder.firstLineDimmingCheckBox.setEnabled(false);
                     vHolder.firstLineSeekBar.setEnabled(false);
+                    vHolder.firstLineDimmingCheckBox.setChecked(false);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -432,6 +433,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.secondLineSwitch.setChecked(false);
                     vHolder.secondLineDimmingCheckBox.setEnabled(false);
                     vHolder.secondLineSeekBar.setEnabled(false);
+                    vHolder.secondLineDimmingCheckBox.setChecked(false);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -458,6 +460,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.thirdLineDimmingCheckBox.setEnabled(false);
                     vHolder.thirdLineSeekBar.setEnabled(false);
                     vHolder.thirdLineSwitch.setChecked(false);
+                    vHolder.thirdLineDimmingCheckBox.setChecked(false);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
