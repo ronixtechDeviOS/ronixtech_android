@@ -26,7 +26,7 @@ public class Device {
     public static final int CONTROL_TIMEOUT = 250;
     public static final int CONTROL_NUMBER_OF_RETRIES = 2;
 
-    public static final int REFRESH_RATE_MS = 1000;
+    public static final int REFRESH_RATE_MS = 500;
     public static final int REFRESH_TIMEOUT = 400;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;
 

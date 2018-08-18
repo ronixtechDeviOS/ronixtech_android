@@ -92,10 +92,10 @@
                     android:layout_toEndOf="@id/first_line_type_imageview"
                     android:layout_toRightOf="@id/first_line_type_imageview"
                     android:padding="8dp">
-                    <Switch
+                    <ToggleButton
                         android:id="@+id/first_line_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:buttonTint="@color/blueColor"/>
@@ -156,10 +156,10 @@
                     android:layout_toEndOf="@id/second_line_type_imageview"
                     android:layout_toRightOf="@id/second_line_type_imageview"
                     android:padding="8dp">
-                    <Switch
+                    <ToggleButton
                         android:id="@+id/second_line_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:buttonTint="@color/blueColor"/>
@@ -220,10 +220,10 @@
                     android:layout_toEndOf="@id/third_line_type_imageview"
                     android:layout_toRightOf="@id/third_line_type_imageview"
                     android:padding="8dp">
-                    <Switch
+                    <ToggleButton
                         android:id="@+id/third_line_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:buttonTint="@color/blueColor"/>

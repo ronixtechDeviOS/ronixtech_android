@@ -11,8 +11,8 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -44,6 +44,36 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         //super(activity, R.layout.list_item_device, devices);
         this.activity = activity;
         this.devices = devices;
+        mHandler = new android.os.Handler();
+    }
+
+    private void setLayoutEnabled(boolean enabled){
+        vHolder.firstLineSwitch.setEnabled(enabled);
+        vHolder.firstLineDimmingCheckBox.setEnabled(enabled);
+        if(vHolder.firstLineSeekBar.isEnabled()) {
+            vHolder.firstLineSeekBar.setEnabled(enabled);
+        }
+
+        vHolder.secondLineSwitch.setEnabled(enabled);
+        vHolder.secondLineDimmingCheckBox.setEnabled(enabled);
+        if(vHolder.secondLineSeekBar.isEnabled()) {
+            vHolder.secondLineSeekBar.setEnabled(enabled);
+        }
+
+        vHolder.thirdLineSwitch.setEnabled(enabled);
+        vHolder.thirdLineDimmingCheckBox.setEnabled(enabled);
+        if(vHolder.thirdLineSeekBar.isEnabled()) {
+            vHolder.thirdLineSeekBar.setEnabled(enabled);
+        }
+    }
+
+    private void setLayoutEnabledDelayed(boolean enabled){
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setLayoutEnabled(enabled);
+            }
+        }, 500);
     }
 
     @Override
@@ -159,7 +189,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    boolean checked = ((Switch)view).isChecked();
+                    boolean checked = ((ToggleButton)view).isChecked();
                     MySettings.setControlState(true);
                     if(checked){
                         //turn on this line
@@ -173,7 +203,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             vHolder.secondLineSwitch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    boolean checked = ((Switch)view).isChecked();
+                    boolean checked = ((ToggleButton)view).isChecked();
                     MySettings.setControlState(true);
                     if(checked){
                         //turn on this line
@@ -189,7 +219,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 @Override
                 public void onClick(View view) {
                     MySettings.setControlState(true);
-                    boolean checked = ((Switch)view).isChecked();
+                    boolean checked = ((ToggleButton)view).isChecked();
                     if(checked){
                         //turn on this line
                         toggleLine(item,2, Line.LINE_STATE_ON);
@@ -677,6 +707,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "2");
         }*/
 
+        setLayoutEnabled(false);
+        setLayoutEnabledDelayed(true);
+
         if(position == 0){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
         }else if(position == 1){
@@ -771,6 +804,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         }else if(position == 2){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_STATE);
         }
+
+        setLayoutEnabled(false);
+        setLayoutEnabledDelayed(true);
 
         List<Line> lines = device.getLines();
         Line line = lines.get(position);
@@ -950,6 +986,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         ImageView removeDeviceImageView;
         SeekBar firstLineSeekBar, secondLineSeekBar, thirdLineSeekBar;
         CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
-        Switch firstLineSwitch, secondLineSwitch, thirdLineSwitch;
+        ToggleButton firstLineSwitch, secondLineSwitch, thirdLineSwitch;
     }
+
+    android.os.Handler mHandler;
 }
