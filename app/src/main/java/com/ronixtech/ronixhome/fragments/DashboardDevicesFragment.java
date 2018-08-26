@@ -444,6 +444,7 @@ public class DashboardDevicesFragment extends Fragment {
         Log.d(TAG, "Getting device info...");
         StatusGetter statusGetter = new StatusGetter(device);
         statusGetter.execute();
+
         /*//volley request to device to get its status
         String url = "http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS;
 
@@ -831,6 +832,8 @@ public class DashboardDevicesFragment extends Fragment {
         @Override
         protected void onPreExecute(){
 
+            Log.d(TAG, "Enabling getStatus flag...");
+            MySettings.setGetStatusState(true);
         }
 
         @Override
@@ -843,6 +846,8 @@ public class DashboardDevicesFragment extends Fragment {
             if(MainActivity.getInstance() != null){
                 MainActivity.getInstance().updateDevicesList();
             }
+            Log.d(TAG, "Disabling getStatus flag...");
+            MySettings.setGetStatusState(false);
         }
 
         @Override
@@ -945,12 +950,17 @@ public class DashboardDevicesFragment extends Fragment {
                                 //MySettings.addDevice(device);
                             }catch (JSONException e){
                                 Log.d(TAG, "Json exception: " + e.getMessage());
+                            }finally {
+                                Log.d(TAG, "Disabling getStatus flag...");
+                                MySettings.setGetStatusState(false);
                             }
                         }
                     }
 
                 } finally {
                     urlConnection.disconnect();
+                    Log.d(TAG, "Disabling getStatus flag...");
+                    MySettings.setGetStatusState(false);
                 }
             }catch (MalformedURLException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
@@ -958,6 +968,9 @@ public class DashboardDevicesFragment extends Fragment {
                 Log.d(TAG, "Exception: " + e.getMessage());
             }catch (JSONException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                Log.d(TAG, "Disabling getStatus flag...");
+                MySettings.setGetStatusState(false);
             }
 
             return null;

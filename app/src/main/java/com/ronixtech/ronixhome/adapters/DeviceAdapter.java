@@ -2,6 +2,7 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,22 +15,24 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
-import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class DeviceAdapter extends BaseSwipeAdapter {
@@ -698,14 +701,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
     }
 
     private void toggleLine(Device device, int position, final int state){
-        String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
-        /*if(position == 0){
+        LineToggler lineToggler = new LineToggler(device, position, state);
+        lineToggler.execute();
+        /*String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+        *//*if(position == 0){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "0");
         }else if(position == 1){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "1");
         }else if(position == 2){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + "2");
-        }*/
+        }*//*
 
         setLayoutEnabled(false);
         setLayoutEnabledDelayed(true);
@@ -727,20 +732,20 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         List<Line> lines = device.getLines();
         Line line = lines.get(position);
         final int oldState = line.getPowerState();
-        /*line.setPowerState(Line.LINE_STATE_PROCESSING);
+        *//*line.setPowerState(Line.LINE_STATE_PROCESSING);
         MySettings.updateLineState(line, Line.LINE_STATE_PROCESSING);
         if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
-        }*/
+        }*//*
         line.setPowerState(state);
         lines.remove(line);
         lines.add(position, line);
         device.setLines(lines);
         DevicesInMemory.updateDevice(device);
         //MySettings.updateLineState(line, state);
-        /*if(MainActivity.getInstance() != null) {
+        *//*if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
-        }*/
+        }*//*
 
         Log.d(TAG,  "toggleLine URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -749,21 +754,21 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 Log.d(TAG, "toggleLine response: " + response);
                 MySettings.setControlState(false);
                 HttpConnector.getInstance(activity).getRequestQueue().cancelAll("controlRequest");
-                /*line.setPowerState(state);
+                *//*line.setPowerState(state);
                 MySettings.updateLineState(line, state);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
-                }*/
+                }*//*
 
                 //notifyDataSetChanged();
-                /*try{
+                *//*try{
                     JSONObject jsonObject= new JSONObject(response);
                     if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
 
                     }
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());
-                }*/
+                }*//*
             }
         }, new Response.ErrorListener() {
             @Override
@@ -792,11 +797,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         request.setTag("controlRequest");
         request.setShouldCache(false);
         request.setRetryPolicy(new DefaultRetryPolicy(Device.CONTROL_TIMEOUT, Device.CONTROL_NUMBER_OF_RETRIES, 0f));
-        HttpConnector.getInstance(activity).addToRequestQueue(request);
-    }
+        HttpConnector.getInstance(activity).addToRequestQueue(request);*/
+    }/**/
 
     private void toggleDimming(Device device, int position, int state){
-        String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+        DimmingToggler dimmingToggler = new DimmingToggler(device, position, state);
+        dimmingToggler.execute();
+        /*String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
         if(position == 0){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_STATE);
         }else if(position == 1){
@@ -811,11 +818,11 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         List<Line> lines = device.getLines();
         Line line = lines.get(position);
         int oldState = line.getDimmingState();
-        /*line.setDimmingState(Line.DIMMING_STATE_PROCESSING);
+        *//*line.setDimmingState(Line.DIMMING_STATE_PROCESSING);
         MySettings.updateLineDimmingState(line, Line.DIMMING_STATE_PROCESSING);
         if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
-        }*/
+        }*//*
 
         line.setDimmingState(state);
 
@@ -839,20 +846,20 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 HttpConnector.getInstance(activity).getRequestQueue().cancelAll("controlRequest");
 
-                /*line.setDimmingState(state);
+                *//*line.setDimmingState(state);
                 MySettings.updateLineDimmingState(line, state);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
-                }*/
+                }*//*
                 //notifyDataSetChanged();
-                /*try{
+                *//*try{
                     JSONObject jsonObject= new JSONObject(response);
                     if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
 
                     }
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());
-                }*/
+                }*//*
             }
         }, new Response.ErrorListener() {
             @Override
@@ -881,11 +888,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         request.setTag("controlRequest");
         request.setShouldCache(false);
         request.setRetryPolicy(new DefaultRetryPolicy(Device.CONTROL_TIMEOUT, Device.CONTROL_NUMBER_OF_RETRIES, 0f));
-        HttpConnector.getInstance(activity).addToRequestQueue(request);
+        HttpConnector.getInstance(activity).addToRequestQueue(request);*/
     }
 
     private void controlDimming(Device device, int position, int value){
-        String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+        DimmingController dimmingController = new DimmingController(device, position, value);
+        dimmingController.execute();
+        /*String url = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
         if(position == 0){
             url = url.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
         }else if(position == 1){
@@ -912,9 +921,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         DevicesInMemory.updateDevice(device);
 
         //MySettings.updateLineDimmingValue(line, value);
-        /*if(MainActivity.getInstance() != null) {
+        *//*if(MainActivity.getInstance() != null) {
             MainActivity.getInstance().updateDevicesList();
-        }*/
+        }*//*
 
         Log.d(TAG,  "controlLineDimming URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -925,26 +934,26 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 MySettings.setControlState(false);
                 HttpConnector.getInstance(activity).getRequestQueue().cancelAll("controlRequest");
 
-                /*line.setDimmingVvalue(value);
+                *//*line.setDimmingVvalue(value);
                 MySettings.updateLineDimmingValue(line, value);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
-                }*/
-                /*Line line = device.getLines().get(position);
+                }*//*
+                *//*Line line = device.getLines().get(position);
                 line.setDimmingVvalue(value);
                 MySettings.updateLineDimmingValue(line, value);
                 if(MainActivity.getInstance() != null) {
                     MainActivity.getInstance().updateDevicesList();
-                }*/
+                }*//*
                 //notifyDataSetChanged();
-                /*try{
+                *//*try{
                     JSONObject jsonObject= new JSONObject(response);
                     if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
 
                     }
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());
-                }*/
+                }*//*
             }
         }, new Response.ErrorListener() {
             @Override
@@ -975,7 +984,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         request.setTag("controlRequest");
         request.setShouldCache(false);
         request.setRetryPolicy(new DefaultRetryPolicy(Device.CONTROL_TIMEOUT, Device.CONTROL_NUMBER_OF_RETRIES, 0f));
-        HttpConnector.getInstance(activity).addToRequestQueue(request);
+        HttpConnector.getInstance(activity).addToRequestQueue(request);*/
     }
 
     public static class ViewHolder{
@@ -990,4 +999,417 @@ public class DeviceAdapter extends BaseSwipeAdapter {
     }
 
     android.os.Handler mHandler;
+
+
+    public class LineToggler extends AsyncTask<Void, Void, Void> {
+        private final String TAG = DeviceAdapter.LineToggler.class.getSimpleName();
+
+        Device device;
+        int position;
+        int state;
+
+        List<Line> lines;
+        Line line;
+        int oldState;
+
+        public LineToggler(Device device, int position, int state) {
+            this.device = device;
+            this.position = position;
+            this.state = state;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            setLayoutEnabled(false);
+            //setLayoutEnabledDelayed(true);
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldState = line.getPowerState();
+
+            line.setPowerState(state);
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            /*if(MainActivity.getInstance() != null){
+                MainActivity.getInstance().updateDevicesList();
+            }*/
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            //MySettings.updateLineState(line, oldState);
+            if(MainActivity.getInstance() != null){
+                MainActivity.getInstance().updateDevicesList();
+            }
+            MySettings.setControlState(false);
+            setLayoutEnabled(true);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while(MySettings.isGetStatusActive()){
+                Log.d(TAG, "getStatusActive, doing nothing...");
+                /*try {
+                    Thread.sleep(20);
+                }catch (InterruptedException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }*/
+            }
+
+            HttpURLConnection urlConnection = null;
+            int statusCode = 0;
+            try{
+                String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+                if(position == 0){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
+                }else if(position == 1){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_SECOND_LINE_DIMMING_CONTROL_VALUE);
+                }else if(position == 2){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_VALUE);
+                }
+
+                if(state == Line.LINE_STATE_ON){
+                    urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + ":");
+                }else if(state == Line.LINE_STATE_OFF){
+                    urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + "0");
+                }
+                URL url = new URL(urlString);
+
+                Log.d(TAG,  "toggleLine URL: " + url);
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoInput(false);
+                urlConnection.setDoOutput(false);
+                urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
+                urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
+                statusCode = urlConnection.getResponseCode();
+                //Log.d(TAG,  "toggleLine responseCode: " + statusCode);
+                    /*InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    Log.d(TAG,  "toggleLine response: " + result.toString());*/
+            }catch (MalformedURLException e){
+                line.setPowerState(oldState);
+                Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+            }catch (IOException e){
+                //line.setPowerState(oldState);
+                Log.d(TAG, "Exception IOException: " + e.getMessage());
+            }catch (Exception e){
+                //line.setPowerState(oldState);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                Log.d(TAG,  "toggleLine responseCode: " + statusCode);
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+
+/*
+            HttpURLConnection urlConnection = null;
+            int statusCode = 0;
+            int count = 0;
+            while(statusCode != 200){
+                Log.d(TAG,  "toggleLine attempt #: " + count);
+
+                try{
+                    String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+                    if(position == 0){
+                        urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
+                    }else if(position == 1){
+                        urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_SECOND_LINE_DIMMING_CONTROL_VALUE);
+                    }else if(position == 2){
+                        urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_VALUE);
+                    }
+
+                    if(state == Line.LINE_STATE_ON){
+                        urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + ":");
+                    }else if(state == Line.LINE_STATE_OFF){
+                        urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + "0");
+                    }
+                    URL url = new URL(urlString);
+
+                    Log.d(TAG,  "toggleLine URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setDoInput(false);
+                    urlConnection.setDoOutput(false);
+                    urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
+                    statusCode = urlConnection.getResponseCode();
+                    //Log.d(TAG,  "toggleLine responseCode: " + statusCode);
+                    */
+/*InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    Log.d(TAG,  "toggleLine response: " + result.toString());*//*
+
+                }catch (MalformedURLException e){
+                    line.setPowerState(oldState);
+                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                }catch (IOException e){
+                    //line.setPowerState(oldState);
+                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                }catch (Exception e){
+                    //line.setPowerState(oldState);
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    Log.d(TAG,  "toggleLine responseCode: " + statusCode);
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    count++;
+                }
+            }
+*/
+
+            return null;
+        }
+    }
+
+    public class DimmingToggler extends AsyncTask<Void, Void, Void> {
+        private final String TAG = DeviceAdapter.DimmingToggler.class.getSimpleName();
+
+        Device device;
+        int position;
+        int state;
+
+        List<Line> lines;
+        Line line;
+        int oldState;
+
+        public DimmingToggler(Device device, int position, int state) {
+            this.device = device;
+            this.position = position;
+            this.state = state;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            setLayoutEnabled(false);
+            //setLayoutEnabledDelayed(true);
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldState = line.getDimmingState();
+
+            line.setDimmingState(state);
+
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            //MySettings.updateLineDimmingState(line, state);
+            if(MainActivity.getInstance() != null) {
+                MainActivity.getInstance().updateDevicesList();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            //MySettings.updateLineDimmingState(line, oldState);
+            if(MainActivity.getInstance() != null) {
+                MainActivity.getInstance().updateDevicesList();
+            }
+
+            MySettings.setControlState(false);
+
+            setLayoutEnabled(true);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while(MySettings.isGetStatusActive()){
+                Log.d(TAG, "getStatusActive, doing nothing...");
+                /*try {
+                    Thread.sleep(20);
+                }catch (InterruptedException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }*/
+            }
+
+            try{
+                String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+                if(position == 0){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_STATE);
+                }else if(position == 1){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_SECOND_LINE_DIMMING_CONTROL_STATE);
+                }else if(position == 2){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_STATE);
+                }
+                urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + state);
+                URL url = new URL(urlString);
+
+                Log.d(TAG,  "toggleDimming URL: " + url);
+
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
+                urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
+                try {
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    Log.d(TAG,  "toggleDimming response: " + result.toString());
+                } finally {
+                    urlConnection.disconnect();
+                }
+            }catch (MalformedURLException e){
+                line.setDimmingState(oldState);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (IOException e){
+                line.setDimmingState(oldState);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (Exception e){
+                line.setDimmingState(oldState);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }
+
+            return null;
+        }
+    }
+
+    public class DimmingController extends AsyncTask<Void, Void, Void> {
+        private final String TAG = DeviceAdapter.DimmingController.class.getSimpleName();
+
+        Device device;
+        int position;
+        int value;
+
+        List<Line> lines;
+        Line line;
+        int oldValue;
+
+        public DimmingController(Device device, int position, int value) {
+            this.device = device;
+            this.position = position;
+            this.value = value;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            //setLayoutEnabled(false);
+            //setLayoutEnabledDelayed(true);
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldValue = line.getDimmingVvalue();
+
+            line.setDimmingVvalue(value);
+
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+
+            //MySettings.updateLineDimmingValue(line, oldValue);
+            if(MainActivity.getInstance() != null) {
+                MainActivity.getInstance().updateDevicesList();
+            }
+
+            MySettings.setControlState(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while(MySettings.isGetStatusActive()){
+                //Log.d(TAG, "getStatusActive, doing nothing...");
+                /*try {
+                    Thread.sleep(20);
+                }catch (InterruptedException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }*/
+            }
+
+            try{
+                String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
+                if(position == 0){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
+                }else if(position == 1){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_SECOND_LINE_DIMMING_CONTROL_VALUE);
+                }else if(position == 2){
+                    urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_THIRD_LINE_DIMMING_CONTROL_VALUE);
+                }
+
+                if(value == 10){
+                    urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + ":");
+                }else{
+                    urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + value);
+                }
+                URL url = new URL(urlString);
+
+                Log.d(TAG,  "controlDimming URL: " + url);
+
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
+                urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
+                try {
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    Log.d(TAG,  "controlDimming response: " + result.toString());
+                } finally {
+                    urlConnection.disconnect();
+                }
+            }catch (MalformedURLException e){
+                line.setDimmingVvalue(oldValue);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (IOException e){
+                line.setDimmingVvalue(oldValue);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (Exception e){
+                line.setDimmingVvalue(oldValue);
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }
+
+            return null;
+        }
+    }
 }

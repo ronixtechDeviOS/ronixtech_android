@@ -31,6 +31,7 @@ public class MySettings {
     public static final String PREF_CURRENT_PLACE = "pref_current_place";
     public static final String PREF_CURRENT_FLOOR = "pref_current_floor";
     public static final String PREF_CONTROL_ACTIVE = "control_active";
+    public static final String PREF_GETSTATUS_ACTIVE = "get_status_active";
 
 
     private static User loggedInUser;
@@ -40,6 +41,7 @@ public class MySettings {
     private static boolean initialStartup;
     private static boolean scanningActive;
     private static boolean controlActive;
+    private static boolean gettingStatusActive;
     private static WifiNetwork homeNetwork;
     private static String currentDeviceBeingConfiguredMACAddress;
     private static Device tempDevice;
@@ -381,7 +383,20 @@ public class MySettings {
     public static boolean isControlActive() {
         //SharedPreferences prefs = getSettings();
         //scanningActive = prefs.getBoolean(PREF_CONTROL_ACTIVE, true);
-        return controlActive;
+        return false;
+    }
+
+    public static void setGetStatusState(boolean state) {
+        MySettings.gettingStatusActive = state;
+
+        //SharedPreferences.Editor editor = getSettings().edit();
+        //editor.putBoolean(PREF_GETSTATUS_ACTIVE, controlActive);
+        //editor.apply();
+    }
+    public static boolean isGetStatusActive() {
+        //SharedPreferences prefs = getSettings();
+        //scanningActive = prefs.getBoolean(PREF_GETSTATUS_ACTIVE, true);
+        return gettingStatusActive;
     }
 
     private static void setCurrentUserEmail(String email) {
