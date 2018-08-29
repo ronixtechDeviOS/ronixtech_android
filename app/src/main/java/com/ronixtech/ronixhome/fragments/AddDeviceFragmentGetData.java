@@ -123,6 +123,16 @@ public class AddDeviceFragmentGetData extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "Volley Error: " + error.getMessage());
+                Log.d(TAG, "Volley Error: " + error.getNetworkTimeMs());
+                Log.d(TAG, "Volley Error: " + error.getCause());
+                Log.d(TAG, "Volley Error: " + error.getLocalizedMessage());
+                try {
+                    byte[] htmlBodyBytes = error.networkResponse.data;
+                    Log.e(TAG,"TEST " + new String(htmlBodyBytes), error);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+                //Log.d(TAG, "Volley Error: statusCode: " + error.networkResponse.statusCode);
                 if(getActivity() != null) {
                     Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }

@@ -25,11 +25,7 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -349,11 +345,17 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+                    MySettings.setControlState(true);
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //MySettings.setControlState(true);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                    MySettings.setControlState(false);
                     int i = vHolder.firstLineSeekBar.getProgress();
                     //controlDimming(item, 0, i);
                 }
@@ -369,11 +371,17 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+                    MySettings.setControlState(true);
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //MySettings.setControlState(true);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                    MySettings.setControlState(false);
                     int i = vHolder.secondLineSeekBar.getProgress();
                     //controlDimming(item, 1, i);
                 }
@@ -389,11 +397,17 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+                    MySettings.setControlState(true);
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    //MySettings.setControlState(true);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                    MySettings.setControlState(false);
                     int i = vHolder.thirdLineSeekBar.getProgress();
                     //controlDimming(item, 2, i);
                 }
@@ -1058,13 +1072,17 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         @Override
         protected Void doInBackground(Void... params) {
+            boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
                 Log.d(TAG, "getStatusActive, doing nothing...");
-                /*try {
-                    Thread.sleep(20);
-                }catch (InterruptedException e){
+                statusWasActive = true;
+            }
+            if(statusWasActive) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                     Log.d(TAG, "Exception: " + e.getMessage());
-                }*/
+                }
             }
 
             HttpURLConnection urlConnection = null;
@@ -1107,10 +1125,10 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 line.setPowerState(oldState);
                 Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
             }catch (IOException e){
-                //line.setPowerState(oldState);
+                line.setPowerState(oldState);
                 Log.d(TAG, "Exception IOException: " + e.getMessage());
             }catch (Exception e){
-                //line.setPowerState(oldState);
+                line.setPowerState(oldState);
                 Log.d(TAG, "Exception: " + e.getMessage());
             }finally {
                 Log.d(TAG,  "toggleLine responseCode: " + statusCode);
@@ -1246,15 +1264,21 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         @Override
         protected Void doInBackground(Void... params) {
+            boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
                 Log.d(TAG, "getStatusActive, doing nothing...");
-                /*try {
-                    Thread.sleep(20);
-                }catch (InterruptedException e){
+                statusWasActive = true;
+            }
+            if(statusWasActive) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                     Log.d(TAG, "Exception: " + e.getMessage());
-                }*/
+                }
             }
 
+            HttpURLConnection urlConnection = null;
+            int statusCode = 0;
             try{
                 String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
                 if(position == 0){
@@ -1269,21 +1293,21 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 Log.d(TAG,  "toggleDimming URL: " + url);
 
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoInput(false);
+                urlConnection.setDoOutput(false);
                 urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
                 urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
-                try {
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder result = new StringBuilder();
-                    String dataLine;
-                    while((dataLine = bufferedReader.readLine()) != null) {
-                        result.append(dataLine);
-                    }
-                    Log.d(TAG,  "toggleDimming response: " + result.toString());
-                } finally {
-                    urlConnection.disconnect();
+                statusCode = urlConnection.getResponseCode();
+                /*InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String dataLine;
+                while((dataLine = bufferedReader.readLine()) != null) {
+                    result.append(dataLine);
                 }
+                Log.d(TAG,  "toggleDimming response: " + result.toString());*/
+
             }catch (MalformedURLException e){
                 line.setDimmingState(oldState);
                 Log.d(TAG, "Exception: " + e.getMessage());
@@ -1293,6 +1317,11 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             }catch (Exception e){
                 line.setDimmingState(oldState);
                 Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                Log.d(TAG,  "toggleDimming responseCode: " + statusCode);
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
             }
 
             return null;
@@ -1350,20 +1379,26 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 MainActivity.getInstance().updateDevicesList();
             }
 
-            MySettings.setControlState(false);
+            //MySettings.setControlState(false);
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                //Log.d(TAG, "getStatusActive, doing nothing...");
-                /*try {
-                    Thread.sleep(20);
-                }catch (InterruptedException e){
+                Log.d(TAG, "getStatusActive, doing nothing...");
+                statusWasActive = true;
+            }
+            if(statusWasActive) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                     Log.d(TAG, "Exception: " + e.getMessage());
-                }*/
+                }
             }
 
+            HttpURLConnection urlConnection = null;
+            int statusCode = 0;
             try{
                 String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
                 if(position == 0){
@@ -1383,21 +1418,20 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 Log.d(TAG,  "controlDimming URL: " + url);
 
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoInput(false);
+                urlConnection.setDoOutput(false);
                 urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
                 urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
-                try {
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder result = new StringBuilder();
-                    String dataLine;
-                    while((dataLine = bufferedReader.readLine()) != null) {
-                        result.append(dataLine);
-                    }
-                    Log.d(TAG,  "controlDimming response: " + result.toString());
-                } finally {
-                    urlConnection.disconnect();
+                statusCode = urlConnection.getResponseCode();
+                /*InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String dataLine;
+                while((dataLine = bufferedReader.readLine()) != null) {
+                    result.append(dataLine);
                 }
+                Log.d(TAG,  "controlDimming response: " + result.toString());*/
             }catch (MalformedURLException e){
                 line.setDimmingVvalue(oldValue);
                 Log.d(TAG, "Exception: " + e.getMessage());
@@ -1407,6 +1441,11 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             }catch (Exception e){
                 line.setDimmingVvalue(oldValue);
                 Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                Log.d(TAG,  "controlDimming responseCode: " + statusCode);
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
             }
 
             return null;
