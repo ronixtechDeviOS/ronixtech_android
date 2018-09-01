@@ -110,20 +110,20 @@ public class MainActivity extends AppCompatActivity
         userEmailTextView.setText(MySettings.getActiveUser().getEmail());
     }
 
-    public void updateDevicesList(){
+    public void refreshDevicesListFromMemory(){
         if(fragmentManager != null) {
             DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
             if (fragment != null) {
-                fragment.refreshDevicesFromMemory();
+                fragment.loadDevicesFromMemory();
             }
         }
     }
 
-    public void updateDeviceListDatabase(){
+    public void refreshDeviceListFromDatabase(){
         if(fragmentManager != null) {
             DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
             if (fragment != null) {
-                fragment.loadDevicesIntoMemory();
+                fragment.loadDevicesFromDatabase();
             }
         }
     }

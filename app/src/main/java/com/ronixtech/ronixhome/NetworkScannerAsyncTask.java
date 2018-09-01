@@ -175,7 +175,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                                     Utils.showNotification(device);
                                     MySettings.updateDeviceIP(device, ip);
                                     if(MainActivity.getInstance() != null) {
-                                        MainActivity.getInstance().updateDeviceListDatabase();
+                                        MainActivity.getInstance().refreshDeviceListFromDatabase();
                                     }
                                 }
                             }else{
@@ -186,7 +186,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                 }
             }
             if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().updateDevicesList();
+                MainActivity.getInstance().refreshDeviceListFromDatabase();
             }
         } catch (FileNotFoundException e) {
             Log.d(TAG, "Exception: " + e.getMessage());

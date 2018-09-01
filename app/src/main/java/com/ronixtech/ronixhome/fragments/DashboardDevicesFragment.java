@@ -52,6 +52,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -82,6 +83,7 @@ public class DashboardDevicesFragment extends Fragment {
 
     Timer timer;
     TimerTask doAsynchronousTask;
+    Handler handler;
 
     private Room room;
 
@@ -133,7 +135,7 @@ public class DashboardDevicesFragment extends Fragment {
         deviceAdapter = new DeviceAdapter(getActivity(), devices);
         devicesListView.setAdapter(deviceAdapter);
 
-        loadDevicesIntoMemory();
+        loadDevicesFromDatabase();
 
         MySettings.setControlState(false);
 
@@ -213,7 +215,7 @@ public class DashboardDevicesFragment extends Fragment {
                         if(ipEditText.getText().toString() != null && ipEditText.getText().toString().length() >= 4) {
                             clickedDevice.setIpAddress(ipEditText.getText().toString());
                             MySettings.updateDeviceIP(clickedDevice, ipEditText.getText().toString());
-                            MainActivity.getInstance().updateDevicesList();
+                            MainActivity.getInstance().refreshDevicesListFromMemory();
                             dialog.dismiss();
                         }else{
                             YoYo.with(Techniques.Shake)
@@ -236,37 +238,7 @@ public class DashboardDevicesFragment extends Fragment {
             }
         });
 
-        final Handler handler = new Handler();
-        timer = new Timer();
-        doAsynchronousTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        //MySettings.scanDevices();
-                        if(MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1){
-                            boolean allDevicesReachable = true;
-                            for (Device dev : MySettings.getRoomDevices(room.getId())) {
-                                if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
-                                    if(!MySettings.isControlActive()) {
-                                        getDeviceInfo(dev);
-                                    }else{
-                                        Log.d(TAG, "Controls active, skipping get_status");
-                                    }
-                                }else{
-                                    MySettings.scanNetwork();
-                                    allDevicesReachable = false;
-                                }
-                            }
-                            if(allDevicesReachable){
-                                Utils.hideUpdatingNotification();
-                            }
-                        }
-                    }
-                });
-            }
-        };
-        timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every 1000 ms
+        //startTimer();
 
         final TextView debugTextView = view.findViewById(R.id.debug_textview);
         Button testButton = view.findViewById(R.id.test_button);
@@ -386,57 +358,98 @@ public class DashboardDevicesFragment extends Fragment {
         return view;
     }
 
+    private void startTimer(){
+        timer = new Timer();
+        handler = new Handler();
+        doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        //MySettings.scanDevices();
+                        if(MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1){
+                            boolean allDevicesReachable = true;
+                            for (Device dev : MySettings.getRoomDevices(room.getId())) {
+                                if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
+                                    if(!MySettings.isControlActive()) {
+                                        getDeviceInfo(dev);
+                                    }else{
+                                        Log.d(TAG, "Controls active, skipping get_status");
+                                    }
+                                }else{
+                                    MySettings.scanNetwork();
+                                    allDevicesReachable = false;
+                                }
+                            }
+                            if(allDevicesReachable){
+                                Utils.hideUpdatingNotification();
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every 1000 ms
+    }
+
+    private void stopTimer(){
+        doAsynchronousTask.cancel();
+        timer.cancel();
+        timer.purge();
+    }
+
     public void setRoom(Room room){
         this.room = room;
     }
 
-    public void loadDevicesIntoMemory(){
+    public void loadDevicesFromDatabase(){
         if(mHandler != null) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(devices != null) {
-                        devices.clear();
-                        if (MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
-                            devices.addAll(MySettings.getRoomDevices(room.getId()));
-                            emptyTextView.setVisibility(View.GONE);
-                            addDeviceButton.setVisibility(View.GONE);
-                        } else {
-                            emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below.");
-                            emptyTextView.setVisibility(View.VISIBLE);
-                            addDeviceButton.setVisibility(View.VISIBLE);
-                        }
-                        deviceAdapter.notifyDataSetChanged();
-                        DevicesInMemory.setDevices(devices);
+                    List<Device> tempDevices = new ArrayList<>();
+                    if (MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
+                        tempDevices.addAll(MySettings.getRoomDevices(room.getId()));
                     }
+                    DevicesInMemory.setDevices(tempDevices);
+                    putDevicesIntoListView();
                 }
             });
         }
     }
 
-    public void refreshDevicesFromMemory(){
+    public void loadDevicesFromMemory(){
         if(mHandler != null) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    /*if(devices != null) {
-                        devices.clear();
-                        if (MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
-                            devices.addAll(MySettings.getRoomDevices(room.getId()));
-                            emptyTextView.setVisibility(View.GONE);
-                            addDeviceButton.setVisibility(View.GONE);
-                        } else {
-                            emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below.");
-                            emptyTextView.setVisibility(View.VISIBLE);
-                            addDeviceButton.setVisibility(View.VISIBLE);
-                        }
-                        deviceAdapter.notifyDataSetChanged();
-                    }*/
-                    devices.clear();
-                    devices.addAll(DevicesInMemory.getDevices());
-                    deviceAdapter.notifyDataSetChanged();
+                    putDevicesIntoListView();
                 }
             });
+        }
+    }
+
+    private void putDevicesIntoListView(){
+        if(devices != null) {
+            devices.clear();
+            if (DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1) {
+                List<Device> tempDevices = DevicesInMemory.getDevices();
+                for (Device device:tempDevices) {
+                    if(!devices.contains(device)) {
+                        devices.add(device);
+                    }
+                }
+                emptyTextView.setVisibility(View.GONE);
+                addDeviceButton.setVisibility(View.GONE);
+            } else {
+                emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below.");
+                emptyTextView.setVisibility(View.VISIBLE);
+                addDeviceButton.setVisibility(View.VISIBLE);
+            }
+            if(devices.size() >= 1) {
+                Collections.sort(devices);
+            }
+            deviceAdapter.notifyDataSetChanged();
         }
     }
 
@@ -485,33 +498,31 @@ public class DashboardDevicesFragment extends Fragment {
     private void removeDevice(Device device){
         devices.remove(device);
         MySettings.removeDevice(device);
-        loadDevicesIntoMemory();
+        loadDevicesFromDatabase();
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        doAsynchronousTask.run();
-        //timer.schedule(doAsynchronousTask, 0, 1000); //execute in every 1000 ms
+        startTimer();
     }
 
     @Override
     public void onPause(){
+        stopTimer();
         super.onPause();
-        //timer.cancel();
-        doAsynchronousTask.cancel();
     }
 
-    @Override
+    /*@Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         //FIXED: setUserVisibleHint() called before onCreateView() in Fragment causes NullPointerException
         //super.setUserVisibleHint(isVisibleToUser);
-        if(!isVisibleToUser){
-            //doAsynchronousTask.cancel();
+        if(isVisibleToUser){
+            startTimer();
         }else{
-            doAsynchronousTask.run();
+            stopTimer();
         }
-    }
+    }*/
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -592,237 +603,15 @@ public class DashboardDevicesFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public static class DataParser extends AsyncTask<Void, Void, Void> {
-        private final String TAG = DashboardDevicesFragment.DataParser.class.getSimpleName();
-
-        Device device;
-        JSONObject jsonObject;
-
-        public DataParser(Device device, String data) {
-            try{
-                jsonObject = new JSONObject(data);
-                this.device = device;
-            }catch (Exception e){
-                Log.d(TAG, "Json exception " + e.getMessage());
-            }
-        }
-
-        @Override
-        protected void onPreExecute(){
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            DevicesInMemory.updateDevice(device);
-            //MySettings.addDevice(device);
-            if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().updateDevicesList();
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            if(jsonObject != null){
-                try {
-                    JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
-
-                    JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
-                    /*String chipID = wifiStatus.getString("U_W_UID");
-                    if(device.getChipID().length() >= 1) {
-                        if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
-                            MySettings.updateDeviceIP(device, "");
-                            MySettings.updateDeviceErrorCount(device, 0);
-                            MySettings.scanNetwork();
-                            return null;
-                        }
-                    }*/
-
-                    /*JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                    if(hardwareStatus.has("L_0_STT")){
-                        line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                        line0PowerState = Integer.valueOf(line0PowerStateString);
-                    }
-                    if(hardwareStatus.has("L_1_STT")){
-                        line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                        line1PowerState = Integer.valueOf(line1PowerStateString);
-                    }
-                    if(hardwareStatus.has("L_2_STT")){
-                        line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                        line2PowerState = Integer.valueOf(line2PowerStateString);
-                    }
-
-                    String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
-                    int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                    if(hardwareStatus.has("L_0_DIM")){
-                        line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                        if(line0DimmingValueString.equals(":")){
-                            line0DimmingValue = 10;
-                        }else{
-                            line0DimmingValue = Integer.valueOf(line0DimmingValueString);
-                        }
-                    }
-                    if(hardwareStatus.has("L_1_DIM")){
-                        line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                        if(line1DimmingValueString.equals(":")){
-                            line1DimmingValue = 10;
-                        }else{
-                            line1DimmingValue = Integer.valueOf(line1DimmingValueString);
-                        }
-                    }
-                    if(hardwareStatus.has("L_2_DIM")){
-                        line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                        if(line2DimmingValueString.equals(":")){
-                            line2DimmingValue = 10;
-                        }else{
-                            line2DimmingValue = Integer.valueOf(line2DimmingValueString);
-                        }
-                    }
-
-                    String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
-                    int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                    if(hardwareStatus.has("L_0_D_S")){
-                        line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                        line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                    }
-                    if(hardwareStatus.has("L_1_D_S")){
-                        line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                        line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                    }
-                    if(hardwareStatus.has("L_2_D_S")){
-                        line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                        line2DimmingState = Integer.valueOf(line2DimmingStateString);
-                    }*/
-
-                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                    line0PowerState = Integer.valueOf(line0PowerStateString);
-
-                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                    line1PowerState = Integer.valueOf(line1PowerStateString);
-
-                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                    line2PowerState = Integer.valueOf(line2PowerStateString);
-
-                    String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
-                    int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                    line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                    if(line0DimmingValueString.equals(":")){
-                        line0DimmingValue = 10;
-                    }else{
-                        line0DimmingValue = Integer.valueOf(line0DimmingValueString);
-                    }
-
-                    line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                    if(line1DimmingValueString.equals(":")){
-                        line1DimmingValue = 10;
-                    }else{
-                        line1DimmingValue = Integer.valueOf(line1DimmingValueString);
-                    }
-
-
-                    line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                    if(line2DimmingValueString.equals(":")){
-                        line2DimmingValue = 10;
-                    }else{
-                        line2DimmingValue = Integer.valueOf(line2DimmingValueString);
-                    }
-
-
-                    String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
-                    int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                    line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                    line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                    line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                    line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                    line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                    line2DimmingState = Integer.valueOf(line2DimmingStateString);
-
-
-                    /*String deviceStatus = jsonObject.getString(Constants.PARAMETER_DEVICE_STATUS_KEY);
-                    String[] status = deviceStatus.split("%");
-                    String line1PowerStateString = status[0];
-                    String line2PowerStateString = status[1];
-                    String line3PowerStateString = status[2];
-                    String line1DimmingValueString = status[3];
-                    String line2DimmingValueString = status[4];
-                    String line3DimmingValueString = status[5];
-                    String line1DimmingStateString = status[11];
-                    String line2DimmingStateString = status[12];
-                    String line3DimmingStateString = status[13];
-
-                    int line1PowerState = Integer.valueOf(line1PowerStateString.substring(line1PowerStateString.indexOf("=")+1));
-                    int line2PowerState = Integer.valueOf(line2PowerStateString.substring(line2PowerStateString.indexOf("=")+1));
-                    int line3PowerState = Integer.valueOf(line3PowerStateString.substring(line3PowerStateString.indexOf("=")+1));
-
-
-                    int line1DimmingValue, line2DimmingValue, line3DimmingValue;
-                    if(!line1DimmingValueString.substring(line1DimmingValueString.indexOf("=")+1).equals(":")){
-                        line1DimmingValue = Integer.valueOf(line1DimmingValueString.substring(line1DimmingValueString.indexOf("=")+1));
-                    }else{
-                        line1DimmingValue = 10;
-                    }
-
-                    if(!line2DimmingValueString.substring(line2DimmingValueString.indexOf("=")+1).equals(":")){
-                        line2DimmingValue = Integer.valueOf(line2DimmingValueString.substring(line2DimmingValueString.indexOf("=")+1));
-                    }else{
-                        line2DimmingValue = 10;
-                    }
-
-                    if(!line3DimmingValueString.substring(line3DimmingValueString.indexOf("=")+1).equals(":")){
-                        line3DimmingValue = Integer.valueOf(line3DimmingValueString.substring(line3DimmingValueString.indexOf("=")+1));
-                    }else{
-                        line3DimmingValue = 10;
-                    }
-
-
-                    int line1DimmingState = Integer.valueOf(line1DimmingStateString.substring(line1DimmingStateString.indexOf("=")+1));
-                    int line2DimmingState = Integer.valueOf(line2DimmingStateString.substring(line2DimmingStateString.indexOf("=")+1));
-                    int line3DimmingState = Integer.valueOf(line3DimmingStateString.substring(line3DimmingStateString.indexOf("=")+1));*/
-
-                    List<Line> lines = device.getLines();
-                    for (Line line:lines) {
-                        if(line.getPosition() == 0){
-                            line.setPowerState(line0PowerState);
-                            line.setDimmingState(line0DimmingState);
-                            line.setDimmingVvalue(line0DimmingValue);
-                        }else if(line.getPosition() == 1){
-                            line.setPowerState(line1PowerState);
-                            line.setDimmingState(line1DimmingState);
-                            line.setDimmingVvalue(line1DimmingValue);
-                        }else if(line.getPosition() == 2){
-                            line.setPowerState(line2PowerState);
-                            line.setDimmingState(line2DimmingState);
-                            line.setDimmingVvalue(line2DimmingValue);
-                        }
-                    }
-                    device.setLines(lines);
-                }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
-                }
-            }
-            return null;
-        }
-    }
-
     public static class StatusGetter extends AsyncTask<Void, Void, Void>{
         private final String TAG = DashboardDevicesFragment.StatusGetter.class.getSimpleName();
 
         Device device;
 
+        int statusCode;
+
         public StatusGetter(Device device) {
             try{
-
                 this.device = device;
             }catch (Exception e){
                 Log.d(TAG, "Json exception " + e.getMessage());
@@ -842,8 +631,10 @@ public class DashboardDevicesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().updateDevicesList();
+            if(statusCode == 200) {
+                if (MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                }
             }
             Log.d(TAG, "Disabling getStatus flag...");
             MySettings.setGetStatusState(false);
@@ -852,6 +643,7 @@ public class DashboardDevicesFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
+            statusCode = 0;
             try{
                 URL url = new URL("http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS);
                 Log.d(TAG,  "statusGetter URL: " + url);
@@ -859,6 +651,7 @@ public class DashboardDevicesFragment extends Fragment {
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
                 urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
+                statusCode = urlConnection.getResponseCode();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
                 StringBuilder result = new StringBuilder();
@@ -945,7 +738,9 @@ public class DashboardDevicesFragment extends Fragment {
                             }
                         }
                         device.setLines(lines);
-                        DevicesInMemory.updateDevice(device);
+                        if(statusCode == 200) {
+                            DevicesInMemory.updateDevice(device);
+                        }
                         //MySettings.addDevice(device);
                     }
                 }
@@ -957,168 +752,6 @@ public class DashboardDevicesFragment extends Fragment {
                 Log.d(TAG, "Exception: " + e.getMessage());
             }finally {
                 urlConnection.disconnect();
-                Log.d(TAG, "Disabling getStatus flag...");
-                MySettings.setGetStatusState(false);
-            }
-
-            return null;
-        }
-    }
-
-    public static class StatusGetterTest extends AsyncTask<Void, Void, Void>{
-        private final String TAG = DashboardDevicesFragment.StatusGetterTest.class.getSimpleName();
-
-        Device device;
-
-        public StatusGetterTest(Device device) {
-            try{
-
-                this.device = device;
-            }catch (Exception e){
-                Log.d(TAG, "Json exception " + e.getMessage());
-            }
-        }
-
-        @Override
-        protected void onPreExecute(){
-
-            Log.d(TAG, "Enabling getStatus flag...");
-            MySettings.setGetStatusState(true);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().updateDevicesList();
-            }
-            Log.d(TAG, "Disabling getStatus flag...");
-            MySettings.setGetStatusState(false);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try{
-                URL url = new URL("http://ronixtech.com/ronix_services/task/srv.php");
-                Log.d(TAG,  "statusGetterTest URL: " + url);
-
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
-                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
-                try {
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder result = new StringBuilder();
-                    String dataLine;
-                    while((dataLine = bufferedReader.readLine()) != null) {
-                        result.append(dataLine);
-                    }
-                    Log.d(TAG,  "statusGetterTest response: " + result.toString());
-                    if(result.length() >= 10){
-                        JSONObject jsonObject = new JSONObject(result.toString());
-                        if(jsonObject != null){
-                            try {
-                                JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
-
-                                JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
-                                String chipID = wifiStatus.getString("U_W_UID");
-                                if(device.getChipID().length() >= 1) {
-                                    if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
-                                        MySettings.updateDeviceIP(device, "");
-                                        MySettings.updateDeviceErrorCount(device, 0);
-                                        MySettings.scanNetwork();
-                                        return null;
-                                    }
-                                }
-
-                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                line0PowerState = Integer.valueOf(line0PowerStateString);
-                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                line1PowerState = Integer.valueOf(line1PowerStateString);
-                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                line2PowerState = Integer.valueOf(line2PowerStateString);
-
-                                String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
-                                int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                                if(line0DimmingValueString.equals(":")){
-                                    line0DimmingValue = 10;
-                                }else{
-                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
-                                }
-
-                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                                if(line1DimmingValueString.equals(":")){
-                                    line1DimmingValue = 10;
-                                }else{
-                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
-                                }
-
-                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                                if(line2DimmingValueString.equals(":")){
-                                    line2DimmingValue = 10;
-                                }else{
-                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
-                                }
-
-
-                                String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
-                                int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
-
-
-                                List<Line> lines = device.getLines();
-                                for (Line line:lines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                        line.setDimmingState(line0DimmingState);
-                                        line.setDimmingVvalue(line0DimmingValue);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                        line.setDimmingState(line1DimmingState);
-                                        line.setDimmingVvalue(line1DimmingValue);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                        line.setDimmingState(line2DimmingState);
-                                        line.setDimmingVvalue(line2DimmingValue);
-                                    }
-                                }
-                                device.setLines(lines);
-                                DevicesInMemory.updateDevice(device);
-                                //MySettings.addDevice(device);
-                            }catch (JSONException e){
-                                Log.d(TAG, "Json exception: " + e.getMessage());
-                            }finally {
-                                Log.d(TAG, "Disabling getStatus flag...");
-                                MySettings.setGetStatusState(false);
-                            }
-                        }
-                    }
-
-                } finally {
-                    urlConnection.disconnect();
-                    Log.d(TAG, "Disabling getStatus flag...");
-                    MySettings.setGetStatusState(false);
-                }
-            }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
-            }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
-            }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
-            }finally {
                 Log.d(TAG, "Disabling getStatus flag...");
                 MySettings.setGetStatusState(false);
             }

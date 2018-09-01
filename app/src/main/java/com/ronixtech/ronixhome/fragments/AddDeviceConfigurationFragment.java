@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ronixtech.ronixhome.MySettings;
@@ -247,6 +249,87 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 }else{
                     Utils.setButtonEnabled(continueButton, false);
                 }
+            }
+        });
+
+        thirdLineNameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                //if all valid
+                if(Utils.validateInputs(deviceNameEditText, firstLineNameEditText, secondLineNameEditText, thirdLineNameEditText)){
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(deviceNameEditText.getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(firstLineNameEditText.getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(secondLineNameEditText.getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(thirdLineNameEditText.getWindowToken(), 0);
+                    //create the lines and device.setLines then MySettings.setDevice()
+                    List<Line> lines = new ArrayList<>();
+                    Line line;
+
+                    MySettings.addDevice(device);
+                    device = MySettings.getDeviceByMAC(device.getMacAddress());
+
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
+                        line = new Line();
+                        line.setPosition(0);
+                        line.setName(firstLineNameEditText.getText().toString());
+                        line.setPowerState(Line.LINE_STATE_OFF);
+                        line.setDeviceID(device.getId());
+                        lines.add(line);
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
+                        line = new Line();
+                        line.setPosition(0);
+                        line.setName(firstLineNameEditText.getText().toString());
+                        line.setPowerState(Line.LINE_STATE_OFF);
+                        line.setDeviceID(device.getId());
+                        lines.add(line);
+
+                        line = new Line();
+                        line.setPosition(1);
+                        line.setName(secondLineNameEditText.getText().toString());
+                        line.setPowerState(Line.LINE_STATE_OFF);
+                        line.setDeviceID(device.getId());
+                        lines.add(line);
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+                        line = new Line();
+                        line.setPosition(0);
+                        line.setName(firstLineNameEditText.getText().toString());
+                        line.setPowerState(Line.LINE_STATE_OFF);
+                        line.setDeviceID(device.getId());
+                        lines.add(line);
+
+                        line = new Line();
+                        line.setPosition(1);
+                        line.setName(secondLineNameEditText.getText().toString());
+                        line.setPowerState(Line.LINE_STATE_OFF);
+                        line.setDeviceID(device.getId());
+                        lines.add(line);
+
+                        line = new Line();
+                        line.setPosition(2);
+                        line.setName(thirdLineNameEditText.getText().toString());
+                        line.setPowerState(Line.LINE_STATE_OFF);
+                        line.setDeviceID(device.getId());
+                        lines.add(line);
+                    }
+                    device.setLines(lines);
+                    device.setName(deviceNameEditText.getText().toString());
+                    MySettings.setTempDevice(device);
+
+                    //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
+                    //tempDevice.setLines(lines);
+                    //tempDevice.setName(deviceNameEditText.getText().toString());
+                    //MySettings.addDevice(device);
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                    fragmentTransaction.commit();
+                }
+                return false;
             }
         });
 

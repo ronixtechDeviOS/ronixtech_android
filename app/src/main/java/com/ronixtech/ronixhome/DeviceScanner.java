@@ -11,7 +11,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
-import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -98,7 +97,7 @@ public class DeviceScanner extends Worker{
     }
 
     public class DataParser extends AsyncTask<Void, Void, Void> {
-        private final String TAG = DashboardDevicesFragment.DataParser.class.getSimpleName();
+        private final String TAG = DeviceScanner.DataParser.class.getSimpleName();
 
         Device device;
         JSONObject jsonObject;
@@ -263,7 +262,7 @@ public class DeviceScanner extends Worker{
                     device.setLines(lines);
                     MySettings.addDevice(device);
                     if(MainActivity.getInstance() != null){
-                        MainActivity.getInstance().updateDevicesList();
+                        MainActivity.getInstance().refreshDevicesListFromMemory();
                     }
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());

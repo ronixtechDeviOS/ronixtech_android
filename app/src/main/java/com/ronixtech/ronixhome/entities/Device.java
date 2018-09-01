@@ -11,7 +11,7 @@ import java.util.List;
 
 //This is the entity for the RonixTech device
 @Entity(indices = {@Index(value = {"mac_address"}, unique = true)})
-public class Device {
+public class Device implements Comparable {
     public static final int DEVICE_TYPE_nowifi_1line = 100001;
     public static final int DEVICE_TYPE_nowifi_2lines = 100002;
     public static final int DEVICE_TYPE_nowifi_3lines = 100003;
@@ -140,10 +140,32 @@ public class Device {
     @Override
     public boolean equals(Object object){
         Device device = (Device) object;
-        if(device.getId() == this.id){
-            return true;
+        if(device != null) {
+            if (device.getId() == this.id) {
+                return true;
+            } else {
+                return false;
+            }
         }else{
             return false;
+        }
+    }
+
+    @Override
+    public int compareTo(Object object){
+        Device device = (Device) object;
+        if(device != null){
+            if(this.id == device.getId()){
+                return 0;
+            }else if (this.id > device.getId()){
+                return 1;
+            }else if(this.id < device.getId()){
+                return -1;
+            }else{
+                return 0;
+            }
+        }else{
+            return 0;
         }
     }
 }

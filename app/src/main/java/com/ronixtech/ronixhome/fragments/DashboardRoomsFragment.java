@@ -22,6 +22,7 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.RoomsGridAdapter;
+import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 
@@ -95,6 +96,15 @@ public class DashboardRoomsFragment extends Fragment {
         addFloorButton = view.findViewById(R.id.add_floor_button);
         addRoomButton = view.findViewById(R.id.add_room_button);
         addDeviceButton = view.findViewById(R.id.add_device_button);
+
+        if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
+            List<Device> devices = MySettings.getAllDevices();
+            for (Device device:devices) {
+                if(device.getRoomID() == -1){
+                    MySettings.removeDevice(device);
+                }
+            }
+        }
 
         rooms = new ArrayList<>();
         if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){

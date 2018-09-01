@@ -231,7 +231,7 @@ public class NetworkScanner extends Worker {
                                     Utils.showNotification(device);
                                     MySettings.updateDeviceIP(device, ip);
                                     if(MainActivity.getInstance() != null) {
-                                        MainActivity.getInstance().updateDevicesList();
+                                        MainActivity.getInstance().refreshDevicesListFromMemory();
                                     }
                                 }
                             }else{
@@ -242,7 +242,7 @@ public class NetworkScanner extends Worker {
                 }
             }
             if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().updateDevicesList();
+                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
         } catch (FileNotFoundException e) {
             Log.d(TAG, "Exception: " + e.getMessage());
