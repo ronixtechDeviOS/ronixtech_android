@@ -109,7 +109,6 @@ public class AddDeviceSelectLocationFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddRoomFragment addRoomFragment = new AddRoomFragment();
-                addRoomFragment.setSource(Constants.SOURCE_NEW_DEVICE);
                 fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
                 fragmentTransaction.addToBackStack("addRoomFragment");
                 fragmentTransaction.commit();

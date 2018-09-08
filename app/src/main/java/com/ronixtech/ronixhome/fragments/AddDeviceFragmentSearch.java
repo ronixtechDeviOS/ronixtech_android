@@ -215,6 +215,7 @@ public class AddDeviceFragmentSearch extends Fragment {
                             //Toast.makeText(getActivity(), "RonixTech device detected, connecting...", Toast.LENGTH_SHORT).show();
                             Device device = new Device();
                             device.setMacAddress(result.BSSID);
+                            device.setName(result.SSID);
                             MySettings.setTempDevice(device);
                             Log.d(TAG, "Attempting to connect to " + result.SSID + " with default password");
                             List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();

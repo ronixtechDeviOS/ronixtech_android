@@ -110,7 +110,11 @@ public class AddFloorFragment extends Fragment implements PickPlaceDialogFragmen
         if(source != Constants.SOURCE_NAV_DRAWER) {
             MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_floor), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.floors), getResources().getColor(R.color.whiteColor));
+            if(MySettings.getCurrentPlace() != null){
+                MainActivity.setActionBarTitle(MySettings.getCurrentPlace().getName(), getResources().getColor(R.color.whiteColor));
+            }else{
+                MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.floors), getResources().getColor(R.color.whiteColor));
+            }
         }
         setHasOptionsMenu(true);
 
@@ -155,10 +159,9 @@ public class AddFloorFragment extends Fragment implements PickPlaceDialogFragmen
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddRoomFragment addRoomFragment= new AddRoomFragment();
-                addRoomFragment.setSource(Constants.SOURCE_NAV_DRAWER);
-                fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-                fragmentTransaction.addToBackStack("addRoomFragment");
+                RoomsFragment roomsFragment = new RoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
+                fragmentTransaction.addToBackStack("roomsFragment");
                 fragmentTransaction.commit();
             }
         });
@@ -326,7 +329,6 @@ public class AddFloorFragment extends Fragment implements PickPlaceDialogFragmen
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
-                addPlaceFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
                 fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
                 fragmentTransaction.addToBackStack("addPlaceFragment");
                 fragmentTransaction.commit();
@@ -352,7 +354,6 @@ public class AddFloorFragment extends Fragment implements PickPlaceDialogFragmen
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddRoomFragment addRoomFragment = new AddRoomFragment();
-                addRoomFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
                 fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
                 fragmentTransaction.addToBackStack("addRoomFragment");
                 fragmentTransaction.commit();

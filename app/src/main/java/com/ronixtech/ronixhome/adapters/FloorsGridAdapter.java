@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Floor;
 
@@ -54,12 +55,16 @@ public class FloorsGridAdapter extends BaseAdapter {
         }
 
         Floor item = floors.get(position);
-        vHolder.floorNameTextView.setText(""+item.getName() + "\n" + "(" + item.getPlaceName() + ")");
-
-        /*GlideApp.with(activity)
-                .load(Utils.getImageUrl(item.getImageUrl()))
-                .placeholder(activity.getResources().getDrawable(android.R.drawable.))
-                .into(vHolder.roomImageView);*/
+        vHolder.floorNameTextView.setText(""+item.getName()/* + "\n" + "(" + item.getPlaceName() + ")"*/);
+        if(item.getType().getImageUrl() != null && item.getType().getImageUrl().length() >= 1){
+            GlideApp.with(activity)
+                    .load(item.getType().getImageUrl())
+                    .placeholder(activity.getResources().getDrawable(R.drawable.floor_icon))
+                    .into(vHolder.floorImageView);
+        }else {
+            //vHolder.floorImageView.setImageResource(item.getType().getImageResourceID());
+            vHolder.floorImageView.setImageResource(R.drawable.floor_icon);
+        }
 
         return rowView;
     }

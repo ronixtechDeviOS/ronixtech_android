@@ -24,6 +24,8 @@ public class Room {
     long floorID;
     /*@ColumnInfo(name = "floor")
     Floor floor;*/
+    @ColumnInfo(name = "type_id")
+    public long typeID;
 
     public Room(){
         this.id = 0;
@@ -31,6 +33,7 @@ public class Room {
         this.devices = new ArrayList<>();
         this.floorID = -1;
         //this.floor = new Floor();
+        this.typeID = -1;
     }
 
     public long getId() {
@@ -90,4 +93,20 @@ public class Room {
     public void setFloor(Floor floor) {
         this.floor = floor;
     }*/
+
+    public long getTypeID(){
+        return this.typeID;
+    }
+
+    public void setTypeID(long id){
+        this.typeID = id;
+    }
+
+    public Type getType(){
+        if(typeID != -1) {
+            return MySettings.getType(typeID);
+        }else{
+            return MySettings.getTypeByName("Living Room");
+        }
+    }
 }

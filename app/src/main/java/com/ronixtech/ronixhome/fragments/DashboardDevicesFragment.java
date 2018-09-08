@@ -297,7 +297,6 @@ public class DashboardDevicesFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
-                addPlaceFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
                 fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
                 fragmentTransaction.addToBackStack("addPlaceFragment");
                 fragmentTransaction.commit();
@@ -323,7 +322,6 @@ public class DashboardDevicesFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddRoomFragment addRoomFragment = new AddRoomFragment();
-                addRoomFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
                 fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
                 fragmentTransaction.addToBackStack("addRoomFragment");
                 fragmentTransaction.commit();
@@ -534,20 +532,20 @@ public class DashboardDevicesFragment extends Fragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (v.getId()==R.id.devices_listview) {
-            /*MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.menu_device, menu);*/
+        /*if (v.getId()==R.id.devices_listview) {
+            *//*MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.menu_device, menu);*//*
 
             menu.add("One");
             menu.add("Two");
             menu.add("Three");
-        }
+        }*/
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item){
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch(item.getItemId()) {
+        /*switch(item.getItemId()) {
             case R.id.action_0:
                 // add stuff here
                 Toast.makeText(getActivity(), "action 0", Toast.LENGTH_SHORT).show();
@@ -563,7 +561,8 @@ public class DashboardDevicesFragment extends Fragment {
 
             default:
                 return super.onContextItemSelected(item);
-        }
+        }*/
+        return super.onContextItemSelected(item);
     }
 
     public void onButtonPressed(Uri uri) {

@@ -1,13 +1,10 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,27 +13,25 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
-import com.ronixtech.ronixhome.adapters.RoomsGridAdapter;
 import com.ronixtech.ronixhome.entities.Floor;
+import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
-
-import java.util.List;
+import com.ronixtech.ronixhome.entities.Type;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,29 +41,28 @@ import java.util.List;
  * Use the {@link AddRoomFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddRoomFragment extends Fragment implements PickFloorDialogFragment.OnFloorSelectedListener{
+public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
+                        TypePickerDialogFragment.OnTypeSelectedListener{
     private static final  String TAG = AddRoomFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
-    FloatingActionMenu addMenu;
-    FloatingActionButton addPlaceFab, addFloorFab, addRoomFab, addDeviceFab;
-
-    EditText roomNameEditText, roomLocationEditText;
+    RelativeLayout placeSelectionLayout, selectedFloorLayout;
+    TextView placeNameTextView;
+    ImageView placeImageView;
+    TextView selectedFloorTextView;
+    Button incrementFloorButton, decremetnFloorButton;
+    EditText roomNameEditText;
+    RelativeLayout roomTypeSelectionLayout;
+    TextView roomTypeNameTextView;
+    ImageView roomTypeImageView;
     Button addRoomButton;
-    TextView addRoomDescriptionTextView, floorLevelDescriptionTextView;
-    LinearLayout roomInfoLayout;
-    TextView noRoomsTextView;
 
-    GridView roomsGridView;
-    RoomsGridAdapter roomAdapter;
-    List<Room> rooms;
-
-    TextView roomsTitleTextView;
-
+    Place selectedPlace;
     Floor selectedFloor;
+    int selectedFloorIndex = 0;
 
-    int source = Constants.SOURCE_HOME_FRAGMENT;
+    Type selectedRoomType;
 
     public AddRoomFragment() {
         // Required empty public constructor
@@ -97,127 +91,66 @@ public class AddRoomFragment extends Fragment implements PickFloorDialogFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_room, container, false);
-        if(source != Constants.SOURCE_NAV_DRAWER){
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_room), getResources().getColor(R.color.whiteColor));
-        }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.rooms), getResources().getColor(R.color.whiteColor));
-        }
+        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_new_room), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
-        addMenu = view.findViewById(R.id.add_layout);
-        addPlaceFab = view.findViewById(R.id.add_place_fab);
-        addFloorFab = view.findViewById(R.id.add_floor_fab);
-        addRoomFab = view.findViewById(R.id.add_room_fab);
-        addDeviceFab = view.findViewById(R.id.add_device_fab);
-
-        addRoomDescriptionTextView = view.findViewById(R.id.add_room_description_textview);
-        floorLevelDescriptionTextView = view.findViewById(R.id.floor_level_decsription_textview);
-        roomInfoLayout = view.findViewById(R.id.room_info_layout);
+        placeSelectionLayout = view.findViewById(R.id.place_selection_layout);
+        placeNameTextView = view.findViewById(R.id.selected_place_name_textview);
+        placeImageView = view.findViewById(R.id.selected_place_image_view);
+        selectedFloorLayout = view.findViewById(R.id.floor_layout);
+        selectedFloorTextView = view.findViewById(R.id.selected_floor_textview);
+        incrementFloorButton = view.findViewById(R.id.increment_button);
+        decremetnFloorButton = view.findViewById(R.id.decrement_button);
         roomNameEditText = view.findViewById(R.id.room_name_edittedxt);
-        roomLocationEditText = view.findViewById(R.id.room_floor_edittext);
+        roomTypeSelectionLayout = view.findViewById(R.id.room_type_selection_layout);
+        roomTypeNameTextView = view.findViewById(R.id.room_type_textview);
+        roomTypeImageView = view.findViewById(R.id.room_type_imageview);
         addRoomButton = view.findViewById(R.id.add_room_button);
-        noRoomsTextView = view.findViewById(R.id.no_rooms_textview);
-        roomsGridView = view.findViewById(R.id.rooms_gridview);
-        roomsTitleTextView = view.findViewById(R.id.rooms_listview_title_textview);
-        if(MySettings.getCurrentFloor() != null){
-            rooms = MySettings.getFloor(MySettings.getCurrentFloor().getId()).getRooms();
-            roomsTitleTextView.setText(MySettings.getCurrentFloor().getName()+":");
-        }else {
-            rooms = MySettings.getAllRooms();
-        }
-        roomAdapter = new RoomsGridAdapter(getActivity(), rooms);
-        roomsGridView.setAdapter(roomAdapter);
 
-        if(rooms != null && rooms.size() >= 1){
-            noRoomsTextView.setVisibility(View.GONE);
-        }else{
-            noRoomsTextView.setVisibility(View.VISIBLE);
-        }
 
-        roomsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Room clickedRoom = (Room) roomAdapter.getItem(i);
-
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                DashboardDevicesFragment dashboardDevicesFragment = new DashboardDevicesFragment();
-                dashboardDevicesFragment.setRoom(clickedRoom);
-                fragmentTransaction.replace(R.id.fragment_view, dashboardDevicesFragment, "dashboardDevicesFragment");
-                fragmentTransaction.addToBackStack("dashboardDevicesFragment");
-                fragmentTransaction.commit();
-            }
-        });
-
-        roomsGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Room selectedRoom = (Room) roomAdapter.getItem(i);
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle("Are you sure you want to delete the selected room?")
-                        .setMessage("Deleting the room will also delete all associated devices")
-                        //set positive button
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                MySettings.removeRoom(selectedRoom);
-                                rooms.clear();
-                                rooms.addAll(MySettings.getAllRooms());
-                                roomAdapter.notifyDataSetChanged();
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                            }
-                        })
-                        .show();
-                return false;
-            }
-        });
-
-        roomLocationEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    // DialogFragment.show() will take care of adding the fragment
-                    // in a transaction.  We also want to remove any currently showing
-                    // dialog, so make our own transaction and take care of that here.
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickFloorDialogFragment");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
-
-                    // Create and show the dialog.
-                    PickFloorDialogFragment fragment = PickFloorDialogFragment.newInstance();
-                    fragment.setTargetFragment(AddRoomFragment.this, 0);
-                    fragment.show(ft, "pickFloorDialogFragment");
-                }
-            }
-        });
-        roomLocationEditText.setOnClickListener(new View.OnClickListener() {
+        placeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // DialogFragment.show() will take care of adding the fragment
                 // in a transaction.  We also want to remove any currently showing
                 // dialog, so make our own transaction and take care of that here.
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickFloorDialogFragment");
+                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
                 if (prev != null) {
                     ft.remove(prev);
                 }
                 ft.addToBackStack(null);
 
                 // Create and show the dialog.
-                PickFloorDialogFragment fragment = PickFloorDialogFragment.newInstance();
+                PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
                 fragment.setTargetFragment(AddRoomFragment.this, 0);
-                fragment.show(ft, "pickFloorDialogFragment");
+                fragment.show(ft, "pickPlaceDialogFragment");
+            }
+        });
+
+        incrementFloorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(selectedPlace != null){
+                    if(selectedFloorIndex < selectedPlace.getFloors().size() - 1){
+                        selectedFloorIndex++;
+                        selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
+                        selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                    }
+                }
+            }
+        });
+
+        decremetnFloorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(selectedPlace != null){
+                    if(selectedFloorIndex >= 1){
+                        selectedFloorIndex--;
+                        selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
+                        selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                    }
+                }
             }
         });
 
@@ -234,12 +167,35 @@ public class AddRoomFragment extends Fragment implements PickFloorDialogFragment
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(Utils.validateInputsWithoutYoyo(roomNameEditText)){
-                    if(selectedFloor != null){
-                        Utils.setButtonEnabled(addRoomButton, true);
-                    }
+                if(validateInputs()){
+                    Utils.setButtonEnabled(addRoomButton, true);
                 }else{
                     Utils.setButtonEnabled(addRoomButton, false);
+                }
+            }
+        });
+
+        roomTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(MySettings.getTypes(Constants.TYPE_ROOM) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
+                    // DialogFragment.show() will take care of adding the fragment
+                    // in a transaction.  We also want to remove any currently showing
+                    // dialog, so make our own transaction and take care of that here.
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
+                    fragment.setTypesCategory(Constants.TYPE_ROOM);
+                    fragment.setTargetFragment(AddRoomFragment.this, 0);
+                    fragment.show(ft, "typePickerDialogFragment");
+                }else{
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -247,115 +203,94 @@ public class AddRoomFragment extends Fragment implements PickFloorDialogFragment
         addRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Utils.validateInputs(roomNameEditText)){
-                    if(selectedFloor != null){
-                        Room room = new Room();
-                        //room.setId(Long.valueOf(roomLocationEditText.getText().toString()));
-                        room.setName(roomNameEditText.getText().toString());
-                        room.setFloorID(selectedFloor.getId());
-                        MySettings.addRoom(room);
-                        rooms.clear();
-                        rooms.addAll(MySettings.getAllRooms());
-                        roomAdapter.notifyDataSetChanged();
-                        roomNameEditText.setText("");
-                        roomLocationEditText.setText("");
-                        selectedFloor = null;
-                        Utils.setButtonEnabled(addRoomButton, false);
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);
-                        noRoomsTextView.setVisibility(View.GONE);
-                        if(source == Constants.SOURCE_NEW_DEVICE){
-                            getFragmentManager().popBackStack();
-                        }else{
-                            getFragmentManager().popBackStack();
-                        }
-                    }else{
-                        YoYo.with(Techniques.Shake)
-                                .duration(700)
-                                .repeat(1)
-                                .playOn(roomLocationEditText);
-                    }
+                if(validateInputs()){
+                    Room room = new Room();
+                    //room.setId(Long.valueOf(roomLocationEditText.getText().toString()));
+                    room.setName(roomNameEditText.getText().toString());
+                    room.setFloorID(selectedFloor.getId());
+                    room.setTypeID(selectedRoomType.getId());
+                    MySettings.addRoom(room);
+
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);
+
+                    getFragmentManager().popBackStack();
                 }
             }
         });
 
-        addPlaceFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
-                addPlaceFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
-                fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
-                fragmentTransaction.addToBackStack("addPlaceFragment");
-                fragmentTransaction.commit();
-            }
-        });
-        addFloorFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddFloorFragment addFloorFragment = new AddFloorFragment();
-                addFloorFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
-                fragmentTransaction.replace(R.id.fragment_view, addFloorFragment, "addFloorFragment");
-                fragmentTransaction.addToBackStack("addFloorFragment");
-                fragmentTransaction.commit();
-            }
-        });
-        addRoomFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddRoomFragment addRoomFragment = new AddRoomFragment();
-                addRoomFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
-                fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-                fragmentTransaction.addToBackStack("addRoomFragment");
-                fragmentTransaction.commit();
-            }
-        });
-        addDeviceFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
-                fragmentTransaction.commit();
-            }
-        });
-
-        if(source == Constants.SOURCE_NAV_DRAWER){
-            //hide adding room layout & views
-            addRoomDescriptionTextView.setVisibility(View.GONE);
-            floorLevelDescriptionTextView.setVisibility(View.GONE);
-            roomInfoLayout.setVisibility(View.GONE);
-            addRoomButton.setVisibility(View.GONE);
-            addMenu.setVisibility(View.VISIBLE);
-        }else{
-            addMenu.setVisibility(View.GONE);
-        }
-
         return view;
     }
 
-    public void setSource(int source){
-        this.source = source;
+    @Override
+    public void onPlaceSelected(Place place){
+        if(place != null){
+            this.selectedPlace = MySettings.getPlace(place.getId());
+            placeNameTextView.setText(selectedPlace.getName());
+            if(selectedPlace.getType().getImageUrl() != null && selectedPlace.getType().getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(selectedPlace.getType().getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                        .into(placeImageView);
+            }else {
+                placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+            }
+            selectedFloorIndex = 0;
+            selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
+            selectedFloorTextView.setText(""+selectedFloor.getLevel());
+        }
     }
 
     @Override
-    public void onFloorSelected(Floor floor){
-        this.selectedFloor = floor;
-        roomLocationEditText.setText(selectedFloor.getName());
-        if(Utils.validateInputsWithoutYoyo(roomNameEditText)){
-            Utils.setButtonEnabled(addRoomButton, true);
+    public void onTypeSelected(Type type){
+        if(type != null){
+            selectedRoomType = type;
+            roomTypeNameTextView.setText(selectedRoomType.getName());
+            if(selectedRoomType.getImageUrl() != null && selectedRoomType.getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(selectedRoomType.getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                        .into(roomTypeImageView);
+            }else {
+                roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+            }
+            if(validateInputs()){
+                Utils.setButtonEnabled(addRoomButton, true);
+            }else{
+                Utils.setButtonEnabled(addRoomButton, false);
+            }
         }
+    }
+
+    private boolean validateInputs(){
+        boolean inputsValid = true;
+        if(selectedPlace == null){
+            inputsValid = false;
+            YoYo.with(Techniques.Shake)
+                    .duration(700)
+                    .repeat(1)
+                    .playOn(placeSelectionLayout);
+        }
+
+        if(selectedFloor == null){
+            YoYo.with(Techniques.Shake)
+                    .duration(700)
+                    .repeat(1)
+                    .playOn(selectedFloorLayout);
+        }
+
+        if(!Utils.validateInputs(roomNameEditText)){
+            inputsValid = false;
+        }
+
+        if(selectedRoomType == null){
+            inputsValid = false;
+            YoYo.with(Techniques.Shake)
+                    .duration(700)
+                    .repeat(1)
+                    .playOn(roomTypeSelectionLayout);
+        }
+        return inputsValid;
     }
 
     @Override

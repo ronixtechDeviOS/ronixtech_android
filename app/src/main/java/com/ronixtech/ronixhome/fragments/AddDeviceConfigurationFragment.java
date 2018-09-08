@@ -50,6 +50,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
     GifImageView deviceLinesAnimationView;
     EditText deviceNameEditText, firstLineNameEditText, secondLineNameEditText, thirdLineNameEditText;
     Button continueButton;
+    TextView deviceNameTextView;
 
     Device device;
 
@@ -83,6 +84,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.configure_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
+        deviceNameTextView = view.findViewById(R.id.device_name_title_textivew);
         deviceLinesAnimationView = view.findViewById(R.id.device_lines_gif_imageview);
         firstLineLayout = view.findViewById(R.id.first_line_configuration_layout);
         secondLineLayout = view.findViewById(R.id.second_line_configuration_layout);
@@ -103,6 +105,10 @@ public class AddDeviceConfigurationFragment extends Fragment {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.commit();
         }
+        deviceNameEditText.setText(device.getName());
+        deviceNameEditText.setEnabled(false);
+        deviceNameEditText.setVisibility(View.GONE);
+        deviceNameTextView.setText(device.getName());
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.GONE);

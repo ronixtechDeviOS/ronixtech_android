@@ -7,40 +7,42 @@
         <item
             android:id="@+id/nav_dashboard"
             android:icon="@drawable/baseline_dashboard_black_36"
-            android:title="Dashboard" />
+            android:title="@string/dashboard" />
         <item
             android:id="@+id/nav_home_network"
             android:icon="@drawable/baseline_network_wifi_black_36"
-            android:title="Home Network" />
+            android:title="@string/home_network" />
         <item
             android:id="@+id/nav_refresh_devices"
             android:icon="@drawable/baseline_refresh_black_48"
-            android:title="Refresh Devices" />
+            android:title="@string/refresh_devices" />
     </group>
 
-    <item android:title="Locations">
+    <item android:title="@string/locations">
         <menu>
             <item
                 android:id="@+id/nav_places"
-                android:icon="@drawable/floor_icon"
-                android:title="Places" />
+                android:icon="@drawable/place_icon"
+                android:title="@string/places" />
             <item
                 android:id="@+id/nav_floors"
                 android:icon="@drawable/floor_icon"
-                android:title="Floors" />
+                android:visible="false"
+                android:title="@string/floors" />
             <item
                 android:id="@+id/nav_rooms"
-                android:icon="@drawable/door_icon"
-                android:title="Rooms" />
+                android:icon="@drawable/room_icon"
+                android:visible="false"
+                android:title="@string/rooms" />
         </menu>
     </item>
 
-    <item android:title="Account">
+    <item android:title="@string/account">
         <menu>
             <item
                 android:id="@+id/log_out"
                 android:icon="@drawable/ic_keyboard_arrow_left_black_24dp"
-                android:title="Logout" />
+                android:title="@string/logout" />
         </menu>
     </item>
 

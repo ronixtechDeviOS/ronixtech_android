@@ -19,6 +19,13 @@ public class MyApp extends Application{
 
         MySettings.initDB();
 
+        if(MySettings.getAppFirstStart()) {
+            Utils.generatePlaceTypes();
+            Utils.generateFloorTypes();
+            Utils.generateRoomTypes();
+            Utils.generateLineTypes();
+            MySettings.setAppFirstStart(false);
+        }
         //MySettings.scanNetwork();
 
 

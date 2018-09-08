@@ -1,6 +1,8 @@
 package com.ronixtech.ronixhome;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.migration.Migration;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -9,6 +11,7 @@ import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
@@ -32,6 +35,7 @@ public class MySettings {
     public static final String PREF_CURRENT_FLOOR = "pref_current_floor";
     public static final String PREF_CONTROL_ACTIVE = "control_active";
     public static final String PREF_GETSTATUS_ACTIVE = "get_status_active";
+    public static final String PREF_APP_FIRST_START = "app_first_start";
 
 
     private static User loggedInUser;
@@ -45,6 +49,7 @@ public class MySettings {
     private static WifiNetwork homeNetwork;
     private static String currentDeviceBeingConfiguredMACAddress;
     private static Device tempDevice;
+    private static boolean appFirstStart;
 
     private static Place currentPlace;
     private static Floor currentFloor;
@@ -253,6 +258,9 @@ public class MySettings {
     public static Place getPlace(long placeID) {
         return MySettings.initDB().placeDAO().getPlaceWIthFloors(placeID);
     }
+    public static Place getPlaceByName(String placeName) {
+        return MySettings.initDB().placeDAO().getPlaceByName(placeName);
+    }
     public static List<Place> getAllPlaces(){
         return MySettings.initDB().placeDAO().getAll();
     }
@@ -303,6 +311,19 @@ public class MySettings {
     public static void removeRoom(com.ronixtech.ronixhome.entities.Room room){
         //remove room from DB
         MySettings.initDB().roomDAO().removeRoomsWithDevices(room);
+    }
+
+    public static Type getType(long typeID){
+        return MySettings.initDB().typeDAO().getType(typeID);
+    }
+    public static Type getTypeByName(String name){
+        return MySettings.initDB().typeDAO().getTypeByName(name);
+    }
+    public static void addType(Type type){
+        MySettings.initDB().typeDAO().insertType(type);
+    }
+    public static List<Type> getTypes(int category){
+        return MySettings.initDB().typeDAO().getTypes(category);
     }
 
     public static void scanNetwork(){
@@ -399,6 +420,19 @@ public class MySettings {
         return gettingStatusActive;
     }
 
+    public static void setAppFirstStart(boolean state) {
+        MySettings.appFirstStart = state;
+
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putBoolean(PREF_APP_FIRST_START, appFirstStart);
+        editor.apply();
+    }
+    public static boolean getAppFirstStart() {
+        SharedPreferences prefs = getSettings();
+        appFirstStart = prefs.getBoolean(PREF_APP_FIRST_START, true);
+        return appFirstStart;
+    }
+
     private static void setCurrentUserEmail(String email) {
         MySettings.loggedInUserEmail = email;
 
@@ -464,9 +498,28 @@ public class MySettings {
         if(database != null){
             return database;
         }else{
+            Migration MIGRATION_1_2 = new Migration(1, 2) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+                    database.execSQL("CREATE TABLE `Type` (`id` INTEGER NOT NULL DEFAULT -1, "
+                            + "`name` TEXT,"
+                            + "`category_id` INTEGER NOT NULL DEFAULT 0,"
+                            + "`image_url` TEXT,"
+                            + "`image_resource_id` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
+                    database.execSQL("ALTER TABLE Floor "
+                            + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
+                    database.execSQL("ALTER TABLE Room "
+                            + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
+                    database.execSQL("ALTER TABLE Line "
+                            + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
+                            .addMigrations(MIGRATION_1_2)
                             .allowMainThreadQueries().
-                            fallbackToDestructiveMigration().
                             build();
             return database;
         }

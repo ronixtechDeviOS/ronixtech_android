@@ -15,13 +15,16 @@ import android.widget.ListView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Type;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Utils {
@@ -273,6 +276,168 @@ public class Utils {
             e.printStackTrace();
             //Default to return 1 core
             return 1;
+        }
+    }
+
+    public static void generatePlaceTypes(){
+        List<Type> placeTypes = new ArrayList<>();
+
+        Type type = new Type(Constants.TYPE_PLACE, "Bank", "", R.drawable.place_type_bank);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Church", "", R.drawable.place_type_church);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Cinema", "", R.drawable.place_type_cinema);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Clinic", "", R.drawable.place_type_clinic);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Coffee Shop", "", R.drawable.place_type_coffee_shop);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Embassy", "", R.drawable.place_type_embassy);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Hospital", "", R.drawable.place_type_hospital);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Hotel", "", R.drawable.place_type_hotel);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "House", "", R.drawable.place_type_house);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Mosque", "", R.drawable.place_type_mosque);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Museum", "", R.drawable.place_type_museum);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Office", "", R.drawable.place_type_office);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Pharmacy", "", R.drawable.place_type_pharmacy);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "School", "", R.drawable.place_type_school);
+        placeTypes.add(type);
+        type = new Type(Constants.TYPE_PLACE, "Store", "", R.drawable.place_type_store);
+        placeTypes.add(type);
+
+        for (Type ty: placeTypes) {
+            MySettings.addType(ty);
+        }
+    }
+
+    public static void generateFloorTypes(){
+        List<Type> floorTypes = new ArrayList<>();
+
+        Type type = new Type(Constants.TYPE_FLOOR, "Floor", "", R.drawable.floor_icon);
+        floorTypes.add(type);
+
+        for (Type ty: floorTypes) {
+            MySettings.addType(ty);
+        }
+    }
+
+    public static void generateRoomTypes(){
+        List<Type> roomTypes = new ArrayList<>();
+
+        Type type = new Type(Constants.TYPE_ROOM, "Balcony", "", R.drawable.room_type_balcony);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Basement", "", R.drawable.room_type_basement);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Bathroom", "", R.drawable.room_type_bathroom);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Bedroom", "", R.drawable.room_type_bedroom);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Kids Bedroom", "", R.drawable.room_type_bedroom_kids);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Corridor", "", R.drawable.room_type_corridor);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Dining", "", R.drawable.room_type_dining);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Entryway", "", R.drawable.room_type_entryway);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Frontyard", "", R.drawable.room_type_frontyard);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Garage", "", R.drawable.room_type_garage);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Home Cinema", "", R.drawable.room_type_home_cinema);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Kitchen", "", R.drawable.room_type_kitchen);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Library", "", R.drawable.room_type_library);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Living Room", "", R.drawable.room_type_living_room);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Office", "", R.drawable.room_type_office);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Terrace", "", R.drawable.room_type_terrace);
+        roomTypes.add(type);
+        type = new Type(Constants.TYPE_ROOM, "Toilet", "", R.drawable.room_type_toilet);
+        roomTypes.add(type);
+
+        for (Type ty: roomTypes) {
+            MySettings.addType(ty);
+        }
+    }
+
+    public static void generateLineTypes(){
+        List<Type> lineTypes = new ArrayList<>();
+
+        Type type = new Type(Constants.TYPE_LINE, "Air Conditioner", "", R.drawable.line_type_air_conditioner);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Appliance Plug", "", R.drawable.line_type_appliance_plug);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Attic Fan", "", R.drawable.line_type_attic_fan);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Boiler", "", R.drawable.line_type_boiler);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Ceiling Fan", "", R.drawable.line_type_ceiling_fan);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Ceiling Fan Light", "", R.drawable.line_type_ceiling_fan_light);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Chandelier", "", R.drawable.line_type_chandelier);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Clothes Iron", "", R.drawable.line_type_clothes_iron);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Coffee Maker", "", R.drawable.line_type_coffee_maker);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Computer", "", R.drawable.line_type_computer);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Dishwasher", "", R.drawable.line_type_dishwasher);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Door", "", R.drawable.line_type_door);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Fan", "", R.drawable.line_type_fan);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Fluorescent Lamp", "", R.drawable.line_type_fluorescent_lamp);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Flush", "", R.drawable.line_type_flush);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Garage", "", R.drawable.line_type_garage);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Hair Dryer", "", R.drawable.line_type_hair_dryer);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Humidifier", "", R.drawable.line_type_humidifier);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Kettle", "", R.drawable.line_type_kettle);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "LED Lamp", "", R.drawable.line_type_led__lamp);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Light Fixture", "", R.drawable.line_type_light_fixture);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Microwave Oven", "", R.drawable.line_type_microwave_oven);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Motion Sensor", "", R.drawable.line_type_motion_sensor);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Oven", "", R.drawable.line_type_oven);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Pendant", "", R.drawable.line_type_pendant);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Photocopier", "", R.drawable.line_type_photocopier);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Printer", "", R.drawable.line_type_printer);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Recessed", "", R.drawable.line_type_recessed);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Refrigerator", "", R.drawable.line_type_refrigerator);
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Window", "", R.drawable.line_type_window);
+        lineTypes.add(type);
+
+        for (Type ty: lineTypes) {
+            MySettings.addType(ty);
         }
     }
 }

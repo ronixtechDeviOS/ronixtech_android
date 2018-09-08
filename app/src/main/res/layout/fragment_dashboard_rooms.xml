@@ -31,6 +31,7 @@
             android:id="@+id/empty_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_centerVertical="true"
@@ -43,51 +44,138 @@
             android:id="@+id/add_device_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_below="@id/empty_textview"
             android:layout_marginTop="8dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:background="@drawable/button_background_round_blue"
             android:textColor="@color/whiteColor"
-            android:text="Add Smart Controller"/>
+            android:text="@string/add_device"/>
 
         <Button
             android:id="@+id/add_room_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_below="@id/empty_textview"
             android:layout_marginTop="8dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:background="@drawable/button_background_round_blue"
             android:textColor="@color/whiteColor"
-            android:text="Add Room"/>
+            android:text="@string/add_room"/>
 
         <Button
             android:id="@+id/add_floor_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_below="@id/empty_textview"
             android:layout_marginTop="8dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:background="@drawable/button_background_round_blue"
             android:textColor="@color/whiteColor"
-            android:text="Add Floor"/>
+            android:text="@string/add_floor"/>
 
         <Button
             android:id="@+id/add_place_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_below="@id/empty_textview"
             android:layout_marginTop="8dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:background="@drawable/button_background_round_blue"
             android:textColor="@color/whiteColor"
-            android:text="Add Place"/>
+            android:text="@string/add_place"/>
+
+        <LinearLayout
+            android:id="@+id/add_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.8"
+                android:layout_marginTop="32dp"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:id="@+id/add_new_place_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/add_place_icon"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/add_place_icon"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/add_place_icon"
+                        android:textSize="18sp"
+                        android:textColor="@color/darkestGrayColor"
+                        android:textAlignment="center"
+                        android:text="@string/add_new_place"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/add_new_room_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/add_room_icon"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/add_room_icon"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/add_room_icon"
+                        android:textSize="18sp"
+                        android:textColor="@color/darkestGrayColor"
+                        android:textAlignment="center"
+                        android:text="@string/add_new_room"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/add_new_device_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/add_device_icon"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/add_device_icon"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/add_device_icon"
+                        android:textSize="18sp"
+                        android:textColor="@color/darkestGrayColor"
+                        android:textAlignment="center"
+                        android:text="@string/add_new_device"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.1"/>
+        </LinearLayout>
 
         <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/add_fab_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

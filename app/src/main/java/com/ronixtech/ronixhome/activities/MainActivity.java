@@ -32,10 +32,10 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
 import com.ronixtech.ronixhome.fragments.AddFloorFragment;
-import com.ronixtech.ronixhome.fragments.AddPlaceFragment;
-import com.ronixtech.ronixhome.fragments.AddRoomFragment;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
+import com.ronixtech.ronixhome.fragments.PlacesFragment;
+import com.ronixtech.ronixhome.fragments.RoomsFragment;
 import com.ronixtech.ronixhome.fragments.WifiInfoFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
+
 
         LinearLayout headerLayout = (LinearLayout) navigationView.getHeaderView(0);
         userNameTextView = headerLayout.findViewById(R.id.user_name_textview);
@@ -199,11 +201,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_places) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
-            addPlaceFragment.setSource(Constants.SOURCE_NAV_DRAWER);
+            PlacesFragment placesFragment = new PlacesFragment();
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
-            fragmentTransaction.addToBackStack("addPlaceFragment");
+            fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
+            fragmentTransaction.addToBackStack("placesFragment");
             fragmentTransaction.commit();
         } else if (id == R.id.nav_floors) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -217,11 +218,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_rooms) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            AddRoomFragment addRoomFragment = new AddRoomFragment();
-            addRoomFragment.setSource(Constants.SOURCE_NAV_DRAWER);
+            RoomsFragment roomsFragment = new RoomsFragment();
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-            fragmentTransaction.addToBackStack("addRoomFragment");
+            fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
+            fragmentTransaction.addToBackStack("roomsFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
             MySettings.setCurrentUser(null);

@@ -5,8 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Place;
 
@@ -51,6 +53,7 @@ public class PlaceAdapter extends ArrayAdapter {
             rowView = inflater.inflate(R.layout.list_item_place, null);
             vHolder = new ViewHolder();
             vHolder.placeNameTextView = rowView.findViewById(R.id.place_name_textview);
+            vHolder.placeImageView = rowView.findViewById(R.id.place_imageview);
             rowView.setTag(vHolder);
         }
         else{
@@ -58,11 +61,20 @@ public class PlaceAdapter extends ArrayAdapter {
         }
 
         vHolder.placeNameTextView.setText(""+places.get(position).getName());
+        if(places.get(position).getType().getImageUrl() != null && places.get(position).getType().getImageUrl().length() >= 1){
+            GlideApp.with(activity)
+                    .load(places.get(position).getType().getImageUrl())
+                    .placeholder(activity.getResources().getDrawable(R.drawable.place_type_house))
+                    .into(vHolder.placeImageView);
+        }else {
+            vHolder.placeImageView.setImageResource(places.get(position).getType().getImageResourceID());
+        }
 
         return rowView;
     }
 
     public static class ViewHolder{
         TextView placeNameTextView;
+        ImageView placeImageView;
     }
 }

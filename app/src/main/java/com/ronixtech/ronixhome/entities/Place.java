@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.ronixtech.ronixhome.MySettings;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +18,14 @@ public class Place {
     String name;
     @Ignore
     List<Floor> floors;
+    @ColumnInfo(name = "type_id")
+    public long typeID;
 
     public Place(){
         this.id = 0;
         this.name = "";
         this.floors = new ArrayList<>();
+        this.typeID = -1;
     }
 
     public long getId() {
@@ -45,5 +50,21 @@ public class Place {
 
     public void setFloors(List<Floor> floors) {
         this.floors = floors;
+    }
+
+    public long getTypeID(){
+        return this.typeID;
+    }
+
+    public void setTypeID(long id){
+        this.typeID = id;
+    }
+
+    public Type getType(){
+        if(typeID != -1) {
+            return MySettings.getType(typeID);
+        }else{
+            return MySettings.getTypeByName("House");
+        }
     }
 }

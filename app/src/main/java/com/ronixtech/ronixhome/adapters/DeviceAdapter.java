@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -285,7 +287,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     MySettings.setControlState(true);
                     boolean checked = ((CheckBox)view).isChecked();
                     if(checked){
-                        toggleDimming(item, 01, Line.DIMMING_STATE_ON);
+                        toggleDimming(item, 1, Line.DIMMING_STATE_ON);
                     }else{
                         toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
                     }
@@ -415,6 +417,85 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             });
         }
 
+        vHolder.firstLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(activity, view);
+                popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+                popup.show();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item1) {
+                        int id = item1.getItemId();
+                        if(id == R.id.action_toggle_dimming){
+                            MySettings.setControlState(true);
+                            int dimmingState = item.getLines().get(0).getDimmingState();
+                            if(dimmingState == Line.DIMMING_STATE_OFF){
+                                toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                            }else{
+                                toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                            }
+                        }else if(id == R.id.action_1){
+                            Toast.makeText(activity, "action_1 clicked", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    }
+                });
+            }
+        });
+        vHolder.secondLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(activity, view);
+                popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+                popup.show();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item1) {
+                        int id = item1.getItemId();
+                        if(id == R.id.action_toggle_dimming){
+                            MySettings.setControlState(true);
+                            int dimmingState = item.getLines().get(1).getDimmingState();
+                            if(dimmingState == Line.DIMMING_STATE_OFF){
+                                toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                            }else{
+                                toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                            }
+                        }else if(id == R.id.action_1){
+                            Toast.makeText(activity, "action_1 clicked", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    }
+                });
+            }
+        });
+        vHolder.thirdLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(activity, view);
+                popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+                popup.show();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item1) {
+                        int id = item1.getItemId();
+                        if(id == R.id.action_toggle_dimming){
+                            MySettings.setControlState(true);
+                            int dimmingState = item.getLines().get(2).getDimmingState();
+                            if(dimmingState == Line.DIMMING_STATE_OFF){
+                                toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                            }else{
+                                toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                            }
+                        }else if(id == R.id.action_1){
+                            Toast.makeText(activity, "action_1 clicked", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    }
+                });
+            }
+        });
+
         vHolder.removeDeviceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -540,6 +621,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         vHolder.firstLineSwitch = v.findViewById(R.id.first_line_switch);
         vHolder.secondLineSwitch = v.findViewById(R.id.second_line_switch);
         vHolder.thirdLineSwitch = v.findViewById(R.id.third_line_switch);
+        vHolder.firstLineAdvancedOptionsButton = v.findViewById(R.id.first_line_advanced_options_button);
+        vHolder.secondLineAdvancedOptionsButton = v.findViewById(R.id.second_line_advanced_options_button);
+        vHolder.thirdLineAdvancedOptionsButton = v.findViewById(R.id.third_line_advanced_options_button);
 
 
         /*if(v == null){
@@ -1011,6 +1095,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         SeekBar firstLineSeekBar, secondLineSeekBar, thirdLineSeekBar;
         CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
         ToggleButton firstLineSwitch, secondLineSwitch, thirdLineSwitch;
+        ImageView firstLineAdvancedOptionsButton, secondLineAdvancedOptionsButton, thirdLineAdvancedOptionsButton;
     }
 
     android.os.Handler mHandler;

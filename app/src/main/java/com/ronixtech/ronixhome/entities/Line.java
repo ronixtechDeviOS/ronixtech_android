@@ -4,6 +4,8 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.ronixtech.ronixhome.MySettings;
+
 //This is an entity that represents a specific AC line
 @Entity
 public class Line {
@@ -28,14 +30,14 @@ public class Line {
     int dimmingVvalue;
     @ColumnInfo(name = "device_id")
     long deviceID;
-    @ColumnInfo(name = "type_id")
-    int lineType;
     @ColumnInfo(name = "type_name")
     String lineTypeString;
     @ColumnInfo(name = "tyoe_image_url")
     String lineTypeImageUrl;
     @ColumnInfo(name = "power_usage")
     double linePowerUsage;
+    @ColumnInfo(name = "type_id")
+    public long typeID;
 
     public Line(){
         this.id = 0;
@@ -45,10 +47,10 @@ public class Line {
         this.dimmingState = Line.DIMMING_STATE_OFF;
         this.dimmingVvalue = 0;
         this.deviceID = -1;
-        this.lineType = -1;
         this.lineTypeString = "";
         this.lineTypeImageUrl = "";
         this.linePowerUsage = 0;
+        this.typeID = -1;
     }
 
     public long getId() {
@@ -107,14 +109,6 @@ public class Line {
         this.deviceID = deviceID;
     }
 
-    public int getLineType() {
-        return lineType;
-    }
-
-    public void setLineType(int lineType) {
-        this.lineType = lineType;
-    }
-
     public String getLineTypeString() {
         return lineTypeString;
     }
@@ -137,6 +131,22 @@ public class Line {
 
     public void setLinePowerUsage(double linePowerUsage) {
         this.linePowerUsage = linePowerUsage;
+    }
+
+    public long getTypeID(){
+        return this.typeID;
+    }
+
+    public void setTypeID(long id){
+        this.typeID = id;
+    }
+
+    public Type getType(){
+        if(typeID != -1) {
+            return MySettings.getType(typeID);
+        }else{
+            return MySettings.getTypeByName("LED Lamp");
+        }
     }
 
     @Override

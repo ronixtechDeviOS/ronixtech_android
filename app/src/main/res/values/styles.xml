@@ -17,6 +17,11 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="ToggleButton" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/lightGrayColor</item>
+        <item name="colorAccent">@color/blueColor</item>
+    </style>
+
     <style name="CustomDialog" parent="android:Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>

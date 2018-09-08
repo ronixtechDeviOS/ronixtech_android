@@ -27,6 +27,8 @@ public class Floor {
     List<Room> rooms;
     @ColumnInfo(name = "place_id")
     long placeID;
+    @ColumnInfo(name = "type_id")
+    public long typeID;
 
     public Floor(){
         this.id = 0;
@@ -34,6 +36,7 @@ public class Floor {
         this.level = 0;
         this.rooms = new ArrayList<>();
         this.placeID = 0;
+        this.typeID = -1;
     }
 
     public long getId() {
@@ -74,6 +77,22 @@ public class Floor {
 
     public void setPlaceID(long placeID) {
         this.placeID = placeID;
+    }
+
+    public long getTypeID(){
+        return this.typeID;
+    }
+
+    public void setTypeID(long id){
+        this.typeID = id;
+    }
+
+    public Type getType(){
+        if(typeID != -1) {
+            return MySettings.getType(typeID);
+        }else{
+            return MySettings.getTypeByName("Floor");
+        }
     }
 
     public String getPlaceName(){

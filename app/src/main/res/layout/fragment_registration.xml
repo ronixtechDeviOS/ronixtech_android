@@ -173,6 +173,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/registration_edittexts_layout"
                 android:layout_centerHorizontal="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="64dp"
                 android:layout_marginRight="64dp"

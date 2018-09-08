@@ -56,6 +56,12 @@ public class Constants {
     public static final int SOURCE_HOME_FRAGMENT = 1;
     public static final int SOURCE_NAV_DRAWER = 2;
 
+    //types constants
+    public static final int TYPE_PLACE = 0;
+    public static final int TYPE_FLOOR = 1;
+    public static final int TYPE_ROOM = 2;
+    public static final int TYPE_LINE = 3;
+
     //notification channel constant, only for api26+
     public static final String CHANNEL_ID = "4";
 

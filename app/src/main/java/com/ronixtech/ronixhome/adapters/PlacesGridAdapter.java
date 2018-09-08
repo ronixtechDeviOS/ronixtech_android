@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Place;
 
@@ -55,11 +56,15 @@ public class PlacesGridAdapter extends BaseAdapter {
 
         Place item = places.get(position);
         vHolder.placeNameTextView.setText(""+item.getName());
+        if(item.getType().getImageUrl() != null && item.getType().getImageUrl().length() >= 1){
+            GlideApp.with(activity)
+                .load(item.getType().getImageUrl())
+                .placeholder(activity.getResources().getDrawable(R.drawable.place_type_house))
+                .into(vHolder.placeImageView);
+        }else {
+            vHolder.placeImageView.setImageResource(item.getType().getImageResourceID());
+        }
 
-        /*GlideApp.with(activity)
-                .load(Utils.getImageUrl(item.getImageUrl()))
-                .placeholder(activity.getResources().getDrawable(android.R.drawable.))
-                .into(vHolder.roomImageView);*/
 
         return rowView;
     }

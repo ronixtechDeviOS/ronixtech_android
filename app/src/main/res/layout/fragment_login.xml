@@ -95,25 +95,12 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/forgot_password_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/login_edittexts_layout"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="64dp"
-            android:layout_marginLeft="64dp"
-            android:background="@color/transparentColor"
-            android:textAllCaps="false"
-            android:textColor="@color/darkestGrayColor"
-            android:text="@string/forgot_password"/>
-        <Button
             android:id="@+id/login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
             android:layout_below="@id/login_edittexts_layout"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="64dp"
             android:layout_marginRight="64dp"
             android:background="@drawable/button_background_round_blue"
@@ -122,29 +109,45 @@
             android:text="@string/login"/>
 
 
-
         <com.facebook.login.widget.LoginButton
             android:id="@+id/facebook_login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/login_button"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginStart="64dp"
             android:layout_marginEnd="64dp" />
+
         <Button
             android:id="@+id/register_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/facebook_login_button"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="64dp"
             android:layout_marginRight="64dp"
-            android:background="@drawable/button_background_round_blue"
+            android:background="@drawable/button_background_round_border_blue"
             android:textAllCaps="false"
-            android:textColor="@color/whiteColor"
+            android:textColor="@color/blueColor"
             android:text="@string/register"/>
+
+        <Button
+            android:id="@+id/forgot_password_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/facebook_login_button"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:background="@color/transparentColor"
+            android:textAllCaps="false"
+            android:textColor="@color/blackColor"
+            android:text="@string/forgot_password"/>
     </RelativeLayout>
 
 </FrameLayout>

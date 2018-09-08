@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ronixtech.ronixhome.MySettings;
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Room;
 
@@ -56,15 +56,19 @@ public class RoomsGridAdapter extends BaseAdapter{
 
         Room item = rooms.get(position);
         if(item.getFloorName() == null || item.getFloorName().length() < 1) {
-            vHolder.roomNameTextView.setText("" + item.getName() + "\n" + "(" + item.getFloorLevel() + ")");
+            vHolder.roomNameTextView.setText("" + item.getName()/* + "\n" + "(" + item.getFloorLevel() + ")"*/);
         }else{
-            vHolder.roomNameTextView.setText("" + item.getName() + "\n" + "(" + MySettings.getFloor(item.getFloorID()).getPlaceName() + " > " + item.getFloorName() + ")");
+            vHolder.roomNameTextView.setText("" + item.getName()/* + "\n" + "(" + MySettings.getFloor(item.getFloorID()).getPlaceName() + " > " + item.getFloorName() + ")"*/);
         }
 
-        /*GlideApp.with(activity)
-                .load(Utils.getImageUrl(item.getImageUrl()))
-                .placeholder(activity.getResources().getDrawable(android.R.drawable.))
-                .into(vHolder.roomImageView);*/
+        if(item.getType().getImageUrl() != null && item.getType().getImageUrl().length() >= 1){
+            GlideApp.with(activity)
+                    .load(item.getType().getImageUrl())
+                    .placeholder(activity.getResources().getDrawable(R.drawable.room_type_living_room))
+                    .into(vHolder.roomImageView);
+        }else {
+            vHolder.roomImageView.setImageResource(item.getType().getImageResourceID());
+        }
 
         return rowView;
     }
