@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -48,6 +50,8 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
     String ssid, password;
     boolean ssidRetrieved = false;
     boolean passwordRetrieved = false;
+
+    private int source = Constants.SOURCE_NAV_DRAWER;
 
     public WifiInfoFragment() {
         // Required empty public constructor
@@ -104,7 +108,17 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                 wifiNetwork.setSsid(ssid);
                 wifiNetwork.setPassword(password.trim());
                 MySettings.setHomeNetwork(wifiNetwork);
-                getFragmentManager().popBackStack();
+                if(source == Constants.SOURCE_NAV_DRAWER) {
+                    getFragmentManager().popBackStack();
+                }else if(source == Constants.SOURCE_NEW_DEVICE){
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    fragmentTransaction.commit();
+                }
             }
         });
 
@@ -226,6 +240,10 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
         transaction.replace(R.id.child_fragment_container, wifiListFragment).commit();
 
         return view;
+    }
+
+    public void setSource(int source){
+        this.source = source;
     }
 
     @Override

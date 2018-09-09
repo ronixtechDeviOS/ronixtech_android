@@ -101,7 +101,7 @@ public class AddDeviceFragmentSearch extends Fragment {
         step2TextView = view.findViewById(R.id.instructions_2_textview);
         debugTextView = view.findViewById(R.id.debug_textview);
 
-        if(MySettings.getHomeNetwork() == null) {
+        /*if(MySettings.getHomeNetwork() == null) {
             //if home network is not defined, configure it first so when adding the device(s), they're automatically connected to it
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -114,7 +114,11 @@ public class AddDeviceFragmentSearch extends Fragment {
             //scan for device in the background, when found, confirm it's the correct the device and continue to device configuration screen
             //first check if there are permissions to handle WiFi operations
             checkLocationPermissions();
-        }
+        }*/
+
+        //scan for device in the background, when found, confirm it's the correct the device and continue to device configuration screen
+        //first check if there are permissions to handle WiFi operations
+        checkLocationPermissions();
 
         return view;
     }

@@ -83,7 +83,7 @@
                         android:inputType="textCapWords"
                         android:imeOptions="actionNext"
                         android:textAlignment="center"
-                        android:hint="@string/line_name_hint"/>
+                        android:hint="@string/line_1_name_hint"/>
                 </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/second_line_configuration_layout"
@@ -97,7 +97,7 @@
                         android:inputType="textCapWords"
                         android:imeOptions="actionNext"
                         android:textAlignment="center"
-                        android:hint="@string/line_name_hint"/>
+                        android:hint="@string/line_2_name_hint"/>
                 </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/third_line_configuration_layout"
@@ -111,7 +111,7 @@
                         android:inputType="textCapWords"
                         android:imeOptions="actionNext"
                         android:textAlignment="center"
-                        android:hint="@string/line_name_hint"/>
+                        android:hint="@string/line_3_name_hint"/>
                 </RelativeLayout>
 
             </LinearLayout>

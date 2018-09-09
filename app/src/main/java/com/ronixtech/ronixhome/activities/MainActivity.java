@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
             WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
+            wifiInfoFragment.setSource(Constants.SOURCE_NAV_DRAWER);
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
             fragmentTransaction.addToBackStack("wifiInfoFragment");

@@ -1,6 +1,8 @@
 package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
@@ -342,7 +344,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if(b) {
                         MySettings.setControlState(true);
-                        controlDimming(item, 0, i);
+                        //controlDimming(item, 0, i);
                     }
                 }
 
@@ -353,14 +355,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    try {
+                    /*try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Exception: " + e.getMessage());
-                    }
-                    MySettings.setControlState(false);
+                    }*/
                     int i = vHolder.firstLineSeekBar.getProgress();
-                    //controlDimming(item, 0, i);
+                    controlDimming(item, 0, i);
                 }
             });
             vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -368,7 +369,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if(b) {
                         MySettings.setControlState(true);
-                        controlDimming(item, 1, i);
+                        //controlDimming(item, 1, i);
                     }
                 }
 
@@ -379,14 +380,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    try {
+                    /*try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Exception: " + e.getMessage());
-                    }
-                    MySettings.setControlState(false);
+                    }*/
                     int i = vHolder.secondLineSeekBar.getProgress();
-                    //controlDimming(item, 1, i);
+                    controlDimming(item, 1, i);
                 }
             });
             vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -394,7 +394,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if(b) {
                         MySettings.setControlState(true);
-                        controlDimming(item, 2, i);
+                        //controlDimming(item, 2, i);
                     }
                 }
 
@@ -405,14 +405,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    try {
+                    /*try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Exception: " + e.getMessage());
-                    }
-                    MySettings.setControlState(false);
+                    }*/
                     int i = vHolder.thirdLineSeekBar.getProgress();
-                    //controlDimming(item, 2, i);
+                    controlDimming(item, 2, i);
                 }
             });
         }
@@ -435,8 +434,30 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                             }else{
                                 toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
                             }
-                        }else if(id == R.id.action_1){
-                            Toast.makeText(activity, "action_1 clicked", Toast.LENGTH_SHORT).show();
+                        }else if(id == R.id.action_delete){
+                            AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                    //set icon
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    //set title
+                                    .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                    //set message
+                                    .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                    //set positive button
+                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what would happen when positive button is clicked
+                                            removeDevice(item);
+                                        }
+                                    })
+                                    //set negative button
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what should happen when negative button is clicked
+                                        }
+                                    })
+                                    .show();
                         }
                         return true;
                     }
@@ -461,8 +482,30 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                             }else{
                                 toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
                             }
-                        }else if(id == R.id.action_1){
-                            Toast.makeText(activity, "action_1 clicked", Toast.LENGTH_SHORT).show();
+                        }else if(id == R.id.action_delete){
+                            AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                    //set icon
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    //set title
+                                    .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                    //set message
+                                    .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                    //set positive button
+                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what would happen when positive button is clicked
+                                            removeDevice(item);
+                                        }
+                                    })
+                                    //set negative button
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what should happen when negative button is clicked
+                                        }
+                                    })
+                                    .show();
                         }
                         return true;
                     }
@@ -487,8 +530,30 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                             }else{
                                 toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
                             }
-                        }else if(id == R.id.action_1){
-                            Toast.makeText(activity, "action_1 clicked", Toast.LENGTH_SHORT).show();
+                        }else if(id == R.id.action_delete){
+                            AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                    //set icon
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    //set title
+                                    .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                    //set message
+                                    .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                    //set positive button
+                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what would happen when positive button is clicked
+                                            removeDevice(item);
+                                        }
+                                    })
+                                    //set negative button
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what should happen when negative button is clicked
+                                        }
+                                    })
+                                    .show();
                         }
                         return true;
                     }
@@ -526,6 +591,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         vHolder.firstLineDimmingCheckBox.setChecked(false);
                         vHolder.firstLineDimmingCheckBox.setEnabled(true);
                         vHolder.firstLineSeekBar.setEnabled(false);
+                        vHolder.firstLineSeekBar.setProgress(0);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
                         vHolder.firstLineDimmingCheckBox.setEnabled(false);
                         vHolder.firstLineSeekBar.setEnabled(false);
@@ -536,6 +602,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.firstLineDimmingCheckBox.setEnabled(false);
                     vHolder.firstLineSeekBar.setEnabled(false);
                     vHolder.firstLineDimmingCheckBox.setChecked(false);
+                    vHolder.firstLineSeekBar.setProgress(0);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -553,6 +620,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         vHolder.secondLineDimmingCheckBox.setChecked(false);
                         vHolder.secondLineDimmingCheckBox.setEnabled(true);
                         vHolder.secondLineSeekBar.setEnabled(false);
+                        vHolder.secondLineSeekBar.setProgress(0);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
                         vHolder.secondLineDimmingCheckBox.setEnabled(false);
                         vHolder.secondLineSeekBar.setEnabled(false);
@@ -563,6 +631,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.secondLineDimmingCheckBox.setEnabled(false);
                     vHolder.secondLineSeekBar.setEnabled(false);
                     vHolder.secondLineDimmingCheckBox.setChecked(false);
+                    vHolder.secondLineSeekBar.setProgress(0);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -580,6 +649,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         vHolder.thirdLineDimmingCheckBox.setChecked(false);
                         vHolder.thirdLineDimmingCheckBox.setEnabled(true);
                         vHolder.thirdLineSeekBar.setEnabled(false);
+                        vHolder.thirdLineSeekBar.setProgress(0);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
                         vHolder.thirdLineDimmingCheckBox.setEnabled(false);
                         vHolder.thirdLineSeekBar.setEnabled(false);
@@ -590,6 +660,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.thirdLineSeekBar.setEnabled(false);
                     vHolder.thirdLineSwitch.setChecked(false);
                     vHolder.thirdLineDimmingCheckBox.setChecked(false);
+                    vHolder.thirdLineSeekBar.setProgress(0);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }

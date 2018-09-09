@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
@@ -60,6 +62,18 @@ public class AddDeviceFragmentIntro extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_device_intro, container, false);
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
+
+        if(MySettings.getHomeNetwork() == null) {
+            //if home network is not defined, configure it first so when adding the device(s), they're automatically connected to it
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
+            wifiInfoFragment.setSource(Constants.SOURCE_NEW_DEVICE);
+            fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
+            //fragmentTransaction.addToBackStack("wifiInfoFragment");
+            fragmentTransaction.commit();
+        }
 
         continueButton = view.findViewById(R.id.continue_button);
         continueButton.setOnClickListener(new View.OnClickListener() {

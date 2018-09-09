@@ -113,16 +113,22 @@ public class AddDeviceConfigurationFragment extends Fragment {
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.GONE);
             thirdLineLayout.setVisibility(View.GONE);
+            firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
             //deviceLinesAnimationView.setBackgroundResource(unit with 1 line gif, no device highlighted);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.VISIBLE);
             thirdLineLayout.setVisibility(View.GONE);
+            firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+            secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
             //deviceLinesAnimationView.setBackgroundResource(unit with 2 lines gif, no device highlighted);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.VISIBLE);
             thirdLineLayout.setVisibility(View.VISIBLE);
+            firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+            secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_2_name_hint));
+            thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
             //deviceLinesAnimationView.setBackgroundResource(unit with 3 lines gif, no device highlighted);
         }else{
             Toast.makeText(getActivity(), "Unknown smart controller type (" + device.getDeviceTypeID() + "). Please try again later or contact support.", Toast.LENGTH_SHORT).show();

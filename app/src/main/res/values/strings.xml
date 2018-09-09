@@ -34,6 +34,7 @@
     <string name="place_type">Place Type</string>
     <string name="place_type_hint">Tap here to select the place type</string>
     <string name="place_selection_hint">Tap here to select a place</string>
+    <string name="place_already_exists_error">A place already exists with this name</string>
 
 
     <string name="floor">Floor</string>
@@ -93,6 +94,9 @@
     <string name="unit_name_hint">For example, Living Room</string>
     <string name="configure_lines_title">Configure the devices of this controller</string>
     <string name="line_name_hint">For example, night lamp or fan</string>
+    <string name="line_1_name_hint">Left device</string>
+    <string name="line_2_name_hint">Middle device</string>
+    <string name="line_3_name_hint">Right device</string>
 
 
     <string name="no_types_available">No types available</string>

@@ -168,24 +168,46 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
-                    Place place = new Place();
-                    place.setName(placeNameEditText.getText().toString());
-                    place.setTypeID(selectedPlaceType.getId());
-                    MySettings.addPlace(place);
-                    long placeID = MySettings.getPlaceByName(place.getName()).getId();
-                    for(int x = 1; x <= numberOfFloors; x++){
-                        Floor floor = new Floor();
-                        floor.setName("Floor #" + x);
-                        floor.setLevel(x);
-                        floor.setPlaceID(placeID);
-                        MySettings.addFloor(floor);
+                    Place oldPlace = MySettings.getPlaceByName(placeNameEditText.getText().toString());
+                    if(oldPlace != null){
+                        placeNameEditText.setError(getActivity().getResources().getString(R.string.place_already_exists_error));
+                        YoYo.with(Techniques.Shake)
+                                .duration(700)
+                                .repeat(1)
+                                .playOn(placeNameEditText);
+                    }else{
+                        Place place = new Place();
+                        place.setName(placeNameEditText.getText().toString());
+                        place.setTypeID(selectedPlaceType.getId());
+                        MySettings.addPlace(place);
+                        long placeID = MySettings.getPlaceByName(place.getName()).getId();
+                        for(int x = 1; x <= numberOfFloors; x++){
+                            Floor floor = new Floor();
+                            floor.setName("Floor #" + x);
+                            floor.setLevel(x);
+                            floor.setPlaceID(placeID);
+                            MySettings.addFloor(floor);
+                        }
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
+                        getFragmentManager().popBackStack();
                     }
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
-                    getFragmentManager().popBackStack();
                 }
             }
         });
+
+        selectedPlaceType = MySettings.getTypeByName("House");
+        if(selectedPlaceType != null){
+            placeTypeNameTextView.setText(selectedPlaceType.getName());
+            if(selectedPlaceType.getImageUrl() != null && selectedPlaceType.getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(selectedPlaceType.getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                        .into(placeTypeImageView);
+            }else {
+                placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
+            }
+        }
 
         return view;
     }
