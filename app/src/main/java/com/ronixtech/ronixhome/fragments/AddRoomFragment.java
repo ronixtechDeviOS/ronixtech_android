@@ -107,6 +107,22 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         roomTypeImageView = view.findViewById(R.id.room_type_imageview);
         addRoomButton = view.findViewById(R.id.add_room_button);
 
+        selectedPlace = MySettings.getCurrentPlace();
+        if(selectedPlace != null){
+            selectedPlace = MySettings.getPlace(selectedPlace.getId());
+            placeNameTextView.setText(selectedPlace.getName());
+            if(selectedPlace.getType().getImageUrl() != null && selectedPlace.getType().getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(selectedPlace.getType().getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                        .into(placeImageView);
+            }else {
+                placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+            }
+            selectedFloorIndex = 0;
+            selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
+            selectedFloorTextView.setText(""+selectedFloor.getLevel());
+        }
 
         placeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override

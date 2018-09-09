@@ -180,14 +180,15 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                         place.setName(placeNameEditText.getText().toString());
                         place.setTypeID(selectedPlaceType.getId());
                         MySettings.addPlace(place);
-                        long placeID = MySettings.getPlaceByName(place.getName()).getId();
+                        Place dbPlace = MySettings.getPlaceByName(place.getName());
                         for(int x = 1; x <= numberOfFloors; x++){
                             Floor floor = new Floor();
                             floor.setName("Floor #" + x);
                             floor.setLevel(x);
-                            floor.setPlaceID(placeID);
+                            floor.setPlaceID(dbPlace.getId());
                             MySettings.addFloor(floor);
                         }
+                        MySettings.setCurrentPlace(dbPlace);
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
                         getFragmentManager().popBackStack();

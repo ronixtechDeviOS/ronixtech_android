@@ -65,7 +65,9 @@
                 android:layout_below="@id/place_title_textview"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:background="@drawable/button_background_round_border_blue">
                 <ImageView
                     android:id="@+id/selected_place_image_view"
                     android:layout_width="46dp"
@@ -74,19 +76,31 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>
-
+                <ImageView
+                    android:id="@+id/selected_place_arrow_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"/>
                 <TextView
                     android:id="@+id/selected_place_name_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@id/selected_place_image_view"
                     android:layout_toRightOf="@id/selected_place_image_view"
+                    android:layout_toStartOf="@id/selected_place_arrow_image_view"
+                    android:layout_toLeftOf="@id/selected_place_arrow_image_view"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:textSize="16sp"
                     android:textColor="@color/blackColor"
                     android:text="@string/place_selection_hint"/>
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -131,7 +145,7 @@
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_gray"
+                        android:background="@drawable/button_background_round_border_blue"
                         android:textColor="@color/blackColor"
                         android:text="@string/minus_symbol"/>
                     <android.support.v4.widget.Space
@@ -143,7 +157,7 @@
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_gray"
+                        android:background="@drawable/button_background_round_border_blue"
                         android:textColor="@color/blackColor"
                         android:text="@string/add_symbol"/>
                 </LinearLayout>
@@ -190,7 +204,9 @@
                 android:layout_below="@id/room_type_title_textview"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:background="@drawable/button_background_round_border_blue">
                 <ImageView
                     android:id="@+id/room_type_imageview"
                     android:layout_width="46dp"
@@ -199,13 +215,24 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>
-
+                <ImageView
+                    android:id="@+id/room_type_arrow_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"/>
                 <TextView
                     android:id="@+id/room_type_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@id/room_type_imageview"
                     android:layout_toRightOf="@id/room_type_imageview"
+                    android:layout_toStartOf="@id/room_type_arrow_image_view"
+                    android:layout_toLeftOf="@id/room_type_arrow_image_view"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
@@ -225,66 +252,6 @@
                 android:textColor="@color/whiteColor"
                 android:text="@string/add"/>
 
-            <com.github.clans.fab.FloatingActionMenu
-                android:id="@+id/add_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                app:menu_colorNormal="@color/blueColor"
-                app:menu_colorPressed="@color/bluePressedColor"
-                app:menu_colorRipple="@color/blueRippleColor"
-                android:elevation="16dp"
-                app:menu_fab_size="normal"
-                app:menu_showShadow="true"
-                app:menu_icon="@drawable/ic_add_black_24dp">
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/add_place_fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:src="@drawable/ic_add_black_24dp"
-                    app:fab_colorNormal="@color/blueColor"
-                    app:fab_colorPressed="@color/bluePressedColor"
-                    app:fab_colorRipple="@color/blueRippleColor"
-                    app:fab_size="mini"
-                    app:fab_label="@string/place"/>
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/add_floor_fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:src="@drawable/ic_add_black_24dp"
-                    app:fab_colorNormal="@color/blueColor"
-                    app:fab_colorPressed="@color/bluePressedColor"
-                    app:fab_colorRipple="@color/blueRippleColor"
-                    app:fab_size="mini"
-                    app:fab_label="@string/floor"/>
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/add_room_fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_add_black_24dp"
-                    app:fab_colorNormal="@color/blueColor"
-                    app:fab_colorPressed="@color/bluePressedColor"
-                    app:fab_colorRipple="@color/blueRippleColor"
-                    app:fab_size="mini"
-                    app:fab_label="@string/room"/>
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/add_device_fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_add_black_24dp"
-                    app:fab_colorNormal="@color/blueColor"
-                    app:fab_colorPressed="@color/bluePressedColor"
-                    app:fab_colorRipple="@color/blueRippleColor"
-                    app:fab_size="mini"
-                    app:fab_label="@string/device"/>
-            </com.github.clans.fab.FloatingActionMenu>
         </RelativeLayout>
 
     </FrameLayout>
