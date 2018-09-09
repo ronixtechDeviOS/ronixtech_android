@@ -1,7 +1,5 @@
 package com.ronixtech.ronixhome.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -144,7 +142,7 @@ public class DashboardDevicesFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Device clickedDevice = (Device) deviceAdapter.getItem(i);
 
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                /*AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         //set title
@@ -166,7 +164,7 @@ public class DashboardDevicesFragment extends Fragment {
                                 //set what should happen when negative button is clicked
                             }
                         })
-                        .show();
+                        .show();*/
 
                 /*final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
                 LinearLayout layout = new LinearLayout(getActivity());
