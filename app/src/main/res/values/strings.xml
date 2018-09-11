@@ -70,13 +70,17 @@
     <string name="room_type">Room Type</string>
     <string name="room_type_hint">Tap here to select the room type</string>
     <string name="room_location">Floor</string>
+    <string name="room_selection_hint">Tap here to select a room</string>
+
 
 
     <string name="device">Smart Controller</string>
+    <string name="add_device_title">Locate your Smart Controller</string>
     <string name="add_device">Add Smart Controller</string>
     <string name="add_new_device">Add New Smart Controller</string>
     <string name="no_devices">No Smart Controller</string>
     <string name="remove_device">Remove</string>
+    <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
 
 
     <string name="add_device_search">Searching For Smart Controller</string>

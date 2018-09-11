@@ -23,6 +23,8 @@ public class PickRoomDialogFragment extends DialogFragment{
     List<Room> rooms;
     RoomAdapter adapter;
 
+    long floorID;
+
     public interface OnRoomSelectedListener {
         public void onRoomSelected(Room room);
     }
@@ -51,7 +53,7 @@ public class PickRoomDialogFragment extends DialogFragment{
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_fragment_room_selection, container, false);
         ListView listView = new ListView(getActivity());
-        rooms = MySettings.getAllRooms();
+        rooms = MySettings.getFloorRooms(floorID);
 
 
         adapter = new RoomAdapter(getActivity(), rooms);
@@ -67,5 +69,9 @@ public class PickRoomDialogFragment extends DialogFragment{
         });
 
         return listView;
+    }
+
+    public void setFloorID(long floorID){
+        this.floorID = floorID;
     }
 }

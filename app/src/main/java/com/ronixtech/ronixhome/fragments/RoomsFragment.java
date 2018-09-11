@@ -105,6 +105,8 @@ public class RoomsFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Room selectedRoom = (Room) roomAdapter.getItem(i);
 
+                MySettings.setCurrentRoom(selectedRoom);
+
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

@@ -33,6 +33,7 @@ public class MySettings {
     public static final String PREF_SCANNING_ACTIVE = "scanning_active";
     public static final String PREF_CURRENT_PLACE = "pref_current_place";
     public static final String PREF_CURRENT_FLOOR = "pref_current_floor";
+    public static final String PREF_CURRENT_ROOM = "pref_current_room";
     public static final String PREF_CONTROL_ACTIVE = "control_active";
     public static final String PREF_GETSTATUS_ACTIVE = "get_status_active";
     public static final String PREF_APP_FIRST_START = "app_first_start";
@@ -53,6 +54,7 @@ public class MySettings {
 
     private static Place currentPlace;
     private static Floor currentFloor;
+    private static com.ronixtech.ronixhome.entities.Room currentRoom;
 
     private static Gson gson;
 
@@ -145,6 +147,35 @@ public class MySettings {
                 }
                 currentFloor = gson.fromJson(json, Floor.class);
                 return currentFloor;
+            }
+        }
+    }
+
+    public static void setCurrentRoom(com.ronixtech.ronixhome.entities.Room room) {
+        MySettings.currentRoom = room;
+
+        if(gson == null){
+            gson = new Gson();
+        }
+        String json = gson.toJson(MySettings.currentRoom);
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putString(PREF_CURRENT_ROOM, json);
+        editor.apply();
+    }
+    public static com.ronixtech.ronixhome.entities.Room getCurrentRoom() {
+        if (currentRoom != null) {
+            return currentRoom;
+        } else {
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_CURRENT_ROOM, "");
+            if (json.isEmpty() || json.equals("null")) {
+                return null;
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                currentRoom = gson.fromJson(json, com.ronixtech.ronixhome.entities.Room.class);
+                return currentRoom;
             }
         }
     }

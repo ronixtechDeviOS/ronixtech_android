@@ -1,139 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.AddDeviceSelectLocationFragment">
-
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteColor">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/done_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/whiteColor"
-            android:background="@drawable/button_background_round_gray"
-            android:enabled="false"
-            android:text="@string/done"/>
-
-        <LinearLayout
-            android:id="@+id/location_selection_layout"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/done_button"
-            android:orientation="horizontal">
-            <RelativeLayout
-                android:layout_width="0dp"
+            android:background="@drawable/background_1">
+            <TextView
+                android:id="@+id/add_device_title_textview"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <TextView
-                    android:id="@+id/select_floor_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="24sp"
+                android:textColor="@color/blueColor"
+                android:textAlignment="center"
+                android:text="@string/add_device_title"/>
+            <ImageView
+                android:id="@+id/add_device_imageview"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@drawable/device_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/add_device_title_textview"/>
+            <TextView
+                android:id="@+id/add_device_description_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_device_imageview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="16sp"
+                android:textColor="@color/blackColor"
+                android:textAlignment="center"
+                android:text="@string/add_device_description"/>
+
+            <TextView
+                android:id="@+id/place_title_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_device_description_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:text="@string/place"/>
+            <RelativeLayout
+                android:id="@+id/place_selection_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/place_title_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:background="@drawable/button_background_round_border_blue">
+                <ImageView
+                    android:id="@+id/selected_place_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/place_icon"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"/>
+                <ImageView
+                    android:id="@+id/selected_place_arrow_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
                     android:layout_marginEnd="16dp"
-                    android:textSize="18sp"
-                    android:textColor="@color/blackColor"
-                    android:text="@string/floor" />
-                <ListView
-                    android:id="@+id/floors_listview"
+                    android:layout_marginRight="16dp"/>
+                <TextView
+                    android:id="@+id/selected_place_name_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/select_floor_textview"
-                    android:layout_marginTop="8dp"
+                    android:layout_toEndOf="@id/selected_place_image_view"
+                    android:layout_toRightOf="@id/selected_place_image_view"
+                    android:layout_toStartOf="@id/selected_place_arrow_image_view"
+                    android:layout_toLeftOf="@id/selected_place_arrow_image_view"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    tools:listitem="@layout/list_item_floor"/>
-                <TextView
-                    android:id="@+id/no_floors_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/floors_listview"
-                    android:layout_marginTop="16dp"
-                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="16dp"
                     android:textSize="16sp"
                     android:textColor="@color/blackColor"
-                    android:text="@string/no_floors"/>
-                <Button
-                    android:id="@+id/add_new_floor_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/no_floors_textview"
-                    android:layout_centerHorizontal="true"
-                    android:background="@color/transparentColor"
-                    android:text="@string/add_a_floor"/>
+                    android:text="@string/place_selection_hint"/>
             </RelativeLayout>
 
-            <View android:layout_width="1dp"
-                android:layout_height="match_parent"
+            <RelativeLayout
+                android:id="@+id/floor_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_below="@id/place_selection_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:id="@+id/floor_level_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:text="@string/floor_level_colon"/>
+
+                <TextView
+                    android:id="@+id/selected_floor_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/floor_level_textview"
+                    android:layout_toRightOf="@id/floor_level_textview"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:text="1"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/decrement_button"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_background_round_border_blue"
+                        android:textColor="@color/blackColor"
+                        android:text="@string/minus_symbol"/>
+                    <android.support.v4.widget.Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"/>
+                    <Button
+                        android:id="@+id/increment_button"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_background_round_border_blue"
+                        android:textColor="@color/blackColor"
+                        android:text="@string/add_symbol"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/room_title_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/floor_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:text="@string/room"/>
+            <RelativeLayout
+                android:id="@+id/room_selection_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/room_title_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:background="@drawable/button_background_round_border_blue">
+                <ImageView
+                    android:id="@+id/selected_room_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/place_icon"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"/>
+                <ImageView
+                    android:id="@+id/selected_room_arrow_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"/>
+                <TextView
+                    android:id="@+id/selected_room_name_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/selected_room_image_view"
+                    android:layout_toRightOf="@id/selected_room_image_view"
+                    android:layout_toStartOf="@id/selected_room_arrow_image_view"
+                    android:layout_toLeftOf="@id/selected_room_arrow_image_view"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/room_selection_hint"/>
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/done_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/room_selection_layout"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:background="@color/darkestGrayColor"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/whiteColor"
+                android:background="@drawable/button_background_round_gray"
+                android:enabled="false"
+                android:text="@string/done"/>
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <TextView
-                    android:id="@+id/select_room_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="18sp"
-                    android:textColor="@color/blackColor"
-                    android:text="@string/room" />
-                <ListView
-                    android:id="@+id/rooms_listview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/select_room_textview"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    tools:listitem="@layout/list_item_room"/>
-                <TextView
-                    android:id="@+id/select_floor_first_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/select_room_textview"
-                    android:layout_marginTop="16dp"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="16sp"
-                    android:textColor="@color/redColor"
-                    android:text="@string/select_floor_first"/>
-                <TextView
-                    android:id="@+id/no_rooms_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/rooms_listview"
-                    android:layout_marginTop="16dp"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="16sp"
-                    android:textColor="@color/blackColor"
-                    android:text="@string/no_rooms"/>
-                <Button
-                    android:id="@+id/add_new_room_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/no_rooms_textview"
-                    android:layout_centerHorizontal="true"
-                    android:background="@color/transparentColor"
-                    android:text="@string/add_a_room"/>
-            </RelativeLayout>
-        </LinearLayout>
-
-    </RelativeLayout>
-
-
-</FrameLayout>
+        </RelativeLayout>
+    </FrameLayout>
+</ScrollView>

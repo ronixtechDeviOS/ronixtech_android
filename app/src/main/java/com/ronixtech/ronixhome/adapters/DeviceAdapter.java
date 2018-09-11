@@ -582,6 +582,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.firstLineSwitch.setChecked(true);
+                    vHolder.firstLineSeekBar.setVisibility(View.VISIBLE);
                     if(line.getDimmingState() == Line.DIMMING_STATE_ON){
                         vHolder.firstLineDimmingCheckBox.setChecked(true);
                         vHolder.firstLineDimmingCheckBox.setEnabled(true);
@@ -603,6 +604,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.firstLineSeekBar.setEnabled(false);
                     vHolder.firstLineDimmingCheckBox.setChecked(false);
                     vHolder.firstLineSeekBar.setProgress(0);
+                    vHolder.firstLineSeekBar.setVisibility(View.GONE);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -611,6 +613,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.secondLineSwitch.setChecked(true);
+                    vHolder.secondLineSeekBar.setVisibility(View.VISIBLE);
                     if(line.getDimmingState() == Line.DIMMING_STATE_ON){
                         vHolder.secondLineDimmingCheckBox.setChecked(true);
                         vHolder.secondLineDimmingCheckBox.setEnabled(true);
@@ -632,6 +635,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.secondLineSeekBar.setEnabled(false);
                     vHolder.secondLineDimmingCheckBox.setChecked(false);
                     vHolder.secondLineSeekBar.setProgress(0);
+                    vHolder.secondLineSeekBar.setVisibility(View.GONE);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -640,6 +644,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.thirdLineSwitch.setChecked(true);
+                    vHolder.thirdLineSeekBar.setVisibility(View.VISIBLE);
                     if(line.getDimmingState() == Line.DIMMING_STATE_ON){
                         vHolder.thirdLineDimmingCheckBox.setChecked(true);
                         vHolder.thirdLineDimmingCheckBox.setEnabled(true);
@@ -661,6 +666,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.thirdLineSwitch.setChecked(false);
                     vHolder.thirdLineDimmingCheckBox.setChecked(false);
                     vHolder.thirdLineSeekBar.setProgress(0);
+                    vHolder.thirdLineSeekBar.setVisibility(View.GONE);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
