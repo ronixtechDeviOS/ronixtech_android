@@ -4,6 +4,7 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.migration.Migration;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -532,6 +533,9 @@ public class MySettings {
             Migration MIGRATION_1_2 = new Migration(1, 2) {
                 @Override
                 public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
                     database.execSQL("CREATE TABLE `Type` (`id` INTEGER NOT NULL DEFAULT -1, "
                             + "`name` TEXT,"
                             + "`category_id` INTEGER NOT NULL DEFAULT 0,"
@@ -543,8 +547,8 @@ public class MySettings {
                             + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
                     database.execSQL("ALTER TABLE Room "
                             + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
-                    database.execSQL("ALTER TABLE Line "
-                            + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");
+                    /*database.execSQL("ALTER TABLE Line "
+                            + " ADD COLUMN type_id INTEGER NOT NULL DEFAULT -1");*/
                 }
             };
 
@@ -553,6 +557,28 @@ public class MySettings {
                             .allowMainThreadQueries().
                             build();
             return database;
+        }
+    }
+
+    private static void dropAllUserTables(SupportSQLiteDatabase db) {
+        Cursor cursor = db.query("SELECT name FROM sqlite_master WHERE type='table'", null);
+        //noinspection TryFinallyCanBeTryWithResources not available with API < 19
+        try {
+            List<String> tables = new ArrayList<>(cursor.getCount());
+
+            while (cursor.moveToNext()) {
+                tables.add(cursor.getString(0));
+            }
+
+            for (String table : tables) {
+                if (table.startsWith("sqlite_")) {
+                    continue;
+                }
+                db.execSQL("DROP TABLE IF EXISTS " + table);
+                Log.v(TAG, "Dropped table " + table);
+            }
+        } finally {
+            cursor.close();
         }
     }
 
