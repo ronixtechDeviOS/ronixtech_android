@@ -202,16 +202,6 @@
                 app:fab_size="mini"
                 app:fab_label="@string/place"/>
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/add_floor_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_add_black_24dp"
-                app:fab_colorNormal="@color/blueColor"
-                app:fab_colorPressed="@color/bluePressedColor"
-                app:fab_colorRipple="@color/blueRippleColor"
-                app:fab_size="mini"
-                app:fab_label="@string/floor"/>
-            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/add_room_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

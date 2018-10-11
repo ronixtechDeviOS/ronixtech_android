@@ -194,7 +194,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         roomTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(MySettings.getTypes(Constants.TYPE_ROOM) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
+                if(MySettings.getTypes(Constants.TYPE_ROOM) != null && MySettings.getTypes(Constants.TYPE_ROOM).size() >= 1){
                     // DialogFragment.show() will take care of adding the fragment
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
@@ -234,6 +234,8 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                 }
             }
         });
+
+        roomNameEditText.requestFocus();
 
         return view;
     }

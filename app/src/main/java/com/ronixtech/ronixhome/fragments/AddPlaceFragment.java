@@ -45,7 +45,6 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
 
     private OnFragmentInteractionListener mListener;
 
-
     TextView addPlaceTitleTextView, addPlaceDescriptionTextView, numberOfFloorsTextView;
     EditText placeNameEditText;
     RelativeLayout placeTypeSelectionLayout;
@@ -209,6 +208,8 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
             }
         }
+
+        placeNameEditText.requestFocus();
 
         return view;
     }

@@ -142,50 +142,54 @@ public class AddDeviceFragmentSendData extends Fragment {
     }
 
     public void goToSearchFragment(){
-        getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+        if(getFragmentManager() != null) {
+            getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+        }
     }
 
     public void connectToWifiNetwork(final String ssid, String password){
-        WifiManager mWifiManager;
-        mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
+            WifiManager mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        if(!mWifiManager.isWifiEnabled()){
-            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        }
-
-        List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-        for(WifiConfiguration i : list) {
-            if(i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
-                mWifiManager.removeNetwork(i.networkId);
-                break;
+            if(!mWifiManager.isWifiEnabled()){
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             }
-        }
 
-        WifiConfiguration conf = new WifiConfiguration();
-        /*if(Build.VERSION.SDK_INT >= 23){
-            conf.SSID = ssid;
-        }else{
+            List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
+            for(WifiConfiguration i : list) {
+                if(i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                    mWifiManager.removeNetwork(i.networkId);
+                    break;
+                }
+            }
+
+            WifiConfiguration conf = new WifiConfiguration();
+            /*if(Build.VERSION.SDK_INT >= 23){
+                conf.SSID = ssid;
+            }else{
+                conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
+            }*/
             conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
-        }*/
-        conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
-        conf.preSharedKey = "\""+ password +"\"";
-        conf.status = WifiConfiguration.Status.ENABLED;
-        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+            conf.preSharedKey = "\""+ password +"\"";
+            conf.status = WifiConfiguration.Status.ENABLED;
+            conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
-        mWifiManager.addNetwork(conf);
+            mWifiManager.addNetwork(conf);
 
-        mWifiManager.setWifiEnabled(true);
+            mWifiManager.setWifiEnabled(true);
 
-        list = mWifiManager.getConfiguredNetworks();
-        for(WifiConfiguration i : list) {
-            if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
-                mWifiManager.disconnect();
-                mWifiManager.enableNetwork(i.networkId, true);
-                mWifiManager.reconnect();
-                break;
+            list = mWifiManager.getConfiguredNetworks();
+            for(WifiConfiguration i : list) {
+                if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
+                    mWifiManager.disconnect();
+                    mWifiManager.enableNetwork(i.networkId, true);
+                    mWifiManager.reconnect();
+                    break;
+                }
             }
         }
+
     }
 
     @Override
@@ -259,7 +263,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                 AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
                 fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
                 fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-                fragmentTransaction.commit();
+                fragmentTransaction.commitAllowingStateLoss();
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 fragment.goToSearchFragment();

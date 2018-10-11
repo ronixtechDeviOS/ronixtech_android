@@ -67,4 +67,6 @@ public class Constants {
 
     public static final int UPDATING_DEVICES_NOTIFICATION = 44;
 
+    public static final int DELAY_TIME_MS = 250;
+
 }

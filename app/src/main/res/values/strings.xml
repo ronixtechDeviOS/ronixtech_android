@@ -36,6 +36,9 @@
     <string name="place_selection_hint">Tap here to select a place</string>
     <string name="place_already_exists_error">A place already exists with this name</string>
 
+    <string name="remove_place_question">Are you sure you want to delete the selected place?</string>
+    <string name="remove_place_description">Deleting the place will also delete all associated floors, rooms and devices</string>
+
 
     <string name="floor">Floor</string>
     <string name="floors">Floors</string>
@@ -55,6 +58,8 @@
     <string name="floor_level_colon">Floor Level:</string>
     <string name="floor_location">Place</string>
 
+    <string name="remove_floor_question">Are you sure you want to delete the selected floor?</string>
+    <string name="remove_floor_description">Deleting the floor will also delete all associated rooms and devices</string>
 
     <string name="room">Room</string>
     <string name="rooms">Rooms</string>
@@ -72,7 +77,8 @@
     <string name="room_location">Floor</string>
     <string name="room_selection_hint">Tap here to select a room</string>
 
-
+    <string name="remove_room_question">Are you sure you want to delete the selected room?</string>
+    <string name="remove_room_description">Deleting the room will also delete all associated devices</string>
 
     <string name="device">Smart Controller</string>
     <string name="add_device_title">Locate your Smart Controller</string>
@@ -101,6 +107,11 @@
     <string name="line_1_name_hint">Left device</string>
     <string name="line_2_name_hint">Middle device</string>
     <string name="line_3_name_hint">Right device</string>
+    <string name="line_type">Device Type</string>
+    <string name="line_type_hint">Tap here to select the device type</string>
+
+    <string name="enable_dimming">Enable dimming</string>
+    <string name="disable_dimming">Disable dimming</string>
 
 
     <string name="no_types_available">No types available</string>
@@ -126,7 +137,7 @@
     <string name="ip_address_hint">IP Address (ex 192.168.1.2)</string>
 
     <string name="remove_unit_question">Are you sure you want to remove this smart controller?</string>
-    <string name="remove_unit_message">Removing the smart controller wil also remove all the associated lines and cannot be undone</string>
+    <string name="remove_unit_message">Removing the smart controller wil also remove all the associated devices and cannot be undone</string>
 
 
     <string name="duplicate_unit_title">Duplicate Smart Controller</string>
@@ -134,6 +145,9 @@
 
     <string name="remove_duplicate_smart_controller">Remove old smart controller and re-configure it</string>
     <string name="keep_smart_controller">Keep old smart controller and go back</string>
+
+    <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
+    <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>
 
     <string name="server_connection_error">Error connecting to smart controller, please try again</string>
 

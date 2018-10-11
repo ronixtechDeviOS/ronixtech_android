@@ -69,7 +69,7 @@ public class DashboardDevicesFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    FloatingActionButton addPlaceFab, addFloorFab, addRoomFab, addDeviceFab;
+    FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
     Button addDeviceButton;
 
     ListView devicesListView;
@@ -123,7 +123,6 @@ public class DashboardDevicesFragment extends Fragment {
 
         emptyTextView = view.findViewById(R.id.empty_textview);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
-        addFloorFab = view.findViewById(R.id.add_floor_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
         addDeviceButton = view.findViewById(R.id.add_device_button);
@@ -300,54 +299,53 @@ public class DashboardDevicesFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-        addFloorFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddFloorFragment addFloorFragment = new AddFloorFragment();
-                addFloorFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
-                fragmentTransaction.replace(R.id.fragment_view, addFloorFragment, "addFloorFragment");
-                fragmentTransaction.addToBackStack("addFloorFragment");
-                fragmentTransaction.commit();
-            }
-        });
         addRoomFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddRoomFragment addRoomFragment = new AddRoomFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-                fragmentTransaction.addToBackStack("addRoomFragment");
-                fragmentTransaction.commit();
+                if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
+                }else{
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddRoomFragment addRoomFragment = new AddRoomFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
+                    fragmentTransaction.addToBackStack("addRoomFragment");
+                    fragmentTransaction.commit();
+                }
             }
         });
         addDeviceFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
-                fragmentTransaction.commit();
+                if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                }else{
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    fragmentTransaction.commit();
+                }
             }
         });
 
         addDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
-                fragmentTransaction.commit();
+                if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                }else{
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    fragmentTransaction.commit();
+                }
             }
         });
 
@@ -399,18 +397,20 @@ public class DashboardDevicesFragment extends Fragment {
     }
 
     public void loadDevicesFromDatabase(){
-        if(mHandler != null) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    List<Device> tempDevices = new ArrayList<>();
-                    if (MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
-                        tempDevices.addAll(MySettings.getRoomDevices(room.getId()));
+        if(room != null){
+            if(mHandler != null) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<Device> tempDevices = new ArrayList<>();
+                        if (MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
+                            tempDevices.addAll(MySettings.getRoomDevices(room.getId()));
+                        }
+                        DevicesInMemory.setDevices(tempDevices);
+                        putDevicesIntoListView();
                     }
-                    DevicesInMemory.setDevices(tempDevices);
-                    putDevicesIntoListView();
-                }
-            });
+                });
+            }
         }
     }
 
@@ -429,7 +429,8 @@ public class DashboardDevicesFragment extends Fragment {
         if(devices != null) {
             devices.clear();
             if (DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1) {
-                List<Device> tempDevices = DevicesInMemory.getDevices();
+                List<Device> tempDevices = new ArrayList<>();
+                tempDevices.addAll(DevicesInMemory.getDevices());
                 for (Device device:tempDevices) {
                     if(!devices.contains(device)) {
                         devices.add(device);
@@ -438,7 +439,7 @@ public class DashboardDevicesFragment extends Fragment {
                 emptyTextView.setVisibility(View.GONE);
                 addDeviceButton.setVisibility(View.GONE);
             } else {
-                emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below.");
+                emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a smart controller by clicking the button below.");
                 emptyTextView.setVisibility(View.VISIBLE);
                 addDeviceButton.setVisibility(View.VISIBLE);
             }

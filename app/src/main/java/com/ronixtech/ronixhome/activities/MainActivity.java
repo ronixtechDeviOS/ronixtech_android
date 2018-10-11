@@ -29,9 +29,9 @@ import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
-import com.ronixtech.ronixhome.fragments.AddFloorFragment;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
@@ -198,6 +198,10 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.commit();
         } else if(id == R.id.nav_refresh_devices){
             Toast.makeText(mInstance, "Refreshing devices", Toast.LENGTH_SHORT).show();
+            for (Device device: MySettings.getAllDevices()) {
+                device.setIpAddress("");
+                MySettings.updateDeviceIP(device, "");
+            }
             MySettings.scanNetwork();
         } else if (id == R.id.nav_places) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -207,16 +211,16 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
             fragmentTransaction.addToBackStack("placesFragment");
             fragmentTransaction.commit();
-        } else if (id == R.id.nav_floors) {
+        } /*else if (id == R.id.nav_floors) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            AddFloorFragment addFloorFragment = new AddFloorFragment();
+            FloorsFragment addFloorFragment = new FloorsFragment();
             addFloorFragment.setSource(Constants.SOURCE_NAV_DRAWER);
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.replace(R.id.fragment_view, addFloorFragment, "addFloorFragment");
             fragmentTransaction.addToBackStack("addFloorFragment");
             fragmentTransaction.commit();
-        } else if (id == R.id.nav_rooms) {
+        }*/ else if (id == R.id.nav_rooms) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
             RoomsFragment roomsFragment = new RoomsFragment();

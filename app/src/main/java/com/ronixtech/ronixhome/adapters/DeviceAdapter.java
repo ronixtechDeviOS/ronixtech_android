@@ -24,6 +24,7 @@ import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.activities.MainActivity;
@@ -421,6 +422,21 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(activity, view);
                 popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+
+                int lineState = item.getLines().get(0).getPowerState();
+                if(lineState == Line.LINE_STATE_ON){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                }else if(lineState == Line.LINE_STATE_OFF){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                }
+
+                int dimmingState = item.getLines().get(0).getDimmingState();
+                if(dimmingState == Line.DIMMING_STATE_ON){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                }else if(dimmingState == Line.DIMMING_STATE_OFF){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                }
+
                 popup.show();
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -469,6 +485,21 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(activity, view);
                 popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+
+                int lineState = item.getLines().get(1).getPowerState();
+                if(lineState == Line.LINE_STATE_ON){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                }else if(lineState == Line.LINE_STATE_OFF){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                }
+
+                int dimmingState = item.getLines().get(1).getDimmingState();
+                if(dimmingState == Line.DIMMING_STATE_ON){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                }else if(dimmingState == Line.DIMMING_STATE_OFF){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                }
+
                 popup.show();
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -517,6 +548,21 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(activity, view);
                 popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+
+                int lineState = item.getLines().get(2).getPowerState();
+                if(lineState == Line.LINE_STATE_ON){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                }else if(lineState == Line.LINE_STATE_OFF){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                }
+
+                int dimmingState = item.getLines().get(2).getDimmingState();
+                if(dimmingState == Line.DIMMING_STATE_ON){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                }else if(dimmingState == Line.DIMMING_STATE_OFF){
+                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                }
+
                 popup.show();
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -579,6 +625,14 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         for (Line line : item.getLines()) {
             if(line.getPosition() == 0){
                 vHolder.firstLineTextView.setText(line.getName());
+                if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
+                    GlideApp.with(activity)
+                            .load(line.getType().getImageUrl())
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .into(vHolder.firstLineTypeImageView);
+                }else {
+                    vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.firstLineSwitch.setChecked(true);
@@ -588,11 +642,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         vHolder.firstLineDimmingCheckBox.setEnabled(true);
                         vHolder.firstLineSeekBar.setEnabled(true);
                         vHolder.firstLineSeekBar.setProgress(line.getDimmingVvalue());
+                        vHolder.firstLineSeekBar.setVisibility(View.VISIBLE);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
                         vHolder.firstLineDimmingCheckBox.setChecked(false);
                         vHolder.firstLineDimmingCheckBox.setEnabled(true);
                         vHolder.firstLineSeekBar.setEnabled(false);
                         vHolder.firstLineSeekBar.setProgress(0);
+                        vHolder.firstLineSeekBar.setVisibility(View.INVISIBLE);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
                         vHolder.firstLineDimmingCheckBox.setEnabled(false);
                         vHolder.firstLineSeekBar.setEnabled(false);
@@ -604,12 +660,20 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.firstLineSeekBar.setEnabled(false);
                     vHolder.firstLineDimmingCheckBox.setChecked(false);
                     vHolder.firstLineSeekBar.setProgress(0);
-                    vHolder.firstLineSeekBar.setVisibility(View.GONE);
+                    vHolder.firstLineSeekBar.setVisibility(View.INVISIBLE);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
             }else if(line.getPosition() == 1){
                 vHolder.secondLineTextView.setText(line.getName());
+                if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
+                    GlideApp.with(activity)
+                            .load(line.getType().getImageUrl())
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .into(vHolder.secondLineTypeImageView);
+                }else {
+                    vHolder.secondLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.secondLineSwitch.setChecked(true);
@@ -619,11 +683,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         vHolder.secondLineDimmingCheckBox.setEnabled(true);
                         vHolder.secondLineSeekBar.setEnabled(true);
                         vHolder.secondLineSeekBar.setProgress(line.getDimmingVvalue());
+                        vHolder.secondLineSeekBar.setVisibility(View.VISIBLE);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
                         vHolder.secondLineDimmingCheckBox.setChecked(false);
                         vHolder.secondLineDimmingCheckBox.setEnabled(true);
                         vHolder.secondLineSeekBar.setEnabled(false);
                         vHolder.secondLineSeekBar.setProgress(0);
+                        vHolder.secondLineSeekBar.setVisibility(View.INVISIBLE);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
                         vHolder.secondLineDimmingCheckBox.setEnabled(false);
                         vHolder.secondLineSeekBar.setEnabled(false);
@@ -635,12 +701,20 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.secondLineSeekBar.setEnabled(false);
                     vHolder.secondLineDimmingCheckBox.setChecked(false);
                     vHolder.secondLineSeekBar.setProgress(0);
-                    vHolder.secondLineSeekBar.setVisibility(View.GONE);
+                    vHolder.secondLineSeekBar.setVisibility(View.INVISIBLE);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
             }else if(line.getPosition() == 2){
                 vHolder.thirdLineTextView.setText(line.getName());
+                if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
+                    GlideApp.with(activity)
+                            .load(line.getType().getImageUrl())
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .into(vHolder.thirdLineTypeImageView);
+                }else {
+                    vHolder.thirdLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.thirdLineSwitch.setChecked(true);
@@ -650,11 +724,13 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         vHolder.thirdLineDimmingCheckBox.setEnabled(true);
                         vHolder.thirdLineSeekBar.setEnabled(true);
                         vHolder.thirdLineSeekBar.setProgress(line.getDimmingVvalue());
+                        vHolder.thirdLineSeekBar.setVisibility(View.VISIBLE);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
                         vHolder.thirdLineDimmingCheckBox.setChecked(false);
                         vHolder.thirdLineDimmingCheckBox.setEnabled(true);
                         vHolder.thirdLineSeekBar.setEnabled(false);
                         vHolder.thirdLineSeekBar.setProgress(0);
+                        vHolder.thirdLineSeekBar.setVisibility(View.INVISIBLE);
                     }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
                         vHolder.thirdLineDimmingCheckBox.setEnabled(false);
                         vHolder.thirdLineSeekBar.setEnabled(false);
@@ -666,7 +742,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     vHolder.thirdLineSwitch.setChecked(false);
                     vHolder.thirdLineDimmingCheckBox.setChecked(false);
                     vHolder.thirdLineSeekBar.setProgress(0);
-                    vHolder.thirdLineSeekBar.setVisibility(View.GONE);
+                    vHolder.thirdLineSeekBar.setVisibility(View.INVISIBLE);
                 }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
@@ -701,6 +777,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         vHolder.firstLineAdvancedOptionsButton = v.findViewById(R.id.first_line_advanced_options_button);
         vHolder.secondLineAdvancedOptionsButton = v.findViewById(R.id.second_line_advanced_options_button);
         vHolder.thirdLineAdvancedOptionsButton = v.findViewById(R.id.third_line_advanced_options_button);
+        vHolder.firstLineTypeImageView = v.findViewById(R.id.first_line_type_imageview);
+        vHolder.secondLineTypeImageView = v.findViewById(R.id.second_line_type_imageview);
+        vHolder.thirdLineTypeImageView = v.findViewById(R.id.third_line_type_imageview);
 
 
         /*if(v == null){
@@ -1173,6 +1252,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
         ToggleButton firstLineSwitch, secondLineSwitch, thirdLineSwitch;
         ImageView firstLineAdvancedOptionsButton, secondLineAdvancedOptionsButton, thirdLineAdvancedOptionsButton;
+        ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
     }
 
     android.os.Handler mHandler;
@@ -1246,7 +1326,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             }
             if(statusWasActive) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
@@ -1259,7 +1339,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             while(statusCode != 200 && numberOfAttempts <= Device.CONTROL_NUMBER_OF_RETRIES){
                 if(delay){
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Exception: " + e.getMessage());
                     }
@@ -1457,7 +1537,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             }
             if(statusWasActive) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
@@ -1470,7 +1550,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             while(statusCode != 200 && numberOfAttempts <= Device.CONTROL_NUMBER_OF_RETRIES){
                 if(delay){
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Exception: " + e.getMessage());
                     }
@@ -1596,7 +1676,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             }
             if(statusWasActive) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
@@ -1609,7 +1689,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             while(statusCode != 200 && numberOfAttemtps <= Device.CONTROL_NUMBER_OF_RETRIES){
                 if(delay){
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
                         Log.d(TAG, "Exception: " + e.getMessage());
                     }

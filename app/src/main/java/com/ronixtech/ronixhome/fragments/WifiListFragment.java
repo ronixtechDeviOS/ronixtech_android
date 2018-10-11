@@ -73,6 +73,9 @@ public class WifiListFragment extends Fragment {
     private static final int RC_PERMISSION_ACCESS_WIFI_STATE = 1005;
     private static final int RC_PERMISSION_CHANGE_WIFI_STATE= 1006;
 
+    private static final int RC_ACTIVITY_WIFI_TURN_ON = 1007;
+    private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
+
     Button continueButton;
 
     List<WifiNetwork> networks;
@@ -277,26 +280,32 @@ public class WifiListFragment extends Fragment {
         }
     }
 
-    private void turnOnLocationServices(){
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        boolean isGpsProviderEnabled, isNetworkProviderEnabled;
-        isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    private boolean checkLocationServices(){
+        boolean actionNeeded = false;
+        if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            boolean isGpsProviderEnabled, isNetworkProviderEnabled;
+            isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Location Services");
-            builder.setMessage("The app needs location permissions to scan nearby networks. Please turn them on to continue using the app");
-            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent);
-                }
-            });
-            builder.setNegativeButton(android.R.string.no, null);
-            builder.show();
+            if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
+                actionNeeded = true;
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Location Services");
+                builder.setMessage("The app needs location permissions to scan nearby networks. Please turn them on to continue using the app");
+                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
+                    }
+                });
+                builder.setNegativeButton(android.R.string.no, null);
+                builder.show();
+            }
         }
+
+        return actionNeeded;
     }
 
     public void setWifiNetwork(WifiNetwork network){
@@ -304,51 +313,61 @@ public class WifiListFragment extends Fragment {
     }
 
     private void refreshNetworks(){
-        turnOnLocationServices();
-        mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(checkLocationServices()){
+            return;
+        }
+        if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
+            mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if(!mWifiManager.isWifiEnabled()){
+                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+            }else{
+                mWifiScanReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context c, Intent intent) {
+                        if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                            //networks.clear();
+                            List<ScanResult> mScanResults = mWifiManager.getScanResults();
+                            if(mScanResults != null){
+                                for (ScanResult result : mScanResults) {
+                                    WifiNetwork network = new WifiNetwork();
+                                    network.setSsid(result.SSID);
+                                    network.setSignal(""+result.level);
+                                    if(!networks.contains(network)){
+                                        networks.add(network);
+                                    }
+                                    /*if(result.SSID.toLowerCase().contains(preferredNetwork.getSsid())){
+                                        Toast.makeText(getActivity(), "WiFi network within range, connecting...", Toast.LENGTH_SHORT).show();
+                                        connectToWifiNetwork(result.SSID, preferredNetwork.getPassword());
+                                    }*/
+                                }
+                            }
+                            networksAdapter.notifyDataSetChanged();
+                            if(networks.size() >= 1){
+                                searchStatusTextView.setVisibility(View.GONE);
+                            }else{
+                                searchStatusTextView.setVisibility(View.VISIBLE);
+                                if(getActivity() != null) {
+                                    searchStatusTextView.setText(getActivity().getResources().getString(R.string.no_networks_in_range));
+                                }
+                            }
+                            mWifiManager.startScan();
+                        }
+                    }
+                };
 
-        mWifiScanReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context c, Intent intent) {
-                if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-                    //networks.clear();
-                    List<ScanResult> mScanResults = mWifiManager.getScanResults();
-                    for (ScanResult result : mScanResults) {
-                        WifiNetwork network = new WifiNetwork();
-                        network.setSsid(result.SSID);
-                        network.setSignal(""+result.level);
-                        if(!networks.contains(network)){
-                            networks.add(network);
-                        }
-                        /*if(result.SSID.toLowerCase().contains(preferredNetwork.getSsid())){
-                            Toast.makeText(getActivity(), "WiFi network within range, connecting...", Toast.LENGTH_SHORT).show();
-                            connectToWifiNetwork(result.SSID, preferredNetwork.getPassword());
-                        }*/
+                try {
+                    if (getActivity() != null) {
+                        getActivity().registerReceiver(mWifiScanReceiver,
+                                new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     }
-                    networksAdapter.notifyDataSetChanged();
-                    if(networks.size() >= 1){
-                        searchStatusTextView.setVisibility(View.GONE);
-                    }else{
-                        searchStatusTextView.setVisibility(View.VISIBLE);
-                        if(getActivity() != null) {
-                            searchStatusTextView.setText(getActivity().getResources().getString(R.string.no_networks_in_range));
-                        }
-                    }
-                    mWifiManager.startScan();
+                }catch (IllegalArgumentException e){
+                    Log.d(TAG, "Error registering mWifiScanReceiver");
                 }
-            }
-        };
 
-        try {
-            if (getActivity() != null) {
-                getActivity().registerReceiver(mWifiScanReceiver,
-                        new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                mWifiManager.startScan();
             }
-        }catch (IllegalArgumentException e){
-            Log.d(TAG, "Error registering mWifiScanReceiver");
         }
 
-        mWifiManager.startScan();
     }
 
     private void connectToWifiNetwork(final String ssid, String password){
@@ -528,6 +547,15 @@ public class WifiListFragment extends Fragment {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
+            refreshNetworks();
+        }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
+            refreshNetworks();
         }
     }
 

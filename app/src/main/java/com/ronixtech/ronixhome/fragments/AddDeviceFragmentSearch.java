@@ -59,6 +59,9 @@ public class AddDeviceFragmentSearch extends Fragment {
     private static final int RC_PERMISSION_ACCESS_WIFI_STATE = 1005;
     private static final int RC_PERMISSION_CHANGE_WIFI_STATE= 1006;
 
+    private static final int RC_ACTIVITY_WIFI_TURN_ON = 1007;
+    private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
+
     WifiManager mWifiManager;
     BroadcastReceiver mWifiScanReceiver;
     BroadcastReceiver mWifiConnectionReceiver;
@@ -171,94 +174,105 @@ public class AddDeviceFragmentSearch extends Fragment {
         }
     }
 
-    private void turnOnLocationServices(){
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        boolean isGpsProviderEnabled, isNetworkProviderEnabled;
-        isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    private boolean checkLocationServices(){
+        boolean actionNeeded = false;
+        if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            boolean isGpsProviderEnabled, isNetworkProviderEnabled;
+            isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Location Services");
-            builder.setMessage("The app needs location permissions to scan nearby networks. Please turn them on to continue using the app");
-            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent);
-                }
-            });
-            builder.setNegativeButton(android.R.string.no, null);
-            builder.show();
+            if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
+                actionNeeded = true;
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Location Services");
+                builder.setMessage("The app needs location permissions to scan nearby networks. Please turn them on to continue using the app");
+                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
+                    }
+                });
+                builder.setNegativeButton(android.R.string.no, null);
+                builder.show();
+            }
         }
+        return actionNeeded;
     }
 
     private void refreshNetworks(){
-        turnOnLocationServices();
-        debugTextView.setText("Searching for your RonixTech unit, please wait...\n");
-        mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        if(!mWifiManager.isWifiEnabled()){
-            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        if(checkLocationServices()){
+            return;
         }
+        debugTextView.setText("Searching for your RonixTech unit, please wait...\n");
+        if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
+            mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        mWifiScanReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context c, Intent intent) {
-                if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-                    List<ScanResult> mScanResults = mWifiManager.getScanResults();
-                    for (ScanResult result : mScanResults) {
-                        //debugTextView.append("found SSID: " + result.SSID + "\n");
-                        if(result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())){
-                            instructionImageView.setVisibility(View.GONE);
-                            step1TextView.setVisibility(View.GONE);
-                            step2TextView.setVisibility(View.GONE);
-                            debugTextView.setText("RonixTech unit found!\n");
-                            debugTextView.append(""+result.SSID+"\n");
-                            debugTextView.append("Connecting to your RonixTech unit, please wait...\n");
-                            //Toast.makeText(getActivity(), "RonixTech device detected, connecting...", Toast.LENGTH_SHORT).show();
-                            Device device = new Device();
-                            device.setMacAddress(result.BSSID);
-                            device.setName(result.SSID);
-                            MySettings.setTempDevice(device);
-                            Log.d(TAG, "Attempting to connect to " + result.SSID + " with default password");
-                            List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-                            for(WifiConfiguration i : list) {
-                                if(i.SSID != null && i.SSID.toLowerCase().equals(MySettings.getHomeNetwork().getSsid())) {
-                                    mWifiManager.removeNetwork(i.networkId);
-                                    break;
-                                }
-                            }
-                            connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
-                            try {
-                                if (mWifiScanReceiver != null) {
-                                    if (getActivity() != null) {
-                                        getActivity().unregisterReceiver(mWifiScanReceiver);
+            if(!mWifiManager.isWifiEnabled()){
+                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+            }else{
+                mWifiScanReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context c, Intent intent) {
+                        if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                            List<ScanResult> mScanResults = mWifiManager.getScanResults();
+                            if(mScanResults != null){
+                                for (ScanResult result : mScanResults) {
+                                    //debugTextView.append("found SSID: " + result.SSID + "\n");
+                                    if(result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())){
+                                        instructionImageView.setVisibility(View.GONE);
+                                        step1TextView.setVisibility(View.GONE);
+                                        step2TextView.setVisibility(View.GONE);
+                                        debugTextView.setText("RonixTech unit found!\n");
+                                        debugTextView.append(""+result.SSID+"\n");
+                                        debugTextView.append("Connecting to your RonixTech unit, please wait...\n");
+                                        //Toast.makeText(getActivity(), "RonixTech device detected, connecting...", Toast.LENGTH_SHORT).show();
+                                        Device device = new Device();
+                                        device.setMacAddress(result.BSSID);
+                                        device.setName(result.SSID);
+                                        MySettings.setTempDevice(device);
+                                        Log.d(TAG, "Attempting to connect to " + result.SSID + " with default password");
+                                        List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
+                                        for(WifiConfiguration i : list) {
+                                            if(i.SSID != null && i.SSID.toLowerCase().equals(MySettings.getHomeNetwork().getSsid())) {
+                                                mWifiManager.removeNetwork(i.networkId);
+                                                break;
+                                            }
+                                        }
+                                        connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
+                                        try {
+                                            if (mWifiScanReceiver != null) {
+                                                if (getActivity() != null) {
+                                                    getActivity().unregisterReceiver(mWifiScanReceiver);
+                                                }
+                                            }
+                                            break;
+                                        }catch (Exception e){
+                                            Log.d(TAG, "Error unregistering mWifiScanReceiver");
+                                            break;
+                                        }
+                                    }else{
+                                        mWifiManager.startScan();
                                     }
                                 }
-                                break;
-                            }catch (Exception e){
-                                Log.d(TAG, "Error unregistering mWifiScanReceiver");
-                                break;
                             }
-                        }else{
-                            mWifiManager.startScan();
                         }
                     }
+                };
+
+                try {
+                    if (getActivity() != null) {
+                        getActivity().registerReceiver(mWifiScanReceiver,
+                                new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                    }
+                }catch (Exception e){
+                    Log.d(TAG, "Error registering mWifiScanReceiver");
                 }
-            }
-        };
 
-        try {
-            if (getActivity() != null) {
-                getActivity().registerReceiver(mWifiScanReceiver,
-                        new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                mWifiManager.startScan();
             }
-        }catch (Exception e){
-            Log.d(TAG, "Error registering mWifiScanReceiver");
         }
-
-        mWifiManager.startScan();
     }
 
     private void connectToWifiNetwork(final String ssid, String password, boolean registerCallback){
@@ -312,7 +326,7 @@ public class AddDeviceFragmentSearch extends Fragment {
                                     AddDeviceFragmentGetData addDeviceFragmentGetData = new AddDeviceFragmentGetData();
                                     fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentGetData, "addDeviceFragmentGetData");
                                     fragmentTransaction.addToBackStack("addDeviceFragmentGetData");
-                                    fragmentTransaction.commit();
+                                    fragmentTransaction.commitAllowingStateLoss();
 
                                     //get device info and save them in the database
                                     //namely device mac address (previously), chipid (get request now), typeid (get request now)
@@ -403,6 +417,15 @@ public class AddDeviceFragmentSearch extends Fragment {
                 mWifiManager.reconnect();
                 break;
             }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
+            refreshNetworks();
+        }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
+            refreshNetworks();
         }
     }
 

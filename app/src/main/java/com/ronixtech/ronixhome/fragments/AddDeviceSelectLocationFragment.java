@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -107,12 +109,16 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }else {
                 placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
             }
-        }
 
-        if(MySettings.getCurrentFloor() != null){
-            selectedFloor = MySettings.getFloor(MySettings.getCurrentFloor().getId());
-            selectedFloorIndex = selectedFloor.getLevel();
-            selectedFloorTextView.setText(""+selectedFloor.getLevel());
+            if(MySettings.getCurrentFloor() != null){
+                selectedFloor = MySettings.getFloor(MySettings.getCurrentFloor().getId());
+                selectedFloorIndex = selectedFloor.getLevel();
+                selectedFloorTextView.setText(""+selectedFloor.getLevel());
+            }else{
+                selectedFloor = MySettings.getFloor(selectedPlace.getFloors().get(0).getId());
+                selectedFloorIndex = selectedFloor.getLevel();
+                selectedFloorTextView.setText(""+selectedFloor.getLevel());
+            }
         }
 
         if(MySettings.getCurrentRoom() != null){
@@ -157,6 +163,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
                         selectedFloorTextView.setText(""+selectedFloor.getLevel());
                     }
+                }else{
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(placeSelectionLayout);
                 }
             }
         });
@@ -170,6 +181,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
                         selectedFloorTextView.setText(""+selectedFloor.getLevel());
                     }
+                }else{
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(placeSelectionLayout);
                 }
             }
         });
@@ -177,21 +193,35 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         roomSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // DialogFragment.show() will take care of adding the fragment
-                // in a transaction.  We also want to remove any currently showing
-                // dialog, so make our own transaction and take care of that here.
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
+                if(selectedPlace != null){
+                    if(selectedFloor != null){
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
 
-                // Create and show the dialog.
-                PickRoomDialogFragment fragment = PickRoomDialogFragment.newInstance();
-                fragment.setFloorID(selectedFloor.getId());
-                fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
-                fragment.show(ft, "pickRoomDialogFragment");
+                        // Create and show the dialog.
+                        PickRoomDialogFragment fragment = PickRoomDialogFragment.newInstance();
+                        fragment.setFloorID(selectedFloor.getId());
+                        fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                        fragment.show(ft, "pickRoomDialogFragment");
+                    }else{
+                        YoYo.with(Techniques.Shake)
+                                .duration(700)
+                                .repeat(1)
+                                .playOn(selectedFloorLayout);
+                    }
+                }else{
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(placeSelectionLayout);
+                }
             }
         });
 

@@ -4,67 +4,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.DashboardDevicesFragment">
+    tools:context=".fragments.FloorsFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_1">
-        <ListView
-            android:id="@+id/devices_listview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:paddingBottom="72dp"
-            android:clipToPadding="false"
-            tools:listitem="@layout/list_item_device"/>
 
         <TextView
-            android:id="@+id/empty_textview"
+            android:id="@+id/floors_listview_title_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textSize="18sp"
+            android:textColor="@color/blackColor"
+            android:text="@string/floors"/>
+
+        <TextView
+            android:id="@+id/no_floors_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/floors_listview_title_textview"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/blackColor"
+            android:text="@string/no_floors"/>
+
+        <GridView
+            android:id="@+id/floors_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/floors_listview_title_textview"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:text="You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below."/>
-
-        <Button
-            android:id="@+id/add_device_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/empty_textview"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:background="@drawable/button_background_round_blue"
-            android:textColor="@color/whiteColor"
-            android:text="Add Smart Controller"/>
-
-        <Button
-            android:id="@+id/test_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"
-            android:text="send json post request"/>
-
-        <TextView
-            android:id="@+id/debug_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_margin="16dp"
-            android:textSize="16sp"
-            android:textColor="@color/blackColor"
-            android:layout_below="@id/test_button"
-            android:layout_centerHorizontal="true"/>
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="72dp"
+            android:clipToPadding="false"
+            android:numColumns="2"
+            android:verticalSpacing="4dp"
+            android:horizontalSpacing="4dp"
+            android:stretchMode="columnWidth"
+            android:scrollbars="none"
+            android:gravity="center"/>
 
         <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/add_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -95,7 +85,6 @@
                 android:id="@+id/add_room_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:src="@drawable/ic_add_black_24dp"
                 app:fab_colorNormal="@color/blueColor"
                 app:fab_colorPressed="@color/bluePressedColor"
@@ -113,6 +102,7 @@
                 app:fab_size="mini"
                 app:fab_label="@string/device"/>
         </com.github.clans.fab.FloatingActionMenu>
+
     </RelativeLayout>
 
 </FrameLayout>

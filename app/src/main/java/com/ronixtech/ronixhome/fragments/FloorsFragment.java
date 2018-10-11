@@ -1,12 +1,10 @@
 package com.ronixtech.ronixhome.fragments;
 
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,38 +17,41 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
-import com.ronixtech.ronixhome.adapters.PlacesGridAdapter;
-import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.adapters.FloorsGridAdapter;
+import com.ronixtech.ronixhome.entities.Floor;
 
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PlacesFragment.OnFragmentInteractionListener} interface
+ * {@link FloorsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PlacesFragment#newInstance} factory method to
+ * Use the {@link FloorsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PlacesFragment extends Fragment {
-    private static final String TAG = PlacesFragment.class.getSimpleName();
+public class FloorsFragment extends Fragment{
+    private static final String TAG = FloorsFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
     FloatingActionMenu addMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
 
-    TextView noPlacesTextView;
+    TextView noFloorsTextView;
 
-    GridView placesGridView;
-    PlacesGridAdapter placeAdapter;
-    List<Place> places;
+    GridView floorsGridView;
+    FloorsGridAdapter floorAdapter;
+    List<Floor> floors;
 
-    public PlacesFragment() {
+    int source = Constants.SOURCE_HOME_FRAGMENT;
+
+    public FloorsFragment() {
         // Required empty public constructor
     }
 
@@ -60,10 +61,10 @@ public class PlacesFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment PlacesFragment.
+     * @return A new instance of fragment FloorsFragment.
      */
-    public static PlacesFragment newInstance(String param1, String param2) {
-        PlacesFragment fragment = new PlacesFragment();
+    public static FloorsFragment newInstance(String param1, String param2) {
+        FloorsFragment fragment = new FloorsFragment();
         return fragment;
     }
 
@@ -76,62 +77,68 @@ public class PlacesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_places, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.places), getResources().getColor(R.color.whiteColor));
+        View view = inflater.inflate(R.layout.fragment_floors, container, false);
+        if(MySettings.getCurrentPlace() != null){
+            MainActivity.setActionBarTitle(MySettings.getCurrentPlace().getName(), getResources().getColor(R.color.whiteColor));
+        }else{
+            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.floors), getResources().getColor(R.color.whiteColor));
+        }
         setHasOptionsMenu(true);
-
 
         addMenu = view.findViewById(R.id.add_layout);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
 
-        placesGridView = view.findViewById(R.id.places_gridview);
-        noPlacesTextView = view.findViewById(R.id.no_places_textview);
-        places = MySettings.getAllPlaces();
-        placeAdapter = new PlacesGridAdapter(getActivity(), places);
-        placesGridView.setAdapter(placeAdapter);
+        floorsGridView = view.findViewById(R.id.floors_gridview);
+        noFloorsTextView = view.findViewById(R.id.no_floors_textview);
+        if(MySettings.getCurrentPlace() != null){
+            floors = MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors();
+        }else {
+            floors = MySettings.getAllFloors();
+        }
+        floorAdapter = new FloorsGridAdapter(getActivity(), floors);
+        floorsGridView.setAdapter(floorAdapter);
 
-        if(places != null && places.size() >= 1){
-            noPlacesTextView.setVisibility(View.GONE);
+        if(floors != null && floors.size() >= 1){
+            noFloorsTextView.setVisibility(View.GONE);
         }else{
-            noPlacesTextView.setVisibility(View.VISIBLE);
+            noFloorsTextView.setVisibility(View.VISIBLE);
         }
 
-        placesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        floorsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Place selectedPlace = (Place) placeAdapter.getItem(i);
-                MySettings.setCurrentPlace(selectedPlace);
+                final Floor selectedFloor= (Floor) floorAdapter.getItem(i);
+                MySettings.setCurrentFloor(selectedFloor);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                FloorsFragment floorsFragment = new FloorsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, floorsFragment, "floorsFragment");
-                fragmentTransaction.addToBackStack("floorsFragment");
+                RoomsFragment roomsFragment = new RoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
+                fragmentTransaction.addToBackStack("roomsFragment");
                 fragmentTransaction.commit();
             }
         });
 
-        placesGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*floorsGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Place selectedPlace = (Place) placeAdapter.getItem(i);
+                final Floor selectedFloor = (Floor) floorAdapter.getItem(i);
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(getActivity().getResources().getString(R.string.remove_place_question))
-                        .setMessage(getActivity().getResources().getString(R.string.remove_place_description))
+                        .setTitle(getActivity().getResources().getString(R.string.remove_floor_question))
+                        .setMessage(getActivity().getResources().getString(R.string.remove_floor_description))
                         //set positive button
                         .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
-                                MySettings.removePlace(selectedPlace);
-                                MySettings.setCurrentPlace(null);
+                                MySettings.removeFloor(selectedFloor);
                                 MySettings.setCurrentFloor(null);
                                 MySettings.setCurrentRoom(null);
-                                places.clear();
-                                places.addAll(MySettings.getAllPlaces());
-                                placeAdapter.notifyDataSetChanged();
+                                floors.clear();
+                                floors.addAll(MySettings.getAllFloors());
+                                floorAdapter.notifyDataSetChanged();
                             }
                         })
                         //set negative button
@@ -144,7 +151,7 @@ public class PlacesFragment extends Fragment {
                         .show();
                 return true;
             }
-        });
+        });*/
 
         addPlaceFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,14 +198,7 @@ public class PlacesFragment extends Fragment {
             }
         });
 
-
         return view;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -206,6 +206,13 @@ public class PlacesFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         //inflater.inflate(R.menu.menu_gym, menu);
+    }
+
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
     }
 
     /*@Override

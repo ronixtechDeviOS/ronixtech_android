@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -40,7 +40,7 @@ public class RoomsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     FloatingActionMenu addMenu;
-    FloatingActionButton addPlaceFab, addFloorFab, addRoomFab, addDeviceFab;
+    FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
 
     TextView noRoomsTextView;
 
@@ -84,7 +84,6 @@ public class RoomsFragment extends Fragment {
 
         addMenu = view.findViewById(R.id.add_layout);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
-        addFloorFab = view.findViewById(R.id.add_floor_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
 
@@ -123,28 +122,29 @@ public class RoomsFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Room selectedRoom = (Room) roomAdapter.getItem(i);
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle("Are you sure you want to delete the selected room?")
-                        .setMessage("Deleting the room will also delete all associated devices")
+                        .setTitle(getActivity().getResources().getString(R.string.remove_room_question))
+                        .setMessage(getActivity().getResources().getString(R.string.remove_room_description))
                         //set positive button
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
                                 MySettings.removeRoom(selectedRoom);
+                                MySettings.setCurrentRoom(null);
                                 rooms.clear();
                                 rooms.addAll(MySettings.getAllRooms());
                                 roomAdapter.notifyDataSetChanged();
                             }
                         })
                         //set negative button
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
                             }
                         })
                         .show();
-                return false;
+                return true;
             }
         });
 
@@ -160,41 +160,36 @@ public class RoomsFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-        addFloorFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddFloorFragment addFloorFragment = new AddFloorFragment();
-                addFloorFragment.setSource(Constants.SOURCE_HOME_FRAGMENT);
-                fragmentTransaction.replace(R.id.fragment_view, addFloorFragment, "addFloorFragment");
-                fragmentTransaction.addToBackStack("addFloorFragment");
-                fragmentTransaction.commit();
-            }
-        });
         addRoomFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddRoomFragment addRoomFragment = new AddRoomFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-                fragmentTransaction.addToBackStack("addRoomFragment");
-                fragmentTransaction.commit();
+                if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
+                }else{
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddRoomFragment addRoomFragment = new AddRoomFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
+                    fragmentTransaction.addToBackStack("addRoomFragment");
+                    fragmentTransaction.commit();
+                }
             }
         });
         addDeviceFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
-                fragmentTransaction.commit();
+                if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                }else{
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    fragmentTransaction.commit();
+                }
             }
         });
 

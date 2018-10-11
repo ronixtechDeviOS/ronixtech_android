@@ -262,11 +262,13 @@ public class AddDeviceFragmentGetData extends Fragment {
         AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
         fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
         fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
     public void goToSearchFragment(){
-        getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+        if(getFragmentManager() != null) {
+            getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+        }
     }
 
     private void connectToWifiNetwork(final String ssid, String password){
@@ -482,7 +484,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
                                     fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
                                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                    fragmentTransaction.commit();
+                                    fragmentTransaction.commitAllowingStateLoss();
                                 }
                             })
                             .show();
