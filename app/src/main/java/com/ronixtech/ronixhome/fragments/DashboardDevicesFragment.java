@@ -50,7 +50,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -443,9 +442,9 @@ public class DashboardDevicesFragment extends Fragment {
                 emptyTextView.setVisibility(View.VISIBLE);
                 addDeviceButton.setVisibility(View.VISIBLE);
             }
-            if(devices.size() >= 1) {
+            /*if(devices.size() >= 1) {
                 Collections.sort(devices);
-            }
+            }*/
             deviceAdapter.notifyDataSetChanged();
         }
     }

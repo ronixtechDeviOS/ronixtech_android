@@ -44,6 +44,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
     List<Device> devices;
     ViewHolder vHolder = null;
     SwipeLayout swipeLayout;
+    boolean layoutEnabled = true;
 
     public DeviceAdapter(Activity activity, List devices){
         //super(activity, R.layout.list_item_device, devices);
@@ -52,31 +53,31 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         mHandler = new android.os.Handler();
     }
 
-    private void setLayoutEnabled(boolean enabled){
-        vHolder.firstLineSwitch.setEnabled(enabled);
-        vHolder.firstLineDimmingCheckBox.setEnabled(enabled);
+    private void setLayoutEnabled(){
+        vHolder.firstLineSwitch.setEnabled(layoutEnabled);
+        vHolder.firstLineDimmingCheckBox.setEnabled(layoutEnabled);
         if(vHolder.firstLineSeekBar.isEnabled()) {
-            vHolder.firstLineSeekBar.setEnabled(enabled);
+            vHolder.firstLineSeekBar.setEnabled(layoutEnabled);
         }
 
-        vHolder.secondLineSwitch.setEnabled(enabled);
-        vHolder.secondLineDimmingCheckBox.setEnabled(enabled);
+        vHolder.secondLineSwitch.setEnabled(layoutEnabled);
+        vHolder.secondLineDimmingCheckBox.setEnabled(layoutEnabled);
         if(vHolder.secondLineSeekBar.isEnabled()) {
-            vHolder.secondLineSeekBar.setEnabled(enabled);
+            vHolder.secondLineSeekBar.setEnabled(layoutEnabled);
         }
 
-        vHolder.thirdLineSwitch.setEnabled(enabled);
-        vHolder.thirdLineDimmingCheckBox.setEnabled(enabled);
+        vHolder.thirdLineSwitch.setEnabled(layoutEnabled);
+        vHolder.thirdLineDimmingCheckBox.setEnabled(layoutEnabled);
         if(vHolder.thirdLineSeekBar.isEnabled()) {
-            vHolder.thirdLineSeekBar.setEnabled(enabled);
+            vHolder.thirdLineSeekBar.setEnabled(layoutEnabled);
         }
     }
 
-    private void setLayoutEnabledDelayed(boolean enabled){
+    private void setLayoutEnabledDelayed(){
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                setLayoutEnabled(enabled);
+                setLayoutEnabled();
             }
         }, 500);
     }
@@ -135,493 +136,425 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         vHolder.secondLineSeekBar.setMax(10);
         vHolder.thirdLineSeekBar.setMax(10);
 
-        vHolder.deviceNameTextView.setText(""+item.getName()/* + " (" + item.getLines().size() + " lines)"*/);
-        vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
-
-        if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
-            vHolder.firstLineLayout.setVisibility(View.VISIBLE);
-            vHolder.secondLineLayout.setVisibility(View.GONE);
-            vHolder.thirdLineLayout.setVisibility(View.GONE);
-
-            populateLineData(item);
-        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
-            vHolder.firstLineLayout.setVisibility(View.VISIBLE);
-            vHolder.secondLineLayout.setVisibility(View.VISIBLE);
-            vHolder.thirdLineLayout.setVisibility(View.GONE);
-
-            populateLineData(item);
-        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
-            vHolder.firstLineLayout.setVisibility(View.VISIBLE);
-            vHolder.secondLineLayout.setVisibility(View.VISIBLE);
-            vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
+        if(item != null){
+            if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
+                vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+                vHolder.secondLineLayout.setVisibility(View.GONE);
+                vHolder.thirdLineLayout.setVisibility(View.GONE);
+            }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
+                vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+                vHolder.secondLineLayout.setVisibility(View.VISIBLE);
+                vHolder.thirdLineLayout.setVisibility(View.GONE);
+            }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+                vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+                vHolder.secondLineLayout.setVisibility(View.VISIBLE);
+                vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
+            }
 
             populateLineData(item);
+
+            if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
+                vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                vHolder.firstLineSeekBar.setEnabled(false);
+                vHolder.secondLineSeekBar.setEnabled(false);
+                vHolder.thirdLineSeekBar.setEnabled(false);
+                vHolder.firstLineDimmingCheckBox.setEnabled(false);
+                vHolder.secondLineDimmingCheckBox.setEnabled(false);
+                vHolder.thirdLineDimmingCheckBox.setEnabled(false);
+                vHolder.firstLineSwitch.setEnabled(false);
+                vHolder.secondLineSwitch.setEnabled(false);
+                vHolder.thirdLineSwitch.setEnabled(false);
+            }else{
+                vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                vHolder.firstLineSeekBar.setEnabled(true);
+                vHolder.secondLineSeekBar.setEnabled(true);
+                vHolder.thirdLineSeekBar.setEnabled(true);
+                vHolder.firstLineDimmingCheckBox.setEnabled(true);
+                vHolder.secondLineDimmingCheckBox.setEnabled(true);
+                vHolder.thirdLineDimmingCheckBox.setEnabled(true);
+                vHolder.firstLineSwitch.setEnabled(true);
+                vHolder.secondLineSwitch.setEnabled(true);
+                vHolder.thirdLineSwitch.setEnabled(true);
+
+                populateLineData(item);
+
+                vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        boolean checked = ((ToggleButton)view).isChecked();
+                        MySettings.setControlState(true);
+                        if(checked){
+                            //turn on this line
+                            toggleLine(item,0, Line.LINE_STATE_ON);
+                        }else{
+                            //turn off this line
+                            toggleLine(item, 0, Line.LINE_STATE_OFF);
+                        }
+                    }
+                });
+                vHolder.secondLineSwitch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        boolean checked = ((ToggleButton)view).isChecked();
+                        MySettings.setControlState(true);
+                        if(checked){
+                            //turn on this line
+                            toggleLine(item,1, Line.LINE_STATE_ON);
+                        }else{
+                            //turn off this line
+                            toggleLine(item, 1, Line.LINE_STATE_OFF);
+                        }
+                    }
+
+                });
+                vHolder.thirdLineSwitch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MySettings.setControlState(true);
+                        boolean checked = ((ToggleButton)view).isChecked();
+                        if(checked){
+                            //turn on this line
+                            toggleLine(item,2, Line.LINE_STATE_ON);
+                        }else{
+                            //turn off this line
+                            toggleLine(item, 2, Line.LINE_STATE_OFF);
+                        }
+                    }
+                });
+
+                vHolder.firstLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MySettings.setControlState(true);
+                        boolean checked = ((CheckBox)view).isChecked();
+                        if(checked){
+                            toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                        }else{
+                            toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                        }
+                    }
+                });
+                vHolder.secondLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MySettings.setControlState(true);
+                        boolean checked = ((CheckBox)view).isChecked();
+                        if(checked){
+                            toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                        }else{
+                            toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                        }
+                    }
+                });
+                vHolder.thirdLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MySettings.setControlState(true);
+                        boolean checked = ((CheckBox)view).isChecked();
+                        if(checked){
+                            toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                        }else{
+                            toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                        }
+                    }
+                });
+
+                vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        if(b) {
+                            MySettings.setControlState(true);
+                            //controlDimming(item, 0, i);
+                            Log.d("AAAAAAAA", "progress: " + seekBar.getProgress());
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        MySettings.setControlState(true);
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        /*try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }*/
+                        int i = seekBar.getProgress();
+                        controlDimming(item, 0, i);
+                    }
+                });
+                vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        if(b) {
+                            MySettings.setControlState(true);
+                            //controlDimming(item, 1, i);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        MySettings.setControlState(true);
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        /*try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }*/
+                        int i = seekBar.getProgress();
+                        controlDimming(item, 1, i);
+                    }
+                });
+                vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        if(b) {
+                            MySettings.setControlState(true);
+                            //controlDimming(item, 2, i);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        MySettings.setControlState(true);
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        /*try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }*/
+                        int i = seekBar.getProgress();
+                        controlDimming(item, 2, i);
+                    }
+                });
+            }
+
+            vHolder.firstLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popup = new PopupMenu(activity, view);
+                    popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+
+                    int lineState = item.getLines().get(0).getPowerState();
+                    if(lineState == Line.LINE_STATE_ON){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                    }else if(lineState == Line.LINE_STATE_OFF){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                    }
+
+                    int dimmingState = item.getLines().get(0).getDimmingState();
+                    if(dimmingState == Line.DIMMING_STATE_ON){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                    }else if(dimmingState == Line.DIMMING_STATE_OFF){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                    }
+
+                    popup.show();
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item1) {
+                            int id = item1.getItemId();
+                            if(id == R.id.action_toggle_dimming){
+                                MySettings.setControlState(true);
+                                int dimmingState = item.getLines().get(0).getDimmingState();
+                                if(dimmingState == Line.DIMMING_STATE_OFF){
+                                    toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                                }else{
+                                    toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                                }
+                            }else if(id == R.id.action_delete){
+                                AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                        //set icon
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        //set title
+                                        .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                        //set message
+                                        .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                        //set positive button
+                                        .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what would happen when positive button is clicked
+                                                removeDevice(item);
+                                            }
+                                        })
+                                        //set negative button
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what should happen when negative button is clicked
+                                            }
+                                        })
+                                        .show();
+                            }
+                            return true;
+                        }
+                    });
+                }
+            });
+            vHolder.secondLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popup = new PopupMenu(activity, view);
+                    popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+
+                    int lineState = item.getLines().get(1).getPowerState();
+                    if(lineState == Line.LINE_STATE_ON){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                    }else if(lineState == Line.LINE_STATE_OFF){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                    }
+
+                    int dimmingState = item.getLines().get(1).getDimmingState();
+                    if(dimmingState == Line.DIMMING_STATE_ON){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                    }else if(dimmingState == Line.DIMMING_STATE_OFF){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                    }
+
+                    popup.show();
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item1) {
+                            int id = item1.getItemId();
+                            if(id == R.id.action_toggle_dimming){
+                                MySettings.setControlState(true);
+                                int dimmingState = item.getLines().get(1).getDimmingState();
+                                if(dimmingState == Line.DIMMING_STATE_OFF){
+                                    toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                                }else{
+                                    toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                                }
+                            }else if(id == R.id.action_delete){
+                                AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                        //set icon
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        //set title
+                                        .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                        //set message
+                                        .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                        //set positive button
+                                        .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what would happen when positive button is clicked
+                                                removeDevice(item);
+                                            }
+                                        })
+                                        //set negative button
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what should happen when negative button is clicked
+                                            }
+                                        })
+                                        .show();
+                            }
+                            return true;
+                        }
+                    });
+                }
+            });
+            vHolder.thirdLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popup = new PopupMenu(activity, view);
+                    popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+
+                    int lineState = item.getLines().get(2).getPowerState();
+                    if(lineState == Line.LINE_STATE_ON){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                    }else if(lineState == Line.LINE_STATE_OFF){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
+                    }
+
+                    int dimmingState = item.getLines().get(2).getDimmingState();
+                    if(dimmingState == Line.DIMMING_STATE_ON){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                    }else if(dimmingState == Line.DIMMING_STATE_OFF){
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                    }
+
+                    popup.show();
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item1) {
+                            int id = item1.getItemId();
+                            if(id == R.id.action_toggle_dimming){
+                                MySettings.setControlState(true);
+                                int dimmingState = item.getLines().get(2).getDimmingState();
+                                if(dimmingState == Line.DIMMING_STATE_OFF){
+                                    toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                                }else{
+                                    toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                                }
+                            }else if(id == R.id.action_delete){
+                                AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                        //set icon
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        //set title
+                                        .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                        //set message
+                                        .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                        //set positive button
+                                        .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what would happen when positive button is clicked
+                                                removeDevice(item);
+                                            }
+                                        })
+                                        //set negative button
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what should happen when negative button is clicked
+                                            }
+                                        })
+                                        .show();
+                            }
+                            return true;
+                        }
+                    });
+                }
+            });
+
+            vHolder.removeDeviceLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    removeDevice(item);
+                }
+            });
+            vHolder.removeDeviceImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    removeDevice(item);
+                }
+            });
         }
 
-        if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-            vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-            vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-            vHolder.firstLineSeekBar.setEnabled(false);
-            vHolder.secondLineSeekBar.setEnabled(false);
-            vHolder.thirdLineSeekBar.setEnabled(false);
-            vHolder.firstLineDimmingCheckBox.setEnabled(false);
-            vHolder.secondLineDimmingCheckBox.setEnabled(false);
-            vHolder.thirdLineDimmingCheckBox.setEnabled(false);
-            vHolder.firstLineSwitch.setEnabled(false);
-            vHolder.secondLineSwitch.setEnabled(false);
-            vHolder.thirdLineSwitch.setEnabled(false);
-        }else{
-            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-            vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-            vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-            vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-            vHolder.firstLineSeekBar.setEnabled(true);
-            vHolder.secondLineSeekBar.setEnabled(true);
-            vHolder.thirdLineSeekBar.setEnabled(true);
-            vHolder.firstLineDimmingCheckBox.setEnabled(true);
-            vHolder.secondLineDimmingCheckBox.setEnabled(true);
-            vHolder.thirdLineDimmingCheckBox.setEnabled(true);
-            vHolder.firstLineSwitch.setEnabled(true);
-            vHolder.secondLineSwitch.setEnabled(true);
-            vHolder.thirdLineSwitch.setEnabled(true);
-
-            populateLineData(item);
-
-            vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    boolean checked = ((ToggleButton)view).isChecked();
-                    MySettings.setControlState(true);
-                    if(checked){
-                        //turn on this line
-                        toggleLine(item,0, Line.LINE_STATE_ON);
-                    }else{
-                        //turn off this line
-                        toggleLine(item, 0, Line.LINE_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.secondLineSwitch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    boolean checked = ((ToggleButton)view).isChecked();
-                    MySettings.setControlState(true);
-                    if(checked){
-                        //turn on this line
-                        toggleLine(item,1, Line.LINE_STATE_ON);
-                    }else{
-                        //turn off this line
-                        toggleLine(item, 1, Line.LINE_STATE_OFF);
-                    }
-                }
-
-            });
-            vHolder.thirdLineSwitch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MySettings.setControlState(true);
-                    boolean checked = ((ToggleButton)view).isChecked();
-                    if(checked){
-                        //turn on this line
-                        toggleLine(item,2, Line.LINE_STATE_ON);
-                    }else{
-                        //turn off this line
-                        toggleLine(item, 2, Line.LINE_STATE_OFF);
-                    }
-                }
-            });
-
-            /*vHolder.firstLineLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
-                        //turn on this line
-                        toggleLine(item,0, Line.LINE_STATE_ON);
-                    }else if(item.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
-                        //turn off this line
-                        toggleLine(item, 0, Line.LINE_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.secondLineLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
-                        //turn on this line
-                        toggleLine(item,1, Line.LINE_STATE_ON);
-                    }else if(item.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
-                        //turn off this line
-                        toggleLine(item,1, Line.LINE_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.thirdLineLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF){
-                        //turn on this line
-                        toggleLine(item,2, Line.LINE_STATE_ON);
-                    }else if(item.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
-                        //turn off this line
-                        toggleLine(item,2, Line.LINE_STATE_OFF);
-                    }
-                }
-            });*/
-
-            vHolder.firstLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MySettings.setControlState(true);
-                    boolean checked = ((CheckBox)view).isChecked();
-                    if(checked){
-                        toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                    }else{
-                        toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.secondLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MySettings.setControlState(true);
-                    boolean checked = ((CheckBox)view).isChecked();
-                    if(checked){
-                        toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                    }else{
-                        toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.thirdLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MySettings.setControlState(true);
-                    boolean checked = ((CheckBox)view).isChecked();
-                    if(checked){
-                        toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                    }else{
-                        toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
-                    }
-                }
-            });
-
-            /*vHolder.firstLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if(b){
-                        toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                    }else{
-                        toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.secondLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if(b){
-                        toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                    }else{
-                        toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
-                    }
-                }
-            });
-            vHolder.thirdLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if(b){
-                        toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                    }else{
-                        toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
-                    }
-                }
-            });*/
-
-            vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    if(b) {
-                        MySettings.setControlState(true);
-                        //controlDimming(item, 0, i);
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                    MySettings.setControlState(true);
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    /*try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
-                    }*/
-                    int i = vHolder.firstLineSeekBar.getProgress();
-                    controlDimming(item, 0, i);
-                }
-            });
-            vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    if(b) {
-                        MySettings.setControlState(true);
-                        //controlDimming(item, 1, i);
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                    MySettings.setControlState(true);
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    /*try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
-                    }*/
-                    int i = vHolder.secondLineSeekBar.getProgress();
-                    controlDimming(item, 1, i);
-                }
-            });
-            vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    if(b) {
-                        MySettings.setControlState(true);
-                        //controlDimming(item, 2, i);
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                    MySettings.setControlState(true);
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    /*try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
-                    }*/
-                    int i = vHolder.thirdLineSeekBar.getProgress();
-                    controlDimming(item, 2, i);
-                }
-            });
-        }
-
-        vHolder.firstLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(activity, view);
-                popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
-
-                int lineState = item.getLines().get(0).getPowerState();
-                if(lineState == Line.LINE_STATE_ON){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
-                }else if(lineState == Line.LINE_STATE_OFF){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
-                }
-
-                int dimmingState = item.getLines().get(0).getDimmingState();
-                if(dimmingState == Line.DIMMING_STATE_ON){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
-                }else if(dimmingState == Line.DIMMING_STATE_OFF){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
-                }
-
-                popup.show();
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item1) {
-                        int id = item1.getItemId();
-                        if(id == R.id.action_toggle_dimming){
-                            MySettings.setControlState(true);
-                            int dimmingState = item.getLines().get(0).getDimmingState();
-                            if(dimmingState == Line.DIMMING_STATE_OFF){
-                                toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                            }else{
-                                toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                            }
-                        }else if(id == R.id.action_delete){
-                            AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                    //set icon
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    //set title
-                                    .setTitle(activity.getResources().getString(R.string.remove_unit_question))
-                                    //set message
-                                    .setMessage(activity.getResources().getString(R.string.remove_unit_message))
-                                    //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what would happen when positive button is clicked
-                                            removeDevice(item);
-                                        }
-                                    })
-                                    //set negative button
-                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what should happen when negative button is clicked
-                                        }
-                                    })
-                                    .show();
-                        }
-                        return true;
-                    }
-                });
-            }
-        });
-        vHolder.secondLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(activity, view);
-                popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
-
-                int lineState = item.getLines().get(1).getPowerState();
-                if(lineState == Line.LINE_STATE_ON){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
-                }else if(lineState == Line.LINE_STATE_OFF){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
-                }
-
-                int dimmingState = item.getLines().get(1).getDimmingState();
-                if(dimmingState == Line.DIMMING_STATE_ON){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
-                }else if(dimmingState == Line.DIMMING_STATE_OFF){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
-                }
-
-                popup.show();
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item1) {
-                        int id = item1.getItemId();
-                        if(id == R.id.action_toggle_dimming){
-                            MySettings.setControlState(true);
-                            int dimmingState = item.getLines().get(1).getDimmingState();
-                            if(dimmingState == Line.DIMMING_STATE_OFF){
-                                toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                            }else{
-                                toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
-                            }
-                        }else if(id == R.id.action_delete){
-                            AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                    //set icon
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    //set title
-                                    .setTitle(activity.getResources().getString(R.string.remove_unit_question))
-                                    //set message
-                                    .setMessage(activity.getResources().getString(R.string.remove_unit_message))
-                                    //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what would happen when positive button is clicked
-                                            removeDevice(item);
-                                        }
-                                    })
-                                    //set negative button
-                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what should happen when negative button is clicked
-                                        }
-                                    })
-                                    .show();
-                        }
-                        return true;
-                    }
-                });
-            }
-        });
-        vHolder.thirdLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(activity, view);
-                popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
-
-                int lineState = item.getLines().get(2).getPowerState();
-                if(lineState == Line.LINE_STATE_ON){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
-                }else if(lineState == Line.LINE_STATE_OFF){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
-                }
-
-                int dimmingState = item.getLines().get(2).getDimmingState();
-                if(dimmingState == Line.DIMMING_STATE_ON){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
-                }else if(dimmingState == Line.DIMMING_STATE_OFF){
-                    popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
-                }
-
-                popup.show();
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item1) {
-                        int id = item1.getItemId();
-                        if(id == R.id.action_toggle_dimming){
-                            MySettings.setControlState(true);
-                            int dimmingState = item.getLines().get(2).getDimmingState();
-                            if(dimmingState == Line.DIMMING_STATE_OFF){
-                                toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                            }else{
-                                toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
-                            }
-                        }else if(id == R.id.action_delete){
-                            AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                    //set icon
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    //set title
-                                    .setTitle(activity.getResources().getString(R.string.remove_unit_question))
-                                    //set message
-                                    .setMessage(activity.getResources().getString(R.string.remove_unit_message))
-                                    //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what would happen when positive button is clicked
-                                            removeDevice(item);
-                                        }
-                                    })
-                                    //set negative button
-                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what should happen when negative button is clicked
-                                        }
-                                    })
-                                    .show();
-                        }
-                        return true;
-                    }
-                });
-            }
-        });
-
-        vHolder.removeDeviceLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeDevice(item);
-            }
-        });
-        vHolder.removeDeviceImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeDevice(item);
-            }
-        });
+        setLayoutEnabled();
     }
 
     private void populateLineData(Device item){
+        vHolder.deviceNameTextView.setText(""+item.getName()/* + " (" + item.getLines().size() + " lines)"*/);
+        vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
         for (Line line : item.getLines()) {
             if(line.getPosition() == 0){
                 vHolder.firstLineTextView.setText(line.getName());
@@ -799,155 +732,6 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         return v;
     }
-
-    /*@Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View rowView = convertView;
-        if(rowView == null){
-            LayoutInflater inflater = activity.getLayoutInflater();
-            rowView = inflater.inflate(R.layout.list_item_device, null);
-            vHolder = new ViewHolder();
-            vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
-            vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
-            vHolder.firstLineButton = rowView.findViewById(R.id.first_line_button);
-            vHolder.secondLineButton = rowView.findViewById(R.id.second_line_button);
-            vHolder.thirdLineButton = rowView.findViewById(R.id.third_line_button);
-            rowView.setTag(vHolder);
-        }
-        else{
-            vHolder = (ViewHolder) rowView.getTag();
-        }
-
-        Device item = (Device) devices.get(position);
-
-        vHolder.deviceNameTextView.setText(""+item.getName() + " (" + item.getLines().size() + " lines)");
-        vHolder.deviceLocationTextView.setText("Room ID: "+item.getRoomID());
-
-        if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line){
-            vHolder.firstLineButton.setVisibility(View.VISIBLE);
-            vHolder.secondLineButton.setVisibility(View.INVISIBLE);
-            vHolder.thirdLineButton.setVisibility(View.INVISIBLE);
-            for (Line line : item.getLines()) {
-                if(line.getPosition() == 0){
-                    vHolder.firstLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }else if(line.getPosition() == 1){
-                    vHolder.secondLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }else if(line.getPosition() == 2){
-                    vHolder.thirdLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }
-            }
-        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines){
-            vHolder.firstLineButton.setVisibility(View.VISIBLE);
-            vHolder.secondLineButton.setVisibility(View.VISIBLE);
-            vHolder.thirdLineButton.setVisibility(View.INVISIBLE);
-            for (Line line : item.getLines()) {
-                if(line.getPosition() == 0){
-                    vHolder.firstLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }else if(line.getPosition() == 1){
-                    vHolder.secondLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }else if(line.getPosition() == 2){
-                    vHolder.thirdLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }
-            }
-        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines){
-            vHolder.firstLineButton.setVisibility(View.VISIBLE);
-            vHolder.secondLineButton.setVisibility(View.VISIBLE);
-            vHolder.thirdLineButton.setVisibility(View.VISIBLE);
-            for (Line line : item.getLines()) {
-                if(line.getPosition() == 0){
-                    vHolder.firstLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.firstLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }else if(line.getPosition() == 1){
-                    vHolder.secondLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.secondLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }else if(line.getPosition() == 2){
-                    vHolder.thirdLineButton.setText(line.getName());
-                    if(line.getPowerState() == Line.LINE_STATE_ON){
-                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.greenColor));
-                    }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                        vHolder.thirdLineButton.setBackgroundColor(activity.getResources().getColor(R.color.redColor));
-                    }
-                }
-            }
-        }
-
-        vHolder.firstLineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
-                    //turn on this line
-                    toggleLine(item,0, Line.LINE_STATE_ON);
-                }else if(item.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
-                    //turn off this line
-                    toggleLine(item, 0, Line.LINE_STATE_OFF);
-                }
-            }
-        });
-        vHolder.secondLineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
-                    //turn on this line
-                    toggleLine(item,1, Line.LINE_STATE_ON);
-                }else if(item.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
-                    //turn off this line
-                    toggleLine(item,1, Line.LINE_STATE_OFF);
-                }
-            }
-        });
-        vHolder.thirdLineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF){
-                    //turn on this line
-                    toggleLine(item,2, Line.LINE_STATE_ON);
-                }else if(item.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
-                    //turn off this line
-                    toggleLine(item,2, Line.LINE_STATE_OFF);
-                }
-            }
-        });
-
-        return rowView;
-    }*/
 
     private void removeDevice(Device device){
         devices.remove(device);
@@ -1278,7 +1062,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         @Override
         protected void onPreExecute(){
-            setLayoutEnabled(false);
+            layoutEnabled = false;
+            notifyDataSetChanged();
             //setLayoutEnabledDelayed(true);
 
             lines = device.getLines();
@@ -1314,7 +1099,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 MainActivity.getInstance().refreshDevicesListFromMemory();
             }
             MySettings.setControlState(false);
-            setLayoutEnabled(true);
+            layoutEnabled = true;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -1485,7 +1271,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         @Override
         protected void onPreExecute(){
-            setLayoutEnabled(false);
+            layoutEnabled = false;
+            notifyDataSetChanged();
             //setLayoutEnabledDelayed(true);
 
             lines = device.getLines();
@@ -1525,7 +1312,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
             MySettings.setControlState(false);
 
-            setLayoutEnabled(true);
+            layoutEnabled = true;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -1631,6 +1419,8 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         protected void onPreExecute(){
             //setLayoutEnabled(false);
             //setLayoutEnabledDelayed(true);
+            layoutEnabled = false;
+            notifyDataSetChanged();
 
             lines = device.getLines();
             line = lines.get(position);
@@ -1665,6 +1455,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             }
 
             //MySettings.setControlState(false);
+
+            layoutEnabled = true;
+            notifyDataSetChanged();
         }
 
         @Override

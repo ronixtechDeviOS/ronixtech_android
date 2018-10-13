@@ -390,6 +390,10 @@ public class AddDeviceFragmentSearch extends Fragment {
                 mWifiManager.removeNetwork(i.networkId);
                 break;
             }
+            if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
+                mWifiManager.removeNetwork(i.networkId);
+                break;
+            }
         }
 
         WifiConfiguration conf = new WifiConfiguration();

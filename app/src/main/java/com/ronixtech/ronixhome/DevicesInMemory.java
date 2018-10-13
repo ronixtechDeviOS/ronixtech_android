@@ -21,7 +21,7 @@ public class DevicesInMemory {
     }
 
     public static void updateDevice(Device device){
-        devices.remove(device);
-        devices.add(device);
+        int index = devices.indexOf(device);
+        devices.set(index, device);
     }
 }
