@@ -212,6 +212,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.generateRoomTypes();
                 }
             }
         });

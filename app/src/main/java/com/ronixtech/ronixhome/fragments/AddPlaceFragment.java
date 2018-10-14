@@ -138,6 +138,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.generatePlaceTypes();
                 }
 
             }

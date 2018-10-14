@@ -428,13 +428,14 @@ public class DashboardDevicesFragment extends Fragment {
         if(devices != null) {
             devices.clear();
             if (DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1) {
-                List<Device> tempDevices = new ArrayList<>();
+                /*List<Device> tempDevices = new ArrayList<>();
                 tempDevices.addAll(DevicesInMemory.getDevices());
                 for (Device device:tempDevices) {
                     if(!devices.contains(device)) {
                         devices.add(device);
                     }
-                }
+                }*/
+                devices.addAll(DevicesInMemory.getDevices());
                 emptyTextView.setVisibility(View.GONE);
                 addDeviceButton.setVisibility(View.GONE);
             } else {
@@ -632,8 +633,7 @@ public class DashboardDevicesFragment extends Fragment {
                 if (MainActivity.getInstance() != null) {
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
-            }
-            Log.d(TAG, "Disabling getStatus flag...");
+            };
             MySettings.setGetStatusState(false);
         }
 
@@ -716,7 +716,6 @@ public class DashboardDevicesFragment extends Fragment {
                         line1DimmingState = Integer.valueOf(line1DimmingStateString);
                         line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
                         line2DimmingState = Integer.valueOf(line2DimmingStateString);
-
 
                         List<Line> lines = device.getLines();
                         for (Line line:lines) {

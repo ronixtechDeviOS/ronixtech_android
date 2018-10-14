@@ -239,6 +239,10 @@ public class AddDeviceFragmentSearch extends Fragment {
                                                 mWifiManager.removeNetwork(i.networkId);
                                                 break;
                                             }
+                                            if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
+                                                mWifiManager.removeNetwork(i.networkId);
+                                                break;
+                                            }
                                         }
                                         connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
                                         try {
@@ -336,6 +340,10 @@ public class AddDeviceFragmentSearch extends Fragment {
                                     List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
                                     for(WifiConfiguration i : list) {
                                         if(i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                                            mWifiManager.removeNetwork(i.networkId);
+                                            break;
+                                        }
+                                        if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
                                             mWifiManager.removeNetwork(i.networkId);
                                             break;
                                         }

@@ -12,16 +12,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.daimajia.swipe.SwipeLayout;
-import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.GlideApp;
@@ -35,9 +34,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceAdapter extends BaseSwipeAdapter {
+public class DeviceAdapter extends ArrayAdapter {
     private static final String TAG = DeviceAdapter.class.getSimpleName();
 
     Activity activity ;
@@ -47,39 +47,10 @@ public class DeviceAdapter extends BaseSwipeAdapter {
     boolean layoutEnabled = true;
 
     public DeviceAdapter(Activity activity, List devices){
-        //super(activity, R.layout.list_item_device, devices);
+        super(activity, R.layout.list_item_device, devices);
         this.activity = activity;
         this.devices = devices;
         mHandler = new android.os.Handler();
-    }
-
-    private void setLayoutEnabled(){
-        vHolder.firstLineSwitch.setEnabled(layoutEnabled);
-        vHolder.firstLineDimmingCheckBox.setEnabled(layoutEnabled);
-        if(vHolder.firstLineSeekBar.isEnabled()) {
-            vHolder.firstLineSeekBar.setEnabled(layoutEnabled);
-        }
-
-        vHolder.secondLineSwitch.setEnabled(layoutEnabled);
-        vHolder.secondLineDimmingCheckBox.setEnabled(layoutEnabled);
-        if(vHolder.secondLineSeekBar.isEnabled()) {
-            vHolder.secondLineSeekBar.setEnabled(layoutEnabled);
-        }
-
-        vHolder.thirdLineSwitch.setEnabled(layoutEnabled);
-        vHolder.thirdLineDimmingCheckBox.setEnabled(layoutEnabled);
-        if(vHolder.thirdLineSeekBar.isEnabled()) {
-            vHolder.thirdLineSeekBar.setEnabled(layoutEnabled);
-        }
-    }
-
-    private void setLayoutEnabledDelayed(){
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setLayoutEnabled();
-            }
-        }, 500);
     }
 
     @Override
@@ -103,38 +74,47 @@ public class DeviceAdapter extends BaseSwipeAdapter {
     }
 
     @Override
-    public int getSwipeLayoutResourceId(int position) {
-        return R.id.swipe;
-    }
+    public View getView(final int position, View convertView, ViewGroup parent){
+        View rowView = convertView;
+        if(rowView == null){
+            LayoutInflater inflater = activity.getLayoutInflater();
+            rowView = inflater.inflate(R.layout.list_item_device, null);
+            vHolder = new ViewHolder();
+            vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+            vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
+            vHolder.firstLineLayout = rowView.findViewById(R.id.first_line_layout);
+            vHolder.secondLineLayout = rowView.findViewById(R.id.second_line_layout);
+            vHolder.thirdLineLayout = rowView.findViewById(R.id.third_line_layout);
+            vHolder.firstLineTextView = rowView.findViewById(R.id.first_line_textvie);
+            vHolder.secondLineTextView = rowView.findViewById(R.id.second_line_textview);
+            vHolder.thirdLineTextView = rowView.findViewById(R.id.third_line_textview);
+            vHolder.firstLineSeekBar = rowView.findViewById(R.id.first_line_seekbar);
+            vHolder.secondLineSeekBar = rowView.findViewById(R.id.second_line_seekbar);
+            vHolder.thirdLineSeekBar = rowView.findViewById(R.id.third_line_seekbar);
+            vHolder.firstLineDimmingCheckBox = rowView.findViewById(R.id.first_line_dimming_checkbox);
+            vHolder.secondLineDimmingCheckBox = rowView.findViewById(R.id.second_line_dimming_checkbox);
+            vHolder.thirdLineDimmingCheckBox = rowView.findViewById(R.id.third_line_dimming_checkbox);
+            vHolder.firstLineSwitch = rowView.findViewById(R.id.first_line_switch);
+            vHolder.secondLineSwitch = rowView.findViewById(R.id.second_line_switch);
+            vHolder.thirdLineSwitch = rowView.findViewById(R.id.third_line_switch);
+            vHolder.firstLineAdvancedOptionsButton = rowView.findViewById(R.id.first_line_advanced_options_button);
+            vHolder.secondLineAdvancedOptionsButton = rowView.findViewById(R.id.second_line_advanced_options_button);
+            vHolder.thirdLineAdvancedOptionsButton = rowView.findViewById(R.id.third_line_advanced_options_button);
+            vHolder.firstLineTypeImageView = rowView.findViewById(R.id.first_line_type_imageview);
+            vHolder.secondLineTypeImageView = rowView.findViewById(R.id.second_line_type_imageview);
+            vHolder.thirdLineTypeImageView = rowView.findViewById(R.id.third_line_type_imageview);
 
-    @Override
-    public void fillValues(int position, View convertView){
+            vHolder.firstLineSeekBar.setMax(10);
+            vHolder.secondLineSeekBar.setMax(10);
+            vHolder.thirdLineSeekBar.setMax(10);
+
+            rowView.setTag(vHolder);
+        }
+        else{
+            vHolder = (ViewHolder) rowView.getTag();
+        }
+
         Device item = (Device) devices.get(position);
-
-        //vHolder = new ViewHolder();
-        vHolder.deviceNameTextView = convertView.findViewById(R.id.device_name_textview);
-        vHolder.deviceLocationTextView = convertView.findViewById(R.id.device_location_textview);
-        vHolder.firstLineLayout = convertView.findViewById(R.id.first_line_layout);
-        vHolder.secondLineLayout = convertView.findViewById(R.id.second_line_layout);
-        vHolder.thirdLineLayout = convertView.findViewById(R.id.third_line_layout);
-        vHolder.firstLineTextView = convertView.findViewById(R.id.first_line_textvie);
-        vHolder.secondLineTextView = convertView.findViewById(R.id.second_line_textview);
-        vHolder.thirdLineTextView = convertView.findViewById(R.id.third_line_textview);
-        vHolder.removeDeviceLayout = convertView.findViewById(R.id.remove_device_layout);
-        vHolder.removeDeviceImageView = convertView.findViewById(R.id.remove_device_imageview);
-        vHolder.firstLineSeekBar = convertView.findViewById(R.id.first_line_seekbar);
-        vHolder.secondLineSeekBar = convertView.findViewById(R.id.second_line_seekbar);
-        vHolder.thirdLineSeekBar = convertView.findViewById(R.id.third_line_seekbar);
-        vHolder.firstLineDimmingCheckBox = convertView.findViewById(R.id.first_line_dimming_checkbox);
-        vHolder.secondLineDimmingCheckBox = convertView.findViewById(R.id.second_line_dimming_checkbox);
-        vHolder.thirdLineDimmingCheckBox = convertView.findViewById(R.id.third_line_dimming_checkbox);
-        vHolder.firstLineSwitch = convertView.findViewById(R.id.first_line_switch);
-        vHolder.secondLineSwitch = convertView.findViewById(R.id.second_line_switch);
-        vHolder.thirdLineSwitch = convertView.findViewById(R.id.third_line_switch);
-
-        vHolder.firstLineSeekBar.setMax(10);
-        vHolder.secondLineSeekBar.setMax(10);
-        vHolder.thirdLineSeekBar.setMax(10);
 
         if(item != null){
             if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
@@ -145,7 +125,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 vHolder.firstLineLayout.setVisibility(View.VISIBLE);
                 vHolder.secondLineLayout.setVisibility(View.VISIBLE);
                 vHolder.thirdLineLayout.setVisibility(View.GONE);
-            }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+            }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                 vHolder.firstLineLayout.setVisibility(View.VISIBLE);
                 vHolder.secondLineLayout.setVisibility(View.VISIBLE);
                 vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
@@ -159,7 +139,9 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
-                vHolder.firstLineSeekBar.setEnabled(false);
+                //layoutEnabled = false;
+
+                /*vHolder.firstLineSeekBar.setEnabled(false);
                 vHolder.secondLineSeekBar.setEnabled(false);
                 vHolder.thirdLineSeekBar.setEnabled(false);
                 vHolder.firstLineDimmingCheckBox.setEnabled(false);
@@ -167,14 +149,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 vHolder.thirdLineDimmingCheckBox.setEnabled(false);
                 vHolder.firstLineSwitch.setEnabled(false);
                 vHolder.secondLineSwitch.setEnabled(false);
-                vHolder.thirdLineSwitch.setEnabled(false);
+                vHolder.thirdLineSwitch.setEnabled(false);*/
             }else{
                 vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
                 vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                 vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                 vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
-                vHolder.firstLineSeekBar.setEnabled(true);
+                //layoutEnabled = true;
+
+                /*vHolder.firstLineSeekBar.setEnabled(true);
                 vHolder.secondLineSeekBar.setEnabled(true);
                 vHolder.thirdLineSeekBar.setEnabled(true);
                 vHolder.firstLineDimmingCheckBox.setEnabled(true);
@@ -182,168 +166,209 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 vHolder.thirdLineDimmingCheckBox.setEnabled(true);
                 vHolder.firstLineSwitch.setEnabled(true);
                 vHolder.secondLineSwitch.setEnabled(true);
-                vHolder.thirdLineSwitch.setEnabled(true);
-
-                populateLineData(item);
-
-                vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        boolean checked = ((ToggleButton)view).isChecked();
-                        MySettings.setControlState(true);
-                        if(checked){
-                            //turn on this line
-                            toggleLine(item,0, Line.LINE_STATE_ON);
-                        }else{
-                            //turn off this line
-                            toggleLine(item, 0, Line.LINE_STATE_OFF);
-                        }
-                    }
-                });
-                vHolder.secondLineSwitch.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        boolean checked = ((ToggleButton)view).isChecked();
-                        MySettings.setControlState(true);
-                        if(checked){
-                            //turn on this line
-                            toggleLine(item,1, Line.LINE_STATE_ON);
-                        }else{
-                            //turn off this line
-                            toggleLine(item, 1, Line.LINE_STATE_OFF);
-                        }
-                    }
-
-                });
-                vHolder.thirdLineSwitch.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        MySettings.setControlState(true);
-                        boolean checked = ((ToggleButton)view).isChecked();
-                        if(checked){
-                            //turn on this line
-                            toggleLine(item,2, Line.LINE_STATE_ON);
-                        }else{
-                            //turn off this line
-                            toggleLine(item, 2, Line.LINE_STATE_OFF);
-                        }
-                    }
-                });
-
-                vHolder.firstLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        MySettings.setControlState(true);
-                        boolean checked = ((CheckBox)view).isChecked();
-                        if(checked){
-                            toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                        }else{
-                            toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                        }
-                    }
-                });
-                vHolder.secondLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        MySettings.setControlState(true);
-                        boolean checked = ((CheckBox)view).isChecked();
-                        if(checked){
-                            toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                        }else{
-                            toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
-                        }
-                    }
-                });
-                vHolder.thirdLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        MySettings.setControlState(true);
-                        boolean checked = ((CheckBox)view).isChecked();
-                        if(checked){
-                            toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                        }else{
-                            toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
-                        }
-                    }
-                });
-
-                vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            MySettings.setControlState(true);
-                            //controlDimming(item, 0, i);
-                            Log.d("AAAAAAAA", "progress: " + seekBar.getProgress());
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        MySettings.setControlState(true);
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        /*try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            Log.d(TAG, "Exception: " + e.getMessage());
-                        }*/
-                        int i = seekBar.getProgress();
-                        controlDimming(item, 0, i);
-                    }
-                });
-                vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            MySettings.setControlState(true);
-                            //controlDimming(item, 1, i);
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        MySettings.setControlState(true);
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        /*try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            Log.d(TAG, "Exception: " + e.getMessage());
-                        }*/
-                        int i = seekBar.getProgress();
-                        controlDimming(item, 1, i);
-                    }
-                });
-                vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            MySettings.setControlState(true);
-                            //controlDimming(item, 2, i);
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        MySettings.setControlState(true);
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        /*try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            Log.d(TAG, "Exception: " + e.getMessage());
-                        }*/
-                        int i = seekBar.getProgress();
-                        controlDimming(item, 2, i);
-                    }
-                });
+                vHolder.thirdLineSwitch.setEnabled(true);*/
             }
+
+            vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!MySettings.isControlActive()){
+                        if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            boolean checked = ((ToggleButton) view).isChecked();
+                            MySettings.setControlState(true);
+                            if (checked) {
+                                //turn on this line
+                                toggleLine(item, 0, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                toggleLine(item, 0, Line.LINE_STATE_OFF);
+                            }
+                        }
+                    }
+                }
+            });
+            vHolder.secondLineSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!MySettings.isControlActive()){
+                        if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            boolean checked = ((ToggleButton) view).isChecked();
+                            MySettings.setControlState(true);
+                            if (checked) {
+                                //turn on this line
+                                toggleLine(item, 1, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                toggleLine(item, 1, Line.LINE_STATE_OFF);
+                            }
+                        }
+                    }
+                }
+
+            });
+            vHolder.thirdLineSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!MySettings.isControlActive()){
+                        if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                            boolean checked = ((ToggleButton) view).isChecked();
+                            if (checked) {
+                                //turn on this line
+                                toggleLine(item, 2, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                toggleLine(item, 2, Line.LINE_STATE_OFF);
+                            }
+                        }
+                    }
+                }
+            });
+
+            vHolder.firstLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!MySettings.isControlActive()){
+                        if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                            boolean checked = ((CheckBox) view).isChecked();
+                            if (checked) {
+                                toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                            } else {
+                                toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                            }
+                        }
+                    }
+                }
+            });
+            vHolder.secondLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!MySettings.isControlActive()){
+                        if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                            boolean checked = ((CheckBox) view).isChecked();
+                            if (checked) {
+                                toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                            } else {
+                                toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                            }
+                        }
+                    }
+                }
+            });
+            vHolder.thirdLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!MySettings.isControlActive()){
+                        if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                            boolean checked = ((CheckBox) view).isChecked();
+                            if (checked) {
+                                toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                            } else {
+                                toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                            }
+                        }
+                    }
+                }
+            });
+
+            vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    if(b) {
+                        if(!MySettings.isControlActive()){
+                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                MySettings.setControlState(true);
+                                //controlDimming(item, 0, i);
+                            }                        }
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    if(!MySettings.isControlActive()) {
+                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                        }
+                    }
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    if(!MySettings.isControlActive()) {
+                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            int i = seekBar.getProgress();
+                            controlDimming(item, 0, i);
+                        }
+                    }
+                }
+            });
+            vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    if(b) {
+                        if(!MySettings.isControlActive()) {
+                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                MySettings.setControlState(true);
+                                //controlDimming(item, 1, i);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    if(!MySettings.isControlActive()) {
+                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                        }
+                    }
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    if(!MySettings.isControlActive()) {
+                        int i = seekBar.getProgress();
+                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            controlDimming(item, 1, i);
+                        }
+                    }
+                }
+            });
+            vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    if(b) {
+                        if(!MySettings.isControlActive()) {
+                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                MySettings.setControlState(true);
+                                //controlDimming(item, 2, i);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    if(!MySettings.isControlActive()) {
+                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            MySettings.setControlState(true);
+                        }
+                    }
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    if(!MySettings.isControlActive()) {
+                        int i = seekBar.getProgress();
+                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                            controlDimming(item, 2, i);
+                        }
+                    }
+                }
+            });
 
             vHolder.firstLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -371,12 +396,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         public boolean onMenuItemClick(MenuItem item1) {
                             int id = item1.getItemId();
                             if(id == R.id.action_toggle_dimming){
-                                MySettings.setControlState(true);
-                                int dimmingState = item.getLines().get(0).getDimmingState();
-                                if(dimmingState == Line.DIMMING_STATE_OFF){
-                                    toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                                }else{
-                                    toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                                if(!MySettings.isControlActive()) {
+                                    if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                        MySettings.setControlState(true);
+                                        int dimmingState = item.getLines().get(0).getDimmingState();
+                                        if (dimmingState == Line.DIMMING_STATE_OFF) {
+                                            toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                                        } else {
+                                            toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
+                                        }
+                                    }
                                 }
                             }else if(id == R.id.action_delete){
                                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -434,12 +463,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         public boolean onMenuItemClick(MenuItem item1) {
                             int id = item1.getItemId();
                             if(id == R.id.action_toggle_dimming){
-                                MySettings.setControlState(true);
-                                int dimmingState = item.getLines().get(1).getDimmingState();
-                                if(dimmingState == Line.DIMMING_STATE_OFF){
-                                    toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                                }else{
-                                    toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                                if(!MySettings.isControlActive()) {
+                                    if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                        MySettings.setControlState(true);
+                                        int dimmingState = item.getLines().get(1).getDimmingState();
+                                        if (dimmingState == Line.DIMMING_STATE_OFF) {
+                                            toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                                        } else {
+                                            toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
+                                        }
+                                    }
                                 }
                             }else if(id == R.id.action_delete){
                                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -497,12 +530,16 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                         public boolean onMenuItemClick(MenuItem item1) {
                             int id = item1.getItemId();
                             if(id == R.id.action_toggle_dimming){
-                                MySettings.setControlState(true);
-                                int dimmingState = item.getLines().get(2).getDimmingState();
-                                if(dimmingState == Line.DIMMING_STATE_OFF){
-                                    toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                                }else{
-                                    toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                                if(!MySettings.isControlActive()) {
+                                    if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                        MySettings.setControlState(true);
+                                        int dimmingState = item.getLines().get(2).getDimmingState();
+                                        if (dimmingState == Line.DIMMING_STATE_OFF) {
+                                            toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                                        } else {
+                                            toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
+                                        }
+                                    }
                                 }
                             }else if(id == R.id.action_delete){
                                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -534,28 +571,35 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     });
                 }
             });
-
-            vHolder.removeDeviceLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    removeDevice(item);
-                }
-            });
-            vHolder.removeDeviceImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    removeDevice(item);
-                }
-            });
         }
 
-        setLayoutEnabled();
+        /*vHolder.firstLineSwitch.setEnabled(layoutEnabled);
+        vHolder.firstLineDimmingCheckBox.setEnabled(layoutEnabled);
+        if(vHolder.firstLineSeekBar.isEnabled()) {
+            vHolder.firstLineSeekBar.setEnabled(layoutEnabled);
+        }
+
+        vHolder.secondLineSwitch.setEnabled(layoutEnabled);
+        vHolder.secondLineDimmingCheckBox.setEnabled(layoutEnabled);
+        if(vHolder.secondLineSeekBar.isEnabled()) {
+            vHolder.secondLineSeekBar.setEnabled(layoutEnabled);
+        }
+
+        vHolder.thirdLineSwitch.setEnabled(layoutEnabled);
+        vHolder.thirdLineDimmingCheckBox.setEnabled(layoutEnabled);
+        if(vHolder.thirdLineSeekBar.isEnabled()) {
+            vHolder.thirdLineSeekBar.setEnabled(layoutEnabled);
+        }
+*/
+        return rowView;
     }
 
     private void populateLineData(Device item){
         vHolder.deviceNameTextView.setText(""+item.getName()/* + " (" + item.getLines().size() + " lines)"*/);
         vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
-        for (Line line : item.getLines()) {
+        List<Line> lines = new ArrayList<>();
+        lines.addAll(item.getLines());
+        for (Line line : lines) {
             if(line.getPosition() == 0){
                 vHolder.firstLineTextView.setText(line.getName());
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
@@ -681,56 +725,6 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 }
             }
         }
-    }
-
-    @Override
-    public View generateView(int position, ViewGroup parent) {
-        View v = LayoutInflater.from(activity).inflate(R.layout.list_item_device, null);
-
-        vHolder = new ViewHolder();
-        vHolder.deviceNameTextView = v.findViewById(R.id.device_name_textview);
-        vHolder.deviceLocationTextView = v.findViewById(R.id.device_location_textview);
-        vHolder.firstLineLayout = v.findViewById(R.id.first_line_layout);
-        vHolder.secondLineLayout = v.findViewById(R.id.second_line_layout);
-        vHolder.thirdLineLayout = v.findViewById(R.id.third_line_layout);
-        vHolder.firstLineTextView = v.findViewById(R.id.first_line_textvie);
-        vHolder.secondLineTextView = v.findViewById(R.id.second_line_textview);
-        vHolder.thirdLineTextView = v.findViewById(R.id.third_line_textview);
-        vHolder.removeDeviceLayout = v.findViewById(R.id.remove_device_layout);
-        vHolder.removeDeviceImageView = v.findViewById(R.id.remove_device_imageview);
-        vHolder.firstLineSeekBar = v.findViewById(R.id.first_line_seekbar);
-        vHolder.secondLineSeekBar = v.findViewById(R.id.second_line_seekbar);
-        vHolder.thirdLineSeekBar = v.findViewById(R.id.third_line_seekbar);
-        vHolder.firstLineDimmingCheckBox = v.findViewById(R.id.first_line_dimming_checkbox);
-        vHolder.secondLineDimmingCheckBox = v.findViewById(R.id.second_line_dimming_checkbox);
-        vHolder.thirdLineDimmingCheckBox = v.findViewById(R.id.third_line_dimming_checkbox);
-        vHolder.firstLineSwitch = v.findViewById(R.id.first_line_switch);
-        vHolder.secondLineSwitch = v.findViewById(R.id.second_line_switch);
-        vHolder.thirdLineSwitch = v.findViewById(R.id.third_line_switch);
-        vHolder.firstLineAdvancedOptionsButton = v.findViewById(R.id.first_line_advanced_options_button);
-        vHolder.secondLineAdvancedOptionsButton = v.findViewById(R.id.second_line_advanced_options_button);
-        vHolder.thirdLineAdvancedOptionsButton = v.findViewById(R.id.third_line_advanced_options_button);
-        vHolder.firstLineTypeImageView = v.findViewById(R.id.first_line_type_imageview);
-        vHolder.secondLineTypeImageView = v.findViewById(R.id.second_line_type_imageview);
-        vHolder.thirdLineTypeImageView = v.findViewById(R.id.third_line_type_imageview);
-
-
-        /*if(v == null){
-            LayoutInflater inflater = activity.getLayoutInflater();
-            v = inflater.inflate(R.layout.list_item_device, null);
-            vHolder = new ViewHolder();
-            vHolder.deviceNameTextView = v.findViewById(R.id.device_name_textview);
-            vHolder.deviceLocationTextView = v.findViewById(R.id.device_location_textview);
-            vHolder.firstLineButton = v.findViewById(R.id.first_line_button);
-            vHolder.secondLineButton = v.findViewById(R.id.second_line_button);
-            vHolder.thirdLineButton = v.findViewById(R.id.third_line_button);
-            v.setTag(vHolder);
-        }
-        else{
-            vHolder = (ViewHolder) v.getTag();
-        }*/
-
-        return v;
     }
 
     private void removeDevice(Device device){
@@ -1029,9 +1023,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
     public static class ViewHolder{
         TextView deviceNameTextView, deviceLocationTextView;
         TextView firstLineTextView, secondLineTextView, thirdLineTextView;
-        RelativeLayout removeDeviceLayout;
         CardView firstLineLayout, secondLineLayout, thirdLineLayout;
-        ImageView removeDeviceImageView;
         SeekBar firstLineSeekBar, secondLineSeekBar, thirdLineSeekBar;
         CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
         ToggleButton firstLineSwitch, secondLineSwitch, thirdLineSwitch;
@@ -1062,7 +1054,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         @Override
         protected void onPreExecute(){
-            layoutEnabled = false;
+            /*layoutEnabled = false;
             notifyDataSetChanged();
             //setLayoutEnabledDelayed(true);
 
@@ -1074,7 +1066,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             lines.remove(line);
             lines.add(position, line);
             device.setLines(lines);
-            DevicesInMemory.updateDevice(device);
+            DevicesInMemory.updateDevice(device);*/
             /*if(MainActivity.getInstance() != null){
                 MainActivity.getInstance().refreshDevicesListFromMemory();
             }*/
@@ -1090,7 +1082,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             if(statusCode != 200){
                 Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
             }
-            lines.remove(line);
+            /*lines.remove(line);
             lines.add(position, line);
             device.setLines(lines);
             DevicesInMemory.updateDevice(device);
@@ -1099,12 +1091,24 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 MainActivity.getInstance().refreshDevicesListFromMemory();
             }
             MySettings.setControlState(false);
-            layoutEnabled = true;
-            notifyDataSetChanged();
+            layoutEnabled = true;*/
+            //notifyDataSetChanged();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            layoutEnabled = false;
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldState = line.getPowerState();
+
+            line.setPowerState(state);
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
                 Log.d(TAG, "getStatusActive, doing nothing...");
@@ -1183,6 +1187,17 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     delay = true;
                 }
             }
+
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            layoutEnabled = true;
+            //MySettings.updateLineState(line, oldState);
+            if(MainActivity.getInstance() != null){
+                MainActivity.getInstance().refreshDevicesListFromMemory();
+            }
+            MySettings.setControlState(false);
 
 /*
             HttpURLConnection urlConnection = null;
@@ -1271,7 +1286,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
 
         @Override
         protected void onPreExecute(){
-            layoutEnabled = false;
+            /*layoutEnabled = false;
             notifyDataSetChanged();
             //setLayoutEnabledDelayed(true);
 
@@ -1288,7 +1303,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             //MySettings.updateLineDimmingState(line, state);
             if(MainActivity.getInstance() != null) {
                 MainActivity.getInstance().refreshDevicesListFromMemory();
-            }
+            }*/
         }
 
         @Override
@@ -1301,7 +1316,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             if(statusCode != 200){
                 Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
             }
-            lines.remove(line);
+            /*lines.remove(line);
             lines.add(position, line);
             device.setLines(lines);
             DevicesInMemory.updateDevice(device);
@@ -1313,11 +1328,27 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             MySettings.setControlState(false);
 
             layoutEnabled = true;
-            notifyDataSetChanged();
+            notifyDataSetChanged();*/
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            layoutEnabled = false;
+
+            //setLayoutEnabledDelayed(true);
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldState = line.getDimmingState();
+
+            line.setDimmingState(state);
+
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            //MySettings.updateLineDimmingState(line, state);
+
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
                 Log.d(TAG, "getStatusActive, doing nothing...");
@@ -1392,6 +1423,18 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                 }
             }
 
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            //MySettings.updateLineDimmingState(line, oldState);
+            layoutEnabled = true;
+            if(MainActivity.getInstance() != null) {
+                MainActivity.getInstance().refreshDevicesListFromMemory();
+            }
+
+            MySettings.setControlState(false);
+
             return null;
         }
     }
@@ -1419,7 +1462,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
         protected void onPreExecute(){
             //setLayoutEnabled(false);
             //setLayoutEnabledDelayed(true);
-            layoutEnabled = false;
+            /*layoutEnabled = false;
             notifyDataSetChanged();
 
             lines = device.getLines();
@@ -1431,7 +1474,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             lines.remove(line);
             lines.add(position, line);
             device.setLines(lines);
-            DevicesInMemory.updateDevice(device);
+            DevicesInMemory.updateDevice(device);*/
         }
 
         @Override
@@ -1444,7 +1487,7 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             if(statusCode != 200){
                 Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
             }
-            lines.remove(line);
+            /*lines.remove(line);
             lines.add(position, line);
             device.setLines(lines);
             DevicesInMemory.updateDevice(device);
@@ -1457,11 +1500,24 @@ public class DeviceAdapter extends BaseSwipeAdapter {
             //MySettings.setControlState(false);
 
             layoutEnabled = true;
-            notifyDataSetChanged();
+            notifyDataSetChanged();*/
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            layoutEnabled = false;
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldValue = line.getDimmingVvalue();
+
+            line.setDimmingVvalue(value);
+
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
                 Log.d(TAG, "getStatusActive, doing nothing...");
@@ -1539,6 +1595,18 @@ public class DeviceAdapter extends BaseSwipeAdapter {
                     delay = true;
                 }
             }
+
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);
+            //MySettings.updateLineDimmingValue(line, oldValue);
+            layoutEnabled = true;
+            if(MainActivity.getInstance() != null) {
+                MainActivity.getInstance().refreshDevicesListFromMemory();
+            }
+
+            //MySettings.setControlState(false);
 
             return null;
         }

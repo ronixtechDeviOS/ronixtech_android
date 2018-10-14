@@ -121,7 +121,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
 
         device = MySettings.getTempDevice();
         if(device == null){
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_LONG).show();
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
@@ -147,7 +147,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
             secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
             //thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.VISIBLE);
             thirdLineLayout.setVisibility(View.VISIBLE);
@@ -155,13 +155,50 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_2_name_hint));
             thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
         }else{
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_LONG).show();
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
             fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.commit();
+        }
+
+        firstLineType = MySettings.getTypeByName("Fluorescent Lamp");
+        if(firstLineType != null){
+            firstLineTypeTextView.setText(firstLineType.getName());
+            if(firstLineType.getImageUrl() != null && firstLineType.getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(firstLineType.getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                        .into(firstLineTypeImageView);
+            }else {
+                firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
+            }
+        }
+        secondLineType = MySettings.getTypeByName("Fluorescent Lamp");
+        if(secondLineType != null) {
+            secondLineTypeTextView.setText(secondLineType.getName());
+            if (secondLineType.getImageUrl() != null && secondLineType.getImageUrl().length() >= 1) {
+                GlideApp.with(getActivity())
+                        .load(secondLineType.getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                        .into(secondLineTypeImageView);
+            } else {
+                secondLineTypeImageView.setImageResource(secondLineType.getImageResourceID());
+            }
+        }
+        thirdLineType = MySettings.getTypeByName("Fluorescent Lamp");
+        if(thirdLineType != null){
+            thirdLineTypeTextView.setText(thirdLineType.getName());
+            if(thirdLineType.getImageUrl() != null && thirdLineType.getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(thirdLineType.getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                        .into(thirdLineTypeImageView);
+            }else {
+                thirdLineTypeImageView.setImageResource(thirdLineType.getImageResourceID());
+            }
         }
 
         deviceNameEditText.addTextChangedListener(new TextWatcher() {
@@ -268,6 +305,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.generateLineTypes();
                 }
             }
         });
@@ -293,6 +331,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.generateLineTypes();
                 }
             }
         });
@@ -318,6 +357,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.generateLineTypes();
                 }
             }
         });
@@ -363,7 +403,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         line.setPowerState(Line.LINE_STATE_OFF);
                         line.setDeviceID(device.getId());
                         lines.add(line);
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                         line = new Line();
                         line.setPosition(0);
                         line.setName(firstLineNameEditText.getText().toString());
@@ -450,7 +490,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         line.setPowerState(Line.LINE_STATE_OFF);
                         line.setDeviceID(device.getId());
                         lines.add(line);
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                         line = new Line();
                         line.setPosition(0);
                         line.setName(firstLineNameEditText.getText().toString());
@@ -513,7 +553,6 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     }else {
                         firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
                     }
-
                     if(validateInputsWithoutYoyo()){
                         Utils.setButtonEnabled(continueButton, true);
                     }else{

@@ -1,425 +1,387 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.daimajia.swipe.SwipeLayout
-    android:id="@+id/swipe"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/whiteColor">
 
-    <!-- Bottom View Start-->
-    <RelativeLayout
-        android:id="@+id/remove_device_layout"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@color/redColor"
-        android:padding="0dp">
+    <TextView
+        android:id="@+id/device_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:textSize="18sp"
+        android:textColor="@color/blackColor"/>
+
+    <TextView
+        android:id="@+id/device_location_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@id/device_name_textview"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/darkestGrayColor"/>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/first_line_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_below="@id/device_location_textview"
+        android:layout_marginTop="4dp">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true">
+            android:layout_height="match_parent">
             <ImageView
-                android:id="@+id/remove_device_imageview"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/baseline_delete_white_48"/>
-            <TextView
+                android:id="@+id/first_line_type_imageview"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/device_colored_icon"/>
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/remove_device_imageview"
-                android:textColor="@color/whiteColor"
-                android:textSize="16sp"
-                android:text="@string/remove_device"/>
-        </RelativeLayout>
-    </RelativeLayout>
-    <!-- Bottom View End-->
-
-    <!-- Surface View Start -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteColor">
-
-        <TextView
-            android:id="@+id/device_name_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textSize="18sp"
-            android:textColor="@color/blackColor"/>
-
-        <TextView
-            android:id="@+id/device_location_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_below="@id/device_name_textview"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:textSize="16sp"
-            android:textColor="@color/darkestGrayColor"/>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/first_line_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="8dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_below="@id/device_location_textview"
-            android:layout_marginTop="4dp">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/first_line_type_imageview"
+                android:layout_toRightOf="@id/first_line_type_imageview"
+                android:padding="8dp">
                 <ImageView
-                    android:id="@+id/first_line_type_imageview"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_centerVertical="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/device_colored_icon"/>
-                <RelativeLayout
+                    android:id="@+id/first_line_advanced_options_button"
+                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/overflow_3_dots_gray"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+                <ToggleButton
+                    android:id="@+id/first_line_switch"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
+                    android:layout_toLeftOf="@id/first_line_advanced_options_button"
+                    android:layout_toStartOf="@id/first_line_advanced_options_button"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:theme="@style/ToggleButton" />
+                <TextView
+                    android:id="@+id/first_line_textvie"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/first_line_type_imageview"
-                    android:layout_toRightOf="@id/first_line_type_imageview"
-                    android:padding="8dp">
-                    <ImageView
-                        android:id="@+id/first_line_advanced_options_button"
-                        android:layout_width="32dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/overflow_3_dots_gray"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"/>
-                    <ToggleButton
-                        android:id="@+id/first_line_switch"
-                        android:layout_width="60dp"
-                        android:layout_height="45dp"
-                        android:layout_toLeftOf="@id/first_line_advanced_options_button"
-                        android:layout_toStartOf="@id/first_line_advanced_options_button"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:theme="@style/ToggleButton" />
-                    <TextView
-                        android:id="@+id/first_line_textvie"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_alignBaseline="@id/first_line_switch"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:textAlignment="center"
-                        android:text="FirstLineName"/>
-                    <CheckBox
-                        android:id="@+id/first_line_dimming_checkbox"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:visibility="gone"
-                        android:layout_below="@id/first_line_textvie"
-                        android:layout_marginTop="8dp"/>
-                    <SeekBar
-                        android:id="@+id/first_line_seekbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_below="@id/first_line_textvie"
-                        android:layout_toEndOf="@id/first_line_dimming_checkbox"
-                        android:layout_toRightOf="@id/first_line_dimming_checkbox"
-                        android:thumb="@drawable/seekbar_thumb"
-                        android:padding="16dp"/>
-                </RelativeLayout>
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/second_line_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="8dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_below="@id/first_line_layout"
-            android:layout_marginTop="4dp">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:id="@+id/second_line_type_imageview"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_centerVertical="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/device_colored_icon"/>
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/second_line_type_imageview"
-                    android:layout_toRightOf="@id/second_line_type_imageview"
-                    android:padding="8dp">
-                    <ImageView
-                        android:id="@+id/second_line_advanced_options_button"
-                        android:layout_width="32dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/overflow_3_dots_gray"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"/>
-                    <ToggleButton
-                        android:id="@+id/second_line_switch"
-                        android:layout_width="60dp"
-                        android:layout_height="45dp"
-                        android:layout_toLeftOf="@id/second_line_advanced_options_button"
-                        android:layout_toStartOf="@id/second_line_advanced_options_button"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:theme="@style/ToggleButton"/>
-                    <TextView
-                        android:id="@+id/second_line_textview"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_alignBaseline="@id/second_line_switch"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:textAlignment="center"
-                        android:text="SecondLineName"/>
-                    <CheckBox
-                        android:id="@+id/second_line_dimming_checkbox"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:visibility="gone"
-                        android:layout_below="@id/second_line_textview"
-                        android:layout_marginTop="8dp" />
-                    <SeekBar
-                        android:id="@+id/second_line_seekbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_below="@id/second_line_textview"
-                        android:layout_toEndOf="@id/second_line_dimming_checkbox"
-                        android:layout_toRightOf="@id/second_line_dimming_checkbox"
-                        android:thumb="@drawable/seekbar_thumb"
-                        android:padding="16dp"/>
-                </RelativeLayout>
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/third_line_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="8dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_below="@id/second_line_layout"
-            android:layout_marginTop="4dp">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:id="@+id/third_line_type_imageview"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_centerVertical="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/device_colored_icon"/>
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/third_line_type_imageview"
-                    android:layout_toRightOf="@id/third_line_type_imageview"
-                    android:padding="8dp">
-                    <ImageView
-                        android:id="@+id/third_line_advanced_options_button"
-                        android:layout_width="32dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/overflow_3_dots_gray"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"/>
-                    <ToggleButton
-                        android:id="@+id/third_line_switch"
-                        android:layout_width="60dp"
-                        android:layout_height="45dp"
-                        android:layout_toLeftOf="@id/third_line_advanced_options_button"
-                        android:layout_toStartOf="@id/third_line_advanced_options_button"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:theme="@style/ToggleButton"/>
-                    <TextView
-                        android:id="@+id/third_line_textview"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_alignBaseline="@id/third_line_switch"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:textAlignment="center"
-                        android:text="ThirdLineName"/>
-                    <CheckBox
-                        android:id="@+id/third_line_dimming_checkbox"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:visibility="gone"
-                        android:layout_below="@id/third_line_textview"
-                        android:layout_marginTop="8dp"/>
-                    <SeekBar
-                        android:id="@+id/third_line_seekbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_below="@id/third_line_textview"
-                        android:layout_toEndOf="@id/third_line_dimming_checkbox"
-                        android:layout_toRightOf="@id/third_line_dimming_checkbox"
-
-                        android:thumb="@drawable/seekbar_thumb"
-                        android:padding="16dp"/>
-                </RelativeLayout>
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>
-
-        <!--<LinearLayout
-            android:id="@+id/first_two_buttons_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/device_location_textview"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="horizontal">
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <Button
-                    android:id="@+id/first_line_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/whiteColor"/>
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_alignBaseline="@id/first_line_switch"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:text="FirstLineName"/>
                 <CheckBox
                     android:id="@+id/first_line_dimming_checkbox"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/first_line_button"/>
+                    android:visibility="gone"
+                    android:layout_below="@id/first_line_textvie"
+                    android:layout_marginTop="8dp"/>
                 <SeekBar
                     android:id="@+id/first_line_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/first_line_button"
-                    android:layout_alignBottom="@id/first_line_dimming_checkbox"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/first_line_textvie"
                     android:layout_toEndOf="@id/first_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/first_line_dimming_checkbox" />
+                    android:layout_toRightOf="@id/first_line_dimming_checkbox"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:padding="16dp"/>
             </RelativeLayout>
-            <android.support.v4.widget.Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="0.1"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/second_line_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_below="@id/first_line_layout"
+        android:layout_marginTop="4dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/second_line_type_imageview"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/device_colored_icon"/>
             <RelativeLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <Button
-                    android:id="@+id/second_line_button"
-                    android:layout_width="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/second_line_type_imageview"
+                android:layout_toRightOf="@id/second_line_type_imageview"
+                android:padding="8dp">
+                <ImageView
+                    android:id="@+id/second_line_advanced_options_button"
+                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/overflow_3_dots_gray"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+                <ToggleButton
+                    android:id="@+id/second_line_switch"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
+                    android:layout_toLeftOf="@id/second_line_advanced_options_button"
+                    android:layout_toStartOf="@id/second_line_advanced_options_button"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:theme="@style/ToggleButton"/>
+                <TextView
+                    android:id="@+id/second_line_textview"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/whiteColor"/>
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_alignBaseline="@id/second_line_switch"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:text="SecondLineName"/>
                 <CheckBox
                     android:id="@+id/second_line_dimming_checkbox"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/second_line_button"/>
+                    android:visibility="gone"
+                    android:layout_below="@id/second_line_textview"
+                    android:layout_marginTop="8dp" />
                 <SeekBar
                     android:id="@+id/second_line_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/second_line_button"
-                    android:layout_alignBottom="@id/second_line_dimming_checkbox"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/second_line_textview"
                     android:layout_toEndOf="@id/second_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/second_line_dimming_checkbox"/>
-
+                    android:layout_toRightOf="@id/second_line_dimming_checkbox"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:padding="16dp"/>
             </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
-        </LinearLayout>
-
-        <LinearLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/third_line_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_below="@id/second_line_layout"
+        android:layout_marginTop="4dp">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/first_two_buttons_layout"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/third_line_type_imageview"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/device_colored_icon"/>
             <RelativeLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <Button
-                    android:id="@+id/third_line_button"
-                    android:layout_width="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/third_line_type_imageview"
+                android:layout_toRightOf="@id/third_line_type_imageview"
+                android:padding="8dp">
+                <ImageView
+                    android:id="@+id/third_line_advanced_options_button"
+                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/overflow_3_dots_gray"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+                <ToggleButton
+                    android:id="@+id/third_line_switch"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
+                    android:layout_toLeftOf="@id/third_line_advanced_options_button"
+                    android:layout_toStartOf="@id/third_line_advanced_options_button"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:theme="@style/ToggleButton"/>
+                <TextView
+                    android:id="@+id/third_line_textview"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/whiteColor"/>
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_alignBaseline="@id/third_line_switch"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:text="ThirdLineName"/>
                 <CheckBox
                     android:id="@+id/third_line_dimming_checkbox"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/third_line_button"/>
+                    android:visibility="gone"
+                    android:layout_below="@id/third_line_textview"
+                    android:layout_marginTop="8dp"/>
                 <SeekBar
                     android:id="@+id/third_line_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/third_line_button"
-                    android:layout_alignBottom="@id/third_line_dimming_checkbox"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/third_line_textview"
                     android:layout_toEndOf="@id/third_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/third_line_dimming_checkbox"/>
-            </RelativeLayout>
-            <android.support.v4.widget.Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="0.1"/>
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="invisible">
-                <Button
-                    android:id="@+id/fourth_line_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/whiteColor"/>
-                <CheckBox
-                    android:id="@+id/fourth_line_dimming_checkbox"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="4dp"
-                    android:button="@null"
-                    android:background="?android:attr/listChoiceIndicatorMultiple"
-                    android:layout_below="@id/fourth_line_button"/>
-                <SeekBar
-                    android:id="@+id/fourth_line_seekbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@id/fourth_line_button"
-                    android:layout_alignBottom="@id/fourth_line_dimming_checkbox"
-                    android:layout_toEndOf="@id/fourth_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/fourth_line_dimming_checkbox"/>
-            </RelativeLayout>
-        </LinearLayout>-->
-    </RelativeLayout>
-    <!-- Surface View End -->
+                    android:layout_toRightOf="@id/third_line_dimming_checkbox"
 
-</com.daimajia.swipe.SwipeLayout>
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:padding="16dp"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <!--<LinearLayout
+        android:id="@+id/first_two_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/device_location_textview"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/first_line_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/whiteColor"/>
+            <CheckBox
+                android:id="@+id/first_line_dimming_checkbox"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/first_line_button"/>
+            <SeekBar
+                android:id="@+id/first_line_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/first_line_button"
+                android:layout_alignBottom="@id/first_line_dimming_checkbox"
+                android:layout_toEndOf="@id/first_line_dimming_checkbox"
+                android:layout_toRightOf="@id/first_line_dimming_checkbox" />
+        </RelativeLayout>
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.1"/>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/second_line_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/whiteColor"/>
+            <CheckBox
+                android:id="@+id/second_line_dimming_checkbox"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/second_line_button"/>
+            <SeekBar
+                android:id="@+id/second_line_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/second_line_button"
+                android:layout_alignBottom="@id/second_line_dimming_checkbox"
+                android:layout_toEndOf="@id/second_line_dimming_checkbox"
+                android:layout_toRightOf="@id/second_line_dimming_checkbox"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/first_two_buttons_layout"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/third_line_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/whiteColor"/>
+            <CheckBox
+                android:id="@+id/third_line_dimming_checkbox"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/third_line_button"/>
+            <SeekBar
+                android:id="@+id/third_line_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/third_line_button"
+                android:layout_alignBottom="@id/third_line_dimming_checkbox"
+                android:layout_toEndOf="@id/third_line_dimming_checkbox"
+                android:layout_toRightOf="@id/third_line_dimming_checkbox"/>
+        </RelativeLayout>
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.1"/>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible">
+            <Button
+                android:id="@+id/fourth_line_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/whiteColor"/>
+            <CheckBox
+                android:id="@+id/fourth_line_dimming_checkbox"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:button="@null"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                android:layout_below="@id/fourth_line_button"/>
+            <SeekBar
+                android:id="@+id/fourth_line_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/fourth_line_button"
+                android:layout_alignBottom="@id/fourth_line_dimming_checkbox"
+                android:layout_toEndOf="@id/fourth_line_dimming_checkbox"
+                android:layout_toRightOf="@id/fourth_line_dimming_checkbox"/>
+        </RelativeLayout>
+    </LinearLayout>-->
+</RelativeLayout>

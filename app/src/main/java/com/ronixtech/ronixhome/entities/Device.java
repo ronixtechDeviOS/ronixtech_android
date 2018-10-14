@@ -21,11 +21,12 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_wifi_1line_old = 100004;
     public static final int DEVICE_TYPE_wifi_2lines_old = 100005;
     public static final int DEVICE_TYPE_wifi_3lines_old = 100006;
+    public static final int DEVICE_TYPE_wifi_3lines_workaround = 100050;
     public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10000; //testing a high number to disable the re-scan feature when it fails temporarily
 
     public static final int CONTROL_TIMEOUT = 250;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
-
+    
     public static final int REFRESH_RATE_MS = 1500;
     public static final int REFRESH_TIMEOUT = 1200;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;

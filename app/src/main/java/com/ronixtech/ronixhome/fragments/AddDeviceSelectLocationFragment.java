@@ -84,7 +84,6 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.locate_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
-
         placeSelectionLayout = view.findViewById(R.id.place_selection_layout);
         placeNameTextView = view.findViewById(R.id.selected_place_name_textview);
         placeImageView = view.findViewById(R.id.selected_place_image_view);
@@ -343,8 +342,26 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }
             selectedFloorIndex = 0;
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
-            selectedFloorTextView.setText(""+selectedFloor.getLevel());
+            if(selectedFloor != null){
+                selectedFloorTextView.setText(""+selectedFloor.getLevel());
+
+                if(MySettings.getFloorRooms(selectedFloor.getId()) != null && MySettings.getFloorRooms(selectedFloor.getId()).size() >= 1){
+                    selectedRoom = MySettings.getRoom(MySettings.getFloorRooms(selectedFloor.getId()).get(0).getId());
+                    if(selectedRoom != null){
+                        roomNameTextView.setText(selectedRoom.getName());
+                        if(selectedRoom.getType().getImageUrl() != null && selectedRoom.getType().getImageUrl().length() >= 1){
+                            GlideApp.with(getActivity())
+                                    .load(selectedRoom.getType().getImageUrl())
+                                    .placeholder(getActivity().getResources().getDrawable(R.drawable.room_type_living_room))
+                                    .into(roomImageView);
+                        }else {
+                            roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                        }
+                    }
+                }
+            }
         }
+
         if(validateInputs()){
             Utils.setButtonEnabled(doneButton, true);
         }else{

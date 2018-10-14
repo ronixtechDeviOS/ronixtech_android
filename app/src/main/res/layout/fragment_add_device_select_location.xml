@@ -229,7 +229,7 @@
                 android:textColor="@color/whiteColor"
                 android:background="@drawable/button_background_round_gray"
                 android:enabled="false"
-                android:text="@string/done"/>
+                android:text="@string/add"/>
 
         </RelativeLayout>
     </FrameLayout>

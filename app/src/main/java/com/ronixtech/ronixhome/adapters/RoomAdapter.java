@@ -5,8 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Room;
 
@@ -52,6 +54,7 @@ public class RoomAdapter extends ArrayAdapter {
             vHolder = new ViewHolder();
             vHolder.roomNameTextView = rowView.findViewById(R.id.room_name_textview);
             vHolder.roomPositionTextView = rowView.findViewById(R.id.room_position_textview);
+            vHolder.roomImageView = rowView.findViewById(R.id.room_imageview);
             rowView.setTag(vHolder);
         }
         else{
@@ -60,11 +63,20 @@ public class RoomAdapter extends ArrayAdapter {
 
         vHolder.roomNameTextView.setText(""+rooms.get(position).getName());
         vHolder.roomPositionTextView.setText(rooms.get(position).getFloorLevel()+" - "+rooms.get(position).getFloorName());
+        if(rooms.get(position).getType().getImageUrl() != null && rooms.get(position).getType().getImageUrl().length() >= 1){
+            GlideApp.with(activity)
+                    .load(rooms.get(position).getType().getImageUrl())
+                    .placeholder(activity.getResources().getDrawable(R.drawable.room_type_living_room))
+                    .into(vHolder.roomImageView);
+        }else {
+            vHolder.roomImageView.setImageResource(rooms.get(position).getType().getImageResourceID());
+        }
 
         return rowView;
     }
 
     public static class ViewHolder{
         TextView roomNameTextView, roomPositionTextView;
+        ImageView roomImageView;
     }
 }

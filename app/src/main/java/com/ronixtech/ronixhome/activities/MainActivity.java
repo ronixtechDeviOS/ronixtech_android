@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private static MainActivity mInstance;
 
     FragmentManager fragmentManager;
+    DashboardDevicesFragment dashboardDevicesFragment;
     Toolbar toolbar;
     private static TextView mTitle;
 
@@ -114,9 +115,12 @@ public class MainActivity extends AppCompatActivity
 
     public void refreshDevicesListFromMemory(){
         if(fragmentManager != null) {
-            DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
-            if (fragment != null) {
-                fragment.loadDevicesFromMemory();
+            if(dashboardDevicesFragment == null) {
+                dashboardDevicesFragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
+            }
+
+            if(dashboardDevicesFragment != null) {
+                dashboardDevicesFragment.loadDevicesFromMemory();
             }
         }
     }
