@@ -4,9 +4,13 @@
     <item
         android:id="@+id/action_toggle_dimming"
         android:orderInCategory="100"
-        android:title="Toggle Dimming" />
+        android:title="@string/toggle_dimming" />
+    <item
+        android:id="@+id/action_update"
+        android:orderInCategory="100"
+        android:title="@string/update_device" />
     <item
         android:id="@+id/action_delete"
         android:orderInCategory="100"
-        android:title="Delete Smart Controller" />
+        android:title="@string/delete_device" />
 </menu>

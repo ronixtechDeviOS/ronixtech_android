@@ -17,9 +17,17 @@ public class Constants {
     public static final String GET_SSID_URL = "http://ronixtech.com/ronix_services/task/srv.php";
     public static final String MQTT_URL = "tcp://m13.cloudmqtt.com";
     public static final String MQTT_TOPIC = "ronix/network";
+    public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/user1.bin";
+    public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/user2.bin";
+    public static final String DEVICE_GET_FIRMWARE_FILE_NAME_URL = "/flash/next";
+    public static final String DEVICE_UPLOAD_FIRMWARE_URL = "/flash/upload";
+    public static final String DEVICE_REBOOT_URL = "/flash/reboot";
 
     public static final String LOGIN_URL = "";
     public static final String REGISTER_URL = "";
+
+    public static final String DEVICE_FIRMWARE_FILE_NAME_1 = "user1.bin";
+    public static final String DEVICE_FIRMWARE_FILE_NAME_2 = "user2.bin";
 
 
     //json parameters

@@ -128,111 +128,12 @@ public class DashboardDevicesFragment extends Fragment {
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = new ArrayList<>();
-        deviceAdapter = new DeviceAdapter(getActivity(), devices);
+        deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager());
         devicesListView.setAdapter(deviceAdapter);
 
         loadDevicesFromDatabase();
 
         MySettings.setControlState(false);
-
-        devicesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Device clickedDevice = (Device) deviceAdapter.getItem(i);
-
-                /*AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        //set icon
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        //set title
-                        .setTitle(getActivity().getResources().getString(R.string.remove_unit_question))
-                        //set message
-                        .setMessage(getActivity().getResources().getString(R.string.remove_unit_message))
-                        //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                removeDevice(clickedDevice);
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                            }
-                        })
-                        .show();*/
-
-                /*final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
-                LinearLayout layout = new LinearLayout(getActivity());
-                layout.setOrientation(LinearLayout.VERTICAL);
-
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.weight = 1.0f;
-                Resources r = getActivity().getResources();
-                float pxLeftMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                float pxRightMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                float pxTopMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                float pxBottomMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                layoutParams.setMargins(Math.round(pxLeftMargin), Math.round(pxTopMargin), Math.round(pxRightMargin), Math.round(pxBottomMargin));
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-
-                TextView ipTextView = new TextView(getActivity());
-                ipTextView.setText(getActivity().getResources().getString(R.string.ip_address_title));
-                ipTextView.setGravity(Gravity.CENTER);
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    ipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                }
-                ipTextView.setLayoutParams(layoutParams);
-
-                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.weight = 1.0f;
-                Resources r2 = getActivity().getResources();
-                float pxLeftMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
-                float pxRightMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
-                float pxTopMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
-                float pxBottomMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, r2.getDisplayMetrics());
-                layoutParams2.setMargins(Math.round(pxLeftMargin2), Math.round(pxTopMargin2), Math.round(pxRightMargin2), Math.round(pxBottomMargin2));
-                layoutParams2.gravity = Gravity.CENTER_HORIZONTAL;
-
-                final EditText ipEditText = new EditText(getActivity());
-                ipEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                ipEditText.setHint(getActivity().getResources().getString(R.string.ip_address_hint));
-                ipEditText.setLayoutParams(layoutParams2);
-
-                Button submitButton = new Button(getActivity());
-                submitButton.setText(getActivity().getResources().getString(R.string.done));
-                submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
-                submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.greenColor));
-                submitButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(ipEditText.getText().toString() != null && ipEditText.getText().toString().length() >= 4) {
-                            clickedDevice.setIpAddress(ipEditText.getText().toString());
-                            MySettings.updateDeviceIP(clickedDevice, ipEditText.getText().toString());
-                            MainActivity.getInstance().refreshDevicesListFromMemory();
-                            dialog.dismiss();
-                        }else{
-                            YoYo.with(Techniques.Shake)
-                                    .duration(700)
-                                    .repeat(1)
-                                    .playOn(ipEditText);
-                        }
-                    }
-                });
-
-                layout.addView(ipTextView);
-                layout.addView(ipEditText);
-                layout.addView(submitButton);
-
-                dialog.setView(layout);
-
-                dialog.show();*/
-
-                return false;
-            }
-        });
 
         //startTimer();
 

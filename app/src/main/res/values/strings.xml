@@ -89,6 +89,9 @@
     <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
 
 
+    <string name="add_device_hint_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
+    <string name="add_device_hint_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
+    <string name="add_device_hint_3">3- Press Continue when you\'re ready</string>
     <string name="add_device_search">Searching For Smart Controller</string>
     <string name="add_device_get_data">Getting Smart Controller Info</string>
     <string name="add_device_send_data">Configuring Smart Controller</string>
@@ -110,11 +113,30 @@
     <string name="line_type">Device Type</string>
     <string name="line_type_hint">Tap here to select the device type</string>
 
+    <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
 
+    <string name="delete_device">Delete Smart Controller</string>
+
 
     <string name="no_types_available">No types available</string>
+
+    <string name="update_device">Update Smart Controller Firmware</string>
+    <string name="update_device_hint_1">Your device has an old firmware and needs to be updated</string>
+    <string name="update_device_hint_2">Hold tight, we\'ll do everything for you.</string>
+    <string name="update_device_hint_3">Don\'t close the app or turn off the Smart Controller during the update process</string>
+    <string name="update_device_hint_4">Press Start to begin the update process</string>
+    <string name="updating_device">Updating Smart Controller</string>
+
+    <string name="downloading_firmware_files">Downloading firmware files</string>
+    <string name="downloading_file">Downloading file %d/%d</string>
+    <string name="download_complete">Download Complete</string>
+    <string name="uploading_firmware">Uploading firmware</string>
+    <string name="unable_to_get_device_firmware_file_name">Unable to get firmware configuration from Smart Controller</string>
+    <string name="unable_to_upload_firmware">Unable to upload firmware, please try again</string>
+    <string name="unable_to_reboot_device">Unable to reboot Smart Controller, try again or reboot it manually</string>
+    <string name="firmware_update_successfull">Firmware updated successfully, rebooting device now</string>
 
     <string name="home_network">Home Network</string>
     <string name="configure_home_network_title">Please select your home network, where all your Smart Controllers will be connected to</string>
@@ -156,6 +178,7 @@
     <string name="done">Done</string>
     <string name="continue_button">Continue</string>
     <string name="add">Add</string>
+    <string name="start">Start</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

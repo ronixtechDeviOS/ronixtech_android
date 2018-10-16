@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AddDeviceFragmentIntro">
+    tools:context=".fragments.UpdateDeviceIntroFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -11,12 +11,14 @@
         android:background="@color/whiteColor">
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/instructions_gif_imageview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/access_point_activation_final"/>
+            android:src="@drawable/device_colored_icon"/>
 
         <TextView
             android:id="@+id/instructions_1_textview"
@@ -29,7 +31,7 @@
             android:layout_marginEnd="16dp"
             android:textColor="@color/blackColor"
             android:textSize="16sp"
-            android:text="@string/add_device_hint_1"/>
+            android:text="@string/update_device_hint_1"/>
 
         <TextView
             android:id="@+id/instructions_2_textview"
@@ -42,7 +44,7 @@
             android:layout_marginEnd="16dp"
             android:textColor="@color/blackColor"
             android:textSize="16sp"
-            android:text="@string/add_device_hint_2"/>
+            android:text="@string/update_device_hint_2"/>
 
         <TextView
             android:id="@+id/instructions_3_textview"
@@ -55,10 +57,23 @@
             android:layout_marginEnd="16dp"
             android:textColor="@color/blackColor"
             android:textSize="16sp"
-            android:text="@string/add_device_hint_3"/>
+            android:text="@string/update_device_hint_3"/>
+
+        <TextView
+            android:id="@+id/instructions_4_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/instructions_3_textview"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/blackColor"
+            android:textSize="16sp"
+            android:text="@string/update_device_hint_4"/>
 
         <Button
-            android:id="@+id/continue_button"
+            android:id="@+id/start_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -68,7 +83,7 @@
             android:layout_marginEnd="16dp"
             android:textColor="@color/whiteColor"
             android:background="@drawable/button_background_round_blue"
-            android:text="@string/continue_button"/>
+            android:text="@string/start"/>
 
     </RelativeLayout>
 

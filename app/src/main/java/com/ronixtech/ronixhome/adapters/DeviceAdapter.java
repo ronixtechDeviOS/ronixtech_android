@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -26,9 +28,11 @@ import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -45,12 +49,14 @@ public class DeviceAdapter extends ArrayAdapter {
     ViewHolder vHolder = null;
     SwipeLayout swipeLayout;
     boolean layoutEnabled = true;
+    FragmentManager fragmentManager;
 
-    public DeviceAdapter(Activity activity, List devices){
+    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager){
         super(activity, R.layout.list_item_device, devices);
         this.activity = activity;
         this.devices = devices;
         mHandler = new android.os.Handler();
+        this.fragmentManager = fragmentManager;
     }
 
     @Override
@@ -407,6 +413,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                         }
                                     }
                                 }
+                            }else if(id == R.id.action_update){
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
                             }else if(id == R.id.action_delete){
                                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                         //set icon
@@ -474,6 +489,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                         }
                                     }
                                 }
+                            }else if(id == R.id.action_update){
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
                             }else if(id == R.id.action_delete){
                                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                         //set icon
@@ -541,6 +565,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                         }
                                     }
                                 }
+                            }else if(id == R.id.action_update){
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
                             }else if(id == R.id.action_delete){
                                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                         //set icon
