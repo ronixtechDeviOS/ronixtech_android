@@ -239,14 +239,25 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 //tempDevice.setRoomID(clickedRoom.getId());
                 device.setRoomID(selectedRoom.getId());
                 MySettings.addDevice(device);
-                MySettings.setTempDevice(null);
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                    fragmentTransaction.commit();
+                }else{
+                    MySettings.setTempDevice(null);
 
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                fragmentTransaction.commit();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    fragmentTransaction.commit();
+                }
             }
         });
         /*addRoomButton.setOnClickListener(new View.OnClickListener() {

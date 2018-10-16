@@ -165,6 +165,7 @@ public class LoginFragment extends Fragment {
 
         User user = new User();
         user.setEmail(email);
+        user.setPassword(password);
         MySettings.setCurrentUser(user);
         Intent mainIntent = new Intent(getActivity(), MainActivity.class);
         startActivity(mainIntent);
@@ -265,7 +266,7 @@ public class LoginFragment extends Fragment {
                 loginButton.setEnabled(true);
                 if (customProgressDialog != null) customProgressDialog.dismiss();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
-                Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
             }
         }){
             /*@Override

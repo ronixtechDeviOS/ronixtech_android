@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -109,6 +110,7 @@ public class DeviceAdapter extends ArrayAdapter {
             vHolder.firstLineTypeImageView = rowView.findViewById(R.id.first_line_type_imageview);
             vHolder.secondLineTypeImageView = rowView.findViewById(R.id.second_line_type_imageview);
             vHolder.thirdLineTypeImageView = rowView.findViewById(R.id.third_line_type_imageview);
+            vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
 
             vHolder.firstLineSeekBar.setMax(10);
             vHolder.secondLineSeekBar.setMax(10);
@@ -145,6 +147,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
+                vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                 //layoutEnabled = false;
 
                 /*vHolder.firstLineSeekBar.setEnabled(false);
@@ -162,6 +165,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                 vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
+                vHolder.scanningNetworkLayout.setVisibility(View.GONE);
                 //layoutEnabled = true;
 
                 /*vHolder.firstLineSeekBar.setEnabled(true);
@@ -1062,6 +1066,7 @@ public class DeviceAdapter extends ArrayAdapter {
         ToggleButton firstLineSwitch, secondLineSwitch, thirdLineSwitch;
         ImageView firstLineAdvancedOptionsButton, secondLineAdvancedOptionsButton, thirdLineAdvancedOptionsButton;
         ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
+        RelativeLayout scanningNetworkLayout;
     }
 
     android.os.Handler mHandler;
@@ -1113,7 +1118,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
             }
             /*lines.remove(line);
             lines.add(position, line);
@@ -1347,7 +1352,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
             }
             /*lines.remove(line);
             lines.add(position, line);
@@ -1518,7 +1523,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
             }
             /*lines.remove(line);
             lines.add(position, line);

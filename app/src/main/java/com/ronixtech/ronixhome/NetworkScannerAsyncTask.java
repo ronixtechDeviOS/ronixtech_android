@@ -137,10 +137,6 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
         {
             e1.printStackTrace();
         }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
         return null;
     }
 

@@ -14,10 +14,12 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 
 import java.io.IOException;
@@ -79,15 +81,32 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
         progressTextView.setText(getActivity().getResources().getString(R.string.downloading_file, currentFile, totalNumberOfFiles));
 
-        DownloadTask downloadTask = new DownloadTask(getActivity(), this);
-        downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_1);
+        if(Utils.isInternetAvailable()){
+            DownloadTask downloadTask = new DownloadTask(getActivity(), this);
+            downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_1);
+        }else{
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+            goToHomeFragment();
+        }
+
 
         return view;
+    }
+
+    private void goToHomeFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentTransaction.commit();
     }
 
     public void goToUploadFragment(){
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
         UpdateDeviceFirmwareUploadFragment updateDeviceFirmwareUploadFragment = new UpdateDeviceFirmwareUploadFragment();
         fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareUploadFragment, "updateDeviceFirmwareUploadFragment");
         fragmentTransaction.addToBackStack("updateDeviceFirmwareUploadFragment");

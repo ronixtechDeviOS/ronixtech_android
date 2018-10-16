@@ -187,11 +187,6 @@ public class NetworkScanner extends Worker {
             Log.d(TAG, "Exception: " + e1.getMessage());
             e1.printStackTrace();
         }
-        catch(IOException e)
-        {
-            Log.d(TAG, "Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
 
         // Indicate success or failure with your return value:
         return Result.SUCCESS;

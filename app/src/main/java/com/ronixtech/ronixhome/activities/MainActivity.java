@@ -233,10 +233,12 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.addToBackStack("roomsFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
-            MySettings.setCurrentUser(null);
-            Intent loginIntent = new Intent(mInstance, LoginActivity.class);
-            startActivity(loginIntent);
-            finish();
+            if(MySettings.getActiveUser() != null) {
+                MySettings.deleteCurrentUser(MySettings.getActiveUser());
+                Intent loginIntent = new Intent(mInstance, LoginActivity.class);
+                startActivity(loginIntent);
+                finish();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

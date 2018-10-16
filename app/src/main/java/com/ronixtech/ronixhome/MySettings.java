@@ -492,7 +492,7 @@ public class MySettings {
     }
     public static void deleteCurrentUser(User user){
         if(user != null) {
-            //save user into DB
+            //delete user from DB
             loggedInUser = null;
             MySettings.initDB().userDao().delete(user);
             MySettings.setCurrentUserEmail(null);

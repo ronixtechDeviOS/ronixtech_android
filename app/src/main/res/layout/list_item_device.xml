@@ -6,10 +6,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/whiteColor">
 
+    <RelativeLayout
+        android:id="@+id/scanning_network_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp">
+        <ProgressBar
+            android:id="@+id/scanning_network_progress_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/scanning_network_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/scanning_network_progress_circle"
+            android:layout_toRightOf="@id/scanning_network_progress_circle"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textSize="18sp"
+            android:text="@string/scanning_network"/>
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/device_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/scanning_network_layout"
         android:visibility="gone"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"

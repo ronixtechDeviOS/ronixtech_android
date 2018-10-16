@@ -481,6 +481,7 @@ public class AddDeviceFragmentGetData extends Fragment {
 
                                     FragmentManager fragmentManager = fragment.getFragmentManager();
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
                                     DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
                                     fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
                                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);

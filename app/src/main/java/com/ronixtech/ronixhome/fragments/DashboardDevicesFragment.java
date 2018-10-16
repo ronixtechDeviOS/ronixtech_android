@@ -178,7 +178,7 @@ public class DashboardDevicesFragment extends Fragment {
                         Log.d(TAG, "Volley Error: " + error.getMessage());
                         debugTextView.append("Response error: " + error.getMessage() +"\n");
                         if(getActivity() != null){
-                            Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -648,7 +648,9 @@ public class DashboardDevicesFragment extends Fragment {
             }catch (JSONException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
             }finally {
-                urlConnection.disconnect();
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
                 Log.d(TAG, "Disabling getStatus flag...");
                 MySettings.setGetStatusState(false);
             }

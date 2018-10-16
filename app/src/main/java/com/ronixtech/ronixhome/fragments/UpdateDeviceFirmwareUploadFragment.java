@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 
@@ -44,6 +45,8 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
     private static final String TAG = UpdateDeviceFirmwareUploadFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
+
+    //private FirebaseAnalytics mFirebaseAnalytics;
 
     Device device;
     String filename;
@@ -80,13 +83,12 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
 
         device = MySettings.getTempDevice();
 
+        // Obtain the FirebaseAnalytics instance.
+        //mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+
         if(device != null){
             getFirmwareFileName();
         }
-
-        //check user1 or user2 file
-        //upload file to smart controller
-        //reboot device
 
         return view;
     }
@@ -94,6 +96,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
     private void goToHomeFragment(){
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
         DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
         fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -167,6 +170,14 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         request.setShouldCache(false);
         request.setRetryPolicy(new DefaultRetryPolicy(Device.CONFIG_TIMEOUT, Device.CONFIG_NUMBER_OF_RETRIES, 0f));
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);*/
+    }
+
+    public void notifyCrashlyticsOfAffectedDeviceUpdate(){
+        /*Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "44");
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "faulty_device_updated");
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);*/
     }
 
     @Override
@@ -315,6 +326,9 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             if(statusCode == 200){
                 DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment);
                 deviceRebooter.execute();
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                    fragment.notifyCrashlyticsOfAffectedDeviceUpdate();
+                }
                 Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_upload_firmware), Toast.LENGTH_SHORT).show();
@@ -444,6 +458,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
+                MySettings.setTempDevice(null);
                 fragment.goToHomeFragment();
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_reboot_device), Toast.LENGTH_SHORT).show();

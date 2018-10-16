@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -438,6 +439,17 @@ public class Utils {
 
         for (Type ty: lineTypes) {
             MySettings.addType(ty);
+        }
+    }
+
+    public static boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
         }
     }
 }

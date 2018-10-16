@@ -265,7 +265,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                 fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
                 fragmentTransaction.commitAllowingStateLoss();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
                 fragment.goToSearchFragment();
             }
         }
