@@ -7,8 +7,8 @@ android {
         applicationId "com.ronixtech.ronixhome"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 14
-        versionName "1.14"
+        versionCode 15
+        versionName "1.15"
         multiDexEnabled true
     }
     buildTypes {
@@ -62,6 +62,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services:12.0.1'
 
+    implementation 'com.google.firebase:firebase-core:12.0.1'
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 
     implementation 'com.facebook.android:facebook-login:[4,5)'

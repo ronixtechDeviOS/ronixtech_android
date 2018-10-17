@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -46,7 +47,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    //private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     Device device;
     String filename;
@@ -84,7 +85,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         device = MySettings.getTempDevice();
 
         // Obtain the FirebaseAnalytics instance.
-        //mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
         if(device != null){
             getFirmwareFileName();
@@ -173,11 +174,11 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
     }
 
     public void notifyCrashlyticsOfAffectedDeviceUpdate(){
-        /*Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "44");
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "faulty_device_updated");
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "image");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);*/
+        Bundle bundle = new Bundle();
+        bundle.putString("device_chip_id", device.getChipID());
+        bundle.putString("device_id", ""+device.getDeviceTypeID());
+        bundle.putString("device_mac_address", device.getMacAddress());
+        mFirebaseAnalytics.logEvent("device_firmware_updated", bundle);
     }
 
     @Override
