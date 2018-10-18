@@ -12,6 +12,7 @@ import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
@@ -229,48 +230,104 @@ public class MySettings {
 
     public static void addDevice(Device device){
         //save device into DB
-        MySettings.initDB().deviceDAO().insertDeviceWithLines(device);
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+            MySettings.initDB().deviceDAO().insertDeviceWithLines(device);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            MySettings.initDB().deviceDAO().insertDeviceWithSoundDeviceData(device);
+        }
     }
     public static void updateDeviceIP(Device device, String ipAddress){
         MySettings.initDB().deviceDAO().updateDeviceIP(device.getId(), ipAddress);
     }
     public static void updateDeviceErrorCount(Device device, int count){
         MySettings.initDB().deviceDAO().updateDeviceErrorCount(device.getId(), count);
+        for (Device dev:DevicesInMemory.getDevices()) {
+            dev.setErrorCount(dev.getErrorCount()+1);
+        }
     }
-    public static Device getDeviceByID(long deviceID) {
-        return MySettings.initDB().deviceDAO().getDeviceWithLinesByID(deviceID);
+    public static Device getDeviceByID(long deviceID, int deviceType) {
+        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+            MySettings.initDB().deviceDAO().getDeviceWithLinesByID(deviceID);
+        }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByID(deviceID);
+        }
+        return null;
     }
-    public static Device getDeviceByMAC(String macAddress) {
-        return MySettings.initDB().deviceDAO().getDeviceWithLinesByMacAddress(macAddress);
+    public static Device getDeviceByMAC(String macAddress, int deviceType) {
+        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+            return MySettings.initDB().deviceDAO().getDeviceWithLinesByMacAddress(macAddress);
+        }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            return MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByMacAddress(macAddress);
+        }
+        return null;
     }
-    public static Device getDeviceByChipID(String chipID) {
-        return MySettings.initDB().deviceDAO().getDeviceWithLinesByChipID(chipID);
+    public static Device getDeviceByChipID(String chipID, int deviceType) {
+        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+            return MySettings.initDB().deviceDAO().getDeviceWithLinesByChipID(chipID);
+        }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByChipID(chipID);
+        }
+        return null;
     }
     public static List<Device> getAllDevices(){
-        List<Device> devicesWithLines = new ArrayList<>();
+        List<Device> devicesWithData = new ArrayList<>();
         List<Device> devices = MySettings.initDB().deviceDAO().getAll();
         if (devices != null && devices.size() >= 1) {
             for (Device dev : devices) {
-                Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress());
-                devicesWithLines.add(tempDevice);
+                if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
+                    devicesWithData.add(tempDevice);
+                }else if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
+                    devicesWithData.add(tempDevice);
+                }
+
             }
         }
-        return devicesWithLines;
+        return devicesWithData;
     }
     public static List<Device> getRoomDevices(long roomID){
-        List<Device> devicesWithLines = new ArrayList<>();
+        List<Device> devicesWithData = new ArrayList<>();
         List<Device> devices = MySettings.initDB().deviceDAO().getRoomDevices(roomID);
         if (devices != null && devices.size() >= 1) {
             for (Device dev : devices) {
-                Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress());
-                devicesWithLines.add(tempDevice);
+                if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
+                    devicesWithData.add(tempDevice);
+                }else if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
+                    devicesWithData.add(tempDevice);
+                }
+
             }
         }
-        return devicesWithLines;
+        return devicesWithData;
     }
     public static void removeDevice(Device device){
         //remove device from DB
-        MySettings.initDB().deviceDAO().removeDeviceWithLines(device);
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+            MySettings.initDB().deviceDAO().removeDeviceWithLines(device);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            MySettings.initDB().deviceDAO().removeDeviceWithSoundDeviceData(device);
+        }
+
+    }
+    public static Device getDeviceByChipID2(String chipID) {
+        return MySettings.initDB().deviceDAO().getDeviceWithLinesByChipID(chipID);
     }
 
     public static void updateLineState(Line line, int powerState){
@@ -281,6 +338,10 @@ public class MySettings {
     }
     public static void updateLineDimmingValue(Line line, int dimmingValue){
         MySettings.initDB().lineDAO().updateLineDimmingValue(line.getId(), dimmingValue);
+    }
+
+    public static void updateSoundMode(SoundDeviceData soundDeviceData, int mode){
+        MySettings.initDB().soundDeviceDataDAO().updateMode(soundDeviceData.getId(), mode);
     }
 
     public static void addPlace(Place place){
@@ -552,8 +613,31 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_2_3 = new Migration(2, 3) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("CREATE TABLE `sounddevicedata` (`id` INTEGER NOT NULL DEFAULT -1, "
+                            + "`device_id` INTEGER NOT NULL DEFAULT -1,"
+                            + "`mode` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))");
+                }
+            };
+
+            Migration MIGRATION_3_4 = new Migration(3, 4) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN access_token TEXT DEFAULT 'ronix_token'");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                             .allowMainThreadQueries().
                             build();
             return database;

@@ -110,11 +110,14 @@ public class DashboardRoomsFragment extends Fragment {
 
         if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
             List<Device> devices = MySettings.getAllDevices();
-            for (Device device:devices) {
-                if(device.getRoomID() == -1){
-                    MySettings.removeDevice(device);
+            if(devices != null && devices.size() >= 1){
+                for (Device device:devices) {
+                    if(device.getRoomID() == -1){
+                        MySettings.removeDevice(device);
+                    }
                 }
             }
+
         }
 
         rooms = new ArrayList<>();

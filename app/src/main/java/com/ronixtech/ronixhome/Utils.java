@@ -2,6 +2,11 @@ package com.ronixtech.ronixhome;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +16,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -450,6 +456,68 @@ public class Utils {
 
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    private static boolean isAppEnabled(Context context, String packageName) {
+        boolean appStatus = false;
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(packageName, 0);
+            if (ai != null) {
+                appStatus = ai.enabled;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return appStatus;
+    }
+
+    private static boolean isAppInstalled(Context context, String packageName) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException ignored) {
+        }
+        return false;
+    }
+
+    public static void openApp(Context context, String appName, String packageName) {
+        if (isAppInstalled(context, packageName)){
+            if (isAppEnabled(context, packageName)) {
+                context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packageName));
+            } else {
+                Toast.makeText(context, appName + " app is not enabled.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(context)
+                    //set icon
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    //set title
+                    .setTitle(context.getResources().getString(R.string.upnp_app_not_available_title))
+                    //set message
+                    .setMessage(context.getResources().getString(R.string.upnp_app_not_available_message))
+                    //set positive button
+                    .setPositiveButton(context.getResources().getString(R.string.go_to_play_store), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //set what would happen when positive button is clicked
+                            //go to play store
+                            try {
+                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
+                            }
+                        }
+                    })
+                    //set negative button
+                    .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //set what should happen when negative button is clicked
+                        }
+                    })
+                    .show();
         }
     }
 }

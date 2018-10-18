@@ -210,7 +210,37 @@ public class AddDeviceFragmentSearch extends Fragment {
             mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
             if(!mWifiManager.isWifiEnabled()){
-                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+                android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        //set message
+                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                fragmentTransaction.commitAllowingStateLoss();
+                            }
+                        })
+                        .show();
             }else{
                 mWifiScanReceiver = new BroadcastReceiver() {
                     @Override
@@ -435,7 +465,40 @@ public class AddDeviceFragmentSearch extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
-            refreshNetworks();
+            if(mWifiManager != null && mWifiManager.isWifiEnabled()){
+                refreshNetworks();
+            }else{
+                android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        //set message
+                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                refreshNetworks();
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                fragmentTransaction.commitAllowingStateLoss();
+                            }
+                        })
+                        .show();
+            }
         }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
             refreshNetworks();
         }

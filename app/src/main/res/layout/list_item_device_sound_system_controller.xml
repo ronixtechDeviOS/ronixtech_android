@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/whiteColor">
+
+    <RelativeLayout
+        android:id="@+id/scanning_network_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp">
+        <ProgressBar
+            android:id="@+id/scanning_network_progress_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/scanning_network_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/scanning_network_progress_circle"
+            android:layout_toRightOf="@id/scanning_network_progress_circle"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textSize="18sp"
+            android:text="@string/scanning_network"/>
+    </RelativeLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/device_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_below="@id/device_location_textview"
+        android:layout_marginTop="4dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/device_type_imageview"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/device_colored_icon"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/device_type_imageview"
+                android:layout_toRightOf="@id/device_type_imageview"
+                android:padding="8dp">
+                <ImageView
+                    android:id="@+id/device_advanced_options_button"
+                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/overflow_3_dots_gray"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+                <ToggleButton
+                    android:id="@+id/device_mode_switch"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
+                    android:layout_toLeftOf="@id/device_advanced_options_button"
+                    android:layout_toStartOf="@id/device_advanced_options_button"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:theme="@style/ToggleButton" />
+                <TextView
+                    android:id="@+id/device_name_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_alignBaseline="@id/device_mode_switch"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:text="DeviceName"/>
+                <SeekBar
+                    android:id="@+id/device_volume_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/device_name_textview"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:padding="16dp"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

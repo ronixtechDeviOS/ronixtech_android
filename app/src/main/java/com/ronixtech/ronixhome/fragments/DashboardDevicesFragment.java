@@ -37,6 +37,7 @@ import com.ronixtech.ronixhome.adapters.DeviceAdapter;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Room;
+import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,7 +77,7 @@ public class DashboardDevicesFragment extends Fragment {
     List<Device> devices;
     TextView emptyTextView;
 
-    Handler mHandler;
+    Handler listHandler;
 
     Timer timer;
     TimerTask doAsynchronousTask;
@@ -118,7 +119,7 @@ public class DashboardDevicesFragment extends Fragment {
         }
         setHasOptionsMenu(true);
 
-        mHandler = new Handler();
+        listHandler = new Handler();
 
         emptyTextView = view.findViewById(R.id.empty_textview);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
@@ -298,8 +299,8 @@ public class DashboardDevicesFragment extends Fragment {
 
     public void loadDevicesFromDatabase(){
         if(room != null){
-            if(mHandler != null) {
-                mHandler.post(new Runnable() {
+            if(listHandler != null) {
+                listHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         List<Device> tempDevices = new ArrayList<>();
@@ -315,8 +316,8 @@ public class DashboardDevicesFragment extends Fragment {
     }
 
     public void loadDevicesFromMemory(){
-        if(mHandler != null) {
-            mHandler.post(new Runnable() {
+        if(listHandler != null) {
+            listHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     putDevicesIntoListView();
@@ -353,8 +354,17 @@ public class DashboardDevicesFragment extends Fragment {
 
     private void getDeviceInfo(Device device){
         Log.d(TAG, "Getting device info...");
-        StatusGetter statusGetter = new StatusGetter(device);
-        statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+            StatusGetter statusGetter = new StatusGetter(device);
+            statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            ModeGetter modeGetter = new ModeGetter(device);
+            modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+
+        }
 
         /*//volley request to device to get its status
         String url = "http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS;
@@ -534,7 +544,14 @@ public class DashboardDevicesFragment extends Fragment {
                 if (MainActivity.getInstance() != null) {
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
-            };
+            }else{
+                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    MySettings.updateDeviceIP(device, "");
+                    MySettings.updateDeviceErrorCount(device, 0);
+                    MySettings.scanNetwork();
+                }
+            }
             MySettings.setGetStatusState(false);
         }
 
@@ -658,4 +675,120 @@ public class DashboardDevicesFragment extends Fragment {
             return null;
         }
     }
+
+    public static class ModeGetter extends AsyncTask<Void, Void, Void>{
+        private final String TAG = DashboardDevicesFragment.StatusGetter.class.getSimpleName();
+
+        Device device;
+
+        int statusCode;
+
+        public ModeGetter(Device device) {
+            try{
+                this.device = device;
+            }catch (Exception e){
+                Log.d(TAG, "Json exception " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected void onPreExecute(){
+            Log.d(TAG, "Enabling getStatus flag...");
+            MySettings.setGetStatusState(true);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200) {
+                if (MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                }
+            }else{
+                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    MySettings.updateDeviceIP(device, "");
+                    MySettings.updateDeviceErrorCount(device, 0);
+                    MySettings.scanNetwork();
+                }
+            }
+            MySettings.setGetStatusState(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            try{
+                URL url = new URL("http://" + device.getIpAddress() + Constants.CONTROL_SOUND_DEVICE_CHANGE_MODE_URL);
+                Log.d(TAG,  "modeGetter URL: " + url);
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
+                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
+                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
+                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.setRequestMethod("POST");
+
+
+                statusCode = urlConnection.getResponseCode();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String dataLine;
+                while((dataLine = bufferedReader.readLine()) != null) {
+                    result.append(dataLine);
+                }
+                urlConnection.disconnect();
+                Log.d(TAG,  "modeGetter response: " + result.toString());
+                if(result.length() >= 3){
+                    JSONObject jsonObject = new JSONObject(result.toString());
+                    if(jsonObject != null){
+                        String modeString = jsonObject.getString("mode");
+
+
+                        int mode = SoundDeviceData.MODE_LINE_IN;
+
+                        if(modeString != null && modeString.length() >= 1){
+                            if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN)){
+                                mode = SoundDeviceData.MODE_LINE_IN;
+                            }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_UPNP)){
+                                mode = SoundDeviceData.MODE_UPNP;
+                            }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_USB)){
+                                mode = SoundDeviceData.MODE_USB;
+                            }
+                        }
+
+                        device.getSoundDeviceData().setMode(mode);
+
+                        if(statusCode == 200) {
+                            DevicesInMemory.updateDevice(device);
+                        }
+                        //MySettings.addDevice(device);
+                    }
+                }
+            }catch (MalformedURLException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (IOException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (JSONException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                Log.d(TAG, "Disabling getStatus flag...");
+                MySettings.setGetStatusState(false);
+            }
+
+            return null;
+        }
+    }
+
 }

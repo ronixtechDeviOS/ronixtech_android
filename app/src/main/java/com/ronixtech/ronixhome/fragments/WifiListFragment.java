@@ -319,7 +319,30 @@ public class WifiListFragment extends Fragment {
         if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
             mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             if(!mWifiManager.isWifiEnabled()){
-                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+                android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        //set message
+                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                                callback.onNetworkSelected(null);
+                            }
+                        })
+                        .show();
             }else{
                 mWifiScanReceiver = new BroadcastReceiver() {
                     @Override
@@ -553,7 +576,34 @@ public class WifiListFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
-            refreshNetworks();
+            if(mWifiManager != null && mWifiManager.isWifiEnabled()){
+                refreshNetworks();
+            }else{
+                android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        //set message
+                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                refreshNetworks();
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                                callback.onNetworkSelected(null);
+                            }
+                        })
+                        .show();
+            }
         }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
             refreshNetworks();
         }

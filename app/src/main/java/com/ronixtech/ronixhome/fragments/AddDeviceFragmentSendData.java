@@ -26,6 +26,7 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -257,13 +259,43 @@ public class AddDeviceFragmentSendData extends Fragment {
                 }
                 fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
 
-                FragmentManager fragmentManager = fragment.getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-                fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-                fragmentTransaction.commitAllowingStateLoss();
+                Device device = MySettings.getTempDevice();
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+                    fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
+                    fragmentTransaction.commitAllowingStateLoss();
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                    //quickly initialize the souddevicedata configuration for the device
+                    MySettings.addDevice(device);
+                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    SoundDeviceData soundDeviceData = new SoundDeviceData();
+                    soundDeviceData.setDeviceID(device.getId());
+                    device.setSoundDeviceData(soundDeviceData);
+                    MySettings.setTempDevice(device);
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                    fragmentTransaction.commit();
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    //go to PIR motion sensor config. fragment
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
+                    fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
                 fragment.goToSearchFragment();
@@ -277,17 +309,35 @@ public class AddDeviceFragmentSendData extends Fragment {
             int numberOfRetries = 0;
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
-                    String urlString = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
+                    String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
                     //?essid=%SSID%&passwd=%PASS%
 
-                    urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID).concat("=").concat(MySettings.getHomeNetwork().getSsid())
-                            .concat("&").concat(Constants.PARAMETER_PASSWORD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
+                    /*urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID).concat("=").concat(MySettings.getHomeNetwork().getSsid())
+                            .concat("&").concat(Constants.PARAMETER_PASSWORD).concat("=").concat(MySettings.getHomeNetwork().getPassword());*/
                     URL url = new URL(urlString);
                     Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
                     urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(Constants.PARAMETER_SSID, MySettings.getHomeNetwork().getSsid());
+                    jsonObject.put(Constants.PARAMETER_PASSWORD, MySettings.getHomeNetwork().getPassword());
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                    Log.d(TAG,  "sendConfigurationToDevice POST data: " + jsonObject.toString());
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jsonObject.toString());
+                    outputStreamWriter.flush();
+                    outputStreamWriter.close();
+
                     statusCode = urlConnection.getResponseCode();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -298,21 +348,11 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
                     urlConnection.disconnect();
                     Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
-                    if(result.length() >= 3){
-                        JSONObject jsonObject = new JSONObject(result.toString());
-                        if(jsonObject != null&& jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
-                            String typeIDString = jsonObject.getString(Constants.PARAMETER_DEVICE_TYPE_ID);
-                            int deviceTypeID = Integer.valueOf(typeIDString);
-                            Device tempDevice = MySettings.getTempDevice();
-                            tempDevice.setDeviceTypeID(deviceTypeID);
-                            MySettings.setTempDevice(tempDevice);
-                        }
-                    }
                 }catch (MalformedURLException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
-                }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
                 }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }finally {
                     urlConnection.disconnect();

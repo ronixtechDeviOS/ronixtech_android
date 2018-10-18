@@ -116,11 +116,15 @@
     <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
-    
+
+    <string name="upnp">UpnP</string>
+    <string name="line_in">Line-In</string>
+    <string name="usb">USB</string>
+
     <string name="scanning_network">Scanning network for Smart Controller</string>
 
     <string name="delete_device">Delete Smart Controller</string>
-    
+
     <string name="no_types_available">No types available</string>
 
     <string name="update_device">Update Smart Controller Firmware</string>
@@ -169,6 +173,14 @@
     <string name="remove_duplicate_smart_controller">Remove old smart controller and re-configure it</string>
     <string name="keep_smart_controller">Keep old smart controller and go back</string>
 
+    <string name="wifi_required_title">WiFi required</string>
+    <string name="wifi_required_message">To continue using this feature, WiFi must be turned on</string>
+    <string name="go_to_wifi_settings">Go to WiFi settings</string>
+
+    <string name="upnp_app_not_available_title">Application not installed</string>
+    <string name="upnp_app_not_available_message">To use UPnP features, please install the app</string>
+    <string name="go_to_play_store">Go to Play Store</string>
+
     <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
     <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>
 
@@ -182,6 +194,7 @@
     <string name="continue_button">Continue</string>
     <string name="add">Add</string>
     <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

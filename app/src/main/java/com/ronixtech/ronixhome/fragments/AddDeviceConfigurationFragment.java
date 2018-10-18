@@ -379,7 +379,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     Line line;
 
                     MySettings.addDevice(device);
-                    device = MySettings.getDeviceByMAC(device.getMacAddress());
+                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
                     if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
                         line = new Line();
@@ -466,7 +466,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     Line line;
 
                     MySettings.addDevice(device);
-                    device = MySettings.getDeviceByMAC(device.getMacAddress());
+                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
                     if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
                         line = new Line();

@@ -451,7 +451,7 @@ public class AddDeviceFragmentGetData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                if(MySettings.getDeviceByChipID(mChipID) != null){
+                if(MySettings.getDeviceByChipID2(mChipID) != null){
                     //remove device and re-add it again, or just go back?
                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                             //set icon
@@ -465,7 +465,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //set what would happen when positive button is clicked
-                                    MySettings.removeDevice(MySettings.getDeviceByChipID(mChipID));
+                                    MySettings.removeDevice(MySettings.getDeviceByChipID2(mChipID));
                                     fragment.goToSendDataFragment();
                                 }
                             })

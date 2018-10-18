@@ -22,6 +22,8 @@ public class DevicesInMemory {
 
     public static void updateDevice(Device device){
         int index = devices.indexOf(device);
-        devices.set(index, device);
+        if(index != -1 && index < devices.size()){
+            devices.set(index, device);
+        }
     }
 }

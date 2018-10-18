@@ -248,13 +248,23 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
 
     @Override
     public void onNetworkSelected(WifiNetwork network){
-        ssid = network.getSsid();
-        password = network.getPassword();
-        ssidTextView.setText(""+ssid);
-        passwordTextView.setText(""+password.trim());
-        ssidRetrieved = true;
-        passwordRetrieved = true;
-        Utils.setButtonEnabled(continueButton, true);
+        if(network != null) {
+            ssid = network.getSsid();
+            password = network.getPassword();
+            ssidTextView.setText("" + ssid);
+            passwordTextView.setText("" + password.trim());
+            ssidRetrieved = true;
+            passwordRetrieved = true;
+            Utils.setButtonEnabled(continueButton, true);
+        }else{
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.commitAllowingStateLoss();
+        }
     }
 
     private void saveUnfinishedChanges(){

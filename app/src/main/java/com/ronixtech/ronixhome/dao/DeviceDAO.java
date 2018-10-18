@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
 import java.util.List;
 
@@ -30,23 +31,36 @@ public abstract class DeviceDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertDevice(Device device);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insertLines(List<Line> lines);
-
-    @Query("DELETE from device WHERE id=:deviceID")
-    public abstract void removeDevice(long deviceID);
-
-    @Query("DELETE from line WHERE device_id=:deviceID")
-    public abstract void removeDeviceLines(long deviceID);
-
-    @Query("SELECT * FROM line WHERE device_id =:deviceID")
-    public abstract List<Line> getLinesList(long deviceID);
-
     @Query("UPDATE device SET ip_address =:ipAddress WHERE id =:deviceID")
     public abstract void updateDeviceIP(long deviceID, String ipAddress);
 
     @Query("UPDATE device SET error_count =:count WHERE id =:deviceID")
     public abstract void updateDeviceErrorCount(long deviceID, int count);
+
+    @Query("DELETE from device WHERE id=:deviceID")
+    public abstract void removeDevice(long deviceID);
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertLines(List<Line> lines);
+
+    @Query("SELECT * FROM line WHERE device_id =:deviceID")
+    public abstract List<Line> getLinesList(long deviceID);
+
+    @Query("DELETE from line WHERE device_id=:deviceID")
+    public abstract void removeDeviceLines(long deviceID);
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertSoundData(SoundDeviceData soundDeviceData);
+
+    @Query("SELECT * FROM sounddevicedata WHERE device_id =:deviceID")
+    public abstract SoundDeviceData getSoundSystemData(long deviceID);
+
+    @Query("DELETE from sounddevicedata WHERE device_id=:deviceID")
+    public abstract void removeDeviceSoundDeviceData(long deviceID);
+
 
     public void insertDeviceWithLines(Device device) {
         List<Line> lines = device.getLines();
@@ -58,7 +72,6 @@ public abstract class DeviceDAO {
         }
         insertDevice(device);
     }
-
     public Device getDeviceWithLinesByID(long id) {
         Device device = findByID(id);
         if(device != null) {
@@ -69,7 +82,6 @@ public abstract class DeviceDAO {
         }
         return device;
     }
-
     public Device getDeviceWithLinesByMacAddress(String macAddress) {
         Device device = findByMAC(macAddress);
         if(device != null) {
@@ -80,7 +92,6 @@ public abstract class DeviceDAO {
         }
         return device;
     }
-
     public Device getDeviceWithLinesByChipID(String chipID) {
         Device device = findByChipID(chipID);
         if(device != null){
@@ -91,9 +102,53 @@ public abstract class DeviceDAO {
         }
         return device;
     }
-
     public void removeDeviceWithLines(Device device){
         removeDeviceLines(device.getId());
+        removeDevice(device.getId());
+    }
+
+
+
+    public void insertDeviceWithSoundDeviceData(Device device){
+        if(device.getSoundDeviceData() != null) {
+            SoundDeviceData soundDeviceData = device.getSoundDeviceData();
+            soundDeviceData.setDeviceID(device.getId());
+            insertSoundData(soundDeviceData);
+        }
+        insertDevice(device);
+    }
+    public Device getDeviceWithSoundSystemDataByID(long id) {
+        Device device = findByID(id);
+        if(device != null) {
+            SoundDeviceData soundDeviceData = getSoundSystemData(id);
+            if (device != null) {
+                device.setSoundDeviceData(soundDeviceData);
+            }
+        }
+        return device;
+    }
+    public Device getDeviceWithSoundSystemDataByMacAddress(String macAddress) {
+        Device device = findByMAC(macAddress);
+        if(device != null) {
+            SoundDeviceData soundDeviceData = getSoundSystemData(device.getId());
+            if (device != null) {
+                device.setSoundDeviceData(soundDeviceData);
+            }
+        }
+        return device;
+    }
+    public Device getDeviceWithSoundSystemDataByChipID(String chipID) {
+        Device device = findByChipID(chipID);
+        if(device != null) {
+            SoundDeviceData soundDeviceData = getSoundSystemData(device.getId());
+            if (device != null) {
+                device.setSoundDeviceData(soundDeviceData);
+            }
+        }
+        return device;
+    }
+    public void removeDeviceWithSoundDeviceData(Device device){
+        removeDeviceSoundDeviceData(device.getId());
         removeDevice(device.getId());
     }
 }
