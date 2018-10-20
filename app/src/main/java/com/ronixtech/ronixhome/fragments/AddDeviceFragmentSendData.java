@@ -93,8 +93,8 @@ public class AddDeviceFragmentSendData extends Fragment {
     private void sendConfigurationToDevice(){
         //debugTextView.append("Sending home network info to your RonixTech device...\n");
 
-        DataSender dataSender = new DataSender(getActivity(), this);
-        dataSender.execute();
+        DataSenderUsingGet dataSenderUsingGet = new DataSenderUsingGet(getActivity(), this);
+        dataSenderUsingGet.execute();
 
         //volley request to device to send ssid/password and then get device info for next steps
 /*        String url = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
@@ -310,10 +310,7 @@ public class AddDeviceFragmentSendData extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
-                    //?essid=%SSID%&passwd=%PASS%
 
-                    /*urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID).concat("=").concat(MySettings.getHomeNetwork().getSsid())
-                            .concat("&").concat(Constants.PARAMETER_PASSWORD).concat("=").concat(MySettings.getHomeNetwork().getPassword());*/
                     URL url = new URL(urlString);
                     Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
 
@@ -364,4 +361,120 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
+    public static class DataSenderUsingGet extends AsyncTask<Void, Void, Void> {
+        private final String TAG = AddDeviceFragmentSendData.DataSenderUsingGet.class.getSimpleName();
+
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public DataSenderUsingGet(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                if(fragment.mListener != null){
+                    fragment.mListener.onStartListening();
+                }
+                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+
+                Device device = MySettings.getTempDevice();
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+                    fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
+                    fragmentTransaction.commitAllowingStateLoss();
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                    //quickly initialize the souddevicedata configuration for the device
+                    MySettings.addDevice(device);
+                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    SoundDeviceData soundDeviceData = new SoundDeviceData();
+                    soundDeviceData.setDeviceID(device.getId());
+                    device.setSoundDeviceData(soundDeviceData);
+                    MySettings.setTempDevice(device);
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                    fragmentTransaction.commit();
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    //go to PIR motion sensor config. fragment
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
+                    fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+
+            }else{
+                DataSender dataSender = new DataSender(activity, fragment);
+                dataSender.execute();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    String urlString = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
+                    //?essid=%SSID%&passwd=%PASS%
+
+                    urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getSsid())
+                            .concat("&").concat(Constants.PARAMETER_PASSWORD_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
+                    URL url = new URL(urlString);
+                    Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    urlConnection.disconnect();
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
 }

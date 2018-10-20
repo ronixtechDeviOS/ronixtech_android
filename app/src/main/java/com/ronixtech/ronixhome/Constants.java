@@ -24,7 +24,7 @@ public class Constants {
 
     public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/user1.bin";
     public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/user2.bin";
-    public static final String DEVICE_FIRMWARE_LATEST_VERSION_URL = "http://ronixtech.com/ronix_services/wifi_updates/switches_controller/latest_version";
+    public static final String DEVICE_FIRMWARE_LATEST_VERSION_URL = "http://ronixtech.com/ronix_services/wifi_updates/switches_controller/latest_version.php";
 
     public static final String DEVICE_GET_FIRMWARE_FILE_NAME_URL = "/flash/next";
     public static final String DEVICE_UPLOAD_FIRMWARE_URL = "/flash/upload";
@@ -47,6 +47,8 @@ public class Constants {
     public static final String PARAMETER_FACEBOOK_ACCESS_TOKEN = "access_token";
     public static final String PARAMETER_SSID = "U_W_SSD";
     public static final String PARAMETER_PASSWORD = "U_W_PWD";
+    public static final String PARAMETER_SSID_GET_METHOD = "essid";
+    public static final String PARAMETER_PASSWORD_GET_METHOD = "passwd";
     public static final String PARAMETER_DEVICE_TYPE_ID = "unit_type_id";
     public static final String PARAMETER_DEVICE_CHIP_ID = "unit_chip_id_txt";
     public static final String PARAMETER_COMMAND_ZERO = "command_0";
