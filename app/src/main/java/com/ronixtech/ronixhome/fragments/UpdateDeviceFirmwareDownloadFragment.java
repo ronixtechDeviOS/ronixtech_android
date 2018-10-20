@@ -46,6 +46,8 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
     int totalNumberOfFiles = 2;
     int currentFile = 1;
 
+    private UpdateDeviceFirmwareDownloadFragment fragment;
+
     public UpdateDeviceFirmwareDownloadFragment() {
         // Required empty public constructor
     }
@@ -76,19 +78,26 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.updating_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
+        fragment = this;
+
         progressCircle = view.findViewById(R.id.progress_circle);
         progressTextView = view.findViewById(R.id.progress_textview);
 
         progressTextView.setText(getActivity().getResources().getString(R.string.downloading_file, currentFile, totalNumberOfFiles));
 
-        if(Utils.isInternetAvailable()){
-            DownloadTask downloadTask = new DownloadTask(getActivity(), this);
-            downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_1);
-        }else{
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
-            goToHomeFragment();
-        }
+        new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
+            @Override
+            public void onConnectionSuccess() {
+                DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
+                downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_1);
+            }
 
+            @Override
+            public void onConnectionFail(String errorMsg) {
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+                goToHomeFragment();
+            }
+        }).execute();
 
         return view;
     }

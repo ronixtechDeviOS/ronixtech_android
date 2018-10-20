@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Utils {
+    private static final String TAG = Utils.class.getSimpleName();
     public static final int ANIMATION_TYPE_TRANSLATION = 0;
     public static final int ANIMATION_TYPE_FADE = 1;
 
@@ -448,17 +450,6 @@ public class Utils {
         }
     }
 
-    public static boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
-            //You can replace it with your name
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     private static boolean isAppEnabled(Context context, String packageName) {
         boolean appStatus = false;
         try {
@@ -518,6 +509,60 @@ public class Utils {
                         }
                     })
                     .show();
+        }
+    }
+
+    public static class InternetChecker extends AsyncTask<Void, Void, Boolean>{
+
+        private OnConnectionCallback onConnectionCallback;
+        private Context context;
+
+        public InternetChecker(Context context, OnConnectionCallback onConnectionCallback) {
+            super();
+            this.onConnectionCallback = onConnectionCallback;
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if (context == null)
+                return false;
+
+            try {
+                InetAddress ipAddr = InetAddress.getByName("google.com");
+                //You can replace it with your name
+                return !ipAddr.equals("");
+
+            } catch (Exception e) {
+                Log.d(TAG, "Exception: " + e.getMessage());
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+
+            if (b) {
+                onConnectionCallback.onConnectionSuccess();
+            } else {
+                String msg = "No Internet Connection";
+                if (context == null)
+                    msg = "Context is null";
+                onConnectionCallback.onConnectionFail(msg);
+            }
+
+        }
+
+        public interface OnConnectionCallback {
+            void onConnectionSuccess();
+
+            void onConnectionFail(String errorMsg);
         }
     }
 }

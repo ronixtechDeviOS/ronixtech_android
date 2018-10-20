@@ -25,7 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static MainActivity mInstance;
+    public static boolean isResumed;
 
     FragmentManager fragmentManager;
     DashboardDevicesFragment dashboardDevicesFragment;
@@ -113,6 +120,38 @@ public class MainActivity extends AppCompatActivity
         userEmailTextView.setText(MySettings.getActiveUser().getEmail());
     }
 
+    private void getLatestFirmwareVersion(){
+        String url = Constants.DEVICE_LATEST_FIRMWARE_VERSIONS_URL;
+
+        //url = url.concat("?").concat(Constants.PARAMETER_DEVICE_TYPE_ID).concat("=").concat(""+Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                /*http://ronixtech.com/ronix_services/wifi_updates/latest_version.php?unit_type_id=%unit_type_id_value% and it returns latest firmware version for the specific device type in case different types have different firmware versions
+
+                if no value specified for the device_type_value, then return:
+                [
+                    {
+                        "unit_type_id":100006, "latest_firmware_version":"101401"
+                    },
+                    {
+                        "unit_type_id":100070, "latest_firmware_version":"101401"
+                    },... so on
+                ]*/
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        stringRequest.setShouldCache(false);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(Constants.SERVER_TIMEOUT, Constants.SERVER_NUMBER_OF_RETRIES, 0f));
+        HttpConnector.getInstance(mInstance).addToRequestQueue(stringRequest);
+    }
+
     public void refreshDevicesListFromMemory(){
         if(fragmentManager != null) {
             if(dashboardDevicesFragment == null) {
@@ -144,6 +183,18 @@ public class MainActivity extends AppCompatActivity
 
     public static synchronized MainActivity getInstance() {
         return mInstance;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isResumed = true;
+    }
+
+    @Override
+    public void onPause() {
+        isResumed = false;
+        super.onPause();
     }
 
     @Override
@@ -276,46 +327,47 @@ public class MainActivity extends AppCompatActivity
                 if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 
                     ConnectivityManager cm = (ConnectivityManager) mInstance.getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-                    if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI &&
-                            networkInfo.isConnected()) {
-                        // Wifi is connected
-                        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-                        String connectedSSID = wifiInfo.getSSID();
+                    if(cm != null){
+                        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+                        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
+                            // Wifi is connected
+                            WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                            String connectedSSID = wifiInfo.getSSID();
 
-                        /*if(connectedSSID.equals(MySettings.getHomeNetwork().getSsid())){
-                            NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask(mInstance);
-                            networkScannerAsyncTask.execute();
-                        }*/
+                            /*if(connectedSSID.equals(MySettings.getHomeNetwork().getSsid())){
+                                NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask(mInstance);
+                                networkScannerAsyncTask.execute();
+                            }*/
 
-                        Handler mHander = new Handler();
-                        mHander.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                /*// Create a Constraints that defines when the task should run
-                                Constraints myConstraints = new Constraints.Builder()
-                                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                                        // Many other constraints are available, see the
-                                        // Constraints.Builder reference
-                                        .build();
+                            Handler mHander = new Handler();
+                            mHander.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    /*// Create a Constraints that defines when the task should run
+                                    Constraints myConstraints = new Constraints.Builder()
+                                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                                            // Many other constraints are available, see the
+                                            // Constraints.Builder reference
+                                            .build();
 
-                                // ...then create a OneTimeWorkRequest that uses those constraints
-                                OneTimeWorkRequest scannerWork =
-                                        new OneTimeWorkRequest.Builder(NetworkScanner.class)
-                                                .setConstraints(myConstraints)
-                                                .build();
-                                WorkManager.getInstance().enqueue(scannerWork);*/
-                                MySettings.scanNetwork();
+                                    // ...then create a OneTimeWorkRequest that uses those constraints
+                                    OneTimeWorkRequest scannerWork =
+                                            new OneTimeWorkRequest.Builder(NetworkScanner.class)
+                                                    .setConstraints(myConstraints)
+                                                    .build();
+                                    WorkManager.getInstance().enqueue(scannerWork);*/
+                                    MySettings.scanNetwork();
+                                }
+                            }, 10000);
+
+
+                            try {
+                                if (mInstance != null) {
+                                    mInstance.unregisterReceiver(mWifiConnectionReceiver);
+                                }
+                            }catch (Exception e){
+                                Log.d(TAG, "Error unregistering mWifiConnectionReceiver");
                             }
-                        }, 10000);
-
-
-                        try {
-                            if (mInstance != null) {
-                                mInstance.unregisterReceiver(mWifiConnectionReceiver);
-                            }
-                        }catch (Exception e){
-                            Log.d(TAG, "Error unregistering mWifiConnectionReceiver");
                         }
                     }
                 }

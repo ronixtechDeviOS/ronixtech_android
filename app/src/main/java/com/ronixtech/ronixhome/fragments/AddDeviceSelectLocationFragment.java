@@ -240,6 +240,9 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 device.setRoomID(selectedRoom.getId());
                 MySettings.addDevice(device);
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    Device tempDevice = MySettings.getTempDevice();
+                    tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+                    MySettings.setTempDevice(tempDevice);
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

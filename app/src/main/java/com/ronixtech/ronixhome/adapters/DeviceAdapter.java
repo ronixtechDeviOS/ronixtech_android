@@ -956,6 +956,9 @@ public class DeviceAdapter extends ArrayAdapter {
     private void removeDevice(Device device){
         devices.remove(device);
         MySettings.removeDevice(device);
+        if(MainActivity.getInstance() != null){
+            MainActivity.getInstance().refreshDeviceListFromDatabase();
+        }
         notifyDataSetChanged();
     }
 
@@ -1428,6 +1431,11 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
             }
 
+            if(statusCode == 200){
+                line.setPowerState(state);
+            }else{
+                line.setPowerState(oldState);
+            }
             lines.remove(line);
             lines.add(position, line);
             device.setLines(lines);

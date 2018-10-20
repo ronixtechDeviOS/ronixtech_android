@@ -24,7 +24,12 @@ public class Constants {
 
     public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/user1.bin";
     public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/user2.bin";
-    public static final String DEVICE_FIRMWARE_LATEST_VERSION_URL = "http://ronixtech.com/ronix_services/wifi_updates/switches_controller/latest_version.php";
+    public static final String DEVICE_LATEST_FIRMWARE_VERSIONS_URL = "http://ronixtech.com/ronix_services/wifi_updates/latest_version.php";
+
+    public static final int SERVER_TIMEOUT = 5000;
+    public static final int SERVER_NUMBER_OF_RETRIES = 2;
+
+    public static final String DEVICE_DEFAULT_FIRMWARE_VERSION = "0";
 
     public static final String DEVICE_GET_FIRMWARE_FILE_NAME_URL = "/flash/next";
     public static final String DEVICE_UPLOAD_FIRMWARE_URL = "/flash/upload";

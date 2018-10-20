@@ -6,6 +6,7 @@ import android.arch.persistence.room.migration.Migration;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.gson.Gson;
 import com.ronixtech.ronixhome.entities.Device;
@@ -39,6 +40,7 @@ public class MySettings {
     public static final String PREF_CONTROL_ACTIVE = "control_active";
     public static final String PREF_GETSTATUS_ACTIVE = "get_status_active";
     public static final String PREF_APP_FIRST_START = "app_first_start";
+    public static final String PREF_DEVICES_LATEST_VERSIONS = "pref_devices_latest_firmware_versions";
 
 
     private static User loggedInUser;
@@ -57,6 +59,8 @@ public class MySettings {
     private static Place currentPlace;
     private static Floor currentFloor;
     private static com.ronixtech.ronixhome.entities.Room currentRoom;
+
+    private static SparseArray<String> devicesLatestVersions;
 
     private static Gson gson;
 
@@ -247,6 +251,9 @@ public class MySettings {
             dev.setErrorCount(dev.getErrorCount()+1);
         }
     }
+    public static void updateDeviceType(Device device, int deviceType){
+        MySettings.initDB().deviceDAO().updateDeviceTypeID(device.getId(), deviceType);
+    }
     public static Device getDeviceByID(long deviceID, int deviceType) {
         if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
@@ -282,16 +289,8 @@ public class MySettings {
         List<Device> devices = MySettings.initDB().deviceDAO().getAll();
         if (devices != null && devices.size() >= 1) {
             for (Device dev : devices) {
-                if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
-                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
-                    devicesWithData.add(tempDevice);
-                }else if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
-                    devicesWithData.add(tempDevice);
-                }
-
+                Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
+                devicesWithData.add(tempDevice);
             }
         }
         return devicesWithData;
@@ -301,16 +300,8 @@ public class MySettings {
         List<Device> devices = MySettings.initDB().deviceDAO().getRoomDevices(roomID);
         if (devices != null && devices.size() >= 1) {
             for (Device dev : devices) {
-                if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        dev.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
-                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
-                    devicesWithData.add(tempDevice);
-                }else if(dev.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                    Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
-                    devicesWithData.add(tempDevice);
-                }
-
+                Device tempDevice = MySettings.getDeviceByMAC(dev.getMacAddress(), dev.getDeviceTypeID());
+                devicesWithData.add(tempDevice);
             }
         }
         return devicesWithData;
@@ -511,6 +502,52 @@ public class MySettings {
         //SharedPreferences prefs = getSettings();
         //scanningActive = prefs.getBoolean(PREF_GETSTATUS_ACTIVE, true);
         return gettingStatusActive;
+    }
+
+    public static void setDeviceLatestFirmwareVersion(int deviceType, String latestVersion){
+        if(devicesLatestVersions != null){
+            devicesLatestVersions.put(deviceType, latestVersion);
+        }else{
+            devicesLatestVersions = new SparseArray<>();
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_DEVICES_LATEST_VERSIONS, "");
+            if (json.isEmpty() || json.equals("null")) {
+
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                devicesLatestVersions = gson.fromJson(json, SparseArray.class);
+                devicesLatestVersions.put(deviceType, latestVersion);
+            }
+        }
+
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putString(PREF_DEVICES_LATEST_VERSIONS, gson.toJson(devicesLatestVersions));
+        editor.apply();
+    }
+    public static String getDeviceLatestFirmwareVersion(int deviceType){
+        if(devicesLatestVersions != null){
+            if(devicesLatestVersions.get(deviceType) != null && devicesLatestVersions.get(deviceType).length() >= 1){
+                return devicesLatestVersions.get(deviceType);
+            }
+        }else{
+            devicesLatestVersions = new SparseArray<>();
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_DEVICES_LATEST_VERSIONS, "");
+            if (json.isEmpty() || json.equals("null")) {
+                return Constants.DEVICE_DEFAULT_FIRMWARE_VERSION;
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                devicesLatestVersions = gson.fromJson(json, SparseArray.class);
+                if(devicesLatestVersions.get(deviceType) != null && devicesLatestVersions.get(deviceType).length() >= 1){
+                    return devicesLatestVersions.get(deviceType);
+                }
+            }
+        }
+        return Constants.DEVICE_DEFAULT_FIRMWARE_VERSION;
     }
 
     public static void setAppFirstStart(boolean state) {

@@ -175,8 +175,8 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
 
     public void notifyCrashlyticsOfAffectedDeviceUpdate(){
         Bundle bundle = new Bundle();
+        bundle.putString("device_type_id", ""+device.getDeviceTypeID());
         bundle.putString("device_chip_id", device.getChipID());
-        bundle.putString("device_id", ""+device.getDeviceTypeID());
         bundle.putString("device_mac_address", device.getMacAddress());
         mFirebaseAnalytics.logEvent("device_firmware_updated", bundle);
     }
@@ -329,6 +329,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 deviceRebooter.execute();
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     fragment.notifyCrashlyticsOfAffectedDeviceUpdate();
+                    MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
                 }
                 Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
             }else{

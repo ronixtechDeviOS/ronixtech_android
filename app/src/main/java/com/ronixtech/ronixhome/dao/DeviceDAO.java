@@ -31,11 +31,15 @@ public abstract class DeviceDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertDevice(Device device);
 
+
     @Query("UPDATE device SET ip_address =:ipAddress WHERE id =:deviceID")
     public abstract void updateDeviceIP(long deviceID, String ipAddress);
 
     @Query("UPDATE device SET error_count =:count WHERE id =:deviceID")
     public abstract void updateDeviceErrorCount(long deviceID, int count);
+
+    @Query("UPDATE device SET device_type_id =:deviceType WHERE id =:deviceID")
+    public abstract void updateDeviceTypeID(long deviceID, int deviceType);
 
     @Query("DELETE from device WHERE id=:deviceID")
     public abstract void removeDevice(long deviceID);

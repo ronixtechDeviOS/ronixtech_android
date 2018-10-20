@@ -144,8 +144,10 @@ public class AddDeviceFragmentSendData extends Fragment {
     }
 
     public void goToSearchFragment(){
-        if(getFragmentManager() != null) {
-            getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+        if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+            if (getFragmentManager() != null) {
+                getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+            }
         }
     }
 

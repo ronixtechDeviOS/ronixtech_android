@@ -82,7 +82,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
             InetAddress host = InetAddress.getByName(intToIp(dhcpInfo.gateway));
             byte[] ip = host.getAddress();
 
-            NUMBER_OF_THREADS = Utils.getNumCores();
+            NUMBER_OF_THREADS = Utils.getNumCores() - 2;
 
             RANGE = 254 / NUMBER_OF_THREADS;
             START_IP = 1;
