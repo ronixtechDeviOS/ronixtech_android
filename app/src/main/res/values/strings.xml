@@ -117,7 +117,7 @@
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
 
-    <string name="upnp">UpnP</string>
+    <string name="upnp">Stream</string>
     <string name="line_in">Line-In</string>
     <string name="usb">USB</string>
 
@@ -177,6 +177,10 @@
     <string name="wifi_required_message">To continue using this feature, WiFi must be turned on</string>
     <string name="go_to_wifi_settings">Go to WiFi settings</string>
 
+    <string name="location_required_title">Location Services</string>
+    <string name="location_required_message">To continue using this feature, Location Services must be turned on</string>
+    <string name="go_to_location_settings">Go to Location settings</string>
+
     <string name="upnp_app_not_available_title">Application not installed</string>
     <string name="upnp_app_not_available_message">To use UPnP features, please install the app</string>
     <string name="go_to_play_store">Go to Play Store</string>
@@ -187,6 +191,10 @@
     <string name="smart_controller_connection_error">Error connecting to smart controller, please try again</string>
     <string name="server_connection_error">Unable to connect to server, please try again</string>
     <string name="no_internet_connection">No internet connection, please try again alter</string>
+
+    <string name="registration_failed">Registration failed</string>
+    <string name="login_failed">Login failed</string>
+    <string name="reset_password_failed">Failed to send password reset email</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

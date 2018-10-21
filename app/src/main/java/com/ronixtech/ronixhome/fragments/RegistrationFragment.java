@@ -3,9 +3,11 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +16,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.ronixtech.ronixhome.Constants;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -37,6 +45,8 @@ public class RegistrationFragment extends Fragment {
 
     EditText firstNameEditText, lastNameEditText, emailEditText, passwordEditText;
     Button registerButton;
+
+    private FirebaseAuth mAuth;
 
     public RegistrationFragment() {
         // Required empty public constructor
@@ -71,6 +81,10 @@ public class RegistrationFragment extends Fragment {
         emailEditText = view.findViewById(R.id.registration_email_edittext);
         passwordEditText = view.findViewById(R.id.registration_password_edittext);
         registerButton = view.findViewById(R.id.register_button);
+
+        mAuth = FirebaseAuth.getInstance();
+
+
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,14 +191,65 @@ public class RegistrationFragment extends Fragment {
     }
 
     private void register(final String firstName, final  String lastName, final String email, final String password){
-        String url = Constants.LOGIN_URL;
 
-        User user = new User();
-        user.setEmail(email);
-        MySettings.setCurrentUser(user);
-        Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-        startActivity(mainIntent);
-        getActivity().finish();
+        Utils.showLoading(getActivity());
+
+        if(mAuth != null){
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign up success, update database with the signed-up user's information
+                                Log.d(TAG, "createUserWithEmail success");
+                                FirebaseUser fbUser = mAuth.getCurrentUser();
+                                UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(firstName + "" + lastName)
+                                        .build();
+
+                                if(fbUser != null){
+                                    fbUser.updateProfile(userProfileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()) {
+                                                User user = new User();
+                                                user.setEmail(email);
+                                                user.setPassword(password);
+                                                user.setFirstName(firstName);
+                                                user.setLastName(lastName);
+                                                MySettings.setCurrentUser(user);
+                                                Utils.dismissLoading();
+                                                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                                                startActivity(mainIntent);
+                                                getActivity().finish();
+                                            }else{
+                                                Log.d(TAG, "userProfileChangeRequest failure: " + task.getException());
+                                                if(getActivity() != null && task.getException() != null){
+                                                    Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                                //Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.registration_failed), Toast.LENGTH_SHORT).show();
+                                                Utils.dismissLoading();
+                                            }
+                                        }
+                                    });
+                                }
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.d(TAG, "createUserWithEmail failure: " + task.getException());
+                                if(getActivity() != null && task.getException() != null){
+                                    Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                                //Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.registration_failed), Toast.LENGTH_SHORT).show();
+                                Utils.dismissLoading();
+                            }
+                        }
+                    });
+        }else{
+            if(getActivity() != null) {
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.registration_failed), Toast.LENGTH_SHORT).show();
+            }
+            Utils.dismissLoading();
+        }
 
         /*final CustomProgressDialog customProgressDialog = CustomProgressDialog.show(getActivity(), "", "");
 

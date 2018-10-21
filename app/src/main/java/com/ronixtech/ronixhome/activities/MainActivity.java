@@ -30,6 +30,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.firebase.auth.FirebaseAuth;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
@@ -289,6 +290,9 @@ public class MainActivity extends AppCompatActivity
         } else if( id == R.id.log_out){
             if(MySettings.getActiveUser() != null) {
                 MySettings.deleteCurrentUser(MySettings.getActiveUser());
+                if(FirebaseAuth.getInstance() != null && FirebaseAuth.getInstance().getCurrentUser() != null){
+                    FirebaseAuth.getInstance().signOut();
+                }
                 Intent loginIntent = new Intent(mInstance, LoginActivity.class);
                 startActivity(loginIntent);
                 finish();

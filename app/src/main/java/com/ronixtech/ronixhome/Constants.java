@@ -35,6 +35,8 @@ public class Constants {
     public static final String DEVICE_UPLOAD_FIRMWARE_URL = "/flash/upload";
     public static final String DEVICE_REBOOT_URL = "/flash/reboot";
 
+    public static final String DEVICE_SOUND_SYSTEM_SHUTDOWN_URL = "/shutdown";
+
     public static final String LOGIN_URL = "";
     public static final String REGISTER_URL = "";
 
@@ -60,6 +62,9 @@ public class Constants {
     public static final String PARAMETER_COMMAND_ONE = "command_1";
     public static final String PARAMETER_ACCESS_TOKEN = "R_TOKEN";
     public static final String PARAMETER_SOUND_CONTROLLER_MODE = "mode";
+    public static final String PARAMETER_SOUND_CONTROLLER_SHUTDOWN_MODE = "option";
+    public static final String PARAMETER_SOUND_CONTROLLER_OPTION_SHUTDOWN = "shutdown";
+    public static final String PARAMETER_SOUND_CONTROLLER_OPTION_REBOOT = "reboot";
 
     public static final String PARAMETER_FIRST_LINE_DIMMING_CONTROL_STATE = "B";
     public static final String PARAMETER_SECOND_LINE_DIMMING_CONTROL_STATE = "C";

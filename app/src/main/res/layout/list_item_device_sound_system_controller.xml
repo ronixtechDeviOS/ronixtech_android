@@ -35,7 +35,7 @@
         android:elevation="8dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:layout_below="@id/device_location_textview"
+        android:layout_below="@id/scanning_network_layout"
         android:layout_marginTop="4dp">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                     android:src="@drawable/overflow_3_dots_gray"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>
-                <ToggleButton
+                <Button
                     android:id="@+id/device_mode_switch"
                     android:layout_width="60dp"
                     android:layout_height="45dp"

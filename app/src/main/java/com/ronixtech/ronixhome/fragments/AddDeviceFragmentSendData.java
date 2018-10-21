@@ -256,37 +256,15 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                if(fragment.mListener != null){
-                    fragment.mListener.onStartListening();
-                }
-                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
-
                 Device device = MySettings.getTempDevice();
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-                    fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-                    fragmentTransaction.commitAllowingStateLoss();
+                    DeviceRebooterGET deviceRebooterGET = new DeviceRebooterGET(activity, fragment);
+                    deviceRebooterGET.execute();
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                    //quickly initialize the souddevicedata configuration for the device
-                    MySettings.addDevice(device);
-                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-                    SoundDeviceData soundDeviceData = new SoundDeviceData();
-                    soundDeviceData.setDeviceID(device.getId());
-                    device.setSoundDeviceData(soundDeviceData);
-                    MySettings.setTempDevice(device);
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                    fragmentTransaction.commit();
+                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment);
+                    deviceRebooter.execute();
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
                     //go to PIR motion sensor config. fragment
                     FragmentManager fragmentManager = fragment.getFragmentManager();
@@ -354,7 +332,9 @@ public class AddDeviceFragmentSendData extends Fragment {
                 }catch (IOException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }finally {
-                    urlConnection.disconnect();
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
                     numberOfRetries++;
                 }
             }
@@ -389,37 +369,16 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                if(fragment.mListener != null){
-                    fragment.mListener.onStartListening();
-                }
-                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
-
                 Device device = MySettings.getTempDevice();
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-                    fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-                    fragmentTransaction.commitAllowingStateLoss();
+                    DeviceRebooterGET deviceRebooterGET = new DeviceRebooterGET(activity, fragment);
+                    deviceRebooterGET.execute();
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                    //quickly initialize the souddevicedata configuration for the device
-                    MySettings.addDevice(device);
-                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-                    SoundDeviceData soundDeviceData = new SoundDeviceData();
-                    soundDeviceData.setDeviceID(device.getId());
-                    device.setSoundDeviceData(soundDeviceData);
-                    MySettings.setTempDevice(device);
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                    fragmentTransaction.commit();
+                    //reboot the device
+                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment);
+                    deviceRebooter.execute();
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
                     //go to PIR motion sensor config. fragment
                     FragmentManager fragmentManager = fragment.getFragmentManager();
@@ -471,7 +430,191 @@ public class AddDeviceFragmentSendData extends Fragment {
                 }catch (IOException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class DeviceRebooter extends AsyncTask<Void, Void, Void> {
+        private final String TAG = AddDeviceFragmentSendData.DeviceRebooter.class.getSimpleName();
+
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public DeviceRebooter(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(fragment.mListener != null){
+                fragment.mListener.onStartListening();
+            }
+            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+
+            //quickly initialize the souddevicedata configuration for the device
+            Device device = MySettings.getTempDevice();
+            MySettings.addDevice(device);
+            device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+            SoundDeviceData soundDeviceData = new SoundDeviceData();
+            soundDeviceData.setDeviceID(device.getId());
+            device.setSoundDeviceData(soundDeviceData);
+            MySettings.setTempDevice(device);
+            FragmentManager fragmentManager = fragment.getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+            fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+            fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+            fragmentTransaction.commit();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_SOUND_SYSTEM_SHUTDOWN_URL);
+                    Log.d(TAG,  "rebootDevice URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_SHUTDOWN_MODE, Constants.PARAMETER_SOUND_CONTROLLER_OPTION_REBOOT);
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                    Log.d(TAG,  "rebootDevice POST data: " + jsonObject.toString());
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jsonObject.toString());
+                    outputStreamWriter.flush();
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
                     urlConnection.disconnect();
+                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class DeviceRebooterGET extends AsyncTask<Void, Void, Void> {
+        private final String TAG = UpdateDeviceFirmwareUploadFragment.DeviceRebooter.class.getSimpleName();
+
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public DeviceRebooterGET(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(fragment.mListener != null){
+                fragment.mListener.onStartListening();
+            }
+            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+
+            FragmentManager fragmentManager = fragment.getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
+            fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+            fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
+            fragmentTransaction.commitAllowingStateLoss();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_REBOOT_URL);
+                    Log.d(TAG,  "rebootDevice URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    //urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    //urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
                     numberOfRetries++;
                 }
             }

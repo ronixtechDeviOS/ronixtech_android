@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,6 +29,11 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.CustomProgressDialog;
 import com.ronixtech.ronixhome.HttpConnector;
@@ -61,8 +67,10 @@ public class LoginFragment extends Fragment {
     CallbackManager callbackManager;
 
     EditText emailEditText, passwordEditText;
-    Button loginButton, registerButton;
+    Button loginButton, registerButton, resetPasswordButton;
     LoginButton facebookLoginButton;
+
+    private FirebaseAuth mAuth;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -95,8 +103,11 @@ public class LoginFragment extends Fragment {
         emailEditText = view.findViewById(R.id.login_email_edittext);
         passwordEditText = view.findViewById(R.id.login_password_edittext);
         loginButton = view.findViewById(R.id.login_button);
+        resetPasswordButton = view.findViewById(R.id.forgot_password_button);
         facebookLoginButton = view.findViewById(R.id.facebook_login_button);
         registerButton = view.findViewById(R.id.register_button);
+
+        mAuth = FirebaseAuth.getInstance();
 
         facebookLoginButton.setReadPermissions(Arrays.asList(EMAIL));
         facebookLoginButton.setFragment(this);
@@ -135,6 +146,15 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        resetPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Utils.validateInputs(emailEditText)){
+                    resetPassword(emailEditText.getText().toString());
+                }
+            }
+        });
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,19 +177,44 @@ public class LoginFragment extends Fragment {
             }
         });
 
+
         return view;
     }
 
     private void login(final String email, final String password){
-        String url = Constants.LOGIN_URL;
-
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        MySettings.setCurrentUser(user);
-        Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-        startActivity(mainIntent);
-        getActivity().finish();
+        Utils.showLoading(getActivity());
+        if(mAuth != null){
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()){
+                        FirebaseUser fbUser = mAuth.getCurrentUser();
+                        User user = new User();
+                        user.setEmail(fbUser.getEmail());
+                        user.setPassword(password);
+                        user.setFirstName(fbUser.getDisplayName());
+                        MySettings.setCurrentUser(user);
+                        Utils.dismissLoading();
+                        Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                        startActivity(mainIntent);
+                        getActivity().finish();
+                    }else {
+                        // If sign in fails, display a message to the user.
+                        Log.d(TAG, "signInWithEmailAndPassword failure: " + task.getException());
+                        if(getActivity() != null && task.getException() != null){
+                            Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                        //Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+                        Utils.dismissLoading();
+                    }
+                }
+            });
+        }else{
+            if(getActivity() != null){
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+            }
+            Utils.dismissLoading();
+        }
 
         /*final CustomProgressDialog customProgressDialog = CustomProgressDialog.show(getActivity(), "", "");
 
@@ -236,6 +281,31 @@ public class LoginFragment extends Fragment {
                 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);*/
+    }
+
+    private void resetPassword(String email){
+        Utils.showLoading(getActivity());
+        if(mAuth != null){
+            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        Utils.dismissLoading();
+                    }else{
+                        Log.d(TAG, "sendPasswordResetEmail failure: " + task.getException());
+                        if(getActivity() != null && task.getException() != null){
+                            Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                        Utils.dismissLoading();
+                    }
+                }
+            });
+        }else{
+            if(getActivity() != null) {
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.reset_password_failed), Toast.LENGTH_SHORT).show();
+            }
+            Utils.dismissLoading();
+        }
     }
 
     private void loginFacebook(final String accessToken){

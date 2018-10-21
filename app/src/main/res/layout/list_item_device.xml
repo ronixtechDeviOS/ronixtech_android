@@ -104,21 +104,12 @@
                     android:textSize="16sp"
                     android:textAlignment="center"
                     android:text="FirstLineName"/>
-                <CheckBox
-                    android:id="@+id/first_line_dimming_checkbox"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:visibility="gone"
-                    android:layout_below="@id/first_line_textvie"
-                    android:layout_marginTop="8dp"/>
                 <SeekBar
                     android:id="@+id/first_line_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_below="@id/first_line_textvie"
-                    android:layout_toEndOf="@id/first_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/first_line_dimming_checkbox"
                     android:thumb="@drawable/seekbar_thumb"
                     android:padding="16dp"/>
             </RelativeLayout>
@@ -178,21 +169,12 @@
                     android:textSize="16sp"
                     android:textAlignment="center"
                     android:text="SecondLineName"/>
-                <CheckBox
-                    android:id="@+id/second_line_dimming_checkbox"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:visibility="gone"
-                    android:layout_below="@id/second_line_textview"
-                    android:layout_marginTop="8dp" />
                 <SeekBar
                     android:id="@+id/second_line_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_below="@id/second_line_textview"
-                    android:layout_toEndOf="@id/second_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/second_line_dimming_checkbox"
                     android:thumb="@drawable/seekbar_thumb"
                     android:padding="16dp"/>
             </RelativeLayout>
@@ -252,22 +234,12 @@
                     android:textSize="16sp"
                     android:textAlignment="center"
                     android:text="ThirdLineName"/>
-                <CheckBox
-                    android:id="@+id/third_line_dimming_checkbox"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:visibility="gone"
-                    android:layout_below="@id/third_line_textview"
-                    android:layout_marginTop="8dp"/>
                 <SeekBar
                     android:id="@+id/third_line_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_below="@id/third_line_textview"
-                    android:layout_toEndOf="@id/third_line_dimming_checkbox"
-                    android:layout_toRightOf="@id/third_line_dimming_checkbox"
-
                     android:thumb="@drawable/seekbar_thumb"
                     android:padding="16dp"/>
             </RelativeLayout>

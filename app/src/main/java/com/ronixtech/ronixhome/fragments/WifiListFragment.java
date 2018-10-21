@@ -282,29 +282,35 @@ public class WifiListFragment extends Fragment {
 
     private boolean checkLocationServices(){
         boolean actionNeeded = false;
-        if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
-            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            boolean isGpsProviderEnabled, isNetworkProviderEnabled;
-            isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
+                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                boolean isGpsProviderEnabled, isNetworkProviderEnabled;
+                isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
-                actionNeeded = true;
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Location Services");
-                builder.setMessage("The app needs location permissions to scan nearby networks. Please turn them on to continue using the app");
-                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
-                    }
-                });
-                builder.setNegativeButton(android.R.string.no, null);
-                builder.show();
+                if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
+                    actionNeeded = true;
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
+                    builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
+                    builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
+                        }
+                    });
+                    builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            callback.onNetworkSelected(null);
+                        }
+                    });
+                    builder.show();
+                }
             }
         }
-
         return actionNeeded;
     }
 
@@ -576,7 +582,7 @@ public class WifiListFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
-            if(mWifiManager != null && mWifiManager.isWifiEnabled()){
+            /*if(mWifiManager != null && mWifiManager.isWifiEnabled()){
                 refreshNetworks();
             }else{
                 android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
@@ -603,8 +609,29 @@ public class WifiListFragment extends Fragment {
                             }
                         })
                         .show();
-            }
+            }*/
+            refreshNetworks();
         }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
+            /*if(true){
+
+            }else{
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
+                builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
+                builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        refreshNetworks();
+                    }
+                });
+                builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        callback.onNetworkSelected(null);
+                    }
+                });
+                builder.show();
+            }*/
             refreshNetworks();
         }
     }

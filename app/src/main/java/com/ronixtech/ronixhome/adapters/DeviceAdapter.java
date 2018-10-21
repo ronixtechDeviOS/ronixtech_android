@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -118,9 +118,6 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.firstLineSeekBar = rowView.findViewById(R.id.first_line_seekbar);
                 vHolder.secondLineSeekBar = rowView.findViewById(R.id.second_line_seekbar);
                 vHolder.thirdLineSeekBar = rowView.findViewById(R.id.third_line_seekbar);
-                vHolder.firstLineDimmingCheckBox = rowView.findViewById(R.id.first_line_dimming_checkbox);
-                vHolder.secondLineDimmingCheckBox = rowView.findViewById(R.id.second_line_dimming_checkbox);
-                vHolder.thirdLineDimmingCheckBox = rowView.findViewById(R.id.third_line_dimming_checkbox);
                 vHolder.firstLineSwitch = rowView.findViewById(R.id.first_line_switch);
                 vHolder.secondLineSwitch = rowView.findViewById(R.id.second_line_switch);
                 vHolder.thirdLineSwitch = rowView.findViewById(R.id.third_line_switch);
@@ -225,55 +222,6 @@ public class DeviceAdapter extends ArrayAdapter {
                                 } else {
                                     //turn off this line
                                     toggleLine(item, 2, Line.LINE_STATE_OFF);
-                                }
-                            }
-                        }
-                    }
-                });
-
-                vHolder.firstLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                MySettings.setControlState(true);
-                                boolean checked = ((CheckBox) view).isChecked();
-                                if (checked) {
-                                    toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                                } else {
-                                    toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                                }
-                            }
-                        }
-                    }
-                });
-                vHolder.secondLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                MySettings.setControlState(true);
-                                boolean checked = ((CheckBox) view).isChecked();
-                                if (checked) {
-                                    toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                                } else {
-                                    toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
-                                }
-                            }
-                        }
-                    }
-                });
-                vHolder.thirdLineDimmingCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                MySettings.setControlState(true);
-                                boolean checked = ((CheckBox) view).isChecked();
-                                if (checked) {
-                                    toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                                } else {
-                                    toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
                                 }
                             }
                         }
@@ -632,12 +580,12 @@ public class DeviceAdapter extends ArrayAdapter {
                 populateSoundSystemDeviceData(item);
 
                 if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-                    vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                     vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                 }else{
-                    vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                    //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
                     vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
@@ -651,7 +599,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 MySettings.setControlState(true);
                                 if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
                                     changeMode(item, SoundDeviceData.MODE_UPNP);
-                                    Utils.openApp(activity, "BubbleUPnP", "com.bubblesoft.android.bubbleupnp");
+                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
                                 }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
                                     changeMode(item, SoundDeviceData.MODE_USB);
                                 }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
@@ -781,35 +729,18 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.firstLineSwitch.setChecked(true);
-                    vHolder.firstLineSeekBar.setVisibility(View.VISIBLE);
-                    if(line.getDimmingState() == Line.DIMMING_STATE_ON){
-                        vHolder.firstLineDimmingCheckBox.setChecked(true);
-                        vHolder.firstLineDimmingCheckBox.setEnabled(true);
-                        vHolder.firstLineSeekBar.setEnabled(true);
-                        vHolder.firstLineSeekBar.setProgress(line.getDimmingVvalue());
-                        vHolder.firstLineSeekBar.setVisibility(View.VISIBLE);
-                    }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
-                        vHolder.firstLineDimmingCheckBox.setChecked(false);
-                        vHolder.firstLineDimmingCheckBox.setEnabled(true);
-                        vHolder.firstLineSeekBar.setEnabled(false);
-                        vHolder.firstLineSeekBar.setProgress(0);
-                        vHolder.firstLineSeekBar.setVisibility(View.INVISIBLE);
-                    }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
-                        vHolder.firstLineDimmingCheckBox.setEnabled(false);
-                        vHolder.firstLineSeekBar.setEnabled(false);
-                    }
+                    vHolder.firstLineSeekBar.setProgress(line.getDimmingVvalue());
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightGrayColor));
                     vHolder.firstLineSwitch.setChecked(false);
-                    vHolder.firstLineDimmingCheckBox.setEnabled(false);
-                    vHolder.firstLineSeekBar.setEnabled(false);
-                    vHolder.firstLineDimmingCheckBox.setChecked(false);
                     vHolder.firstLineSeekBar.setProgress(0);
+                }
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    vHolder.firstLineSeekBar.setEnabled(true);
+                    vHolder.firstLineSeekBar.setVisibility(View.VISIBLE);
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    vHolder.firstLineSeekBar.setEnabled(false);
                     vHolder.firstLineSeekBar.setVisibility(View.INVISIBLE);
-                }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
-                    //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
             }else if(line.getPosition() == 1){
                 vHolder.secondLineTextView.setText(line.getName());
@@ -822,35 +753,18 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.secondLineTypeImageView.setImageResource(line.getType().getImageResourceID());
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.secondLineSwitch.setChecked(true);
-                    vHolder.secondLineSeekBar.setVisibility(View.VISIBLE);
-                    if(line.getDimmingState() == Line.DIMMING_STATE_ON){
-                        vHolder.secondLineDimmingCheckBox.setChecked(true);
-                        vHolder.secondLineDimmingCheckBox.setEnabled(true);
-                        vHolder.secondLineSeekBar.setEnabled(true);
-                        vHolder.secondLineSeekBar.setProgress(line.getDimmingVvalue());
-                        vHolder.secondLineSeekBar.setVisibility(View.VISIBLE);
-                    }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
-                        vHolder.secondLineDimmingCheckBox.setChecked(false);
-                        vHolder.secondLineDimmingCheckBox.setEnabled(true);
-                        vHolder.secondLineSeekBar.setEnabled(false);
-                        vHolder.secondLineSeekBar.setProgress(0);
-                        vHolder.secondLineSeekBar.setVisibility(View.INVISIBLE);
-                    }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
-                        vHolder.secondLineDimmingCheckBox.setEnabled(false);
-                        vHolder.secondLineSeekBar.setEnabled(false);
-                    }
+                    vHolder.secondLineSeekBar.setProgress(line.getDimmingVvalue());
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightGrayColor));
                     vHolder.secondLineSwitch.setChecked(false);
-                    vHolder.secondLineDimmingCheckBox.setEnabled(false);
-                    vHolder.secondLineSeekBar.setEnabled(false);
-                    vHolder.secondLineDimmingCheckBox.setChecked(false);
                     vHolder.secondLineSeekBar.setProgress(0);
+                }
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    vHolder.secondLineSeekBar.setEnabled(true);
+                    vHolder.secondLineSeekBar.setVisibility(View.VISIBLE);
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    vHolder.secondLineSeekBar.setEnabled(false);
                     vHolder.secondLineSeekBar.setVisibility(View.INVISIBLE);
-                }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
-                    //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
             }else if(line.getPosition() == 2){
                 vHolder.thirdLineTextView.setText(line.getName());
@@ -863,35 +777,19 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.thirdLineTypeImageView.setImageResource(line.getType().getImageResourceID());
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                     vHolder.thirdLineSwitch.setChecked(true);
-                    vHolder.thirdLineSeekBar.setVisibility(View.VISIBLE);
-                    if(line.getDimmingState() == Line.DIMMING_STATE_ON){
-                        vHolder.thirdLineDimmingCheckBox.setChecked(true);
-                        vHolder.thirdLineDimmingCheckBox.setEnabled(true);
-                        vHolder.thirdLineSeekBar.setEnabled(true);
-                        vHolder.thirdLineSeekBar.setProgress(line.getDimmingVvalue());
-                        vHolder.thirdLineSeekBar.setVisibility(View.VISIBLE);
-                    }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
-                        vHolder.thirdLineDimmingCheckBox.setChecked(false);
-                        vHolder.thirdLineDimmingCheckBox.setEnabled(true);
-                        vHolder.thirdLineSeekBar.setEnabled(false);
-                        vHolder.thirdLineSeekBar.setProgress(0);
-                        vHolder.thirdLineSeekBar.setVisibility(View.INVISIBLE);
-                    }else if(line.getDimmingState() == Line.DIMMING_STATE_PROCESSING){
-                        vHolder.thirdLineDimmingCheckBox.setEnabled(false);
-                        vHolder.thirdLineSeekBar.setEnabled(false);
-                    }
+                    vHolder.thirdLineSeekBar.setProgress(line.getDimmingVvalue());
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
                     //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightGrayColor));
-                    vHolder.thirdLineDimmingCheckBox.setEnabled(false);
-                    vHolder.thirdLineSeekBar.setEnabled(false);
                     vHolder.thirdLineSwitch.setChecked(false);
-                    vHolder.thirdLineDimmingCheckBox.setChecked(false);
                     vHolder.thirdLineSeekBar.setProgress(0);
+                }
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    vHolder.thirdLineSeekBar.setEnabled(true);
+                    vHolder.thirdLineSeekBar.setVisibility(View.VISIBLE);
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    vHolder.thirdLineSeekBar.setEnabled(false);
                     vHolder.thirdLineSeekBar.setVisibility(View.INVISIBLE);
-                }else if(line.getPowerState() == Line.LINE_STATE_PROCESSING){
-                    //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
                 }
             }
         }
@@ -1259,7 +1157,6 @@ public class DeviceAdapter extends ArrayAdapter {
         TextView firstLineTextView, secondLineTextView, thirdLineTextView;
         CardView firstLineLayout, secondLineLayout, thirdLineLayout;
         SeekBar firstLineSeekBar, secondLineSeekBar, thirdLineSeekBar;
-        CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
         ToggleButton firstLineSwitch, secondLineSwitch, thirdLineSwitch;
         ImageView firstLineAdvancedOptionsButton, secondLineAdvancedOptionsButton, thirdLineAdvancedOptionsButton;
         ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
@@ -1268,7 +1165,7 @@ public class DeviceAdapter extends ArrayAdapter {
         CardView soundDeviceLayout;
         ImageView soundDeviceTypeImageView;
         ImageView soundDeviceAdvancedOptionsButton;
-        ToggleButton modeSwitch;
+        Button modeSwitch;
         SeekBar speakerVolumeSeekBar;//will be multiple ones, depending on number of speakers
 
         RelativeLayout scanningNetworkLayout;

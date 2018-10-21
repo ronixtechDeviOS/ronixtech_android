@@ -40,6 +40,8 @@ public class Utils {
     public static final int ANIMATION_TYPE_TRANSLATION = 0;
     public static final int ANIMATION_TYPE_FADE = 1;
 
+    private static CustomProgressDialog customProgressDialog;
+
 
     public static FragmentTransaction setAnimations(FragmentTransaction originalFragmentTransaction, int animationType){
         switch (animationType){
@@ -485,7 +487,7 @@ public class Utils {
                     //set icon
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     //set title
-                    .setTitle(context.getResources().getString(R.string.upnp_app_not_available_title))
+                    .setTitle(appName)
                     //set message
                     .setMessage(context.getResources().getString(R.string.upnp_app_not_available_message))
                     //set positive button
@@ -563,6 +565,16 @@ public class Utils {
             void onConnectionSuccess();
 
             void onConnectionFail(String errorMsg);
+        }
+    }
+
+    public static void showLoading(Context context){
+        customProgressDialog = CustomProgressDialog.show(context, "", "");
+    }
+
+    public static void dismissLoading(){
+        if(customProgressDialog != null && customProgressDialog.isShowing()){
+            customProgressDialog.dismiss();
         }
     }
 }

@@ -47,6 +47,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -736,6 +737,15 @@ public class DashboardDevicesFragment extends Fragment {
                 urlConnection.setRequestProperty("Accept", "application/json");
                 urlConnection.setRequestMethod("POST");
 
+                JSONObject jObject = new JSONObject();
+                jObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, "");
+                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                Log.d(TAG,  "modeGetter POST data: " + jObject.toString());
+
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                outputStreamWriter.write(jObject.toString());
+                outputStreamWriter.flush();
 
                 statusCode = urlConnection.getResponseCode();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());

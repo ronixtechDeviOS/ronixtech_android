@@ -417,7 +417,9 @@ public class AddDeviceFragmentGetData extends Fragment {
                 }catch (JSONException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }finally {
-                    urlConnection.disconnect();
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
                     numberOfRetries++;
                 }
             }
@@ -541,7 +543,9 @@ public class AddDeviceFragmentGetData extends Fragment {
                 }catch (JSONException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }finally {
-                    urlConnection.disconnect();
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
                     numberOfRetries++;
                 }
             }

@@ -217,6 +217,19 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
+        selectedRoomType = MySettings.getTypeByName("Living Room");
+        if(selectedRoomType != null){
+            roomTypeNameTextView.setText(selectedRoomType.getName());
+            if(selectedRoomType.getImageUrl() != null && selectedRoomType.getImageUrl().length() >= 1){
+                GlideApp.with(getActivity())
+                        .load(selectedRoomType.getImageUrl())
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                        .into(roomTypeImageView);
+            }else {
+                roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+            }
+        }
+
         addRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
