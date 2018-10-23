@@ -269,23 +269,26 @@ public class AddDeviceFragmentSearch extends Fragment {
                                         debugTextView.setText("RonixTech unit found!\n");
                                         debugTextView.append(""+result.SSID+"\n");
                                         debugTextView.append("Connecting to your RonixTech unit, please wait...\n");
+                                        Log.d(TAG, "Found ssid " + result.SSID);
                                         //Toast.makeText(getActivity(), "RonixTech device detected, connecting...", Toast.LENGTH_SHORT).show();
                                         Device device = new Device();
                                         device.setMacAddress(result.BSSID);
                                         device.setName(result.SSID);
                                         MySettings.setTempDevice(device);
-                                        Log.d(TAG, "Attempting to connect to " + result.SSID + " with default password");
                                         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
                                         for(WifiConfiguration i : list) {
-                                            if(i.SSID != null && i.SSID.toLowerCase().equals(MySettings.getHomeNetwork().getSsid())) {
+                                            if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                                                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                                                //mWifiManager.disableNetwork(i.networkId);
                                                 mWifiManager.removeNetwork(i.networkId);
-                                                break;
                                             }
                                             if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
+                                                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                                                //mWifiManager.disableNetwork(i.networkId);
                                                 mWifiManager.removeNetwork(i.networkId);
-                                                break;
                                             }
                                         }
+                                        Log.d(TAG, "Connecting to " + result.SSID + " with default password");
                                         connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
                                         try {
                                             if (mWifiScanReceiver != null) {
@@ -381,13 +384,15 @@ public class AddDeviceFragmentSearch extends Fragment {
                                 }else{
                                     List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
                                     for(WifiConfiguration i : list) {
-                                        if(i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                                        if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                                            Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                                            //mWifiManager.disableNetwork(i.networkId);
                                             mWifiManager.removeNetwork(i.networkId);
-                                            break;
                                         }
                                         if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
+                                            Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                                            //mWifiManager.disableNetwork(i.networkId);
                                             mWifiManager.removeNetwork(i.networkId);
-                                            break;
                                         }
                                     }
 
@@ -410,7 +415,7 @@ public class AddDeviceFragmentSearch extends Fragment {
                                     list = mWifiManager.getConfiguredNetworks();
                                     for(WifiConfiguration i : list) {
                                         if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
-                                            Log.d(TAG, "Trying to connect to SSID: " + i.SSID + " with password " + password);
+                                            Log.d(TAG, "Connecting to SSID: " + i.SSID + " with password " + password);
                                             mWifiManager.disconnect();
                                             mWifiManager.enableNetwork(i.networkId, true);
                                             mWifiManager.reconnect();
@@ -436,13 +441,15 @@ public class AddDeviceFragmentSearch extends Fragment {
 
         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
-            if(i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+            if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)) {
+                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                //mWifiManager.disableNetwork(i.networkId);
                 mWifiManager.removeNetwork(i.networkId);
-                break;
             }
             if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
+                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                //mWifiManager.disableNetwork(i.networkId);
                 mWifiManager.removeNetwork(i.networkId);
-                break;
             }
         }
 
@@ -465,7 +472,7 @@ public class AddDeviceFragmentSearch extends Fragment {
         list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
             if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
-                Log.d(TAG, "Trying to connect to SSID: " + i.SSID + " with password: " + password);
+                Log.d(TAG, "Connecting to SSID: " + i.SSID + " with password: " + password);
                 mWifiManager.disconnect();
                 mWifiManager.enableNetwork(i.networkId, true);
                 mWifiManager.reconnect();

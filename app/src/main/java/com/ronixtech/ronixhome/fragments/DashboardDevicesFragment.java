@@ -129,7 +129,7 @@ public class DashboardDevicesFragment extends Fragment {
         addDeviceButton = view.findViewById(R.id.add_device_button);
 
         devicesListView = view.findViewById(R.id.devices_listview);
-        devices = new ArrayList<>();
+        devices = DevicesInMemory.getDevices();
         deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager());
         devicesListView.setAdapter(deviceAdapter);
 
@@ -329,7 +329,7 @@ public class DashboardDevicesFragment extends Fragment {
 
     private void putDevicesIntoListView(){
         if(devices != null) {
-            devices.clear();
+            //devices.clear();
             if (DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1) {
                 /*List<Device> tempDevices = new ArrayList<>();
                 tempDevices.addAll(DevicesInMemory.getDevices());
@@ -338,7 +338,7 @@ public class DashboardDevicesFragment extends Fragment {
                         devices.add(device);
                     }
                 }*/
-                devices.addAll(DevicesInMemory.getDevices());
+                //devices.addAll(DevicesInMemory.getDevices());
                 emptyTextView.setVisibility(View.GONE);
                 addDeviceButton.setVisibility(View.GONE);
             } else {

@@ -181,9 +181,6 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                     }
                 }
             }
-            if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().refreshDeviceListFromDatabase();
-            }
         } catch (FileNotFoundException e) {
             Log.d(TAG, "Exception: " + e.getMessage());
             e.printStackTrace();
@@ -205,6 +202,9 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
             } catch (IOException e) {
                 Log.d(TAG, "Exception: " + e.getMessage());
                 e.printStackTrace();
+            }
+            if(MainActivity.getInstance() != null){
+                MainActivity.getInstance().refreshDeviceListFromDatabase();
             }
         }
     }

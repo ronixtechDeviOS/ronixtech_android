@@ -595,8 +595,8 @@ public class AddDeviceFragmentSendData extends Fragment {
                     Log.d(TAG,  "rebootDevice URL: " + url);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
-                    //urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
-                    //urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
                     statusCode = urlConnection.getResponseCode();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));

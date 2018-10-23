@@ -29,14 +29,14 @@ public class Device implements Comparable {
     public static final int DEVICE_NUMBER_OF_TYPES = 3; //lines, pir sensor, speaker controller
     public static final int MAX_CONSECUTIVE_ERROR_COUNT = 20; //testing a high number to disable the re-scan feature when it fails temporarily
 
-    public static final int CONTROL_TIMEOUT = 250;
+    public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
 
     public static final int REFRESH_RATE_MS = 1500;
     public static final int REFRESH_TIMEOUT = 1200;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;
 
-    public static final int CONFIG_TIMEOUT = 400;
+    public static final int CONFIG_TIMEOUT = 1000;
     public static final int CONFIG_NUMBER_OF_RETRIES = 10;
 
     @PrimaryKey(autoGenerate = true)

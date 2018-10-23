@@ -31,7 +31,8 @@ public class MySettings {
 
     public static final String PREF_ACTIVE_USER_EMAIL = "pref_current_user_email";
     public static final String PREF_HOME_NETOWORK = "pref_home_network";
-    public static final String PREF_CURRENT_DEVICE_CONFIG_MAC_ADDRESS = "current_device_mac_address";
+    public static final String PREF_TEMP_DEVICE_MAC_ADDRESS = "temp_device_mac_address";
+    public static final String PREF_TEMP_DEVICE_TYPE_ID = "temp_device_type_id";
     public static final String PREF_TEMP_DEVICE = "temp_device";
     public static final String PREF_SCANNING_ACTIVE = "scanning_active";
     public static final String PREF_CURRENT_PLACE = "pref_current_place";
@@ -52,7 +53,8 @@ public class MySettings {
     private static boolean controlActive;
     private static boolean gettingStatusActive;
     private static WifiNetwork homeNetwork;
-    private static String currentDeviceBeingConfiguredMACAddress;
+    private static String tempDeviceMACAddress;
+    private static int tempDeviceTypeID;
     private static Device tempDevice;
     private static boolean appFirstStart;
 
@@ -186,20 +188,37 @@ public class MySettings {
         }
     }
 
-    public static void setCurrentDeviceConfigMacAddress(String macAddress) {
-        MySettings.currentDeviceBeingConfiguredMACAddress = macAddress;
+    public static void setTempDeviceMacAddress(String macAddress) {
+        MySettings.tempDeviceMACAddress = macAddress;
 
         SharedPreferences.Editor editor = getSettings().edit();
-        editor.putString(PREF_CURRENT_DEVICE_CONFIG_MAC_ADDRESS, currentDeviceBeingConfiguredMACAddress);
+        editor.putString(PREF_TEMP_DEVICE_MAC_ADDRESS, tempDeviceMACAddress);
         editor.apply();
     }
-    public static String getCurrentDeviceConfigMacAddress() {
-        if (currentDeviceBeingConfiguredMACAddress != null && currentDeviceBeingConfiguredMACAddress.length() >= 1) {
-            return currentDeviceBeingConfiguredMACAddress;
+    public static String getTempDeviceMacAddress() {
+        if (tempDeviceMACAddress != null && tempDeviceMACAddress.length() >= 1) {
+            return tempDeviceMACAddress;
         } else {
             SharedPreferences prefs = getSettings();
-            currentDeviceBeingConfiguredMACAddress = prefs.getString(PREF_CURRENT_DEVICE_CONFIG_MAC_ADDRESS, "");
-            return currentDeviceBeingConfiguredMACAddress;
+            tempDeviceMACAddress = prefs.getString(PREF_TEMP_DEVICE_MAC_ADDRESS, "");
+            return tempDeviceMACAddress;
+        }
+    }
+
+    public static void setTempDeviceType(int type) {
+        MySettings.tempDeviceTypeID = type;
+
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putInt(PREF_TEMP_DEVICE_TYPE_ID, tempDeviceTypeID);
+        editor.apply();
+    }
+    public static int getTempDeviceType() {
+        if (tempDeviceTypeID != -1) {
+            return tempDeviceTypeID;
+        } else {
+            SharedPreferences prefs = getSettings();
+            tempDeviceTypeID = prefs.getInt(PREF_TEMP_DEVICE_TYPE_ID, -1);
+            return tempDeviceTypeID;
         }
     }
 
@@ -216,6 +235,9 @@ public class MySettings {
     }
     public static Device getTempDevice() {
         if (tempDevice != null) {
+            /*if(MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID()) != null) {
+                tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+            }*/
             return tempDevice;
         } else {
             SharedPreferences prefs = getSettings();
@@ -227,6 +249,9 @@ public class MySettings {
                     gson = new Gson();
                 }
                 tempDevice = gson.fromJson(json, Device.class);
+                /*if(MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID()) != null) {
+                    tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+                }*/
                 return tempDevice;
             }
         }

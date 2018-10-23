@@ -1,12 +1,7 @@
 package com.ronixtech.ronixhome.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -308,45 +302,10 @@ public class MainActivity extends AppCompatActivity
     BroadcastReceiver mWifiConnectionReceiver;
     @Override
     public void onStartListening(){
-        mWifiManager = (WifiManager) mInstance.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        /*Tested (I didn't test with the WPS "Wi-Fi Protected Setup" standard):
-            In API15 (ICE_CREAM_SANDWICH) this method is called when the new Wi-Fi network state is:
-            DISCONNECTED, OBTAINING_IPADDR, CONNECTED or SCANNING
-
-            In API19 (KITKAT) this method is called when the new Wi-Fi network state is:
-            DISCONNECTED (twice), OBTAINING_IPADDR, VERIFYING_POOR_LINK, CAPTIVE_PORTAL_CHECK
-            or CONNECTED
-
-            (Those states can be obtained as NetworkInfo.DetailedState objects by calling
-            the NetworkInfo object method: "networkInfo.getDetailedState()")*/
-
-        /*
-         * NetworkInfo object associated with the Wi-Fi network.
-         * It won't be null when "android.net.wifi.STATE_CHANGE" action intent arrives.
-         */
-        mWifiConnectionReceiver = new BroadcastReceiver() {
+        Handler mHander = new Handler();
+        mHander.postDelayed(new Runnable() {
             @Override
-            public void onReceive(Context c, Intent intent) {
-                if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-
-                    ConnectivityManager cm = (ConnectivityManager) mInstance.getSystemService(Context.CONNECTIVITY_SERVICE);
-                    if(cm != null){
-                        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-                        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
-                            // Wifi is connected
-                            WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-                            String connectedSSID = wifiInfo.getSSID();
-
-                            /*if(connectedSSID.equals(MySettings.getHomeNetwork().getSsid())){
-                                NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask(mInstance);
-                                networkScannerAsyncTask.execute();
-                            }*/
-
-                            Handler mHander = new Handler();
-                            mHander.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
+            public void run() {
                                     /*// Create a Constraints that defines when the task should run
                                     Constraints myConstraints = new Constraints.Builder()
                                             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -360,6 +319,69 @@ public class MainActivity extends AppCompatActivity
                                                     .setConstraints(myConstraints)
                                                     .build();
                                     WorkManager.getInstance().enqueue(scannerWork);*/
+                MySettings.scanNetwork();
+            }
+        }, 5000);
+        /*try {
+            if (mInstance != null) {
+                mInstance.unregisterReceiver(mWifiConnectionReceiver);
+            }
+        }catch (Exception e){
+            Log.d(TAG, "Error unregistering mWifiConnectionReceiver");
+        }
+
+        mWifiManager = (WifiManager) mInstance.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        *//*Tested (I didn't test with the WPS "Wi-Fi Protected Setup" standard):
+            In API15 (ICE_CREAM_SANDWICH) this method is called when the new Wi-Fi network state is:
+            DISCONNECTED, OBTAINING_IPADDR, CONNECTED or SCANNING
+
+            In API19 (KITKAT) this method is called when the new Wi-Fi network state is:
+            DISCONNECTED (twice), OBTAINING_IPADDR, VERIFYING_POOR_LINK, CAPTIVE_PORTAL_CHECK
+            or CONNECTED
+
+            (Those states can be obtained as NetworkInfo.DetailedState objects by calling
+            the NetworkInfo object method: "networkInfo.getDetailedState()")*//*
+
+        *//*
+         * NetworkInfo object associated with the Wi-Fi network.
+         * It won't be null when "android.net.wifi.STATE_CHANGE" action intent arrives.
+         *//*
+        mWifiConnectionReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context c, Intent intent) {
+                if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+
+                    ConnectivityManager cm = (ConnectivityManager) mInstance.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    if(cm != null){
+                        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+                        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
+                            // Wifi is connected
+                            WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                            String connectedSSID = wifiInfo.getSSID();
+
+                            *//*if(connectedSSID.equals(MySettings.getHomeNetwork().getSsid())){
+                                NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask(mInstance);
+                                networkScannerAsyncTask.execute();
+                            }*//*
+
+                            Handler mHander = new Handler();
+                            mHander.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    *//* Create a Constraints that defines when the task should run
+                                    Constraints myConstraints = new Constraints.Builder()
+                                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                                            // Many other constraints are available, see the
+                                            // Constraints.Builder reference
+                                            .build();
+
+                                    // ...then create a OneTimeWorkRequest that uses those constraints
+                                    OneTimeWorkRequest scannerWork =
+                                            new OneTimeWorkRequest.Builder(NetworkScanner.class)
+                                                    .setConstraints(myConstraints)
+                                                    .build();
+                                    WorkManager.getInstance().enqueue(scannerWork);*//*
                                     MySettings.scanNetwork();
                                 }
                             }, 10000);
@@ -378,8 +400,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        registerReceiver(mWifiConnectionReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        mInstance.registerReceiver(mWifiConnectionReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));*/
 
     }
 }
