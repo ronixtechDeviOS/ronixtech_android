@@ -73,9 +73,9 @@ public class DashboardDevicesFragment extends Fragment {
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
     Button addDeviceButton;
 
-    ListView devicesListView;
-    DeviceAdapter deviceAdapter;
-    List<Device> devices;
+    static ListView devicesListView;
+    static DeviceAdapter deviceAdapter;
+    static List<Device> devices;
     TextView emptyTextView;
 
     Handler listHandler;
@@ -85,7 +85,6 @@ public class DashboardDevicesFragment extends Fragment {
     Handler handler;
 
     private Room room;
-
     public DashboardDevicesFragment() {
         // Required empty public constructor
     }

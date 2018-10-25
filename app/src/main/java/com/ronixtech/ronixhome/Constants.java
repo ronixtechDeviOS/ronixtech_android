@@ -17,6 +17,7 @@ public class Constants {
     public static final String CONTROL_DEVICE_URL = "/ronix/control/command";
     public static final String CONTROL_SOUND_DEVICE_CHANGE_MODE_URL = "/change_mode";
     public static final String GET_DEVICE_STATUS = "/ronix/status";
+    public static final String DEVICE_REBOOT_URL = "/ronix/reboot";
 
     public static final String GET_SSID_URL = "http://ronixtech.com/ronix_services/task/srv.php";
     public static final String MQTT_URL = "tcp://m13.cloudmqtt.com";
@@ -33,7 +34,7 @@ public class Constants {
 
     public static final String DEVICE_GET_FIRMWARE_FILE_NAME_URL = "/flash/next";
     public static final String DEVICE_UPLOAD_FIRMWARE_URL = "/flash/upload";
-    public static final String DEVICE_REBOOT_URL = "/flash/reboot";
+    public static final String DEVICE_FIRMWARE_REBOOT_URL = "/flash/reboot";
 
     public static final String DEVICE_SOUND_SYSTEM_SHUTDOWN_URL = "/shutdown";
 

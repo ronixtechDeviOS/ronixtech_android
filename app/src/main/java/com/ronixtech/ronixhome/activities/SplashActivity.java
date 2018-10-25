@@ -11,7 +11,7 @@ import com.ronixtech.ronixhome.R;
 public class SplashActivity extends AppCompatActivity {
 
     /** Duration of wait **/
-    private final int SPLASH_DISPLAY_LENGTH = 2000;
+    private final int SPLASH_DISPLAY_LENGTH = 1000;
 
 
     @Override

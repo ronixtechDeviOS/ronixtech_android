@@ -475,7 +475,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             int numberOfRetries = 0;
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
-                    URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_REBOOT_URL);
+                    URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_FIRMWARE_REBOOT_URL);
                     Log.d(TAG,  "rebootDevice URL: " + url);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
