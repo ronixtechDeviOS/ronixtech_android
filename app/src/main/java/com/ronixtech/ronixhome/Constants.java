@@ -25,6 +25,10 @@ public class Constants {
 
     public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/user1.bin";
     public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/user2.bin";
+
+    //public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/dev/101405/SSW_WI_03/user1.bin";
+    //public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/dev/101405/SSW_WI_03/user2.bin";
+
     public static final String DEVICE_LATEST_FIRMWARE_VERSIONS_URL = "http://ronixtech.com/ronix_services/wifi_updates/latest_version.php";
 
     public static final int SERVER_TIMEOUT = 5000;

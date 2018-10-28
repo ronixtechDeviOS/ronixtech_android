@@ -28,6 +28,30 @@
             android:text="@string/scanning_network"/>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/last_seen_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/scanning_network_layout"
+        android:padding="4dp">
+        <ImageView
+            android:id="@+id/last_seen_imageview"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/last_seen_clock_icon"/>
+        <TextView
+            android:id="@+id/last_seen_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/last_seen_imageview"
+            android:layout_toRightOf="@id/last_seen_imageview"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:textSize="14sp"
+            android:text="@string/last_seen"/>
+    </RelativeLayout>
+
     <android.support.v7.widget.CardView
         android:id="@+id/device_layout"
         android:layout_width="match_parent"
@@ -35,7 +59,7 @@
         android:elevation="8dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:layout_below="@id/scanning_network_layout"
+        android:layout_below="@id/last_seen_layout"
         android:layout_marginTop="4dp">
         <RelativeLayout
             android:layout_width="match_parent"

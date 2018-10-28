@@ -122,6 +122,7 @@
     <string name="usb">USB</string>
 
     <string name="scanning_network">Scanning network for Smart Controller</string>
+    <string name="last_seen">Last seen @ %s</string>
 
     <string name="delete_device">Delete Smart Controller</string>
 

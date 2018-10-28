@@ -52,6 +52,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -419,6 +420,9 @@ public class DashboardDevicesFragment extends Fragment {
     public void onPause(){
         stopTimer();
         super.onPause();
+        for (Device device:devices) {
+            MySettings.addDevice(device);
+        }
     }
 
     /*@Override
@@ -653,6 +657,7 @@ public class DashboardDevicesFragment extends Fragment {
                         }
                         device.setLines(lines);
                         if(statusCode == 200) {
+                            device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                             DevicesInMemory.updateDevice(device);
                         }
                         //MySettings.addDevice(device);
@@ -777,6 +782,7 @@ public class DashboardDevicesFragment extends Fragment {
                         device.getSoundDeviceData().setMode(mode);
 
                         if(statusCode == 200) {
+                            device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                             DevicesInMemory.updateDevice(device);
                         }
                         //MySettings.addDevice(device);

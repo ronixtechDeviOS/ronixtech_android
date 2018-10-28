@@ -43,6 +43,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class DeviceAdapter extends ArrayAdapter {
     SwipeLayout swipeLayout;
     boolean layoutEnabled = true;
     FragmentManager fragmentManager;
+    SimpleDateFormat simpleDateFormat;
 
     public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager){
         super(activity, R.layout.list_item_device, devices);
@@ -62,6 +64,7 @@ public class DeviceAdapter extends ArrayAdapter {
         this.devices = devices;
         mHandler = new android.os.Handler();
         this.fragmentManager = fragmentManager;
+        simpleDateFormat = new SimpleDateFormat("h:mm a");
     }
 
     @Override
@@ -128,6 +131,9 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.secondLineTypeImageView = rowView.findViewById(R.id.second_line_type_imageview);
                 vHolder.thirdLineTypeImageView = rowView.findViewById(R.id.third_line_type_imageview);
                 vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
 
                 vHolder.firstLineSeekBar.setMax(10);
                 vHolder.secondLineSeekBar.setMax(10);
@@ -170,6 +176,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                }
+
+                if(item.getLastSeenTimestamp() != 0) {
+                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, simpleDateFormat.format(item.getLastSeenTimestamp())));
+                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+                }else{
+                    vHolder.lastSeenLayout.setVisibility(View.GONE);
                 }
 
                 vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
@@ -565,9 +578,11 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.soundDeviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.soundDeviceTypeImageView = rowView.findViewById(R.id.device_type_imageview);
                 vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
 
                 vHolder.speakerVolumeSeekBar.setMax(100);
-
 
                 rowView.setTag(vHolder);
             }
@@ -589,6 +604,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                }
+
+                if(item.getLastSeenTimestamp() != 0) {
+                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, simpleDateFormat.format(item.getLastSeenTimestamp())));
+                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+                }else{
+                    vHolder.lastSeenLayout.setVisibility(View.GONE);
                 }
 
                 vHolder.modeSwitch.setOnClickListener(new View.OnClickListener() {
@@ -1169,6 +1191,9 @@ public class DeviceAdapter extends ArrayAdapter {
         SeekBar speakerVolumeSeekBar;//will be multiple ones, depending on number of speakers
 
         RelativeLayout scanningNetworkLayout;
+        RelativeLayout lastSeenLayout;
+        TextView lastSeenTextView;
+        ImageView lastSeenImageView;
     }
 
     android.os.Handler mHandler;
@@ -1378,7 +1403,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     statusCode = urlConnection.getResponseCode();
                     //Log.d(TAG,  "toggleLine responseCode: " + statusCode);
                     */
-/*InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                /*InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder result = new StringBuilder();
                     String dataLine;

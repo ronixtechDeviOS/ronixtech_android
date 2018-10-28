@@ -62,6 +62,8 @@ public class Device implements Comparable {
     SoundDeviceData soundDeviceData;
     @ColumnInfo(name = "access_token")
     String accessToken;
+    @ColumnInfo(name = "last_seen_timestamp")
+    long lastSeenTimestamp;
 
     public Device(){
         this.id = 0;
@@ -75,6 +77,7 @@ public class Device implements Comparable {
         this.lines = new ArrayList<>();
         this.soundDeviceData = new SoundDeviceData();
         this.accessToken = Constants.DEVICE_DEFAULT_ACCESS_TOKEN;
+        lastSeenTimestamp = 0;
     }
 
     public long getId() {
@@ -163,6 +166,14 @@ public class Device implements Comparable {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public long getLastSeenTimestamp() {
+        return lastSeenTimestamp;
+    }
+
+    public void setLastSeenTimestamp(long lastSeenTimestamp) {
+        this.lastSeenTimestamp = lastSeenTimestamp;
     }
 
     @Override

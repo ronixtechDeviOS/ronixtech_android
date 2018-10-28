@@ -184,16 +184,18 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result){
-            currentFile++;
+            if(getActivity() != null) {
+                currentFile++;
 
-            progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
+                progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
 
-            if(currentFile <= 2){
-                DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
-                downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_2);
-            }else{
-                progressTextView.setText(context.getResources().getString(R.string.download_complete));
-                fragment.goToUploadFragment();
+                if (currentFile <= 2) {
+                    DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
+                    downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_2);
+                } else {
+                    progressTextView.setText(context.getResources().getString(R.string.download_complete));
+                    fragment.goToUploadFragment();
+                }
             }
         }
 

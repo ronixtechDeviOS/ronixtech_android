@@ -698,8 +698,19 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_4_5 = new Migration(4, 5) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN last_seen_timestamp INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                             .allowMainThreadQueries().
                             build();
             return database;
