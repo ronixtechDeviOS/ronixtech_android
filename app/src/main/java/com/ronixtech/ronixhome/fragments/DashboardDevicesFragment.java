@@ -263,9 +263,9 @@ public class DashboardDevicesFragment extends Fragment {
                 handler.post(new Runnable() {
                     public void run() {
                         //MySettings.scanDevices();
-                        if(MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1){
+                        if(DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1){
                             boolean allDevicesReachable = true;
-                            for (Device dev : MySettings.getRoomDevices(room.getId())) {
+                            for (Device dev : DevicesInMemory.getDevices()) {
                                 if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
                                     if(!MySettings.isControlActive()) {
                                         getDeviceInfo(dev);
@@ -285,7 +285,7 @@ public class DashboardDevicesFragment extends Fragment {
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every 1000 ms
+        timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every REFRESH_RATE_MS
     }
 
     private void stopTimer(){
@@ -309,6 +309,7 @@ public class DashboardDevicesFragment extends Fragment {
                             tempDevices.addAll(MySettings.getRoomDevices(room.getId()));
                         }
                         DevicesInMemory.setDevices(tempDevices);
+                        DevicesInMemory.setLocalDevices(tempDevices);
                         putDevicesIntoListView();
                     }
                 });
@@ -357,9 +358,21 @@ public class DashboardDevicesFragment extends Fragment {
         Log.d(TAG, "Getting device info...");
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-            StatusGetter statusGetter = new StatusGetter(device);
-            statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                if(currentFirmwareVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    StatusGetter statusGetter = new StatusGetter(device);
+                    statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }else{
+                    DeviceSyncer deviceSyncer = new DeviceSyncer(device);
+                    deviceSyncer .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }else{
+                StatusGetter statusGetter = new StatusGetter(device);
+                statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             ModeGetter modeGetter = new ModeGetter(device);
             modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -585,16 +598,38 @@ public class DashboardDevicesFragment extends Fragment {
                     if(jsonObject != null){
                         JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
 
-                        JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
-                                /*String chipID = wifiStatus.getString("U_W_UID");
-                                if(device.getChipID().length() >= 1) {
-                                    if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
-                                        MySettings.updateDeviceIP(device, "");
-                                        MySettings.updateDeviceErrorCount(device, 0);
-                                        MySettings.scanNetwork();
-                                        return null;
+                        if(unitStatus != null && unitStatus.has("U_W_STT")){
+                            JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+                            if(wifiStatus != null) {
+                                if(wifiStatus.has("U_W_UID")) {
+                                    String chipID = wifiStatus.getString("U_W_UID");
+                                    if (device.getChipID().length() >= 1) {
+                                        if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
+                                            MySettings.updateDeviceIP(device, "");
+                                            MySettings.updateDeviceErrorCount(device, 0);
+                                            MySettings.scanNetwork();
+                                            MainActivity.getInstance().refreshDeviceListFromDatabase();
+                                            return null;
+                                        }
                                     }
-                                }*/
+                                }
+                                if(wifiStatus.has("U_W_FWV")) {
+                                    String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
+                                    if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1 ){
+                                        device.setFirmwareVersion(currentFirmwareVersion);
+                                        if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                            int currentVersion = Integer.valueOf(currentFirmwareVersion);
+                                            int latestVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                            if (latestVersion > currentVersion) {
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }else{
+                                                device.setFirmwareUpdateAvailable(false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
                         String line0PowerStateString, line1PowerStateString, line2PowerStateString;
@@ -681,8 +716,355 @@ public class DashboardDevicesFragment extends Fragment {
         }
     }
 
+    public static class DeviceSyncer extends AsyncTask<Void, Void, Void>{
+        private final String TAG = DashboardDevicesFragment.DeviceSyncer.class.getSimpleName();
+
+        Device device;
+
+        int statusCode;
+
+        int updateValuesCounter = 2;
+
+        public DeviceSyncer(Device device) {
+            this.device = device;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            Log.d(TAG, "Enabling getStatus flag...");
+            MySettings.setGetStatusState(true);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200) {
+                if (MainActivity.getInstance() != null) {
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                }
+            }else{
+                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    MySettings.updateDeviceIP(device, "");
+                    MySettings.updateDeviceErrorCount(device, 0);
+                    MySettings.scanNetwork();
+                }
+            }
+            MySettings.setGetStatusState(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            try{
+                String urlString = "http://" + device.getIpAddress() + "/ronix/json/post";
+
+                //urlString = urlString.concat("?json_0").concat("=").concat(jObject.toString());
+
+                Log.d(TAG,  "statusGetter URL: " + urlString);
+
+                URL url = new URL(urlString);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
+                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
+                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
+                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.setRequestMethod("POST");
+
+                JSONObject jObject = new JSONObject();
+                Device localDevice = DevicesInMemory.getLocalDevice(device);
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    for (Line line : device.getLines()) {
+                        switch (line.getPosition()){
+                            case 0:
+                                if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
+                                    //jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
+                                    if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
+                                        jObject.put("L_0_DIM", ":");
+                                    }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
+                                        jObject.put("L_0_DIM", "0");
+                                    }
+                                }
+                                if(line.getDimmingState() != localDevice.getLines().get(0).getDimmingState()) {
+                                    jObject.put("L_0_D_S", "" + localDevice.getLines().get(0).getDimmingState());
+                                }
+                                if(line.getDimmingVvalue() != localDevice.getLines().get(0).getDimmingVvalue()){
+                                    if(localDevice.getLines().get(0).getDimmingVvalue() == 10){
+                                        jObject.put("L_0_DIM", ":");
+                                    }else{
+                                        jObject.put("L_0_DIM", ""+localDevice.getLines().get(0).getDimmingVvalue());
+                                    }
+                                }
+                                break;
+                            case 1:
+                                if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
+                                    //jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
+                                    if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
+                                        jObject.put("L_1_DIM", ":");
+                                    }else if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
+                                        jObject.put("L_1_DIM", "0");
+                                    }
+                                }
+                                if(line.getDimmingState() != localDevice.getLines().get(1).getDimmingState()) {
+                                    jObject.put("L_1_D_S", "" + localDevice.getLines().get(1).getDimmingState());
+                                }
+                                if(line.getDimmingVvalue() != localDevice.getLines().get(1).getDimmingVvalue()){
+                                    if(localDevice.getLines().get(1).getDimmingVvalue() == 10){
+                                        jObject.put("L_1_DIM", ":");
+                                    }else{
+                                        jObject.put("L_1_DIM", ""+localDevice.getLines().get(1).getDimmingVvalue());
+                                    }
+                                }
+                                break;
+                            case 2:
+                                if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
+                                    //jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
+                                    if(localDevice.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
+                                        jObject.put("L_2_DIM", ":");
+                                    }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
+                                        jObject.put("L_2_DIM", "0");
+                                    }
+                                }
+                                if(line.getDimmingState() != localDevice.getLines().get(2).getDimmingState()) {
+                                    jObject.put("L_2_D_S", "" + localDevice.getLines().get(2).getDimmingState());
+                                }
+                                if(line.getDimmingVvalue() != localDevice.getLines().get(2).getDimmingVvalue()){
+                                    if(localDevice.getLines().get(2).getDimmingVvalue() == 10){
+                                        jObject.put("L_2_DIM", ":");
+                                    }else{
+                                        jObject.put("L_2_DIM", ""+localDevice.getLines().get(2).getDimmingVvalue());
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                    for (Line line : device.getLines()) {
+                        switch (line.getPosition()){
+                            case 0:
+                                if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
+                                    jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
+                                }
+                                break;
+                            case 1:
+                                if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
+                                    jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
+                                }
+                                break;
+                            case 2:
+                                if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
+                                    jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
+                                }
+                                break;
+                        }
+                    }
+                }
+
+                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+                Log.d(TAG,  "statusGetter POST data: " + jObject.toString());
+
+
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                outputStreamWriter.write(jObject.toString());
+                outputStreamWriter.flush();
+
+                statusCode = urlConnection.getResponseCode();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String dataLine;
+                while((dataLine = bufferedReader.readLine()) != null) {
+                    result.append(dataLine);
+                }
+                urlConnection.disconnect();
+                Log.d(TAG,  "statusGetter response: " + result.toString());
+                if(result.length() >= 10){
+                    JSONObject jsonObject = new JSONObject(result.toString());
+                    if(jsonObject != null){
+                        JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
+
+                        if(unitStatus != null && unitStatus.has("U_W_STT")){
+                            JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+                            if(wifiStatus != null) {
+                                if(wifiStatus.has("U_W_UID")) {
+                                    String chipID = wifiStatus.getString("U_W_UID");
+                                    if (device.getChipID().length() >= 1) {
+                                        if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
+                                            MySettings.updateDeviceIP(device, "");
+                                            MySettings.updateDeviceErrorCount(device, 0);
+                                            MySettings.scanNetwork();
+                                            MainActivity.getInstance().refreshDeviceListFromDatabase();
+                                            return null;
+                                        }
+                                    }
+                                }
+                                if(wifiStatus.has("U_W_FWV")) {
+                                    String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
+                                    if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
+                                        device.setFirmwareVersion(currentFirmwareVersion);
+                                        if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                            int currentVersion = Integer.valueOf(currentFirmwareVersion);
+                                            int latestVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                            if (latestVersion > currentVersion) {
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }else{
+                                                device.setFirmwareUpdateAvailable(false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                            JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+                            String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                            int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                            line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                            line0PowerState = Integer.valueOf(line0PowerStateString);
+                            line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                            line1PowerState = Integer.valueOf(line1PowerStateString);
+                            line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                            line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                            String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
+                            int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
+                            line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
+                            if(line0DimmingValueString.equals(":")){
+                                line0DimmingValue = 10;
+                            }else{
+                                line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                            }
+
+                            line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
+                            if(line1DimmingValueString.equals(":")){
+                                line1DimmingValue = 10;
+                            }else{
+                                line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                            }
+
+                            line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
+                            if(line2DimmingValueString.equals(":")){
+                                line2DimmingValue = 10;
+                            }else{
+                                line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                            }
+
+
+                            String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
+                            int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
+                            line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
+                            line0DimmingState = Integer.valueOf(line0DimmingStateString);
+                            line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
+                            line1DimmingState = Integer.valueOf(line1DimmingStateString);
+                            line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
+                            line2DimmingState = Integer.valueOf(line2DimmingStateString);
+
+                            List<Line> lines = device.getLines();
+                            List<Line> localLines = localDevice.getLines();
+                            for (Line line:lines) {
+                                if(line.getPosition() == 0){
+                                    line.setPowerState(line0PowerState);
+                                    line.setDimmingState(line0DimmingState);
+                                    line.setDimmingVvalue(line0DimmingValue);
+                                }else if(line.getPosition() == 1){
+                                    line.setPowerState(line1PowerState);
+                                    line.setDimmingState(line1DimmingState);
+                                    line.setDimmingVvalue(line1DimmingValue);
+                                }else if(line.getPosition() == 2){
+                                    line.setPowerState(line2PowerState);
+                                    line.setDimmingState(line2DimmingState);
+                                    line.setDimmingVvalue(line2DimmingValue);
+                                }
+                            }
+                            for (Line line:localLines) {
+                                if(line.getPosition() == 0){
+                                    line.setPowerState(line0PowerState);
+                                    line.setDimmingState(line0DimmingState);
+                                    line.setDimmingVvalue(line0DimmingValue);
+                                }else if(line.getPosition() == 1){
+                                    line.setPowerState(line1PowerState);
+                                    line.setDimmingState(line1DimmingState);
+                                    line.setDimmingVvalue(line1DimmingValue);
+                                }else if(line.getPosition() == 2){
+                                    line.setPowerState(line2PowerState);
+                                    line.setDimmingState(line2DimmingState);
+                                    line.setDimmingVvalue(line2DimmingValue);
+                                }
+                            }
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                            JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+                            String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                            int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                            line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                            line0PowerState = Integer.valueOf(line0PowerStateString);
+                            line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                            line1PowerState = Integer.valueOf(line1PowerStateString);
+                            line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                            line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                            List<Line> lines = device.getLines();
+                            List<Line> localLines = localDevice.getLines();
+                            for (Line line:lines) {
+                                if(line.getPosition() == 0){
+                                    line.setPowerState(line0PowerState);
+                                }else if(line.getPosition() == 1){
+                                    line.setPowerState(line1PowerState);
+                                }else if(line.getPosition() == 2){
+                                    line.setPowerState(line2PowerState);
+                                }
+                            }
+                            for (Line line:localLines) {
+                                if(line.getPosition() == 0){
+                                    line.setPowerState(line0PowerState);
+                                }else if(line.getPosition() == 1){
+                                    line.setPowerState(line1PowerState);
+                                }else if(line.getPosition() == 2){
+                                    line.setPowerState(line2PowerState);
+                                }
+                            }
+                        }
+
+                        //device.setLines(lines);
+                        if(statusCode == 200) {
+                            device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                            DevicesInMemory.updateDevice(device);
+                            DevicesInMemory.updateLocalDevice(localDevice);
+                        }
+                        //MySettings.addDevice(device);
+                    }
+                }
+            }catch (MalformedURLException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (IOException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (JSONException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                Log.d(TAG, "Disabling getStatus flag...");
+                MySettings.setGetStatusState(false);
+            }
+
+            return null;
+        }
+    }
+
     public static class ModeGetter extends AsyncTask<Void, Void, Void>{
-        private final String TAG = DashboardDevicesFragment.StatusGetter.class.getSimpleName();
+        private final String TAG = DashboardDevicesFragment.ModeGetter.class.getSimpleName();
 
         Device device;
 

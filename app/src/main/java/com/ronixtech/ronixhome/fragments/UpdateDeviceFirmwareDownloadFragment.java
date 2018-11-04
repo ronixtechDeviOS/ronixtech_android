@@ -8,6 +8,7 @@ import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,9 +19,11 @@ import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Device;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +48,8 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
     TextView progressTextView;
     int totalNumberOfFiles = 2;
     int currentFile = 1;
+
+    Device device;
 
     private UpdateDeviceFirmwareDownloadFragment fragment;
 
@@ -85,19 +90,27 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
         progressTextView.setText(getActivity().getResources().getString(R.string.downloading_file, currentFile, totalNumberOfFiles));
 
-        new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
-            @Override
-            public void onConnectionSuccess() {
-                DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
-                downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_1);
-            }
+        device = MySettings.getTempDevice();
 
-            @Override
-            public void onConnectionFail(String errorMsg) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
-                goToHomeFragment();
-            }
-        }).execute();
+        if(device != null){
+            new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
+                @Override
+                public void onConnectionSuccess() {
+                    String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user1.bin");
+                    DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
+                    downloadTask.execute(url);
+                }
+
+                @Override
+                public void onConnectionFail(String errorMsg) {
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+                    goToHomeFragment();
+                }
+            }).execute();
+        }else{
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_download_firmware), Toast.LENGTH_SHORT).show();
+            goToHomeFragment();
+        }
 
         return view;
     }
@@ -190,8 +203,9 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                 progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
 
                 if (currentFile <= 2) {
+                    String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user2.bin");
                     DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
-                    downloadTask.execute(Constants.DEVICE_FIRMWARE_URL_2);
+                    downloadTask.execute(url);
                 } else {
                     progressTextView.setText(context.getResources().getString(R.string.download_complete));
                     fragment.goToUploadFragment();
@@ -206,6 +220,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(sUrl[0]);
+                Log.d(TAG, "downloadFirmwareFile URL: " + url);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 

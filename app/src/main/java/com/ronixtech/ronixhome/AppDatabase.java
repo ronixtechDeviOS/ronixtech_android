@@ -14,13 +14,14 @@ import com.ronixtech.ronixhome.dao.UserDAO;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.PIRData;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
 
-@Database(entities = {Type.class, Line.class, SoundDeviceData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 5, exportSchema =  false)
+@Database(entities = {Type.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 10, exportSchema =  false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TypeDAO typeDAO();

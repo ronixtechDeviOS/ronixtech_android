@@ -15,6 +15,8 @@ public class Line {
     public static final int DIMMING_STATE_OFF = 0;
     public static final int DIMMING_STATE_ON = 1;
     public static final int DIMMING_STATE_PROCESSING = 2;
+    public static final int MODE_PRIMARY = 0;
+    public static final int MODE_SECONDARY = 1;
 
     @PrimaryKey(autoGenerate = true)
     long id;
@@ -37,7 +39,14 @@ public class Line {
     @ColumnInfo(name = "power_usage")
     double linePowerUsage;
     @ColumnInfo(name = "type_id")
-    public long typeID;
+    long typeID;
+    @ColumnInfo(name = "mode")
+    int mode;
+    @ColumnInfo(name = "primary_device_chip_id")
+    String primaryDeviceChipID;
+    @ColumnInfo(name = "primary_line_position")
+    int primaryLinePosition;
+
 
     public Line(){
         this.id = 0;
@@ -51,6 +60,26 @@ public class Line {
         this.lineTypeImageUrl = "";
         this.linePowerUsage = 0;
         this.typeID = -1;
+        this.mode = Line.MODE_PRIMARY;
+        this.primaryDeviceChipID = "";
+        this.primaryLinePosition = -1;
+    }
+
+    public Line(Line line){
+        this.id = line.getId();
+        this.position = line.getPosition();
+        this.name = line.getName();
+        this.powerState = line.getPowerState();
+        this.dimmingState = line.getDimmingState();
+        this.dimmingVvalue = line.getDimmingVvalue();
+        this.deviceID = line.getDeviceID();
+        this.lineTypeString = line.getLineTypeString();
+        this.lineTypeImageUrl = line.getLineTypeImageUrl();
+        this.linePowerUsage = line.getLinePowerUsage();
+        this.typeID = line.getTypeID();
+        this.mode = line.getMode();
+        this.primaryDeviceChipID = line.getPrimaryDeviceChipID();
+        this.primaryLinePosition = line.getPrimaryLinePosition();
     }
 
     public long getId() {
@@ -147,6 +176,30 @@ public class Line {
         }else{
             return MySettings.getTypeByName("LED Lamp");
         }
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    public String getPrimaryDeviceChipID() {
+        return primaryDeviceChipID;
+    }
+
+    public void setPrimaryDeviceChipID(String primaryDeviceChipID) {
+        this.primaryDeviceChipID = primaryDeviceChipID;
+    }
+
+    public int getPrimaryLinePosition() {
+        return primaryLinePosition;
+    }
+
+    public void setPrimaryLinePosition(int primaryLinePosition) {
+        this.primaryLinePosition = primaryLinePosition;
     }
 
     @Override

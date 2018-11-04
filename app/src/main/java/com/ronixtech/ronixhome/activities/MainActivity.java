@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -38,6 +39,10 @@ import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.RoomsFragment;
 import com.ronixtech.ronixhome.fragments.WifiInfoFragment;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -113,33 +118,37 @@ public class MainActivity extends AppCompatActivity
 
         userNameTextView.setText(MySettings.getActiveUser().getFirstName() + " " + MySettings.getActiveUser().getLastName());
         userEmailTextView.setText(MySettings.getActiveUser().getEmail());
+
+        getLatestFirmwareVersion();
     }
 
     private void getLatestFirmwareVersion(){
         String url = Constants.DEVICE_LATEST_FIRMWARE_VERSIONS_URL;
 
-        //url = url.concat("?").concat(Constants.PARAMETER_DEVICE_TYPE_ID).concat("=").concat(""+Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER);
-
+        Log.d(TAG, "getLatestFirmwareVersions URL: " + url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                Log.d(TAG, "getLatestFirmwareVersions response: " + response);
+                try{
+                    JSONArray jsonArray = new JSONArray(response);
+                    int length = jsonArray.length();
+                    for(int x = 0; x < length; x++){
+                        JSONObject jsonObject = jsonArray.getJSONObject(x);
+                        String deviceTypeString = jsonObject.getString("unit_type_id");
+                        String latestVersionString = jsonObject.getString("latest_firmware_version");
 
-                /*http://ronixtech.com/ronix_services/wifi_updates/latest_version.php?unit_type_id=%unit_type_id_value% and it returns latest firmware version for the specific device type in case different types have different firmware versions
-
-                if no value specified for the device_type_value, then return:
-                [
-                    {
-                        "unit_type_id":100006, "latest_firmware_version":"101401"
-                    },
-                    {
-                        "unit_type_id":100070, "latest_firmware_version":"101401"
-                    },... so on
-                ]*/
+                        int deviceType = Integer.valueOf(deviceTypeString);
+                        MySettings.setDeviceLatestFirmwareVersion(deviceType, latestVersionString);
+                    }
+                }catch (JSONException e){
+                    Log.d(TAG, "Json exception: " + e.getMessage());
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Log.d(TAG, "Volley error: " + error.getMessage());
             }
         });
         stringRequest.setShouldCache(false);

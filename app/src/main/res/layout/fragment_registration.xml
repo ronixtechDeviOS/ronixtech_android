@@ -146,6 +146,16 @@
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:hint="@string/password"/>
+                    <ImageView
+                        android:id="@+id/toggle_password_visibility_imageview"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/password_off"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"/>
                     <RelativeLayout
                         android:layout_width="45dp"
                         android:layout_height="45dp"

@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if(isGooglePlayServicesAvailable(this)) {
-            Toast.makeText(this, "Google Play Services is available", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Google Play Services is available", Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

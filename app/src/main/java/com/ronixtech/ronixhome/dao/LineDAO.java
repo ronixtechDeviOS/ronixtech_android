@@ -28,4 +28,8 @@ public abstract class LineDAO{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertLine(Line line);
+
+
+    @Query("SELECT * FROM line WHERE primary_device_chip_id =:mainDeviceChipID")
+    public abstract List<Line> getSecondaryLine(String mainDeviceChipID);
 }

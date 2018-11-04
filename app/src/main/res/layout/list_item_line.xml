@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/whiteColor">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/line_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginTop="4dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/line_type_imageview"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/device_colored_icon"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/line_type_imageview"
+                android:layout_toRightOf="@id/line_type_imageview"
+                android:padding="8dp">
+                <TextView
+                    android:id="@+id/line_textvie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blackColor"
+                    android:text="LineName"/>
+
+                <TextView
+                    android:id="@+id/line_location_static_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line_textvie"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/darkGrayColor"
+                    android:text="@string/location"/>
+
+                <TextView
+                    android:id="@+id/line_location_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line_location_static_textview"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/blackColor"
+                    android:text="LineLocation"/>
+
+                <TextView
+                    android:id="@+id/line_controller_static_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line_location_textview"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/darkGrayColor"
+                    android:text="@string/device"/>
+
+                <TextView
+                    android:id="@+id/line_controller_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line_controller_static_textview"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/blackColor"
+                    android:text="LineController"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

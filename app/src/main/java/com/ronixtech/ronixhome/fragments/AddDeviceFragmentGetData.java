@@ -273,6 +273,26 @@ public class AddDeviceFragmentGetData extends Fragment {
         }
     }
 
+    public void goToPIRConfigurationFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+        AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
+        fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
+        fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    public void goToConfigurationFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+        AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
+        fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+        fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
     private void connectToWifiNetwork(final String ssid, String password){
         WifiManager mWifiManager;
         mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -402,8 +422,14 @@ public class AddDeviceFragmentGetData extends Fragment {
                     Log.d(TAG,  "getDeviceType response: " + result.toString());
                     if(result.length() >= 3){
                         JSONObject jsonObject = new JSONObject(result.toString());
-                        if(jsonObject != null&& jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
+                        if(jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
                             String typeIDString = jsonObject.getString(Constants.PARAMETER_DEVICE_TYPE_ID);
+                            int deviceTypeID = Integer.valueOf(typeIDString);
+                            Device tempDevice = MySettings.getTempDevice();
+                            tempDevice.setDeviceTypeID(deviceTypeID);
+                            MySettings.setTempDevice(tempDevice);
+                        }else if(jsonObject.has("U_W_TYP")){
+                            String typeIDString = jsonObject.getString("U_W_TYP");
                             int deviceTypeID = Integer.valueOf(typeIDString);
                             Device tempDevice = MySettings.getTempDevice();
                             tempDevice.setDeviceTypeID(deviceTypeID);
@@ -470,7 +496,17 @@ public class AddDeviceFragmentGetData extends Fragment {
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //set what would happen when positive button is clicked
                                     MySettings.removeDevice(MySettings.getDeviceByChipID2(mChipID));
-                                    fragment.goToSendDataFragment();
+                                    Device device = MySettings.getTempDevice();
+                                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                                        fragment.goToPIRConfigurationFragment();
+                                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+                                        fragment.goToConfigurationFragment();
+                                    }else {
+                                        fragment.goToSendDataFragment();
+                                    }
                                 }
                             })
                             //set negative button
@@ -495,7 +531,17 @@ public class AddDeviceFragmentGetData extends Fragment {
                             .show();
                 }else {
                     //debugTextView.append("Chip ID: " + chipID + "\n");
-                    fragment.goToSendDataFragment();
+                    Device device = MySettings.getTempDevice();
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                        fragment.goToPIRConfigurationFragment();
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+                        fragment.goToConfigurationFragment();
+                    }else {
+                        fragment.goToSendDataFragment();
+                    }
                 }
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
@@ -528,8 +574,14 @@ public class AddDeviceFragmentGetData extends Fragment {
                     Log.d(TAG,  "getChipID response: " + result.toString());
                     if(result.length() >= 3){
                         JSONObject jsonObject = new JSONObject(result.toString());
-                        if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_CHIP_ID)){
+                        if(jsonObject.has(Constants.PARAMETER_DEVICE_CHIP_ID)){
                             String chipID = jsonObject.getString(Constants.PARAMETER_DEVICE_CHIP_ID);
+                            Device tempDevice = MySettings.getTempDevice();
+                            tempDevice.setChipID(chipID);
+                            MySettings.setTempDevice(tempDevice);
+                            mChipID = chipID;
+                        }else if(jsonObject.has("U_W_UID")){
+                            String chipID = jsonObject.getString("U_W_UID");
                             Device tempDevice = MySettings.getTempDevice();
                             tempDevice.setChipID(chipID);
                             MySettings.setTempDevice(tempDevice);

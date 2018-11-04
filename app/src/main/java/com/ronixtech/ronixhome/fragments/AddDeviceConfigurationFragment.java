@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +31,9 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.Type;
 
 import java.util.ArrayList;
@@ -45,24 +47,33 @@ import java.util.List;
  * Use the {@link AddDeviceConfigurationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceConfigurationFragment extends Fragment implements TypePickerDialogFragment.OnTypeSelectedListener {
+public class AddDeviceConfigurationFragment extends Fragment implements TypePickerDialogFragment.OnTypeSelectedListener, PickLineDialogFragment.OnLineSelectedListener {
     private static final String TAG = AddDeviceConfigurationFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
     RelativeLayout firstLineLayout, secondLineLayout, thirdLineLayout;
+    EditText deviceNameEditText, firstLineNameEditText, secondLineNameEditText, thirdLineNameEditText;
+    RadioGroup firstLineModeRadioGroup, secondLineModeRadioGroup, thirdLineModeRadioGroup;
+    RelativeLayout firstLineTypeSelectionLayout, secondLineTypeSelectionLayout, thirdLineTypeSelectionLayout;
     RelativeLayout firstLineTypeLayout, secondLineTypeLayout, thirdLineTypeLayout;
     TextView firstLineTypeTextView, secondLineTypeTextView, thirdLineTypeTextView;
     ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
-    EditText deviceNameEditText, firstLineNameEditText, secondLineNameEditText, thirdLineNameEditText;
+    RelativeLayout firstLineSelectedLineLayout, secondLineSelectedLineLayout, thirdLineSelectedLineLayout;
+    TextView firstLineSelectedLineNameTextView, secondLineSelectedLineNameTextView, thirdLineSelectedLineNameTextView;
+    TextView firstLineSelectedLineLocationTextView, secondLineSelectedLineLocationTextView, thirdLineSelectedLineLocationTextView;
+    ImageView firstLineSelectedLineImageView, secondLineSelectedLineImageView, thirdLineSelectedLineImageView;
     Button continueButton;
     TextView deviceNameTextView;
 
     Type firstLineType, secondLineType, thirdLineType;
 
+    Line firstLine, secondLine, thirdLine;
+    Line firstLineSelectedLine, secondLineSelectedLine, thirdLineSelectedLine;
+
     Device device;
 
-    int selectedLineType;
+    int selectedLineIndex;
 
     public AddDeviceConfigurationFragment() {
         // Required empty public constructor
@@ -101,13 +112,21 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         secondLineLayout = view.findViewById(R.id.second_line_configuration_layout);
         thirdLineLayout = view.findViewById(R.id.third_line_configuration_layout);
 
-        firstLineTypeLayout = view.findViewById(R.id.first_line_type_selection_layout);
-        secondLineTypeLayout = view.findViewById(R.id.second_line_type_selection_layout);
-        thirdLineTypeLayout = view.findViewById(R.id.third_line_type_selection_layout);
-
         firstLineNameEditText = view.findViewById(R.id.first_line_name_edittxt);
         secondLineNameEditText = view.findViewById(R.id.second_line_name_edittxt);
         thirdLineNameEditText = view.findViewById(R.id.third_line_name_edittxt);
+
+        firstLineModeRadioGroup = view.findViewById(R.id.first_line_mode_radiogroup);
+        secondLineModeRadioGroup = view.findViewById(R.id.second_line_mode_radiogroup);
+        thirdLineModeRadioGroup = view.findViewById(R.id.third_line_mode_radiogroup);
+
+        firstLineTypeLayout = view.findViewById(R.id.first_line_type_layout);
+        secondLineTypeLayout = view.findViewById(R.id.second_line_type_layout);
+        thirdLineTypeLayout = view.findViewById(R.id.third_line_type_layout);
+
+        firstLineTypeSelectionLayout = view.findViewById(R.id.first_line_type_selection_layout);
+        secondLineTypeSelectionLayout = view.findViewById(R.id.second_line_type_selection_layout);
+        thirdLineTypeSelectionLayout = view.findViewById(R.id.third_line_type_selection_layout);
 
         firstLineTypeTextView = view.findViewById(R.id.first_line_type_textview);
         secondLineTypeTextView = view.findViewById(R.id.second_line_type_textview);
@@ -116,6 +135,22 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         firstLineTypeImageView = view.findViewById(R.id.first_line_type_imageview);
         secondLineTypeImageView = view.findViewById(R.id.second_line_type_imageview);
         thirdLineTypeImageView = view.findViewById(R.id.third_line_type_imageview);
+
+        firstLineSelectedLineLayout = view.findViewById(R.id.first_line_selected_line_layout);
+        secondLineSelectedLineLayout = view.findViewById(R.id.second_line_selected_line_layout);
+        thirdLineSelectedLineLayout = view.findViewById(R.id.third_line_selected_line_layout);
+
+        firstLineSelectedLineNameTextView = view.findViewById(R.id.first_line_selected_line_textvie);
+        secondLineSelectedLineNameTextView = view.findViewById(R.id.second_line_selected_line_textvie);
+        thirdLineSelectedLineNameTextView = view.findViewById(R.id.third_line_selected_line_textvie);
+
+        firstLineSelectedLineLocationTextView = view.findViewById(R.id.first_line_selected_line_location_textview);
+        secondLineSelectedLineLocationTextView = view.findViewById(R.id.second_line_selected_line_location_textview);
+        thirdLineSelectedLineLocationTextView = view.findViewById(R.id.third_line_selected_line_location_textview);
+
+        firstLineSelectedLineImageView = view.findViewById(R.id.first_line_selected_line_type_imageview);
+        secondLineSelectedLineImageView = view.findViewById(R.id.second_line_selected_line_type_imageview);
+        thirdLineSelectedLineImageView = view.findViewById(R.id.third_line_selected_line_type_imageview);
 
         continueButton = view.findViewById(R.id.continue_button);
 
@@ -130,6 +165,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.commit();
         }
+        firstLine = new Line();
+        secondLine = new Line();
+        thirdLine = new Line();
         deviceNameEditText.setText(device.getName());
         deviceNameEditText.setEnabled(false);
         deviceNameEditText.setVisibility(View.GONE);
@@ -139,15 +177,12 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             secondLineLayout.setVisibility(View.GONE);
             thirdLineLayout.setVisibility(View.GONE);
             firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
-            //secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
-            //thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.VISIBLE);
             thirdLineLayout.setVisibility(View.GONE);
             firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
             secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
-            //thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
             firstLineLayout.setVisibility(View.VISIBLE);
             secondLineLayout.setVisibility(View.VISIBLE);
@@ -155,7 +190,26 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
             secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_2_name_hint));
             thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
-        }else{
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines ) {
+            firstLineLayout.setVisibility(View.VISIBLE);
+            secondLineLayout.setVisibility(View.GONE);
+            thirdLineLayout.setVisibility(View.GONE);
+            firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_1_name_hint));
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines) {
+            firstLineLayout.setVisibility(View.VISIBLE);
+            secondLineLayout.setVisibility(View.VISIBLE);
+            thirdLineLayout.setVisibility(View.GONE);
+            firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_1_name_hint));
+            secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_2_name_hint));
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+            firstLineLayout.setVisibility(View.VISIBLE);
+            secondLineLayout.setVisibility(View.VISIBLE);
+            thirdLineLayout.setVisibility(View.VISIBLE);
+            firstLineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_1_name_hint));
+            secondLineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_2_name_hint));
+            thirdLineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_3_name_hint));
+        }
+        else{
             Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_LONG).show();
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -166,7 +220,22 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             fragmentTransaction.commit();
         }
 
-        firstLineType = MySettings.getTypeByName("Fluorescent Lamp");
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+            firstLineType = MySettings.getTypeByName("Appliance Plug");
+            secondLineType = MySettings.getTypeByName("Appliance Plug");
+            thirdLineType = MySettings.getTypeByName("Appliance Plug");
+            firstLineModeRadioGroup.setVisibility(View.GONE);
+            secondLineModeRadioGroup.setVisibility(View.GONE);
+            thirdLineModeRadioGroup.setVisibility(View.GONE);
+        }else{
+            firstLineType = MySettings.getTypeByName("Fluorescent Lamp");
+            secondLineType = MySettings.getTypeByName("Fluorescent Lamp");
+            thirdLineType = MySettings.getTypeByName("Fluorescent Lamp");
+            firstLineModeRadioGroup.setVisibility(View.VISIBLE);
+            secondLineModeRadioGroup.setVisibility(View.VISIBLE);
+            thirdLineModeRadioGroup.setVisibility(View.VISIBLE);
+        }
+
         if(firstLineType != null){
             firstLineTypeTextView.setText(firstLineType.getName());
             if(firstLineType.getImageUrl() != null && firstLineType.getImageUrl().length() >= 1){
@@ -178,7 +247,6 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
             }
         }
-        secondLineType = MySettings.getTypeByName("Fluorescent Lamp");
         if(secondLineType != null) {
             secondLineTypeTextView.setText(secondLineType.getName());
             if (secondLineType.getImageUrl() != null && secondLineType.getImageUrl().length() >= 1) {
@@ -190,7 +258,6 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 secondLineTypeImageView.setImageResource(secondLineType.getImageResourceID());
             }
         }
-        thirdLineType = MySettings.getTypeByName("Fluorescent Lamp");
         if(thirdLineType != null){
             thirdLineTypeTextView.setText(thirdLineType.getName());
             if(thirdLineType.getImageUrl() != null && thirdLineType.getImageUrl().length() >= 1){
@@ -285,169 +352,219 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             }
         });
 
-        firstLineTypeLayout.setOnClickListener(new View.OnClickListener() {
+        firstLineModeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
-                    selectedLineType = 0;
-                    // DialogFragment.show() will take care of adding the fragment
-                    // in a transaction.  We also want to remove any currently showing
-                    // dialog, so make our own transaction and take care of that here.
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
-
-                    // Create and show the dialog.
-                    TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
-                    fragment.setTypesCategory(Constants.TYPE_LINE);
-                    fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
-                    fragment.show(ft, "typePickerDialogFragment");
-                }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
-                    Utils.generateLineTypes();
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.first_line_mode_primary_mode_radiobutton:
+                        firstLine.setMode(Line.MODE_PRIMARY);
+                        firstLineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                        firstLineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                        break;
+                    case R.id.first_line_mode_secondary_mode_radiobutton:
+                        firstLine.setMode(Line.MODE_SECONDARY);
+                        firstLineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                        firstLineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                        break;
                 }
             }
         });
-        secondLineTypeLayout.setOnClickListener(new View.OnClickListener() {
+        secondLineModeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
-                    selectedLineType = 1;
-                    // DialogFragment.show() will take care of adding the fragment
-                    // in a transaction.  We also want to remove any currently showing
-                    // dialog, so make our own transaction and take care of that here.
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
-
-                    // Create and show the dialog.
-                    TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
-                    fragment.setTypesCategory(Constants.TYPE_LINE);
-                    fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
-                    fragment.show(ft, "typePickerDialogFragment");
-                }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
-                    Utils.generateLineTypes();
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.second_line_mode_primary_mode_radiobutton:
+                        secondLine.setMode(Line.MODE_PRIMARY);
+                        secondLineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                        secondLineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                        break;
+                    case R.id.second_line_mode_secondary_mode_radiobutton:
+                        secondLine.setMode(Line.MODE_SECONDARY);
+                        secondLineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                        secondLineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                        break;
                 }
             }
         });
-        thirdLineTypeLayout.setOnClickListener(new View.OnClickListener() {
+        thirdLineModeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
-                    selectedLineType = 2;
-                    // DialogFragment.show() will take care of adding the fragment
-                    // in a transaction.  We also want to remove any currently showing
-                    // dialog, so make our own transaction and take care of that here.
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
-
-                    // Create and show the dialog.
-                    TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
-                    fragment.setTypesCategory(Constants.TYPE_LINE);
-                    fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
-                    fragment.show(ft, "typePickerDialogFragment");
-                }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
-                    Utils.generateLineTypes();
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.third_line_mode_primary_mode_radiobutton:
+                        thirdLine.setMode(Line.MODE_PRIMARY);
+                        thirdLineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                        thirdLineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                        break;
+                    case R.id.third_line_mode_secondary_mode_radiobutton:
+                        thirdLine.setMode(Line.MODE_SECONDARY);
+                        thirdLineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                        thirdLineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                        break;
                 }
             }
         });
 
-        thirdLineNameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        firstLineTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                //if all valid
-                if(validateInputs()){
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(deviceNameEditText.getWindowToken(), 0);
-                    imm.hideSoftInputFromWindow(firstLineNameEditText.getWindowToken(), 0);
-                    imm.hideSoftInputFromWindow(secondLineNameEditText.getWindowToken(), 0);
-                    imm.hideSoftInputFromWindow(thirdLineNameEditText.getWindowToken(), 0);
-                    //create the lines and device.setLines then MySettings.setDevice()
-                    List<Line> lines = new ArrayList<>();
-                    Line line;
+            public void onClick(View view) {
+                if(firstLine.getMode() == Line.MODE_PRIMARY){
+                    if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
+                        selectedLineIndex = 0;
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
 
-                    MySettings.addDevice(device);
-                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-
-                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
-                        line = new Line();
-                        line.setPosition(0);
-                        line.setName(firstLineNameEditText.getText().toString());
-                        line.setTypeID(firstLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
-                        line = new Line();
-                        line.setPosition(0);
-                        line.setName(firstLineNameEditText.getText().toString());
-                        line.setTypeID(firstLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-
-                        line = new Line();
-                        line.setPosition(1);
-                        line.setName(secondLineNameEditText.getText().toString());
-                        line.setTypeID(secondLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                        line = new Line();
-                        line.setPosition(0);
-                        line.setName(firstLineNameEditText.getText().toString());
-                        line.setTypeID(firstLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-
-                        line = new Line();
-                        line.setPosition(1);
-                        line.setName(secondLineNameEditText.getText().toString());
-                        line.setTypeID(secondLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-
-                        line = new Line();
-                        line.setPosition(2);
-                        line.setName(thirdLineNameEditText.getText().toString());
-                        line.setTypeID(thirdLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
+                        // Create and show the dialog.
+                        TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
+                        fragment.setTypesCategory(Constants.TYPE_LINE);
+                        fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
+                        fragment.show(ft, "typePickerDialogFragment");
+                    }else{
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                        Utils.generateLineTypes();
                     }
-                    device.setLines(lines);
-                    device.setName(deviceNameEditText.getText().toString());
-                    MySettings.setTempDevice(device);
-
-                    //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
-                    //tempDevice.setLines(lines);
-                    //tempDevice.setName(deviceNameEditText.getText().toString());
-                    //MySettings.addDevice(device);
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                    fragmentTransaction.commit();
                 }
-                return false;
+            }
+        });
+        secondLineTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(secondLine.getMode() == Line.MODE_PRIMARY){
+                    if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
+                        selectedLineIndex = 1;
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
+                        fragment.setTypesCategory(Constants.TYPE_LINE);
+                        fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
+                        fragment.show(ft, "typePickerDialogFragment");
+                    }else{
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                        Utils.generateLineTypes();
+                    }
+                }
+            }
+        });
+        thirdLineTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(thirdLine.getMode() == Line.MODE_PRIMARY){
+                    if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
+                        selectedLineIndex = 2;
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
+                        fragment.setTypesCategory(Constants.TYPE_LINE);
+                        fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
+                        fragment.show(ft, "typePickerDialogFragment");
+                    }else{
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                        Utils.generateLineTypes();
+                    }
+                }
+            }
+        });
+
+        firstLineSelectedLineLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(firstLine.getMode() == Line.MODE_SECONDARY){
+                    if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
+                        selectedLineIndex = 0;
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        PickLineDialogFragment fragment = PickLineDialogFragment.newInstance();
+                        fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
+                        fragment.show(ft, "pickLineDialogFragment");
+                    }else{
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        secondLineSelectedLineLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(secondLine.getMode() == Line.MODE_SECONDARY){
+                    if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
+                        selectedLineIndex = 1;
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        PickLineDialogFragment fragment = PickLineDialogFragment.newInstance();
+                        fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
+                        fragment.show(ft, "pickLineDialogFragment");
+                    }else{
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        thirdLineSelectedLineLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(thirdLine.getMode() == Line.MODE_SECONDARY){
+                    if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
+                        selectedLineIndex = 2;
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        PickLineDialogFragment fragment = PickLineDialogFragment.newInstance();
+                        fragment.setTargetFragment(AddDeviceConfigurationFragment.this, 0);
+                        fragment.show(ft, "pickLineDialogFragment");
+                    }else{
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -463,59 +580,83 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     imm.hideSoftInputFromWindow(thirdLineNameEditText.getWindowToken(), 0);
                     //create the lines and device.setLines then MySettings.setDevice()
                     List<Line> lines = new ArrayList<>();
-                    Line line;
 
                     MySettings.addDevice(device);
                     device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
-                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old){
-                        line = new Line();
-                        line.setPosition(0);
-                        line.setName(firstLineNameEditText.getText().toString());
-                        line.setTypeID(firstLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old){
-                        line = new Line();
-                        line.setPosition(0);
-                        line.setName(firstLineNameEditText.getText().toString());
-                        line.setTypeID(firstLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+                        firstLine = new Line();
+                        firstLine.setPosition(0);
+                        firstLine.setName(firstLineNameEditText.getText().toString());
+                        firstLine.setTypeID(firstLineType.getId());
+                        firstLine.setPowerState(Line.LINE_STATE_OFF);
+                        firstLine.setDeviceID(device.getId());
+                        if(firstLine.getMode() == Line.MODE_SECONDARY){
+                            firstLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID()).getChipID());
+                            firstLine.setPrimaryLinePosition(firstLineSelectedLine.getPosition());
+                        }
+                        lines.add(firstLine);
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
+                        firstLine = new Line();
+                        firstLine.setPosition(0);
+                        firstLine.setName(firstLineNameEditText.getText().toString());
+                        firstLine.setTypeID(firstLineType.getId());
+                        firstLine.setPowerState(Line.LINE_STATE_OFF);
+                        firstLine.setDeviceID(device.getId());
+                        if(firstLine.getMode() == Line.MODE_SECONDARY){
+                            firstLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID()).getChipID());
+                            firstLine.setPrimaryLinePosition(firstLineSelectedLine.getPosition());
+                        }
+                        lines.add(firstLine);
 
-                        line = new Line();
-                        line.setPosition(1);
-                        line.setName(secondLineNameEditText.getText().toString());
-                        line.setTypeID(secondLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                        line = new Line();
-                        line.setPosition(0);
-                        line.setName(firstLineNameEditText.getText().toString());
-                        line.setTypeID(firstLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
+                        secondLine = new Line();
+                        secondLine.setPosition(1);
+                        secondLine.setName(secondLineNameEditText.getText().toString());
+                        secondLine.setTypeID(secondLineType.getId());
+                        secondLine.setPowerState(Line.LINE_STATE_OFF);
+                        secondLine.setDeviceID(device.getId());
+                        if(secondLine.getMode() == Line.MODE_SECONDARY){
+                            secondLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(secondLineSelectedLine.getDeviceID()).getChipID());
+                            secondLine.setPrimaryLinePosition(secondLineSelectedLine.getPosition());
+                        }
+                        lines.add(secondLine);
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        firstLine.setPosition(0);
+                        firstLine.setName(firstLineNameEditText.getText().toString());
+                        firstLine.setTypeID(firstLineType.getId());
+                        firstLine.setPowerState(Line.LINE_STATE_OFF);
+                        firstLine.setDeviceID(device.getId());
+                        if(firstLine.getMode() == Line.MODE_SECONDARY){
+                            firstLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID()).getChipID());
+                            firstLine.setPrimaryLinePosition(firstLineSelectedLine.getPosition());
+                        }
+                        lines.add(firstLine);
 
-                        line = new Line();
-                        line.setPosition(1);
-                        line.setName(secondLineNameEditText.getText().toString());
-                        line.setTypeID(secondLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
+                        secondLine.setPosition(1);
+                        secondLine.setName(secondLineNameEditText.getText().toString());
+                        secondLine.setTypeID(secondLineType.getId());
+                        secondLine.setPowerState(Line.LINE_STATE_OFF);
+                        secondLine.setDeviceID(device.getId());
+                        if(secondLine.getMode() == Line.MODE_SECONDARY){
+                            secondLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(secondLineSelectedLine.getDeviceID()).getChipID());
+                            secondLine.setPrimaryLinePosition(secondLineSelectedLine.getPosition());
+                        }
+                        lines.add(secondLine);
 
-                        line = new Line();
-                        line.setPosition(2);
-                        line.setName(thirdLineNameEditText.getText().toString());
-                        line.setTypeID(thirdLineType.getId());
-                        line.setPowerState(Line.LINE_STATE_OFF);
-                        line.setDeviceID(device.getId());
-                        lines.add(line);
+                        thirdLine.setPosition(2);
+                        thirdLine.setName(thirdLineNameEditText.getText().toString());
+                        thirdLine.setTypeID(thirdLineType.getId());
+                        thirdLine.setPowerState(Line.LINE_STATE_OFF);
+                        thirdLine.setDeviceID(device.getId());
+                        if(thirdLine.getMode() == Line.MODE_SECONDARY){
+                            thirdLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(thirdLineSelectedLine.getDeviceID()).getChipID());
+                            thirdLine.setPrimaryLinePosition(thirdLineSelectedLine.getPosition());
+                        }
+                        lines.add(thirdLine);
                     }
                     device.setLines(lines);
                     device.setName(deviceNameEditText.getText().toString());
@@ -529,9 +670,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                    fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                    AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
+                    fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
                     fragmentTransaction.commit();
                 }
             }
@@ -543,7 +684,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
     @Override
     public void onTypeSelected(Type type){
         if(type != null){
-            switch (selectedLineType){
+            switch (selectedLineIndex){
                 case 0:
                     firstLineType = type;
                     firstLineTypeTextView.setText(firstLineType.getName());
@@ -599,50 +740,231 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         }
     }
 
+    @Override
+    public void onLineSelected(Line line){
+        if(line != null){
+            Device device;
+            Room room;
+            Floor floor;
+            switch (selectedLineIndex){
+                case 0:
+                    firstLineSelectedLine = line;
+                    device = MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID());
+                    room = MySettings.getRoom(device.getRoomID());
+                    floor = MySettings.getFloor(room.getFloorID());
+
+                    firstLineSelectedLineNameTextView.setText(device.getName() + "\\" + firstLineSelectedLine.getName());
+                    firstLineSelectedLineLocationTextView.setText(floor.getPlaceName() + "\\" + room.getName());
+                    if(firstLineSelectedLine.getType().getImageUrl() != null && firstLineSelectedLine.getType().getImageUrl().length() >= 1){
+                        GlideApp.with(getActivity())
+                                .load(firstLineSelectedLine.getType().getImageUrl())
+                                .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                                .into(firstLineSelectedLineImageView);
+                    }else {
+                        firstLineSelectedLineImageView.setImageResource(firstLineSelectedLine.getType().getImageResourceID());
+                    }
+
+                    break;
+                case 1:
+                    secondLineSelectedLine = line;
+                    device = MySettings.getDeviceByID2(secondLineSelectedLine.getDeviceID());
+                    room = MySettings.getRoom(device.getRoomID());
+                    floor = MySettings.getFloor(room.getFloorID());
+
+                    secondLineSelectedLineNameTextView.setText(device.getName() + "\\" + secondLineSelectedLine.getName());
+                    secondLineSelectedLineLocationTextView.setText(floor.getPlaceName() + "\\" + room.getName());
+                    if(secondLineSelectedLine.getType().getImageUrl() != null && secondLineSelectedLine.getType().getImageUrl().length() >= 1){
+                        GlideApp.with(getActivity())
+                                .load(secondLineSelectedLine.getType().getImageUrl())
+                                .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                                .into(secondLineSelectedLineImageView);
+                    }else {
+                        secondLineSelectedLineImageView.setImageResource(secondLineSelectedLine.getType().getImageResourceID());
+                    }
+                    break;
+                case 2:
+                    thirdLineSelectedLine = line;
+                    device = MySettings.getDeviceByID2(thirdLineSelectedLine.getDeviceID());
+                    room = MySettings.getRoom(device.getRoomID());
+                    floor = MySettings.getFloor(room.getFloorID());
+
+                    thirdLineSelectedLineNameTextView.setText(device.getName() + "\\" + thirdLineSelectedLine.getName());
+                    thirdLineSelectedLineLocationTextView.setText(floor.getPlaceName() + "\\" + room.getName());
+                    if(thirdLineSelectedLine.getType().getImageUrl() != null && thirdLineSelectedLine.getType().getImageUrl().length() >= 1){
+                        GlideApp.with(getActivity())
+                                .load(thirdLineSelectedLine.getType().getImageUrl())
+                                .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                                .into(thirdLineSelectedLineImageView);
+                    }else {
+                        thirdLineSelectedLineImageView.setImageResource(thirdLineSelectedLine.getType().getImageResourceID());
+                    }
+                    break;
+            }
+        }
+    }
+
     private boolean validateInputs(){
         boolean inputsValid = true;
-        if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(firstLineNameEditText);
-        }
-        if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(secondLineNameEditText);
-        }
-        if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(thirdLineNameEditText);
-        }
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-        if(firstLineType == null){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(firstLineTypeLayout);
-        }
-        if(secondLineType == null){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(secondLineTypeLayout);
-        }
-        if(thirdLineType == null){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(thirdLineTypeLayout);
+            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+                YoYo.with(Techniques.Shake)
+                        .duration(700)
+                        .repeat(1)
+                        .playOn(firstLineNameEditText);
+            }
+
+            if(firstLine.getMode() == Line.MODE_PRIMARY){
+                if(firstLineType == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(firstLineTypeSelectionLayout);
+                }
+            }else if(firstLine.getMode() == Line.MODE_SECONDARY){
+                if(firstLineSelectedLine == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(firstLineSelectedLineLayout);
+                }
+            }
+
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+
+            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+                YoYo.with(Techniques.Shake)
+                        .duration(700)
+                        .repeat(1)
+                        .playOn(firstLineNameEditText);
+            }
+
+            if(firstLine.getMode() == Line.MODE_PRIMARY){
+                if(firstLineType == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(firstLineTypeSelectionLayout);
+                }
+            }else if(firstLine.getMode() == Line.MODE_SECONDARY){
+                if(firstLineSelectedLine == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(firstLineSelectedLineLayout);
+                }
+            }
+
+            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+                YoYo.with(Techniques.Shake)
+                        .duration(700)
+                        .repeat(1)
+                        .playOn(secondLineNameEditText);
+            }
+            if(secondLine.getMode() == Line.MODE_PRIMARY){
+                if(secondLineType == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(secondLineTypeSelectionLayout);
+                }
+            }else if(secondLine.getMode() == Line.MODE_SECONDARY){
+                if(secondLineSelectedLine == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(secondLineSelectedLineLayout);
+                }
+            }
+
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+
+            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+                YoYo.with(Techniques.Shake)
+                        .duration(700)
+                        .repeat(1)
+                        .playOn(firstLineNameEditText);
+            }
+
+            if(firstLine.getMode() == Line.MODE_PRIMARY){
+                if(firstLineType == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(firstLineTypeSelectionLayout);
+                }
+            }else if(firstLine.getMode() == Line.MODE_SECONDARY){
+                if(firstLineSelectedLine == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(firstLineSelectedLineLayout);
+                }
+            }
+
+            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+                YoYo.with(Techniques.Shake)
+                        .duration(700)
+                        .repeat(1)
+                        .playOn(secondLineNameEditText);
+            }
+            if(secondLine.getMode() == Line.MODE_PRIMARY){
+                if(secondLineType == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(secondLineTypeSelectionLayout);
+                }
+            }else if(secondLine.getMode() == Line.MODE_SECONDARY){
+                if(secondLineSelectedLine == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(secondLineSelectedLineLayout);
+                }
+            }
+
+            if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+                YoYo.with(Techniques.Shake)
+                        .duration(700)
+                        .repeat(1)
+                        .playOn(thirdLineNameEditText);
+            }
+            if(thirdLine.getMode() == Line.MODE_PRIMARY){
+                if(thirdLineType == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(thirdLineTypeSelectionLayout);
+                }
+            }else if(thirdLine.getMode() == Line.MODE_SECONDARY){
+                if(thirdLineSelectedLine == null){
+                    inputsValid = false;
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(thirdLineSelectedLineLayout);
+                }
+            }
+
         }
 
         return inputsValid;
@@ -650,24 +972,94 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
 
     private boolean validateInputsWithoutYoyo(){
         boolean inputsValid = true;
-        if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-        if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-        if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-        if(firstLineType == null){
-            inputsValid = false;
-        }
-        if(secondLineType == null){
-            inputsValid = false;
-        }
-        if(thirdLineType == null){
-            inputsValid = false;
+            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+            }
+
+            if(firstLine.getMode() == Line.MODE_PRIMARY){
+                if(firstLineType == null){
+                    inputsValid = false;
+                }
+            }else if(firstLine.getMode() == Line.MODE_SECONDARY){
+                if(firstLineSelectedLine == null){
+                    inputsValid = false;
+                }
+            }
+
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+
+            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+            }
+
+            if(firstLine.getMode() == Line.MODE_PRIMARY){
+                if(firstLineType == null){
+                    inputsValid = false;
+                }
+            }else if(firstLine.getMode() == Line.MODE_SECONDARY){
+                if(firstLineSelectedLine == null){
+                    inputsValid = false;
+                }
+            }
+
+            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+            }
+            if(secondLine.getMode() == Line.MODE_PRIMARY){
+                if(secondLineType == null){
+                    inputsValid = false;
+                }
+            }else if(secondLine.getMode() == Line.MODE_SECONDARY){
+                if(secondLineSelectedLine == null){
+                    inputsValid = false;
+                }
+            }
+
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+
+            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+            }
+
+            if(firstLine.getMode() == Line.MODE_PRIMARY){
+                if(firstLineType == null){
+                    inputsValid = false;
+                }
+            }else if(firstLine.getMode() == Line.MODE_SECONDARY){
+                if(firstLineSelectedLine == null){
+                    inputsValid = false;
+                }
+            }
+
+            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+            }
+            if(secondLine.getMode() == Line.MODE_PRIMARY){
+                if(secondLineType == null){
+                    inputsValid = false;
+                }
+            }else if(secondLine.getMode() == Line.MODE_SECONDARY){
+                if(secondLineSelectedLine == null){
+                    inputsValid = false;
+                }
+            }
+
+            if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
+                inputsValid = false;
+            }
+            if(thirdLine.getMode() == Line.MODE_PRIMARY){
+                if(thirdLineType == null){
+                    inputsValid = false;
+                }
+            }else if(thirdLine.getMode() == Line.MODE_SECONDARY){
+                if(thirdLineSelectedLine == null){
+                    inputsValid = false;
+                }
+            }
+
         }
 
         return inputsValid;

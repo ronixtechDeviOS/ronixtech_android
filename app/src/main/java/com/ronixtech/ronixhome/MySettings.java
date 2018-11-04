@@ -261,10 +261,13 @@ public class MySettings {
         //save device into DB
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
             MySettings.initDB().deviceDAO().insertDeviceWithLines(device);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             MySettings.initDB().deviceDAO().insertDeviceWithSoundDeviceData(device);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            MySettings.initDB().deviceDAO().insertDeviceWithPIRData(device);
         }
     }
     public static void updateDeviceIP(Device device, String ipAddress){
@@ -282,30 +285,38 @@ public class MySettings {
     public static Device getDeviceByID(long deviceID, int deviceType) {
         if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
-                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
-            MySettings.initDB().deviceDAO().getDeviceWithLinesByID(deviceID);
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines || deviceType == Device.DEVICE_TYPE_PLUG_3lines) {
+            return MySettings.initDB().deviceDAO().getDeviceWithLinesByID(deviceID);
         }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-            MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByID(deviceID);
+            return MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByID(deviceID);
+        }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            return MySettings.initDB().deviceDAO().getDeviceWithPIRDataByID(deviceID);
         }
         return null;
     }
     public static Device getDeviceByMAC(String macAddress, int deviceType) {
         if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
-                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines || deviceType == Device.DEVICE_TYPE_PLUG_3lines) {
             return MySettings.initDB().deviceDAO().getDeviceWithLinesByMacAddress(macAddress);
         }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             return MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByMacAddress(macAddress);
+        }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            return MySettings.initDB().deviceDAO().getDeviceWithPIRDataByMacAddress(macAddress);
         }
         return null;
     }
     public static Device getDeviceByChipID(String chipID, int deviceType) {
         if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
-                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround || deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines || deviceType == Device.DEVICE_TYPE_PLUG_3lines) {
             return MySettings.initDB().deviceDAO().getDeviceWithLinesByChipID(chipID);
         }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             MySettings.initDB().deviceDAO().getDeviceWithSoundSystemDataByChipID(chipID);
+        }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            MySettings.initDB().deviceDAO().getDeviceWithPIRDataByChipID(chipID);
         }
         return null;
     }
@@ -335,15 +346,22 @@ public class MySettings {
         //remove device from DB
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
             MySettings.initDB().deviceDAO().removeDeviceWithLines(device);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             MySettings.initDB().deviceDAO().removeDeviceWithSoundDeviceData(device);
         }
 
     }
+    public static Device getDeviceByID2(long deviceID) {
+        return MySettings.initDB().deviceDAO().getDeviceWithLinesByID(deviceID);
+    }
     public static Device getDeviceByChipID2(String chipID) {
         return MySettings.initDB().deviceDAO().getDeviceWithLinesByChipID(chipID);
+    }
+    public static List<Line> getSecondaryLines(Device device){
+        return MySettings.initDB().lineDAO().getSecondaryLine(device.getChipID());
     }
 
     public static void updateLineState(Line line, int powerState){
@@ -513,7 +531,7 @@ public class MySettings {
     public static boolean isControlActive() {
         //SharedPreferences prefs = getSettings();
         //scanningActive = prefs.getBoolean(PREF_CONTROL_ACTIVE, true);
-        return false;
+        return MySettings.controlActive;
     }
 
     public static void setGetStatusState(boolean state) {
@@ -533,20 +551,25 @@ public class MySettings {
         if(devicesLatestVersions != null){
             devicesLatestVersions.put(deviceType, latestVersion);
         }else{
-            devicesLatestVersions = new SparseArray<>();
             SharedPreferences prefs = getSettings();
             String json = prefs.getString(PREF_DEVICES_LATEST_VERSIONS, "");
             if (json.isEmpty() || json.equals("null")) {
-
+                devicesLatestVersions = new SparseArray<>();
+                devicesLatestVersions.put(deviceType, latestVersion);
             } else {
                 if(gson == null){
                     gson = new Gson();
                 }
                 devicesLatestVersions = gson.fromJson(json, SparseArray.class);
+                if(devicesLatestVersions == null){
+                    devicesLatestVersions = new SparseArray<>();
+                }
                 devicesLatestVersions.put(deviceType, latestVersion);
             }
         }
-
+        if(gson == null){
+            gson = new Gson();
+        }
         SharedPreferences.Editor editor = getSettings().edit();
         editor.putString(PREF_DEVICES_LATEST_VERSIONS, gson.toJson(devicesLatestVersions));
         editor.apply();
@@ -557,7 +580,6 @@ public class MySettings {
                 return devicesLatestVersions.get(deviceType);
             }
         }else{
-            devicesLatestVersions = new SparseArray<>();
             SharedPreferences prefs = getSettings();
             String json = prefs.getString(PREF_DEVICES_LATEST_VERSIONS, "");
             if (json.isEmpty() || json.equals("null")) {
@@ -567,7 +589,7 @@ public class MySettings {
                     gson = new Gson();
                 }
                 devicesLatestVersions = gson.fromJson(json, SparseArray.class);
-                if(devicesLatestVersions.get(deviceType) != null && devicesLatestVersions.get(deviceType).length() >= 1){
+                if(devicesLatestVersions != null && devicesLatestVersions.get(deviceType) != null && devicesLatestVersions.get(deviceType).length() >= 1){
                     return devicesLatestVersions.get(deviceType);
                 }
             }
@@ -709,8 +731,69 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_5_6 = new Migration(5, 6) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("CREATE TABLE `pirdata` (`id` INTEGER NOT NULL DEFAULT -1, "
+                            + "`device_id` INTEGER NOT NULL DEFAULT -1,"
+                            + "`state` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))");
+                }
+            };
+
+            Migration MIGRATION_6_7 = new Migration(6, 7) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Line "
+                            + " ADD COLUMN mode INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
+            Migration MIGRATION_7_8 = new Migration(7, 8) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Line "
+                            + " ADD COLUMN primary_device_chip_id TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Line "
+                            + " ADD COLUMN primary_line_position INTEGER NOT NULL DEFAULT -1");
+
+                }
+            };
+
+            Migration MIGRATION_8_9 = new Migration(8, 9) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN firmware_update_available INTEGER NOT NULL DEFAULT 0");
+
+                }
+            };
+
+            Migration MIGRATION_9_10 = new Migration(9, 10) {
+                @Override
+                public void migrate(SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN firmware_version TEXT DEFAULT '101400'");
+
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                             .allowMainThreadQueries().
                             build();
             return database;

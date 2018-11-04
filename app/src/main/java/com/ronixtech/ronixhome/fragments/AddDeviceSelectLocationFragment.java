@@ -198,7 +198,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         // in a transaction.  We also want to remove any currently showing
                         // dialog, so make our own transaction and take care of that here.
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
                         if (prev != null) {
                             ft.remove(prev);
                         }

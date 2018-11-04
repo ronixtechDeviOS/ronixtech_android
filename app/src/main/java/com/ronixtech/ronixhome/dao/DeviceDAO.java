@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.PIRData;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
 import java.util.List;
@@ -58,12 +59,19 @@ public abstract class DeviceDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertSoundData(SoundDeviceData soundDeviceData);
-
     @Query("SELECT * FROM sounddevicedata WHERE device_id =:deviceID")
     public abstract SoundDeviceData getSoundSystemData(long deviceID);
-
     @Query("DELETE from sounddevicedata WHERE device_id=:deviceID")
     public abstract void removeDeviceSoundDeviceData(long deviceID);
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertPIRData(PIRData pirData);
+    @Query("SELECT * FROM pirdata WHERE device_id =:deviceID")
+    public abstract PIRData getPIRData(long deviceID);
+    @Query("DELETE from pirdata WHERE device_id=:deviceID")
+    public abstract void removeDevicePIRData(long deviceID);
 
 
     public void insertDeviceWithLines(Device device) {
@@ -153,6 +161,51 @@ public abstract class DeviceDAO {
     }
     public void removeDeviceWithSoundDeviceData(Device device){
         removeDeviceSoundDeviceData(device.getId());
+        removeDevice(device.getId());
+    }
+
+
+
+    public void insertDeviceWithPIRData(Device device){
+        if(device.getPIRData() != null) {
+            PIRData pirData= device.getPIRData();
+            pirData.setDeviceID(device.getId());
+            insertPIRData(pirData);
+        }
+        insertDevice(device);
+    }
+    public Device getDeviceWithPIRDataByID(long id) {
+        Device device = findByID(id);
+        if(device != null) {
+            PIRData pirData = getPIRData(id);
+            if (device != null) {
+                device.setPIRData(pirData);
+            }
+        }
+        return device;
+    }
+    public Device getDeviceWithPIRDataByMacAddress(String macAddress) {
+        Device device = findByMAC(macAddress);
+        if(device != null) {
+            PIRData pirData = getPIRData(device.getId());
+            if (device != null) {
+                device.setPIRData(pirData);
+            }
+        }
+        return device;
+    }
+    public Device getDeviceWithPIRDataByChipID(String chipID) {
+        Device device = findByChipID(chipID);
+        if(device != null) {
+            PIRData pirData = getPIRData(device.getId());
+            if (device != null) {
+                device.setPIRData(pirData);
+            }
+        }
+        return device;
+    }
+    public void removeDeviceWithPIRData(Device device){
+        removeDevicePIRData(device.getId());
         removeDevice(device.getId());
     }
 }

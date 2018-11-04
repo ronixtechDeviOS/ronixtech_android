@@ -7,14 +7,18 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,8 +71,11 @@ public class LoginFragment extends Fragment {
     CallbackManager callbackManager;
 
     EditText emailEditText, passwordEditText;
+    ImageView togglePasswordVisibilityImageView;
     Button loginButton, registerButton, resetPasswordButton;
     LoginButton facebookLoginButton;
+
+    boolean passwordVisible = false;
 
     private FirebaseAuth mAuth;
 
@@ -102,6 +109,7 @@ public class LoginFragment extends Fragment {
 
         emailEditText = view.findViewById(R.id.login_email_edittext);
         passwordEditText = view.findViewById(R.id.login_password_edittext);
+        togglePasswordVisibilityImageView = view.findViewById(R.id.toggle_password_visibility_imageview);
         loginButton = view.findViewById(R.id.login_button);
         resetPasswordButton = view.findViewById(R.id.forgot_password_button);
         facebookLoginButton = view.findViewById(R.id.facebook_login_button);
@@ -132,6 +140,53 @@ public class LoginFragment extends Fragment {
                         // App code
                     }
                 });
+;
+        togglePasswordVisibilityImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        // PRESSED
+                        //show password
+                        passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_on);
+                        passwordVisible = true;
+                        return true; // if you want to handle the touch event
+                    case MotionEvent.ACTION_UP:
+                        // RELEASED
+                        //hide password
+                        passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                        passwordVisible = false;
+                        return true; // if you want to handle the touch event
+                    case MotionEvent.ACTION_CANCEL:
+                        // RELEASED
+                        //hide password
+                        passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                        passwordVisible = false;
+                        return true; // if you want to handle the touch event
+                }
+                return false;
+            }
+        });
+
+        /*togglePasswordVisibilityImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(passwordVisible){
+                    //hide password
+                    passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                    passwordVisible = false;
+                }else{
+                    //show password
+                    passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    togglePasswordVisibilityImageView.setImageResource(R.drawable.password_on);
+                    passwordVisible = true;
+                }
+            }
+        });*/
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override

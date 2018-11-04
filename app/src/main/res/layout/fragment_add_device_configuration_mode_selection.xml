@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AddDeviceConfigurationModeSelectionFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/whiteColor">
+        <TextView
+            android:id="@+id/device_mode_hint_textivew"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/blackColor"
+            android:text="@string/unit_mode_hint" />
+
+        <RadioGroup
+            android:id="@+id/device_mode_radiogroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/device_mode_hint_textivew"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/device_mode_primary_mode_radiobutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/unit_mode_primary"/>
+            <TextView
+                android:id="@+id/device_mode_primary_description_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/unit_mode_primary_description"/>
+            <RadioButton
+                android:id="@+id/device_mode_secondary_mode_radiobutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/unit_mode_secondary"/>
+            <TextView
+                android:id="@+id/device_mode_secondary_description_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/unit_mode_secondary_description"/>
+            <TextView
+                android:id="@+id/device_mode_difference_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/unit_mode_difference"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/continue_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/device_mode_radiogroup"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/whiteColor"
+            android:background="@drawable/button_background_round_blue"
+            android:text="@string/continue_button"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

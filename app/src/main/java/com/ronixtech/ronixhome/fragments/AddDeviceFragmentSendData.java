@@ -8,6 +8,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,6 +27,8 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.PIRData;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
 import org.json.JSONException;
@@ -93,8 +96,22 @@ public class AddDeviceFragmentSendData extends Fragment {
     private void sendConfigurationToDevice(){
         //debugTextView.append("Sending home network info to your RonixTech device...\n");
 
-        DataSenderUsingGet dataSenderUsingGet = new DataSenderUsingGet(getActivity(), this);
-        dataSenderUsingGet.execute();
+        Device device = MySettings.getTempDevice();
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            PIRResetPairings pirResetPairings = new PIRResetPairings(getActivity(), this);
+            pirResetPairings.execute();
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            /*ControllerAddPairings controllerAddPairings = new ControllerAddPairings(getActivity(), this);
+            controllerAddPairings.execute();*/
+            WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
+            wiFiDataSenderGet.execute();
+        }else{
+            WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
+            wiFiDataSenderGet.execute();
+        }
 
         //volley request to device to send ssid/password and then get device info for next steps
 /*        String url = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
@@ -230,15 +247,248 @@ public class AddDeviceFragmentSendData extends Fragment {
         void onStartListening();
     }
 
-    public static class DataSender extends AsyncTask<Void, Void, Void> {
-        private final String TAG = AddDeviceFragmentSendData.DataSender.class.getSimpleName();
-
+    public static class PIRResetPairings extends AsyncTask<Void, Void, Void> {
         int statusCode;
 
         Activity activity;
         AddDeviceFragmentSendData fragment;
 
-        public DataSender(Activity activity, AddDeviceFragmentSendData fragment) {
+        public PIRResetPairings(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200) {
+                PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment);
+                pirAddPairings.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                fragment.goToSearchFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    String urlString = Constants.DEVICE_URL + Constants.DEVICE_RESET_PAIRINGS_URL;
+
+                    URL url = new URL(urlString);
+                    Log.d(TAG,  "resetPairings URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "resetPairings response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class PIRAddPairings extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public PIRAddPairings(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200) {
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                fragment.goToSearchFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            for (Line line:MySettings.getTempDevice().getLines()) {
+                statusCode = 0;
+                int numberOfRetries = 0;
+                while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                    try{
+                        String urlString = Constants.DEVICE_URL + Constants.DEVICE_ADD_PAIRINGS_URL;
+
+                        urlString = urlString.concat("?").concat("chip_id").concat("=").concat(MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
+                        urlString = urlString.concat("&").concat("line_position").concat("=").concat(""+line.getPosition());
+
+                        URL url = new URL(urlString);
+                        Log.d(TAG,  "addPairing URL: " + url);
+
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                        urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                        urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+
+                        statusCode = urlConnection.getResponseCode();
+                        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                        StringBuilder result = new StringBuilder();
+                        String dataLine;
+                        while((dataLine = bufferedReader.readLine()) != null) {
+                            result.append(dataLine);
+                        }
+                        urlConnection.disconnect();
+                        Log.d(TAG,  "addPairing response: " + result.toString());
+                    }catch (MalformedURLException e){
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }catch (IOException e){
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }finally {
+                        if(urlConnection != null) {
+                            urlConnection.disconnect();
+                        }
+                        numberOfRetries++;
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class ControllerAddPairings extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public ControllerAddPairings(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200) {
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                fragment.goToSearchFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            for (Line line:MySettings.getTempDevice().getLines()) {
+                if(line.getMode() == Line.MODE_SECONDARY){
+                    statusCode = 0;
+                    int numberOfRetries = 0;
+                    while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                        try{
+                            String urlString = Constants.DEVICE_URL + Constants.DEVICE_ADD_LINE_PAIRINGS_URL;
+
+                            urlString = urlString.concat("?").concat("line_position").concat("=").concat(""+line.getPosition());
+                            urlString = urlString.concat("&").concat("primary_chip_id").concat("=").concat(line.getPrimaryDeviceChipID());
+                            urlString = urlString.concat("&").concat("primary_line_position").concat("=").concat(""+line.getPrimaryLinePosition());
+
+                            URL url = new URL(urlString);
+                            Log.d(TAG,  "addPairing URL: " + url);
+
+                            urlConnection = (HttpURLConnection) url.openConnection();
+                            urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                            urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+
+                            statusCode = urlConnection.getResponseCode();
+                            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                            StringBuilder result = new StringBuilder();
+                            String dataLine;
+                            while((dataLine = bufferedReader.readLine()) != null) {
+                                result.append(dataLine);
+                            }
+                            urlConnection.disconnect();
+                            Log.d(TAG,  "addPairing response: " + result.toString());
+                        }catch (MalformedURLException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }catch (IOException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }finally {
+                            if(urlConnection != null) {
+                                urlConnection.disconnect();
+                            }
+                            numberOfRetries++;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class WiFiDataSenderGet extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public WiFiDataSenderGet(Activity activity, AddDeviceFragmentSendData fragment) {
             this.activity = activity;
             this.fragment = fragment;
         }
@@ -259,21 +509,148 @@ public class AddDeviceFragmentSendData extends Fragment {
                 Device device = MySettings.getTempDevice();
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    DeviceRebooterGET deviceRebooterGET = new DeviceRebooterGET(activity, fragment);
-                    deviceRebooterGET.execute();
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
+                            deviceRebooterGet.execute();
+                        }
+                    }, 1000);
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment);
-                    deviceRebooter.execute();
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterPost deviceRebooterPost = new DeviceRebooterPost(activity, fragment);
+                            deviceRebooterPost.execute();
+                        }
+                    }, 1000);
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                    //go to PIR motion sensor config. fragment
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
-                    fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
-                    fragmentTransaction.commitAllowingStateLoss();
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
+                            deviceRebooterGet.execute();
+                        }
+                    }, 1000);
+                }
+
+            }else{
+                WiFiDataSenderPost wiFiDataSenderPost = new WiFiDataSenderPost(activity, fragment);
+                wiFiDataSenderPost.execute();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    String urlString = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
+                    //?essid=%SSID%&passwd=%PASS%
+
+                    urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getSsid())
+                            .concat("&").concat(Constants.PARAMETER_PASSWORD_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
+                    URL url = new URL(urlString);
+                    Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class WiFiDataSenderPost extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public WiFiDataSenderPost(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                Device device = MySettings.getTempDevice();
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
+                            deviceRebooterGet.execute();
+                        }
+                    }, 1000);
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterPost deviceRebooterPost = new DeviceRebooterPost(activity, fragment);
+                            deviceRebooterPost.execute();
+                        }
+                    }, 1000);
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
+                            deviceRebooterGet.execute();
+                        }
+                    }, 1000);
                 }
 
             }else{
@@ -343,15 +720,13 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
-    public static class DataSenderUsingGet extends AsyncTask<Void, Void, Void> {
-        private final String TAG = AddDeviceFragmentSendData.DataSenderUsingGet.class.getSimpleName();
-
+    public static class DeviceRebooterGet extends AsyncTask<Void, Void, Void> {
         int statusCode;
 
         Activity activity;
         AddDeviceFragmentSendData fragment;
 
-        public DataSenderUsingGet(Activity activity, AddDeviceFragmentSendData fragment) {
+        public DeviceRebooterGet(Activity activity, AddDeviceFragmentSendData fragment) {
             this.activity = activity;
             this.fragment = fragment;
         }
@@ -368,31 +743,35 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200){
-                Device device = MySettings.getTempDevice();
-                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    DeviceRebooterGET deviceRebooterGET = new DeviceRebooterGET(activity, fragment);
-                    deviceRebooterGET.execute();
-                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                    //reboot the device
-                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment);
-                    deviceRebooter.execute();
-                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                    //go to PIR motion sensor config. fragment
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
-                    fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
-                    fragmentTransaction.commitAllowingStateLoss();
-                }
+            if(fragment.mListener != null){
+                fragment.mListener.onStartListening();
+            }
+            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
 
+            Device device = MySettings.getTempDevice();
+            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                //quickly initialize the pirdata configuration for the device
+                MySettings.addDevice(device);
+                device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                PIRData pirData = new PIRData();
+                pirData.setDeviceID(device.getId());
+                device.setPIRData(pirData);
+                MySettings.setTempDevice(device);
+                FragmentManager fragmentManager = fragment.getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                fragmentTransaction.commit();
             }else{
-                DataSender dataSender = new DataSender(activity, fragment);
-                dataSender.execute();
+                FragmentManager fragmentManager = fragment.getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                fragmentTransaction.commitAllowingStateLoss();
             }
         }
 
@@ -403,18 +782,12 @@ public class AddDeviceFragmentSendData extends Fragment {
             int numberOfRetries = 0;
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
-                    String urlString = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
-                    //?essid=%SSID%&passwd=%PASS%
-
-                    urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getSsid())
-                            .concat("&").concat(Constants.PARAMETER_PASSWORD_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
-                    URL url = new URL(urlString);
-                    Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
+                    URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_REBOOT_URL);
+                    Log.d(TAG,  "rebootDevice URL: " + url);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
                     urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
-
                     statusCode = urlConnection.getResponseCode();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -424,7 +797,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
+                    Log.d(TAG,  "rebootDevice response: " + result.toString());
                 }catch (MalformedURLException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }catch (IOException e){
@@ -441,15 +814,13 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
-    public static class DeviceRebooter extends AsyncTask<Void, Void, Void> {
-        private final String TAG = AddDeviceFragmentSendData.DeviceRebooter.class.getSimpleName();
-
+    public static class DeviceRebooterPost extends AsyncTask<Void, Void, Void> {
         int statusCode;
 
         Activity activity;
         AddDeviceFragmentSendData fragment;
 
-        public DeviceRebooter(Activity activity, AddDeviceFragmentSendData fragment) {
+        public DeviceRebooterPost(Activity activity, AddDeviceFragmentSendData fragment) {
             this.activity = activity;
             this.fragment = fragment;
         }
@@ -532,84 +903,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                 }catch (IOException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
-                }finally {
-                    if(urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                    numberOfRetries++;
-                }
-            }
-
-            return null;
-        }
-    }
-
-    public static class DeviceRebooterGET extends AsyncTask<Void, Void, Void> {
-        private final String TAG = UpdateDeviceFirmwareUploadFragment.DeviceRebooter.class.getSimpleName();
-
-        int statusCode;
-
-        Activity activity;
-        AddDeviceFragmentSendData fragment;
-
-        public DeviceRebooterGET(Activity activity, AddDeviceFragmentSendData fragment) {
-            this.activity = activity;
-            this.fragment = fragment;
-        }
-
-        @Override
-        protected void onPreExecute(){
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            if(fragment.mListener != null){
-                fragment.mListener.onStartListening();
-            }
-            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
-
-            FragmentManager fragmentManager = fragment.getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-            fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-            fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-            fragmentTransaction.commitAllowingStateLoss();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            HttpURLConnection urlConnection = null;
-            statusCode = 0;
-            int numberOfRetries = 0;
-            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
-                try{
-                    URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_REBOOT_URL);
-                    Log.d(TAG,  "rebootDevice URL: " + url);
-
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
-                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
-                    statusCode = urlConnection.getResponseCode();
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder result = new StringBuilder();
-                    String dataLine;
-                    while((dataLine = bufferedReader.readLine()) != null) {
-                        result.append(dataLine);
-                    }
-                    urlConnection.disconnect();
-                    Log.d(TAG,  "rebootDevice response: " + result.toString());
-                }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
-                }catch (IOException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }finally {
                     if(urlConnection != null) {

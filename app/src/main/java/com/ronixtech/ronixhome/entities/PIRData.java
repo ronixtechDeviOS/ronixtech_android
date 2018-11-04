@@ -5,28 +5,24 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity
-public class SoundDeviceData {
-    public static final int MODE_LINE_IN = 0;
-    public static final int MODE_UPNP = 1;
-    public static final int MODE_USB = 2;
-
+public class PIRData {
     @PrimaryKey(autoGenerate = true)
     long id;
     @ColumnInfo(name = "device_id")
     long deviceID;
-    @ColumnInfo(name = "mode")
-    int mode;
+    @ColumnInfo(name = "state")
+    int state;
 
-    public SoundDeviceData(){
+    public PIRData(){
         this.id = -1;
         this.deviceID = -1;
-        this.mode = SoundDeviceData.MODE_LINE_IN;
+        this.state = Line.LINE_STATE_OFF;
     }
 
-    public SoundDeviceData(SoundDeviceData soundDeviceData){
-        this.id = soundDeviceData.getId();
-        this.deviceID = soundDeviceData.getDeviceID();
-        this.mode = soundDeviceData.getMode();
+    public PIRData(PIRData pirData){
+        this.id = pirData.getId();
+        this.deviceID = pirData.getDeviceID();
+        this.state = pirData.getState();
     }
 
     public long getId() {
@@ -45,11 +41,11 @@ public class SoundDeviceData {
         this.deviceID = deviceID;
     }
 
-    public int getMode() {
-        return mode;
+    public int getState() {
+        return state;
     }
 
-    public void setMode(int mode) {
-        this.mode = mode;
+    public void setState(int state) {
+        this.state = state;
     }
 }

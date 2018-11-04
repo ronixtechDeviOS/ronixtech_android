@@ -19,17 +19,25 @@ public class Constants {
     public static final String GET_DEVICE_STATUS = "/ronix/status";
     public static final String DEVICE_REBOOT_URL = "/ronix/reboot";
 
+    public static final String DEVICE_RESET_PAIRINGS_URL = "/ronix/reset_pairings";
+    public static final String DEVICE_ADD_PAIRINGS_URL = "/ronix/pair_controller";
+
+    public static final String DEVICE_ADD_LINE_PAIRINGS_URL = "/ronix/pair_device";
+
     public static final String GET_SSID_URL = "http://ronixtech.com/ronix_services/task/srv.php";
     public static final String MQTT_URL = "tcp://m13.cloudmqtt.com";
     public static final String MQTT_TOPIC = "ronix/network";
 
+    public static final String DEVICE_FIRMWARE_URL = "http://ronixtech.com/ronix_services/wifi_updates/%s/%s/%s";
+    //http://ronixtech.com/ronix_services/wifi_updates/%FIRMWARE_VERSION%/%DEVICE_TYPE%/%user1/2.bin%
+
     public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/user1.bin";
     public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/user2.bin";
 
-    //public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/dev/101405/SSW_WI_03/user1.bin";
-    //public static final String DEVICE_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/dev/101405/SSW_WI_03/user2.bin";
+    public static final String DEVICE_PIR_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/101406/PIR_WI_01/user1.bin";
+    public static final String DEVICE_PIR_FIRMWARE_URL_2 = "http://ronixtech.com/ronix_services/wifi_updates/101406/PIR_WI_01/user2.bin";
 
-    public static final String DEVICE_LATEST_FIRMWARE_VERSIONS_URL = "http://ronixtech.com/ronix_services/wifi_updates/latest_version.php";
+    public static final String DEVICE_LATEST_FIRMWARE_VERSIONS_URL = "http://ronixtech.com/ronix_services/wifi_updates/switches_controller/latest_version.php";
 
     public static final int SERVER_TIMEOUT = 5000;
     public static final int SERVER_NUMBER_OF_RETRIES = 2;

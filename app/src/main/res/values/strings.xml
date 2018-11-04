@@ -19,7 +19,10 @@
     <string name="account">Account</string>
     <string name="logout">Logout</string>
 
+    <string name="location">Location</string>
+
     <string name="place">Place</string>
+    <string name="place_colon">Place:</string>
     <string name="places">Places</string>
     <string name="add_place">Add Place</string>
     <string name="add_new_place">Add New Place</string>
@@ -62,6 +65,7 @@
     <string name="remove_floor_description">Deleting the floor will also delete all associated rooms and devices</string>
 
     <string name="room">Room</string>
+    <string name="room_colon">Room:</string>
     <string name="rooms">Rooms</string>
     <string name="add_room_title">Setup your room</string>
     <string name="add_room">Add Room</string>
@@ -77,10 +81,25 @@
     <string name="room_location">Floor</string>
     <string name="room_selection_hint">Tap here to select a room</string>
 
+    <string name="pir_pairing_description">Please select which device(s) this PIR controller will be paired to</string>
+    <string name="line_addition_hint">Tap here to add a device</string>
+    <string name="line_selection_hint">Tap here to select device</string>
+    <string name="selected_lines_colon">Selected devices:</string>
+    <string name="selected_line_colon">Selected device</string>
+    <string name="add_devices_first">No Smart Controllers added, please add a Smart Controller first</string>
+
+
+    <string name="select_paired_devices">Select Smart Controller(s)</string>
+    <string name="pairing_description">Please select which controller(s) this controller will be paired to</string>
+    <string name="device_selection_hint">Tap here to select a Smart Controller</string>
+    <string name="selected_devices_colon">Selected Smart Controller(s):</string>
+
+
     <string name="remove_room_question">Are you sure you want to delete the selected room?</string>
     <string name="remove_room_description">Deleting the room will also delete all associated devices</string>
 
     <string name="device">Smart Controller</string>
+    <string name="device_colon">Smart Controller:</string>
     <string name="add_device_title">Locate your Smart Controller</string>
     <string name="add_device">Add Smart Controller</string>
     <string name="add_new_device">Add New Smart Controller</string>
@@ -113,6 +132,26 @@
     <string name="line_type">Device Type</string>
     <string name="line_type_hint">Tap here to select the device type</string>
 
+    <string name="plug_1_name_hint">Plug #1</string>
+    <string name="plug_2_name_hint">Plug #2</string>
+    <string name="plug_3_name_hint">Plug #3</string>
+
+    <string name="unit_mode_title">Smart Controller Mode</string>
+    <string name="unit_mode_hint">Pick the mode which you will use for this Smart Controller</string>
+    <string name="unit_mode_primary">Primary Smart Controller</string>
+    <string name="unit_mode_secondary">Secondary Smart Controller</string>
+    <string name="unit_mode_primary_description">This mode allows the Smart Controller\'s devices to be fully configured</string>
+    <string name="unit_mode_secondary_description">This mode allows the Smart Controller to be paired to another Smart Controller and its devices to be mirrored from the other Smart Controller</string>
+    <string name="unit_mode_difference">Note: Primary Smart Controllers should be electrically wired to the AC loads, while secondary Smart Controllers will not be connected to any AC loads</string>
+
+    <string name="line_mode_title">Device Mode</string>
+    <string name="line_mode_hint">Pick the mode which you will use for this Device</string>
+    <string name="line_mode_primary">Primary Device</string>
+    <string name="line_mode_secondary">Secondary Device (for Deviator scenarios)</string>
+    <string name="line_mode_primary_description">Select this mode when the Smart Controller\'s device is directly connecting to the electric AC load</string>
+    <string name="line_mode_secondary_description">This mode allows the device to be paired to another device in another Smart Controller</string>
+    <string name="line_mode_difference">Note: Primary devices should be electrically wired to the AC loads, while secondary devices will not be connected to any AC loads</string>
+
     <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
@@ -123,6 +162,8 @@
 
     <string name="scanning_network">Scanning network for Smart Controller</string>
     <string name="last_seen">Last seen @ %s</string>
+    <string name="firmware_available">New firmware available</string>
+    <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable control functionality.</string>
 
     <string name="delete_device">Delete Smart Controller</string>
 
@@ -140,6 +181,7 @@
     <string name="download_complete">Download Complete</string>
     <string name="uploading_firmware">Uploading firmware</string>
     <string name="unable_to_get_device_firmware_file_name">Unable to get firmware configuration from Smart Controller</string>
+    <string name="unable_to_download_firmware">Unable to download firmware files, please try again</string>
     <string name="unable_to_upload_firmware">Unable to upload firmware, please try again</string>
     <string name="unable_to_reboot_device">Unable to reboot Smart Controller, try again or reboot it manually</string>
     <string name="firmware_update_successfull">Firmware updated successfully, rebooting device now</string>
@@ -191,7 +233,7 @@
 
     <string name="smart_controller_connection_error">Error connecting to smart controller, please try again</string>
     <string name="server_connection_error">Unable to connect to server, please try again</string>
-    <string name="no_internet_connection">No internet connection, please try again alter</string>
+    <string name="no_internet_connection">No internet connection, please try again later</string>
 
     <string name="registration_failed">Registration failed</string>
     <string name="login_failed">Login failed</string>

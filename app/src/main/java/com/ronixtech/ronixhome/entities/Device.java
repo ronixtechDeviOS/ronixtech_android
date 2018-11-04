@@ -26,18 +26,27 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_wifi_3lines_workaround = 100050;
     public static final int DEVICE_TYPE_PIR_MOTION_SENSOR = 100051;
     public static final int DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER = 100070;
+    public static final int DEVICE_TYPE_PLUG_1lines = 100031;
+    public static final int DEVICE_TYPE_PLUG_2lines = 100032;
+    public static final int DEVICE_TYPE_PLUG_3lines = 100033;
     public static final int DEVICE_NUMBER_OF_TYPES = 3; //lines, pir sensor, speaker controller
-    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 20; //testing a high number to disable the re-scan feature when it fails temporarily
+    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 40;
 
     public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
 
-    public static final int REFRESH_RATE_MS = 1500;
-    public static final int REFRESH_TIMEOUT = 1200;
+    public static final int REFRESH_RATE_MS = 800;
+    public static final int REFRESH_TIMEOUT = 250;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;
 
     public static final int CONFIG_TIMEOUT = 1000;
     public static final int CONFIG_NUMBER_OF_RETRIES = 10;
+
+    public static final int MODE_PRIMARY = 0;
+    public static final int MODE_SECONDARY = 1;
+
+    public static final String DEVICE_BASE_FIRMWARE = "101400";
+    public static final int SYNC_CONTROLS_STATUS_FIRMWARE_VERSION = 101405;
 
     @PrimaryKey(autoGenerate = true)
     long id;
@@ -64,13 +73,19 @@ public class Device implements Comparable {
     String accessToken;
     @ColumnInfo(name = "last_seen_timestamp")
     long lastSeenTimestamp;
+    @Ignore
+    PIRData pirData;
+    @ColumnInfo(name = "firmware_version")
+    String firmwareVersion;
+    @ColumnInfo(name = "firmware_update_available")
+    boolean firmwareUpdateAvailable;
 
     public Device(){
         this.id = 0;
         this.name = "";
         this.macAddress = "";
         this.chipID = "";
-        this.deviceTypeID = Device.DEVICE_TYPE_wifi_3lines;
+        this.deviceTypeID = -1;
         this.ipAddress = "";
         this.roomID = -1;
         this.errorCount = 0;
@@ -78,6 +93,31 @@ public class Device implements Comparable {
         this.soundDeviceData = new SoundDeviceData();
         this.accessToken = Constants.DEVICE_DEFAULT_ACCESS_TOKEN;
         lastSeenTimestamp = 0;
+        this.pirData = new PIRData();
+        this.firmwareUpdateAvailable = false;
+        this.firmwareVersion = Device.DEVICE_BASE_FIRMWARE;
+    }
+
+    public Device(Device device){
+        this.id = device.getId();
+        this.name = device.getName();
+        this.macAddress = device.getMacAddress();
+        this.chipID = device.getChipID();
+        this.deviceTypeID = device.getDeviceTypeID();
+        this.ipAddress = device.getIpAddress();
+        this.roomID = device.getRoomID();
+        this.errorCount = device.getErrorCount();
+        this.lines = new ArrayList<>();
+        for (Line line:device.getLines()) {
+            Line newLine = new Line(line);
+            this.lines.add(newLine);
+        }
+        this.soundDeviceData = new SoundDeviceData(device.getSoundDeviceData());
+        this.accessToken = device.getAccessToken();
+        this.lastSeenTimestamp = device.getLastSeenTimestamp();
+        this.pirData = new PIRData(device.getPIRData());
+        this.firmwareUpdateAvailable = device.isFirmwareUpdateAvailable();
+        this.firmwareVersion = device.getFirmwareVersion();
     }
 
     public long getId() {
@@ -160,6 +200,14 @@ public class Device implements Comparable {
         this.soundDeviceData = soundSystemDevice;
     }
 
+    public PIRData getPIRData(){
+        return this.pirData;
+    }
+
+    public void setPIRData(PIRData pirData){
+        this.pirData = pirData;
+    }
+
     public String getAccessToken() {
         return accessToken;
     }
@@ -174,6 +222,22 @@ public class Device implements Comparable {
 
     public void setLastSeenTimestamp(long lastSeenTimestamp) {
         this.lastSeenTimestamp = lastSeenTimestamp;
+    }
+
+    public boolean isFirmwareUpdateAvailable() {
+        return firmwareUpdateAvailable;
+    }
+
+    public void setFirmwareUpdateAvailable(boolean firmwareUpdateAvailable) {
+        this.firmwareUpdateAvailable = firmwareUpdateAvailable;
+    }
+
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    public void setFirmwareVersion(String firmwareVersion) {
+        this.firmwareVersion = firmwareVersion;
     }
 
     @Override
