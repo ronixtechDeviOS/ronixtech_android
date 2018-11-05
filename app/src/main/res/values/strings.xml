@@ -182,6 +182,7 @@
     <string name="uploading_firmware">Uploading firmware</string>
     <string name="unable_to_get_device_firmware_file_name">Unable to get firmware configuration from Smart Controller</string>
     <string name="unable_to_download_firmware">Unable to download firmware files, please try again</string>
+    <string name="download_firmware_failed">Downloading firmware files failed, please try again</string>
     <string name="unable_to_upload_firmware">Unable to upload firmware, please try again</string>
     <string name="unable_to_reboot_device">Unable to reboot Smart Controller, try again or reboot it manually</string>
     <string name="firmware_update_successfull">Firmware updated successfully, rebooting device now</string>

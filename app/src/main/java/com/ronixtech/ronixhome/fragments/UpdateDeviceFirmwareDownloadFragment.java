@@ -185,6 +185,8 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         private PowerManager.WakeLock mWakeLock;
         UpdateDeviceFirmwareDownloadFragment fragment;
 
+        int statusCode;
+
         public DownloadTask(Context context, UpdateDeviceFirmwareDownloadFragment fragment) {
             this.context = context;
             this.fragment = fragment;
@@ -197,24 +199,30 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result){
-            if(getActivity() != null) {
-                currentFile++;
+            if(getActivity() != null){
+                if(statusCode == 200) {
+                    currentFile++;
 
-                progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
+                    progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
 
-                if (currentFile <= 2) {
-                    String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user2.bin");
-                    DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
-                    downloadTask.execute(url);
-                } else {
-                    progressTextView.setText(context.getResources().getString(R.string.download_complete));
-                    fragment.goToUploadFragment();
+                    if (currentFile <= 2) {
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user2.bin");
+                        DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
+                        downloadTask.execute(url);
+                    } else {
+                        progressTextView.setText(context.getResources().getString(R.string.download_complete));
+                        fragment.goToUploadFragment();
+                    }
+                }else{
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.download_firmware_failed), Toast.LENGTH_SHORT).show();
+                    goToHomeFragment();
                 }
             }
         }
 
         @Override
         protected String doInBackground(String... sUrl) {
+            statusCode = 0;
             InputStream input = null;
             OutputStream output = null;
             HttpURLConnection connection = null;
@@ -224,6 +232,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
+                statusCode = connection.getResponseCode();
                 // expect HTTP 200 OK, so we don't mistakenly save error report
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
