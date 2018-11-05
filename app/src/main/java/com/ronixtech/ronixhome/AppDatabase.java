@@ -21,7 +21,7 @@ import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
 
-@Database(entities = {Type.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 10, exportSchema =  false)
+@Database(entities = {Type.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 11, exportSchema =  false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TypeDAO typeDAO();

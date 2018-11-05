@@ -365,6 +365,13 @@ public class AddDeviceFragmentSendData extends Fragment {
 
                         urlString = urlString.concat("?").concat("chip_id").concat("=").concat(MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
                         urlString = urlString.concat("&").concat("line_position").concat("=").concat(""+line.getPosition());
+                        if(line.getPirDimmingValue() == 10){
+                            urlString = urlString.concat("&").concat("dimming_value").concat(":");
+                        }else{
+                            urlString = urlString.concat("&").concat("dimming_value").concat(""+line.getPirDimmingValue());
+                        }
+                        urlString = urlString.concat("&").concat("trigger_action_duration").concat(""+line.getPirTriggerActionDuration());
+                        urlString = urlString.concat("&").concat("trigger_action_duration_unit").concat(""+line.getPirTriggerActionDurationTimeUnit());
 
                         URL url = new URL(urlString);
                         Log.d(TAG,  "addPairing URL: " + url);

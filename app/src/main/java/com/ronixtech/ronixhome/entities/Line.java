@@ -46,7 +46,16 @@ public class Line {
     String primaryDeviceChipID;
     @ColumnInfo(name = "primary_line_position")
     int primaryLinePosition;
-
+    @ColumnInfo(name = "pir_power_state")
+    int pirPowerState;
+    @ColumnInfo(name = "pir_dimming_state")
+    int pirDimmingState;
+    @ColumnInfo(name = "pir_dimming_value")
+    int pirDimmingValue;
+    @ColumnInfo(name = "pir_trigger_action_duration")
+    int pirTriggerActionDuration;
+    @ColumnInfo(name = "pir_trigger_action_duration_time_unit")
+    int pirTriggerActionDurationTimeUnit;
 
     public Line(){
         this.id = 0;
@@ -63,6 +72,11 @@ public class Line {
         this.mode = Line.MODE_PRIMARY;
         this.primaryDeviceChipID = "";
         this.primaryLinePosition = -1;
+        this.pirPowerState = Line.LINE_STATE_ON;
+        this.pirDimmingState = Line.DIMMING_STATE_OFF;
+        this.pirDimmingValue = 0;
+        this.pirTriggerActionDuration = 0;
+        this.pirTriggerActionDurationTimeUnit = TimeUnit.UNIT_INDEFINITE;
     }
 
     public Line(Line line){
@@ -80,6 +94,11 @@ public class Line {
         this.mode = line.getMode();
         this.primaryDeviceChipID = line.getPrimaryDeviceChipID();
         this.primaryLinePosition = line.getPrimaryLinePosition();
+        this.pirPowerState = line.getPirPowerState();
+        this.pirDimmingState = line.getPirDimmingState();
+        this.pirDimmingValue = line.getPirDimmingValue();
+        this.pirTriggerActionDuration = line.getPirTriggerActionDuration();
+        this.pirTriggerActionDurationTimeUnit = line.getPirTriggerActionDurationTimeUnit();
     }
 
     public long getId() {
@@ -200,6 +219,46 @@ public class Line {
 
     public void setPrimaryLinePosition(int primaryLinePosition) {
         this.primaryLinePosition = primaryLinePosition;
+    }
+
+    public int getPirPowerState() {
+        return pirPowerState;
+    }
+
+    public void setPirPowerState(int pirPowerState) {
+        this.pirPowerState = pirPowerState;
+    }
+
+    public int getPirDimmingState() {
+        return pirDimmingState;
+    }
+
+    public void setPirDimmingState(int pirDimmingState) {
+        this.pirDimmingState = pirDimmingState;
+    }
+
+    public int getPirDimmingValue() {
+        return pirDimmingValue;
+    }
+
+    public void setPirDimmingValue(int pirDimmingValue) {
+        this.pirDimmingValue = pirDimmingValue;
+    }
+
+    public int getPirTriggerActionDuration() {
+        return pirTriggerActionDuration;
+    }
+
+    public void setPirTriggerActionDuration(int pirTriggerActionDuration) {
+        this.pirTriggerActionDuration = pirTriggerActionDuration;
+    }
+
+    public int getPirTriggerActionDurationTimeUnit() {
+        return pirTriggerActionDurationTimeUnit;
+    }
+
+    public void setPirTriggerActionDurationTimeUnit(int pirTriggerActionDurationTimeUnit) {
+        this.pirTriggerActionDurationTimeUnit = pirTriggerActionDurationTimeUnit;
     }
 
     @Override

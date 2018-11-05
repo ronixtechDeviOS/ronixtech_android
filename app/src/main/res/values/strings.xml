@@ -155,6 +155,7 @@
     <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
+    <string name="dimming_value">Dim value</string>
 
     <string name="upnp">Stream</string>
     <string name="line_in">Line-In</string>
@@ -210,6 +211,11 @@
     <string name="remove_unit_question">Are you sure you want to remove this smart controller?</string>
     <string name="remove_unit_message">Removing the smart controller wil also remove all the associated devices and cannot be undone</string>
 
+
+    <string name="pir_action">Trigger Action on this device</string>
+    <string name="pir_action_duration">Trigger Action Duration</string>
+    <string name="pir_action_turn_on">Turn on this device</string>
+    <string name="pir_action_turn_off">Turn off this device</string>
 
     <string name="duplicate_unit_title">Duplicate Smart Controller</string>
     <string name="duplicate_unit_message">Do you want to remove the previous smart controller and all its associated data, and re-configure it from the beginning or do you want to keep the old controller and go back?</string>

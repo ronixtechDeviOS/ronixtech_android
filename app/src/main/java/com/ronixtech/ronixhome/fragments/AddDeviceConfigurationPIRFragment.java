@@ -23,7 +23,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
-import com.ronixtech.ronixhome.adapters.LineAdapter;
+import com.ronixtech.ronixhome.adapters.LinePIRConfigurationAdapter;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 
@@ -47,7 +47,7 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
     TextView lineNameTextView;
     ImageView lineImageView;
 
-    LineAdapter adapter;
+    LinePIRConfigurationAdapter adapter;
     ListView selectedLinesListView;
     List<Line> selectedLines;
     Button continueButton;
@@ -89,7 +89,7 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
         lineImageView = view.findViewById(R.id.selected_line_image_view);
         selectedLinesListView = view.findViewById(R.id.selected_lines_listview);
         selectedLines = new ArrayList<>();
-        adapter = new LineAdapter(getActivity(), selectedLines);
+        adapter = new LinePIRConfigurationAdapter(getActivity(), selectedLines);
         selectedLinesListView.setAdapter(adapter);
         continueButton = view.findViewById(R.id.continue_button);
 

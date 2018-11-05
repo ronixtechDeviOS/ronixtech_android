@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.TimeUnit;
 import com.ronixtech.ronixhome.entities.Type;
 
 import org.json.JSONException;
@@ -450,6 +451,22 @@ public class Utils {
         for (Type ty: lineTypes) {
             MySettings.addType(ty);
         }
+    }
+
+    public static List<TimeUnit> getTimeUnits(){
+        List<TimeUnit> timeUnits = new ArrayList<>();
+        TimeUnit timeUnit = new TimeUnit(TimeUnit.UNIT_SECONDS, "Seconds");
+        timeUnits.add(timeUnit);
+        timeUnit = new TimeUnit(TimeUnit.UNIT_MINUTES, "Minutes");
+        timeUnits.add(timeUnit);
+        timeUnit = new TimeUnit(TimeUnit.UNIT_HOURS, "Hours");
+        timeUnits.add(timeUnit);
+        timeUnit = new TimeUnit(TimeUnit.UNIT_DAYS, "Days");
+        timeUnits.add(timeUnit);
+        timeUnit = new TimeUnit(TimeUnit.UNIT_INDEFINITE, "No time limit");
+        timeUnits.add(timeUnit);
+
+        return timeUnits;
     }
 
     private static boolean isAppEnabled(Context context, String packageName) {
