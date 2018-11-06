@@ -218,7 +218,7 @@
     <string name="pir_action_turn_off">Turn off this device</string>
 
     <string name="duplicate_unit_title">Duplicate Smart Controller</string>
-    <string name="duplicate_unit_message">Do you want to remove the previous smart controller and all its associated data, and re-configure it from the beginning or do you want to keep the old controller and go back?</string>
+    <string name="duplicate_unit_message">Remove the smart controller and re-add or keep the old controller and go back?</string>
 
     <string name="remove_duplicate_smart_controller">Remove old smart controller and re-configure it</string>
     <string name="keep_smart_controller">Keep old smart controller and go back</string>

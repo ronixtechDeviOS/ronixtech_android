@@ -165,6 +165,7 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
         if(line != null && !selectedLines.contains(line)){
             this.selectedLines.add(line);
             adapter.notifyDataSetChanged();
+            Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
             /*lineNameTextView.setText(line.getName());
             if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                 GlideApp.with(getActivity())

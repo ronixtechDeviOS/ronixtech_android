@@ -175,6 +175,7 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
                         vHolder.triggerActionDurationSeekBar.setEnabled(true);
                         vHolder.triggerActionDurationSeekBar.setProgress(30);
                         vHolder.triggerActionDurationSeekBar.setMax(60);
+                        item.setPirTriggerActionDurationTimeUnit(selectedUnit.getID());
                         item.setPirTriggerActionDuration(vHolder.triggerActionDurationSeekBar.getProgress());
                         vHolder.triggerActionDurationTextView.setText("" + vHolder.triggerActionDurationSeekBar.getProgress() + " second(s)");
                         break;
@@ -182,6 +183,7 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
                         vHolder.triggerActionDurationSeekBar.setEnabled(true);
                         vHolder.triggerActionDurationSeekBar.setProgress(30);
                         vHolder.triggerActionDurationSeekBar.setMax(60);
+                        item.setPirTriggerActionDurationTimeUnit(selectedUnit.getID());
                         item.setPirTriggerActionDuration(vHolder.triggerActionDurationSeekBar.getProgress());
                         vHolder.triggerActionDurationTextView.setText("" + vHolder.triggerActionDurationSeekBar.getProgress() + " minutes(s)");
                         break;
@@ -189,6 +191,7 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
                         vHolder.triggerActionDurationSeekBar.setEnabled(true);
                         vHolder.triggerActionDurationSeekBar.setProgress(1);
                         vHolder.triggerActionDurationSeekBar.setMax(24);
+                        item.setPirTriggerActionDurationTimeUnit(selectedUnit.getID());
                         item.setPirTriggerActionDuration(vHolder.triggerActionDurationSeekBar.getProgress());
                         vHolder.triggerActionDurationTextView.setText("" + vHolder.triggerActionDurationSeekBar.getProgress() + " hours(s)");
                         break;
@@ -196,6 +199,7 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
                         vHolder.triggerActionDurationSeekBar.setEnabled(true);
                         vHolder.triggerActionDurationSeekBar.setProgress(1);
                         vHolder.triggerActionDurationSeekBar.setMax(30);
+                        item.setPirTriggerActionDurationTimeUnit(selectedUnit.getID());
                         item.setPirTriggerActionDuration(vHolder.triggerActionDurationSeekBar.getProgress());
                         vHolder.triggerActionDurationTextView.setText("" + vHolder.triggerActionDurationSeekBar.getProgress() + " day(s)");
                         break;
@@ -203,6 +207,7 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
                         vHolder.triggerActionDurationSeekBar.setEnabled(false);
                         vHolder.triggerActionDurationSeekBar.setProgress(0);
                         vHolder.triggerActionDurationSeekBar.setMax(0);
+                        item.setPirTriggerActionDurationTimeUnit(selectedUnit.getID());
                         item.setPirTriggerActionDuration(0);
                         vHolder.triggerActionDurationTextView.setText( "No time limit");
                         break;
@@ -217,23 +222,25 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
         vHolder.triggerActionDurationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                item.setPirTriggerActionDuration(progress);
-                switch (item.getPirTriggerActionDurationTimeUnit()){
-                    case TimeUnit.UNIT_SECONDS:
-                        vHolder.triggerActionDurationTextView.setText("" + progress + " second(s)");
-                        break;
-                    case TimeUnit.UNIT_MINUTES:
-                        vHolder.triggerActionDurationTextView.setText("" + progress + " minute(s)");
-                        break;
-                    case TimeUnit.UNIT_HOURS:
-                        vHolder.triggerActionDurationTextView.setText("" + progress + " hours(s)");
-                        break;
-                    case TimeUnit.UNIT_DAYS:
-                        vHolder.triggerActionDurationTextView.setText("" + progress + " day(s)");
-                        break;
-                    case TimeUnit.UNIT_INDEFINITE:
-                        vHolder.triggerActionDurationTextView.setText( "No time limit");
-                        break;
+                if(progress != 0){
+                    item.setPirTriggerActionDuration(progress);
+                    switch (item.getPirTriggerActionDurationTimeUnit()){
+                        case TimeUnit.UNIT_SECONDS:
+                            vHolder.triggerActionDurationTextView.setText("" + progress + " second(s)");
+                            break;
+                        case TimeUnit.UNIT_MINUTES:
+                            vHolder.triggerActionDurationTextView.setText("" + progress + " minute(s)");
+                            break;
+                        case TimeUnit.UNIT_HOURS:
+                            vHolder.triggerActionDurationTextView.setText("" + progress + " hours(s)");
+                            break;
+                        case TimeUnit.UNIT_DAYS:
+                            vHolder.triggerActionDurationTextView.setText("" + progress + " day(s)");
+                            break;
+                        case TimeUnit.UNIT_INDEFINITE:
+                            vHolder.triggerActionDurationTextView.setText( "No time limit");
+                            break;
+                    }
                 }
             }
 

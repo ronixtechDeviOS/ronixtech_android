@@ -374,7 +374,7 @@ public class AddDeviceFragmentSearch extends Fragment {
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                                     AddDeviceFragmentGetData addDeviceFragmentGetData = new AddDeviceFragmentGetData();
                                     fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentGetData, "addDeviceFragmentGetData");
-                                    fragmentTransaction.addToBackStack("addDeviceFragmentGetData");
+                                    //fragmentTransaction.addToBackStack("addDeviceFragmentGetData");
                                     fragmentTransaction.commitAllowingStateLoss();
 
                                     //get device info and save them in the database

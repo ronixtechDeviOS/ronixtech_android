@@ -21,6 +21,8 @@
                 android:id="@+id/line_type_imageview"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/device_colored_icon"/>

@@ -164,6 +164,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.commit();
+            return null;
         }
         firstLine = new Line();
         secondLine = new Line();
@@ -672,7 +673,7 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                     AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
                     fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
-                    fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                    //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
                     fragmentTransaction.commit();
                 }
             }

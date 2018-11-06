@@ -97,20 +97,22 @@ public class AddDeviceFragmentSendData extends Fragment {
         //debugTextView.append("Sending home network info to your RonixTech device...\n");
 
         Device device = MySettings.getTempDevice();
-        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-            PIRResetPairings pirResetPairings = new PIRResetPairings(getActivity(), this);
-            pirResetPairings.execute();
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+        if(device != null){
+            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                PIRResetPairings pirResetPairings = new PIRResetPairings(getActivity(), this);
+                pirResetPairings.execute();
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
             /*ControllerAddPairings controllerAddPairings = new ControllerAddPairings(getActivity(), this);
             controllerAddPairings.execute();*/
-            WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
-            wiFiDataSenderGet.execute();
-        }else{
-            WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
-            wiFiDataSenderGet.execute();
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
+                wiFiDataSenderGet.execute();
+            }else{
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
+                wiFiDataSenderGet.execute();
+            }
         }
 
         //volley request to device to send ssid/password and then get device info for next steps
@@ -769,15 +771,15 @@ public class AddDeviceFragmentSendData extends Fragment {
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
                 fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                fragmentTransaction.commit();
+                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                fragmentTransaction.commitAllowingStateLoss();
             }else{
                 FragmentManager fragmentManager = fragment.getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
                 fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
                 fragmentTransaction.commitAllowingStateLoss();
             }
         }
@@ -862,8 +864,8 @@ public class AddDeviceFragmentSendData extends Fragment {
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
             AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
             fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-            fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-            fragmentTransaction.commit();
+            //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+            fragmentTransaction.commitAllowingStateLoss();
         }
 
         @Override

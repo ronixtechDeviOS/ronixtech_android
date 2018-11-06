@@ -261,7 +261,7 @@ public class AddDeviceFragmentGetData extends Fragment {
         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
         AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
         fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
-        fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+        //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
         fragmentTransaction.commitAllowingStateLoss();
     }
 
@@ -279,7 +279,7 @@ public class AddDeviceFragmentGetData extends Fragment {
         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
         AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
         fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
-        fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+        //fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
         fragmentTransaction.commitAllowingStateLoss();
     }
 
@@ -289,7 +289,7 @@ public class AddDeviceFragmentGetData extends Fragment {
         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
         AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
         fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-        fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
+        //fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
         fragmentTransaction.commitAllowingStateLoss();
     }
 
