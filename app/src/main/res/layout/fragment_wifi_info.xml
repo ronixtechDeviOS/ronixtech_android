@@ -1,186 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.WifiInfoFragment">
-
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteColor">
-        <Button
-            android:id="@+id/continue_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/whiteColor"
-            android:background="@drawable/button_background_round_gray"
-            android:enabled="false"
-            android:text="@string/continue_button"/>
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/network_info_title_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_centerHorizontal="true"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textColor="@color/blackColor"
-            android:text="@string/configure_home_network_title"/>
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/network_info_title_textview"
-            android:layout_above="@id/continue_button"
-            android:orientation="vertical">
-            <FrameLayout
-                android:id="@+id/child_fragment_container"
+            android:background="@color/whiteColor">
+            <Button
+                android:id="@+id/continue_button"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/whiteColor"
+                android:background="@drawable/button_background_round_gray"
+                android:enabled="false"
+                android:text="@string/add_network"/>
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/network_info_title_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textColor="@color/blackColor"
+                android:text="@string/configure_home_network_title"/>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/network_info_hint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_centerHorizontal="true"
-                    android:textAlignment="center"
-                    android:textSize="16sp"
-                    android:textColor="@color/blackColor"
-                    android:text="@string/network_manually_or_from_list"/>
-
-                <TextView
-                    android:id="@+id/ssid_static_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/network_info_hint"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/darkGrayColor"
-                    android:text="@string/ssid_colon"/>
-                <TextView
-                    android:id="@+id/ssid_textview"
+                android:layout_height="match_parent"
+                android:layout_below="@id/network_info_title_textview"
+                android:layout_above="@id/continue_button"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:id="@+id/child_fragment_container"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ssid_static_textview"
-                    android:paddingTop="8dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/blackColor"
-                    android:text="@string/ssid_tap_to_edit"/>
+                    android:layout_marginEnd="16dp" />
 
-                <LinearLayout
-                    android:id="@+id/ssid_edit_layout"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_below="@id/ssid_static_textview"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="horizontal">
-                    <EditText
-                        android:id="@+id/ssid_edittext"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:inputType="textCapWords"
-                        android:imeOptions="actionDone"
-                        android:textSize="20sp"
-                        android:textColor="@color/blackColor"
-                        android:text="@string/ssid_hint"/>
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:visibility="gone">
 
-                    <ImageView
-                        android:id="@+id/ssid_edit_imageview"
+                    <TextView
+                        android:id="@+id/network_info_hint"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:src="@drawable/ic_check_circle_green_24dp"/>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/password_static_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ssid_textview"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/darkGrayColor"
-                    android:text="@string/password_colon"/>
-                <TextView
-                    android:id="@+id/password_textview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/password_static_textview"
-                    android:paddingTop="8dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/blackColor"
-                    android:text="@string/password_tap_to_edit"/>
-
-                <LinearLayout
-                    android:id="@+id/password_edit_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_below="@id/password_static_textview"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:orientation="horizontal">
-                    <EditText
-                        android:id="@+id/password_edittext"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:inputType="textCapWords"
-                        android:imeOptions="actionDone"
-                        android:textSize="20sp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
                         android:textColor="@color/blackColor"
-                        android:text="@string/password_hint"/>
+                        android:text="@string/network_manually_or_from_list"/>
 
-                    <ImageView
-                        android:id="@+id/password_edit_imageview"
+                    <TextView
+                        android:id="@+id/ssid_static_textview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
+                        android:layout_below="@id/network_info_hint"
+                        android:layout_marginTop="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
-                        android:src="@drawable/ic_check_circle_green_24dp"/>
-                </LinearLayout>
+                        android:textSize="20sp"
+                        android:textColor="@color/darkGrayColor"
+                        android:text="@string/ssid_colon"/>
+                    <TextView
+                        android:id="@+id/ssid_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ssid_static_textview"
+                        android:paddingTop="8dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="20sp"
+                        android:textColor="@color/blackColor"
+                        android:text="@string/ssid_tap_to_edit"/>
 
-            </RelativeLayout>
+                    <LinearLayout
+                        android:id="@+id/ssid_edit_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"
+                        android:layout_below="@id/ssid_static_textview"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:id="@+id/ssid_edittext"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:inputType="textCapWords"
+                            android:imeOptions="actionDone"
+                            android:textSize="20sp"
+                            android:textColor="@color/blackColor"
+                            android:text="@string/ssid_hint"/>
 
-        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/ssid_edit_imageview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:src="@drawable/ic_check_circle_green_24dp"/>
+                    </LinearLayout>
 
-    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/password_static_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ssid_textview"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="20sp"
+                        android:textColor="@color/darkGrayColor"
+                        android:text="@string/password_colon"/>
+                    <TextView
+                        android:id="@+id/password_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/password_static_textview"
+                        android:paddingTop="8dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="20sp"
+                        android:textColor="@color/blackColor"
+                        android:text="@string/password_tap_to_edit"/>
 
-</FrameLayout>
+                    <LinearLayout
+                        android:id="@+id/password_edit_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"
+                        android:layout_below="@id/password_static_textview"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:id="@+id/password_edittext"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:inputType="textCapWords"
+                            android:imeOptions="actionDone"
+                            android:textSize="20sp"
+                            android:textColor="@color/blackColor"
+                            android:text="@string/password_hint"/>
+
+                        <ImageView
+                            android:id="@+id/password_edit_imageview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:src="@drawable/ic_check_circle_green_24dp"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+</ScrollView>

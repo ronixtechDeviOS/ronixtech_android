@@ -216,12 +216,67 @@
                     android:text="@string/room_selection_hint"/>
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/wifi_network_title_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/room_selection_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:text="@string/wifi_network"/>
+            <RelativeLayout
+                android:id="@+id/wifi_network_selection_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/wifi_network_title_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:background="@drawable/button_background_round_border_blue">
+                <ImageView
+                    android:id="@+id/selected_wifi_network_imageview"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/home_network_blue"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"/>
+                <ImageView
+                    android:id="@+id/selected_wifi_network_arrow_image_view"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"/>
+                <TextView
+                    android:id="@+id/selected_wifi_network_name_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/selected_wifi_network_imageview"
+                    android:layout_toRightOf="@id/selected_wifi_network_imageview"
+                    android:layout_toStartOf="@id/selected_wifi_network_arrow_image_view"
+                    android:layout_toLeftOf="@id/selected_wifi_network_arrow_image_view"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/select_wifi_network_hint"/>
+            </RelativeLayout>
+
             <Button
                 android:id="@+id/done_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/room_selection_layout"
+                android:layout_below="@id/wifi_network_selection_layout"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"

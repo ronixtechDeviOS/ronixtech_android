@@ -150,9 +150,9 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
-                fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
                 fragmentTransaction.commit();
             }
         });

@@ -29,9 +29,10 @@
     <string name="add_a_place">Add a placae</string>
     <string name="no_places">No places</string>
     <string name="add_place_first">Add a place first</string>
+    <string name="select_place_first">Select a place first</string>
 
     <string name="add_place_title">Setup your place</string>
-    <string name="add_place_description">To begin, please enter the name, type and the number of floors of your place then click Add</string>
+    <string name="add_place_description">To begin, please enter the name, type, WiFi network and the number of floors of your place then click Add</string>
     <string name="add_place_level_description">Select place</string>
     <string name="place_name">Place Name</string>
     <string name="place_type">Place Type</string>
@@ -203,6 +204,12 @@
     <string name="no_networks_in_range">No networks in range</string>
     <string name="connecting">Connecting...</string>
     <string name="connected_to">Connected to </string>
+
+    <string name="wifi_networks">WiFi Network(s)</string>
+    <string name="wifi_network">WiFi Network</string>
+    <string name="select_wifi_network_hint">Tap here to select a WiFi network</string>
+    <string name="add_wifi_network_hint">Tap here to add a new WiFi network</string>
+    <string name="add_network">Save Network</string>
 
 
     <string name="ip_address_title">Enter the controller\'s IP Address manually, in case the app doesn\'t auto detect it or is taking too long</string>

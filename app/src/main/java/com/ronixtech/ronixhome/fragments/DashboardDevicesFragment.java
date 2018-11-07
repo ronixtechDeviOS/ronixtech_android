@@ -21,14 +21,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.github.clans.fab.FloatingActionButton;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
-import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -53,7 +48,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -138,56 +132,6 @@ public class DashboardDevicesFragment extends Fragment {
         MySettings.setControlState(false);
 
         //startTimer();
-
-        final TextView debugTextView = view.findViewById(R.id.debug_textview);
-        Button testButton = view.findViewById(R.id.test_button);
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //volley request to device to send ssid/password and then get device info for next steps
-                String url = "http://192.168.4.1/ronix/json_test/post";
-                //?essid=%SSID%&passwd=%PASS%
-                debugTextView.append("POSTING data on " + url +"\n");
-
-                HashMap<String, String> postData = new HashMap<>();
-                postData.put("SSID", MySettings.getHomeNetwork().getSsid());
-                postData.put("PASS", MySettings.getHomeNetwork().getPassword());
-
-                debugTextView.append("SSID: " + MySettings.getHomeNetwork().getSsid() +"\n");
-                debugTextView.append("Password: " + MySettings.getHomeNetwork().getPassword() +"\n");
-
-                debugTextView.append("Json data:"+"\n");
-                JSONObject jsonObject = new JSONObject();
-                try{
-                    jsonObject.put("SSID", MySettings.getHomeNetwork().getSsid());
-                    jsonObject.put("PASS", MySettings.getHomeNetwork().getPassword());
-                    debugTextView.append(jsonObject.toString()+"\n");
-                }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
-                }
-
-                Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        debugTextView.append("Response:" + response.toString() +"\n");
-                        debugTextView.append(response.toString() +"\n");
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "Volley Error: " + error.getMessage());
-                        debugTextView.append("Response error: " + error.getMessage() +"\n");
-                        if(getActivity() != null){
-                            Toast.makeText(getActivity(), getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                jsonObjectRequest.setShouldCache(false);
-                HttpConnector.getInstance(getActivity()).addToRequestQueue(jsonObjectRequest);
-            }
-        });
 
         addPlaceFab.setOnClickListener(new View.OnClickListener() {
             @Override

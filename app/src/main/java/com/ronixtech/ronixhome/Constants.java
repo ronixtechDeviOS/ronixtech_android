@@ -102,6 +102,7 @@ public class Constants {
     public static final int SOURCE_NEW_DEVICE = 0;
     public static final int SOURCE_HOME_FRAGMENT = 1;
     public static final int SOURCE_NAV_DRAWER = 2;
+    public static final int SOURCE_NEW_PLACE = 3;
 
     //types constants
     public static final int TYPE_PLACE = 0;

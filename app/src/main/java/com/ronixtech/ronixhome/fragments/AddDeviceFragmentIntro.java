@@ -12,11 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.ronixtech.ronixhome.Constants;
-import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,7 +25,7 @@ import com.ronixtech.ronixhome.activities.MainActivity;
  * Use the {@link AddDeviceFragmentIntro#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceFragmentIntro extends Fragment {
+public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment.OnNetworkAddedListener{
     private static final String TAG = AddDeviceFragmentIntro.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
@@ -63,17 +62,18 @@ public class AddDeviceFragmentIntro extends Fragment {
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
-        if(MySettings.getHomeNetwork() == null) {
-            //if home network is not defined, configure it first so when adding the device(s), they're automatically connected to it
+        /*if(MySettings.getHomeNetwork() == null) {
+            //if home network is not defined, configure it first so when adding the device/place, they're connected to it
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
             WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
             wifiInfoFragment.setSource(Constants.SOURCE_NEW_DEVICE);
+            wifiInfoFragment.setTargetFragment(this, 0);
             fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
             //fragmentTransaction.addToBackStack("wifiInfoFragment");
             fragmentTransaction.commit();
-        }
+        }*/
 
         continueButton = view.findViewById(R.id.continue_button);
         continueButton.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +90,11 @@ public class AddDeviceFragmentIntro extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onNetworkAdded(WifiNetwork wifiNetwork){
+
     }
 
     @Override

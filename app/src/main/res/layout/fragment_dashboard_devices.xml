@@ -53,17 +53,6 @@
             android:layout_centerHorizontal="true"
             android:text="send json post request"/>
 
-        <TextView
-            android:id="@+id/debug_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_margin="16dp"
-            android:textSize="16sp"
-            android:textColor="@color/blackColor"
-            android:layout_below="@id/test_button"
-            android:layout_centerHorizontal="true"/>
-
         <com.github.clans.fab.FloatingActionMenu
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

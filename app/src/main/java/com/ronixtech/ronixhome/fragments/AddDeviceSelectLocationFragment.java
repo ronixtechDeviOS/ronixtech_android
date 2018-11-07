@@ -14,9 +14,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -26,6 +28,7 @@ import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,13 +39,15 @@ import com.ronixtech.ronixhome.entities.Room;
  * create an instance of this fragment.
  */
 public class AddDeviceSelectLocationFragment extends Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
-                            PickRoomDialogFragment.OnRoomSelectedListener{
+                            PickRoomDialogFragment.OnRoomSelectedListener,
+                            PickWifiNetworkDialogFragment.OnNetworkSelectedListener,
+                            WifiInfoFragment.OnNetworkAddedListener{
     private static final String TAG = AddDeviceSelectLocationFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
-    RelativeLayout placeSelectionLayout, selectedFloorLayout, roomSelectionLayout;
-    TextView placeNameTextView, roomNameTextView;
+    RelativeLayout placeSelectionLayout, selectedFloorLayout, roomSelectionLayout, wifiNetworkSelectionLayout;
+    TextView placeNameTextView, roomNameTextView, wifiNetworkNameTextView;
     ImageView placeImageView, roomImageView;
     TextView selectedFloorTextView;
     Button incrementFloorButton, decremetnFloorButton;
@@ -53,6 +58,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
     private Floor selectedFloor;
     private int selectedFloorIndex = 0;
     private Room selectedRoom;
+    private WifiNetwork selectedWifiNetwork;
 
     public AddDeviceSelectLocationFragment() {
         // Required empty public constructor
@@ -92,6 +98,8 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         roomSelectionLayout = view.findViewById(R.id.room_selection_layout);
         roomNameTextView = view.findViewById(R.id.selected_room_name_textview);
         roomImageView = view.findViewById(R.id.selected_room_image_view);
+        wifiNetworkSelectionLayout = view.findViewById(R.id.wifi_network_selection_layout);
+        wifiNetworkNameTextView = view.findViewById(R.id.selected_wifi_network_name_textview);
         incrementFloorButton = view.findViewById(R.id.increment_button);
         decremetnFloorButton = view.findViewById(R.id.decrement_button);
 
@@ -224,6 +232,48 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }
         });
 
+        wifiNetworkSelectionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(selectedPlace != null){
+                    if(MySettings.getPlaceWifiNetworks(selectedPlace.getId()) != null && MySettings.getPlaceWifiNetworks(selectedPlace.getId()).size() >= 1){
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("wifiNetworkPickerDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        PickWifiNetworkDialogFragment fragment = PickWifiNetworkDialogFragment.newInstance();
+                        fragment.setPlaceID(selectedPlace.getId());
+                        fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                        fragment.show(ft, "wifiNetworkPickerDialogFragment");
+                    }else{
+                        //go to add wifi network sequence and then come back here
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
+                        wifiInfoFragment.setSource(Constants.SOURCE_NEW_PLACE);
+                        wifiInfoFragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                        fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
+                        fragmentTransaction.addToBackStack("wifiInfoFragment");
+                        fragmentTransaction.commit();
+                    }
+                }else{
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.select_place_first), Toast.LENGTH_SHORT).show();
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(placeSelectionLayout);
+                }
+            }
+        });
+
         if(validateInputs()){
             Utils.setButtonEnabled(doneButton, true);
         }else{
@@ -233,110 +283,46 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Device device = MySettings.getTempDevice();
+                if(validateInputs()){
+                    Device device = MySettings.getTempDevice();
 
-                //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
-                //tempDevice.setRoomID(clickedRoom.getId());
-                device.setRoomID(selectedRoom.getId());
-                MySettings.addDevice(device);
-                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    Device tempDevice = MySettings.getTempDevice();
-                    tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
-                    MySettings.setTempDevice(tempDevice);
+                    //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
+                    //tempDevice.setRoomID(clickedRoom.getId());
+                    device.setRoomID(selectedRoom.getId());
+                    MySettings.addDevice(device);
+                    MySettings.setHomeNetwork(selectedWifiNetwork);
+                    /*if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                        Device tempDevice = MySettings.getTempDevice();
+                        tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+                        MySettings.setTempDevice(tempDevice);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                        fragmentTransaction.commit();
+                    }else{
+                        MySettings.setTempDevice(null);
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
+                        fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
+                        //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                        fragmentTransaction.commitAllowingStateLoss();
+                    }*/
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                    fragmentTransaction.commit();
-                }else{
-                    MySettings.setTempDevice(null);
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    fragmentTransaction.commit();
+                    AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
+                    //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                    fragmentTransaction.commitAllowingStateLoss();
                 }
             }
         });
-        /*addRoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddRoomFragment addRoomFragment = new AddRoomFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-                fragmentTransaction.addToBackStack("addRoomFragment");
-                fragmentTransaction.commit();
-            }
-        });*/
-
-        /*if(MySettings.getAllFloors() == null || MySettings.getAllFloors().size() < 1){
-            noFloorsTextView.setVisibility(View.VISIBLE);
-            addFloorButton.setVisibility(View.VISIBLE);
-        }else{
-            floors = MySettings.getAllFloors();
-
-            selectFloorFirstTextiew.setVisibility(View.GONE);
-            noFloorsTextView.setVisibility(View.GONE);
-            addFloorButton.setVisibility(View.VISIBLE);
-
-            floorAdapter = new FloorAdapter(getActivity(), floors);
-            floorsListView.setAdapter(floorAdapter);
-
-            floorsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Floor clickedFloor = (Floor) floorAdapter.getItem(i);
-                    Floor clickedFloorWithRooms = MySettings.getFloor(clickedFloor.getId());
-                    if(clickedFloorWithRooms.getRooms() == null || clickedFloorWithRooms.getRooms().size() < 1) {
-                        noRoomsTextView.setVisibility(View.VISIBLE);
-                        addRoomButton.setVisibility(View.VISIBLE);
-                    }else{
-                        noRoomsTextView.setVisibility(View.GONE);
-                        addRoomButton.setVisibility(View.VISIBLE);
-                        //add rooms to the rooms listview
-                        rooms = clickedFloorWithRooms.getRooms();
-                        roomAdapter = new RoomAdapter(getActivity(), rooms);
-                        roomsListView.setAdapter(roomAdapter);
-
-                        roomsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                Room clickedRoom = (Room) roomAdapter.getItem(i);
-                                Utils.setButtonEnabled(doneButton, true);
-
-                                doneButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Device device = MySettings.getTempDevice();
-
-                                        //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
-                                        //tempDevice.setRoomID(clickedRoom.getId());
-                                        device.setRoomID(clickedRoom.getId());
-                                        MySettings.addDevice(device);
-                                        MySettings.setTempDevice(null);
-
-                                        FragmentManager fragmentManager = getFragmentManager();
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                        fragmentTransaction.commit();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }
-            });
-        }*/
-
 
         return view;
     }
@@ -417,6 +403,32 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         }
 
         return inputsValid;
+    }
+
+    @Override
+    public void onWifiNetworkSelected(WifiNetwork wifiNetwork){
+        if(wifiNetwork != null){
+            selectedWifiNetwork = wifiNetwork;
+            wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
+            if(validateInputs()){
+                Utils.setButtonEnabled(doneButton, true);
+            }else{
+                Utils.setButtonEnabled(doneButton, false);
+            }
+        }
+    }
+
+    @Override
+    public void onNetworkAdded(WifiNetwork wifiNetwork){
+        if(wifiNetwork != null){
+            selectedWifiNetwork = wifiNetwork;
+            wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
+            if(validateInputs()){
+                Utils.setButtonEnabled(doneButton, true);
+            }else{
+                Utils.setButtonEnabled(doneButton, false);
+            }
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.ronixtech.ronixhome.dao.RoomDAO;
 import com.ronixtech.ronixhome.dao.SoundDeviceDataDAO;
 import com.ronixtech.ronixhome.dao.TypeDAO;
 import com.ronixtech.ronixhome.dao.UserDAO;
+import com.ronixtech.ronixhome.dao.WifiNetworkDao;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
@@ -20,8 +21,9 @@ import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
-@Database(entities = {Type.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 11, exportSchema =  false)
+@Database(entities = {Type.class, WifiNetwork.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 12, exportSchema =  false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TypeDAO typeDAO();
@@ -31,5 +33,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract RoomDAO roomDAO();
     public abstract FloorDAO floorDAO();
     public abstract PlaceDAO placeDAO();
+    public abstract WifiNetworkDao wifiNetworkDao();
     public abstract UserDAO userDao();
 }

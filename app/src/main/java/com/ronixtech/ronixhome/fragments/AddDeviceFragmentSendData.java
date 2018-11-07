@@ -567,8 +567,11 @@ public class AddDeviceFragmentSendData extends Fragment {
                     String urlString = Constants.DEVICE_URL + Constants.SEND_SSID_PASSWORD_URL;
                     //?essid=%SSID%&passwd=%PASS%
 
-                    urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getSsid())
-                            .concat("&").concat(Constants.PARAMETER_PASSWORD_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
+                    if(MySettings.getHomeNetwork() != null) {
+                        urlString = urlString.concat("?").concat(Constants.PARAMETER_SSID_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getSsid())
+                                .concat("&").concat(Constants.PARAMETER_PASSWORD_GET_METHOD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
+                    }
+
                     URL url = new URL(urlString);
                     Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
 
@@ -690,8 +693,10 @@ public class AddDeviceFragmentSendData extends Fragment {
                     urlConnection.setRequestMethod("POST");
 
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put(Constants.PARAMETER_SSID, MySettings.getHomeNetwork().getSsid());
-                    jsonObject.put(Constants.PARAMETER_PASSWORD, MySettings.getHomeNetwork().getPassword());
+                    if(MySettings.getHomeNetwork() != null){
+                        jsonObject.put(Constants.PARAMETER_SSID, MySettings.getHomeNetwork().getSsid());
+                        jsonObject.put(Constants.PARAMETER_PASSWORD, MySettings.getHomeNetwork().getPassword());
+                    }
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
                     Log.d(TAG,  "sendConfigurationToDevice POST data: " + jsonObject.toString());
@@ -755,7 +760,9 @@ public class AddDeviceFragmentSendData extends Fragment {
             if(fragment.mListener != null){
                 fragment.mListener.onStartListening();
             }
-            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+            if(MySettings.getHomeNetwork() != null) {
+                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+            }
 
             Device device = MySettings.getTempDevice();
             if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
@@ -766,21 +773,22 @@ public class AddDeviceFragmentSendData extends Fragment {
                 pirData.setDeviceID(device.getId());
                 device.setPIRData(pirData);
                 MySettings.setTempDevice(device);
+
                 FragmentManager fragmentManager = fragment.getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                fragmentTransaction.commitAllowingStateLoss();
+                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
             }else{
                 FragmentManager fragmentManager = fragment.getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                fragmentTransaction.commitAllowingStateLoss();
+                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
             }
         }
 
@@ -849,7 +857,9 @@ public class AddDeviceFragmentSendData extends Fragment {
             if(fragment.mListener != null){
                 fragment.mListener.onStartListening();
             }
-            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+            if(MySettings.getHomeNetwork() != null) {
+                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+            }
 
             //quickly initialize the souddevicedata configuration for the device
             Device device = MySettings.getTempDevice();
@@ -859,13 +869,14 @@ public class AddDeviceFragmentSendData extends Fragment {
             soundDeviceData.setDeviceID(device.getId());
             device.setSoundDeviceData(soundDeviceData);
             MySettings.setTempDevice(device);
+
             FragmentManager fragmentManager = fragment.getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-            fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-            //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-            fragmentTransaction.commitAllowingStateLoss();
+            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.commit();
         }
 
         @Override

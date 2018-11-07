@@ -1,29 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="4dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/wifi_network_signal_status_imageview"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:src="@drawable/wifi_gray"/>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/wifi_network_signal_status_imageview"
         android:layout_toRightOf="@id/wifi_network_signal_status_imageview"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp">
         <TextView
             android:id="@+id/wifi_network_item_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:textSize="16sp"
-            android:textColor="@color/blackColor"/>
+            android:textColor="@color/blackColor"
+            android:text="SSID_NAME"/>
         <TextView
             android:id="@+id/wifi_network_item_signal_textview"
             android:layout_width="wrap_content"
@@ -31,10 +36,9 @@
             android:visibility="gone"
             android:layout_below="@id/wifi_network_item_name_textview"
             android:layout_marginTop="4dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:textSize="16sp"
-            android:textColor="@color/darkGrayColor"/>
+            android:textColor="@color/darkGrayColor"
+            android:text="SSID_SIGNAL"/>
     </RelativeLayout>
 
 </RelativeLayout>

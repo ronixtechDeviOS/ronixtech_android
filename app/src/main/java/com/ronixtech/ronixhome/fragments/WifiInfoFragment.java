@@ -39,7 +39,11 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
 public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNetworkSelectedListener{
     private static final String TAG = WifiInfo.class.getSimpleName();
 
-    private OnFragmentInteractionListener mListener;
+    private OnNetworkAddedListener callback;
+
+    public interface OnNetworkAddedListener {
+        public void onNetworkAdded(WifiNetwork network);
+    }
 
     TextView ssidTextView, passwordTextView;
     LinearLayout ssidEditLayout, passwordEditLayout;
@@ -73,6 +77,11 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            callback = (OnNetworkAddedListener) getTargetFragment();
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Calling Fragment must implement OnNetworkAddedListener");
+        }
     }
 
     @Override
@@ -107,8 +116,12 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                 WifiNetwork wifiNetwork = new WifiNetwork();
                 wifiNetwork.setSsid(ssid);
                 wifiNetwork.setPassword(password.trim());
-                MySettings.setHomeNetwork(wifiNetwork);
+                //MySettings.setHomeNetwork(wifiNetwork);
+                MySettings.addWifiNetwork(wifiNetwork);
                 if(source == Constants.SOURCE_NAV_DRAWER) {
+                    if(callback != null) {
+                        callback.onNetworkAdded(wifiNetwork);
+                    }
                     getFragmentManager().popBackStack();
                 }else if(source == Constants.SOURCE_NEW_DEVICE){
                     FragmentManager fragmentManager = getFragmentManager();
@@ -118,6 +131,11 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                     fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
                     fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
                     fragmentTransaction.commit();
+                }else if(source == Constants.SOURCE_NEW_PLACE){
+                    if(callback != null) {
+                        callback.onNetworkAdded(wifiNetwork);
+                    }
+                    getFragmentManager().popBackStack();
                 }
             }
         });
@@ -301,12 +319,6 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         //inflater.inflate(R.menu.menu_gym, menu);
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     /*@Override

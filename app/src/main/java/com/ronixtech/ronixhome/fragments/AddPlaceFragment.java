@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,9 +29,14 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.adapters.WifiNetworkItemAdapter;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Type;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,7 +47,9 @@ import com.ronixtech.ronixhome.entities.Type;
  * create an instance of this fragment.
  *
  */
-public class AddPlaceFragment extends Fragment implements TypePickerDialogFragment.OnTypeSelectedListener {
+public class AddPlaceFragment extends Fragment implements TypePickerDialogFragment.OnTypeSelectedListener,
+        PickWifiNetworkDialogFragment.OnNetworkSelectedListener,
+        WifiInfoFragment.OnNetworkAddedListener{
     private static final String TAG = AddPlaceFragment.class.getSimpleName();
 
 
@@ -47,13 +57,16 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
 
     TextView addPlaceTitleTextView, addPlaceDescriptionTextView, numberOfFloorsTextView;
     EditText placeNameEditText;
-    RelativeLayout placeTypeSelectionLayout;
+    RelativeLayout placeTypeSelectionLayout, wifiNetworkSelectionLayout, wifiNetworkAddLayout;
     ImageView placeTypeImageView;
     TextView placeTypeNameTextView;
+    ListView selectedWifiNetworksListView;
+    WifiNetworkItemAdapter selectedWifiNetworksAdapter;
     Button incrementFloorsButton, decrementFloorsButton;
     Button addPlaceButton;
 
     Type selectedPlaceType;
+    List<WifiNetwork> selectedWifiNetworks;
     int numberOfFloors = 1;
 
     /**
@@ -92,6 +105,14 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         placeTypeSelectionLayout = view.findViewById(R.id.place_type_selection_layout);
         placeTypeImageView = view.findViewById(R.id.type_imageview);
         placeTypeNameTextView = view.findViewById(R.id.type_name_textview);
+        wifiNetworkSelectionLayout = view.findViewById(R.id.wifi_network_selection_layout);
+        wifiNetworkAddLayout = view.findViewById(R.id.wifi_network_add_layout);
+        selectedWifiNetworksListView = view.findViewById(R.id.selected_wifi_networks_listview);
+        if(selectedWifiNetworks == null) {
+            selectedWifiNetworks = new ArrayList<>();
+        }
+        selectedWifiNetworksAdapter = new WifiNetworkItemAdapter(getActivity(), selectedWifiNetworks);
+        selectedWifiNetworksListView.setAdapter(selectedWifiNetworksAdapter);
         incrementFloorsButton = view.findViewById(R.id.increment_button);
         decrementFloorsButton = view.findViewById(R.id.decrement_button);
         addPlaceButton= view.findViewById(R.id.add_place_button);
@@ -144,6 +165,65 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             }
         });
 
+        wifiNetworkSelectionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(MySettings.getAllWifiNetworks() != null && MySettings.getAllWifiNetworks().size() >= 1){
+                    // DialogFragment.show() will take care of adding the fragment
+                    // in a transaction.  We also want to remove any currently showing
+                    // dialog, so make our own transaction and take care of that here.
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("wifiNetworkPickerDialogFragment");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    PickWifiNetworkDialogFragment fragment = PickWifiNetworkDialogFragment.newInstance();
+                    fragment.setTargetFragment(AddPlaceFragment.this, 0);
+                    fragment.show(ft, "wifiNetworkPickerDialogFragment");
+                }else{
+                    //go to add wifi network sequence and then come back here
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
+                    wifiInfoFragment.setSource(Constants.SOURCE_NEW_PLACE);
+                    wifiInfoFragment.setTargetFragment(AddPlaceFragment.this, 0);
+                    fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
+                    fragmentTransaction.addToBackStack("wifiInfoFragment");
+                    fragmentTransaction.commit();
+                }
+            }
+        });
+
+        wifiNetworkAddLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //go to add wifi network sequence and then come back here
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
+                wifiInfoFragment.setSource(Constants.SOURCE_NEW_PLACE);
+                wifiInfoFragment.setTargetFragment(AddPlaceFragment.this, 0);
+                fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
+                fragmentTransaction.addToBackStack("wifiInfoFragment");
+                fragmentTransaction.commit();
+            }
+        });
+
+        selectedWifiNetworksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                WifiNetwork clickedWifiNetwork = (WifiNetwork) selectedWifiNetworksAdapter.getItem(position);
+                selectedWifiNetworks.remove(clickedWifiNetwork);
+                selectedWifiNetworksAdapter.notifyDataSetChanged();
+                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+            }
+        });
+
         numberOfFloorsTextView.setText(""+numberOfFloors);
 
         incrementFloorsButton.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +267,11 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                             floor.setLevel(x);
                             floor.setPlaceID(dbPlace.getId());
                             MySettings.addFloor(floor);
+                        }
+                        for (WifiNetwork network : selectedWifiNetworks) {
+                            network.setPlaceID(dbPlace.getId());
+                            MySettings.addWifiNetwork(network);
+                            MySettings.updateWifiNetworkPlace(network, dbPlace.getId());
                         }
                         MySettings.setCurrentPlace(dbPlace);
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -236,6 +321,38 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         }
     }
 
+    @Override
+    public void onWifiNetworkSelected(WifiNetwork network){
+        if(network != null){
+            if(!selectedWifiNetworks.contains(network)){
+                selectedWifiNetworks.add(network);
+                selectedWifiNetworksAdapter.notifyDataSetChanged();
+                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+                if(validateInputs()){
+                    Utils.setButtonEnabled(addPlaceButton, true);
+                }else{
+                    Utils.setButtonEnabled(addPlaceButton, false);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onNetworkAdded(WifiNetwork wifiNetwork){
+        if(wifiNetwork != null){
+            if(!selectedWifiNetworks.contains(wifiNetwork)){
+                selectedWifiNetworks.add(wifiNetwork);
+                selectedWifiNetworksAdapter.notifyDataSetChanged();
+                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+                if(validateInputs()){
+                    Utils.setButtonEnabled(addPlaceButton, true);
+                }else{
+                    Utils.setButtonEnabled(addPlaceButton, false);
+                }
+            }
+        }
+    }
+
     private boolean validateInputs(){
         boolean inputsValid = true;
 
@@ -249,6 +366,18 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     .duration(700)
                     .repeat(1)
                     .playOn(placeTypeSelectionLayout);
+        }
+
+        if(selectedWifiNetworks == null || selectedWifiNetworks.size() < 1){
+            inputsValid = false;
+            YoYo.with(Techniques.Shake)
+                    .duration(700)
+                    .repeat(1)
+                    .playOn(wifiNetworkSelectionLayout);
+            YoYo.with(Techniques.Shake)
+                    .duration(700)
+                    .repeat(1)
+                    .playOn(wifiNetworkAddLayout);
         }
 
         return inputsValid;

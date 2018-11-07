@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.migration.Migration;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -453,6 +454,30 @@ public class MySettings {
         return MySettings.initDB().typeDAO().getTypes(category);
     }
 
+    public static void addWifiNetwork(WifiNetwork wifiNetwork){
+        //save wifinetwork into DB
+        MySettings.initDB().wifiNetworkDao().insertWifiNetwork(wifiNetwork);
+    }
+    public static List<WifiNetwork> getAllWifiNetworks(){
+        return MySettings.initDB().wifiNetworkDao().getAll();
+    }
+    public static List<WifiNetwork> getPlaceWifiNetworks(long placeID){
+        return MySettings.initDB().wifiNetworkDao().getPlaceWifiNetworks(placeID);
+    }
+    public static WifiNetwork getWifiNetwork(long wifiNetworkID) {
+        return MySettings.initDB().wifiNetworkDao().getWifiNetwork(wifiNetworkID);
+    }
+    public static WifiNetwork getWifiNetworkBySSID(String ssid) {
+        return MySettings.initDB().wifiNetworkDao().getWifiNetworkBySSID(ssid);
+    }
+    public static void updateWifiNetworkPlace(WifiNetwork network, long placeID){
+        MySettings.initDB().wifiNetworkDao().updateWifiNetworkPlaceID(network.getId(), placeID);
+    }
+    public static void removeWifiNetwork(WifiNetwork wifiNetwork){
+        //remove floor from DB
+        MySettings.initDB().wifiNetworkDao().removeWifiNetwork(wifiNetwork.getId());
+    }
+
     public static void scanNetwork(){
         if(!MySettings.getCurrentScanningState()){
             MySettings.setCurrentScanningState(true);
@@ -812,8 +837,23 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_11_12 = new Migration(11, 12) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("CREATE TABLE `wifinetwork` (`id` INTEGER NOT NULL DEFAULT 0, "
+                            + "`ssid` TEXT,"
+                            + "`password` TEXT,"
+                            + "`signal_strength` TEXT,"
+                            + "`place_id` INTEGER NOT NULL DEFAULT -1, PRIMARY KEY(`id`))");
+                    database.execSQL("CREATE UNIQUE INDEX index_WifiNetwork_ssid ON wifinetwork (ssid)");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
                             .allowMainThreadQueries().
                             build();
             return database;

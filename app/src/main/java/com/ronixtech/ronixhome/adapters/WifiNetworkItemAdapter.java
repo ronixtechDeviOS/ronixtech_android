@@ -65,31 +65,33 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
         vHolder.networkNameTextView.setText(""+item.getSsid());
         vHolder.networkSignalTextView.setText("Signal: "+item.getSignal());
 
-        int signalStrenth = Integer.valueOf(item.getSignal());
-        if(signalStrenth <= -90){
-            //signal Unusable
-            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.redColor));
-            vHolder.networkSignalImageView.setImageResource(R.drawable.signal_0);
-        }else if(signalStrenth <= -80){
-            //signal Not Good
-            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.darkOrangeColor));
-            vHolder.networkSignalImageView.setImageResource(R.drawable.signal_1);
-        }else if(signalStrenth <= -70){
-            //signal Okay
-            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.lightestOrangeColor));
-            vHolder.networkSignalImageView.setImageResource(R.drawable.signal_2);
-        }else if(signalStrenth <= -67){
-            //signal Very Good
-            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.blueColor));
-            vHolder.networkSignalImageView.setImageResource(R.drawable.signal_3);
-        }else if(signalStrenth <= -30){
-            //signal Amazing
-            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.greenColor));
-            vHolder.networkSignalImageView.setImageResource(R.drawable.signal_4);
-        }else{
-            //signal Amazing
-            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.greenColor));
-            vHolder.networkSignalImageView.setImageResource(R.drawable.signal_4);
+        if(item.getSignal() != null && item.getSignal().length() >= 1){
+            int signalStrenth = Integer.valueOf(item.getSignal());
+            if(signalStrenth <= -90){
+                //signal Unusable
+                vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.redColor));
+                vHolder.networkSignalImageView.setImageResource(R.drawable.signal_0);
+            }else if(signalStrenth <= -80){
+                //signal Not Good
+                vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.darkOrangeColor));
+                vHolder.networkSignalImageView.setImageResource(R.drawable.signal_1);
+            }else if(signalStrenth <= -70){
+                //signal Okay
+                vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.lightestOrangeColor));
+                vHolder.networkSignalImageView.setImageResource(R.drawable.signal_2);
+            }else if(signalStrenth <= -67){
+                //signal Very Good
+                vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.blueColor));
+                vHolder.networkSignalImageView.setImageResource(R.drawable.signal_3);
+            }else if(signalStrenth <= -30){
+                //signal Amazing
+                vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.greenColor));
+                vHolder.networkSignalImageView.setImageResource(R.drawable.signal_4);
+            }else{
+                //signal Amazing
+                vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.greenColor));
+                vHolder.networkSignalImageView.setImageResource(R.drawable.signal_4);
+            }
         }
 
         return rowView;

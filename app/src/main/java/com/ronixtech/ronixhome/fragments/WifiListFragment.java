@@ -185,7 +185,9 @@ public class WifiListFragment extends Fragment {
                         if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
                             WifiNetwork clickedNetwork = (WifiNetwork) networksAdapter.getItem(i);
                             clickedNetwork.setPassword(passwordEditText.getText().toString());
-                            callback.onNetworkSelected(clickedNetwork);
+                            if(callback != null) {
+                                callback.onNetworkSelected(clickedNetwork);
+                            }
                             dialog.dismiss();
                         }else{
                             YoYo.with(Techniques.Shake)

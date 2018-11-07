@@ -265,6 +265,16 @@ public class AddDeviceFragmentGetData extends Fragment {
         fragmentTransaction.commitAllowingStateLoss();
     }
 
+    public void goToLocationSelectionFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+        AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+        fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+        //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
     public void goToSearchFragment(){
         if(MainActivity.getInstance() != null && MainActivity.isResumed) {
             if (getFragmentManager() != null) {
@@ -505,7 +515,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
                                         fragment.goToConfigurationFragment();
                                     }else {
-                                        fragment.goToSendDataFragment();
+                                        fragment.goToLocationSelectionFragment();
                                     }
                                 }
                             })
@@ -517,7 +527,9 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     if(fragment.mListener != null){
                                         fragment.mListener.onStartListening();
                                     }
-                                    fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                                    if(MySettings.getHomeNetwork() != null) {
+                                        fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                                    }
 
                                     FragmentManager fragmentManager = fragment.getFragmentManager();
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -540,7 +552,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
                         fragment.goToConfigurationFragment();
                     }else {
-                        fragment.goToSendDataFragment();
+                        fragment.goToLocationSelectionFragment();
                     }
                 }
             }else{
