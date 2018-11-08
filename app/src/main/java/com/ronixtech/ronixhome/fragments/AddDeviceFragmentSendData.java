@@ -757,38 +757,44 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(fragment.mListener != null){
-                fragment.mListener.onStartListening();
-            }
-            if(MySettings.getHomeNetwork() != null) {
-                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
-            }
+            if(MainActivity.getInstance() != null){
+                if(fragment.mListener != null){
+                    fragment.mListener.onStartListening();
+                }
+                if(MySettings.getHomeNetwork() != null) {
+                    fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                }
 
-            Device device = MySettings.getTempDevice();
-            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                //quickly initialize the pirdata configuration for the device
-                MySettings.addDevice(device);
-                device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-                PIRData pirData = new PIRData();
-                pirData.setDeviceID(device.getId());
-                device.setPIRData(pirData);
-                MySettings.setTempDevice(device);
+                Device device = MySettings.getTempDevice();
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    //quickly initialize the pirdata configuration for the device
+                    MySettings.addDevice(device);
+                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    PIRData pirData = new PIRData();
+                    pirData.setDeviceID(device.getId());
+                    device.setPIRData(pirData);
+                    MySettings.setTempDevice(device);
 
-                FragmentManager fragmentManager = fragment.getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                fragmentTransaction.commit();
-            }else{
-                FragmentManager fragmentManager = fragment.getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                fragmentTransaction.commit();
+                    if(MainActivity.isResumed) {
+                        FragmentManager fragmentManager = fragment.getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        fragmentTransaction.commit();
+                    }
+                }else{
+                    if(MainActivity.isResumed) {
+                        FragmentManager fragmentManager = fragment.getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        fragmentTransaction.commit();
+                    }
+                }
             }
         }
 
@@ -854,29 +860,33 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(fragment.mListener != null){
-                fragment.mListener.onStartListening();
-            }
-            if(MySettings.getHomeNetwork() != null) {
-                fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
-            }
+            if(MainActivity.getInstance() != null){
+                if(fragment.mListener != null){
+                    fragment.mListener.onStartListening();
+                }
+                if(MySettings.getHomeNetwork() != null) {
+                    fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                }
 
-            //quickly initialize the souddevicedata configuration for the device
-            Device device = MySettings.getTempDevice();
-            MySettings.addDevice(device);
-            device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-            SoundDeviceData soundDeviceData = new SoundDeviceData();
-            soundDeviceData.setDeviceID(device.getId());
-            device.setSoundDeviceData(soundDeviceData);
-            MySettings.setTempDevice(device);
+                //quickly initialize the souddevicedata configuration for the device
+                Device device = MySettings.getTempDevice();
+                MySettings.addDevice(device);
+                device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                SoundDeviceData soundDeviceData = new SoundDeviceData();
+                soundDeviceData.setDeviceID(device.getId());
+                device.setSoundDeviceData(soundDeviceData);
+                MySettings.setTempDevice(device);
 
-            FragmentManager fragmentManager = fragment.getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.commit();
+                if(MainActivity.isResumed) {
+                    FragmentManager fragmentManager = fragment.getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    fragmentTransaction.commit();
+                }
+            }
         }
 
         @Override

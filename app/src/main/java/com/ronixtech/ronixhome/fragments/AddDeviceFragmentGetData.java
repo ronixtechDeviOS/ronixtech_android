@@ -256,23 +256,31 @@ public class AddDeviceFragmentGetData extends Fragment {
     }
 
     public void goToSendDataFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-        AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
-        fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
-        //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
-        fragmentTransaction.commitAllowingStateLoss();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
+                //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     public void goToLocationSelectionFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-        AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-        fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-        //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-        fragmentTransaction.commitAllowingStateLoss();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     public void goToSearchFragment(){
@@ -284,23 +292,31 @@ public class AddDeviceFragmentGetData extends Fragment {
     }
 
     public void goToPIRConfigurationFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-        AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
-        fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
-        //fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
-        fragmentTransaction.commitAllowingStateLoss();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceConfigurationPIRFragment addDeviceConfigurationPIRFragment = new AddDeviceConfigurationPIRFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPIRFragment, "addDeviceConfigurationPIRFragment");
+                //fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     public void goToConfigurationFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-        AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-        fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-        //fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-        fragmentTransaction.commitAllowingStateLoss();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+                //fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     private void connectToWifiNetwork(final String ssid, String password){
