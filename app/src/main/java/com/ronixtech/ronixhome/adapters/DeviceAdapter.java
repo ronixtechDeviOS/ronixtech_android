@@ -1235,9 +1235,7 @@ public class DeviceAdapter extends ArrayAdapter {
     private void removeDevice(Device device){
         devices.remove(device);
         MySettings.removeDevice(device);
-        if(MainActivity.getInstance() != null){
-            MainActivity.getInstance().refreshDeviceListFromDatabase();
-        }
+        DevicesInMemory.removeDevice(device);
         notifyDataSetChanged();
     }
 
@@ -1249,7 +1247,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 LineToggler lineToggler = new LineToggler(device, position, state);
                 lineToggler.execute();
                 //temp hack for deviator demo, will be removed
-                Line clickedLine = device.getLines().get(position);
+                /*Line clickedLine = device.getLines().get(position);
                 if(clickedLine.getMode() == Line.MODE_PRIMARY){
                     List<Line> secondaryLines = MySettings.getSecondaryLines(device);
                     if(secondaryLines != null && secondaryLines.size() >= 1){
@@ -1267,7 +1265,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     Device mainDevice = MySettings.getDeviceByChipID2(mainLineDeviceChipID);
                     LineToggler lineToggler1 = new LineToggler(mainDevice, mainLinePosition, state);
                     lineToggler1.execute();
-                }
+                }*/
             }else{
                 //new method for controls
                 Device localDevice = DevicesInMemory.getLocalDevice(device);
@@ -1287,6 +1285,26 @@ public class DeviceAdapter extends ArrayAdapter {
                 DevicesInMemory.updateLocalDevice(localDevice);
 
                 MySettings.setControlState(false);
+
+                //temp hack for deviator demo, will be removed
+                /*if(line.getMode() == Line.MODE_PRIMARY){
+                    List<Line> secondaryLines = MySettings.getSecondaryLines(device);
+                    if(secondaryLines != null && secondaryLines.size() >= 1){
+                        for (Line secondaryLine:secondaryLines) {
+                            Device secondaryDevice = MySettings.getDeviceByID2(secondaryLine.getDeviceID());
+                            if(secondaryLine.getPosition() == position) {
+                                LineToggler lineToggler1 = new LineToggler(secondaryDevice, secondaryLine.getPosition(), state);
+                                lineToggler1.execute();
+                            }
+                        }
+                    }
+                }else if(line.getMode() == Line.MODE_SECONDARY){
+                    String mainLineDeviceChipID = line.getPrimaryDeviceChipID();
+                    int mainLinePosition = line.getPrimaryLinePosition();
+                    Device mainDevice = MySettings.getDeviceByChipID2(mainLineDeviceChipID);
+                    LineToggler lineToggler1 = new LineToggler(mainDevice, mainLinePosition, state);
+                    lineToggler1.execute();
+                }*/
             }
         }else{
             MySettings.setControlState(false);

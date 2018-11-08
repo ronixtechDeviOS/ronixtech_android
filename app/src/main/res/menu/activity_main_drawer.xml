@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
@@ -46,5 +47,18 @@
                 android:title="@string/logout" />
         </menu>
     </item>
+
+    <group
+        android:id="@+id/nav_footer">
+        <item
+            android:id="@+id/nav_current_version"
+            android:title=""
+            app:actionLayout="@layout/nav_header_footer_current_version" />
+        <item
+            android:id="@+id/nav_latest_version"
+            android:title=""
+            android:visible="false"
+            app:actionLayout="@layout/nav_header_footer_latest_version" />
+    </group>
 
 </menu>

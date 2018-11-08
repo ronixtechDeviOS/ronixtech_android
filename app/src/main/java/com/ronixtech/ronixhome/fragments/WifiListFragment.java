@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +83,7 @@ public class WifiListFragment extends Fragment {
     ListView networksListView;
     WifiNetworkItemAdapter networksAdapter;
     TextView searchStatusTextView;
+    RelativeLayout hiddenNetworkLayout;
 
     private WifiNetwork preferredNetwork;
 
@@ -129,6 +131,7 @@ public class WifiListFragment extends Fragment {
         //setHasOptionsMenu(true);
 
         searchStatusTextView = view.findViewById(R.id.search_status_textview);
+        hiddenNetworkLayout = view.findViewById(R.id.hidden_network_layout);
         networksListView = view.findViewById(R.id.networks_listview);
         networks = new ArrayList<>();
         networksAdapter = new WifiNetworkItemAdapter(getActivity(), networks);
@@ -139,74 +142,18 @@ public class WifiListFragment extends Fragment {
         networksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
-                //TODO show PasswordInputFragment here badal el dialog dah
-                final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
-                LinearLayout layout = new LinearLayout(getActivity());
-                layout.setOrientation(LinearLayout.VERTICAL);
-
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.weight = 1.0f;
-                Resources r = getActivity().getResources();
-                float pxLeftMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                float pxRightMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                float pxTopMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                float pxBottomMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
-                layoutParams.setMargins(Math.round(pxLeftMargin), Math.round(pxTopMargin), Math.round(pxRightMargin), Math.round(pxBottomMargin));
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-
-                TextView passwordTextView = new TextView(getActivity());
-                passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
-                passwordTextView.setGravity(Gravity.CENTER);
-                passwordTextView.setLayoutParams(layoutParams);
-
-                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.weight = 1.0f;
-                Resources r2 = getActivity().getResources();
-                float pxLeftMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
-                float pxRightMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
-                float pxTopMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
-                float pxBottomMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, r2.getDisplayMetrics());
-                layoutParams2.setMargins(Math.round(pxLeftMargin2), Math.round(pxTopMargin2), Math.round(pxRightMargin2), Math.round(pxBottomMargin2));
-                layoutParams2.gravity = Gravity.CENTER_HORIZONTAL;
-
-                final EditText passwordEditText = new EditText(getActivity());
-                passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                passwordEditText.setHint(getActivity().getResources().getString(R.string.password_hint));
-                passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                passwordEditText.setLayoutParams(layoutParams2);
-
-                Button submitButton = new Button(getActivity());
-                submitButton.setText(getActivity().getResources().getString(R.string.done));
-                submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
-                submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.blueColor));
-                submitButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
-                            WifiNetwork clickedNetwork = (WifiNetwork) networksAdapter.getItem(i);
-                            clickedNetwork.setPassword(passwordEditText.getText().toString());
-                            if(callback != null) {
-                                callback.onNetworkSelected(clickedNetwork);
-                            }
-                            dialog.dismiss();
-                        }else{
-                            YoYo.with(Techniques.Shake)
-                                    .duration(700)
-                                    .repeat(1)
-                                    .playOn(passwordEditText);
-                        }
-                    }
-                });
-
-                layout.addView(passwordTextView);
-                layout.addView(passwordEditText);
-                layout.addView(submitButton);
-
-                dialog.setView(layout);
-
-                dialog.show();
+                WifiNetwork clickedNetwork = (WifiNetwork) networksAdapter.getItem(i);
+                showPasswordDialog(clickedNetwork);
             }
         });
+
+        hiddenNetworkLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showManualNetworkDialog();
+            }
+        });
+
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -223,6 +170,162 @@ public class WifiListFragment extends Fragment {
         checkLocationPermissions();
 
         return view;
+    }
+
+    private void showManualNetworkDialog(){
+        final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.weight = 1.0f;
+        Resources r = getActivity().getResources();
+        float pxLeftMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        float pxRightMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        float pxTopMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        float pxBottomMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        layoutParams.setMargins(Math.round(pxLeftMargin), Math.round(pxTopMargin), Math.round(pxRightMargin), Math.round(pxBottomMargin));
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+
+        TextView ssidTextView = new TextView(getActivity());
+        ssidTextView.setText(getActivity().getResources().getString(R.string.ssid_colon));
+        ssidTextView.setGravity(Gravity.CENTER);
+        ssidTextView.setLayoutParams(layoutParams);
+
+        TextView passwordTextView = new TextView(getActivity());
+        passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setGravity(Gravity.CENTER);
+        passwordTextView.setLayoutParams(layoutParams);
+
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.weight = 1.0f;
+        Resources r2 = getActivity().getResources();
+        float pxLeftMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
+        float pxRightMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
+        float pxTopMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
+        float pxBottomMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, r2.getDisplayMetrics());
+        layoutParams2.setMargins(Math.round(pxLeftMargin2), Math.round(pxTopMargin2), Math.round(pxRightMargin2), Math.round(pxBottomMargin2));
+        layoutParams2.gravity = Gravity.CENTER_HORIZONTAL;
+
+        final EditText ssidEditText = new EditText(getActivity());
+        ssidEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        ssidEditText.setHint(getActivity().getResources().getString(R.string.ssid_hint));
+        ssidEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        ssidEditText.setLayoutParams(layoutParams2);
+
+        final EditText passwordEditText = new EditText(getActivity());
+        passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        passwordEditText.setHint(getActivity().getResources().getString(R.string.password_hint));
+        passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        passwordEditText.setLayoutParams(layoutParams2);
+
+        Button submitButton = new Button(getActivity());
+        submitButton.setText(getActivity().getResources().getString(R.string.done));
+        submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
+        submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.blueColor));
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ssidEditText.getText().toString() != null && ssidEditText.getText().toString().length() >= 1){
+                    if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
+                        WifiNetwork network = new WifiNetwork();
+                        network.setSsid(ssidEditText.getText().toString());
+                        network.setPassword(passwordEditText.getText().toString());
+                        if(callback != null) {
+                            callback.onNetworkSelected(network);
+                        }
+                        dialog.dismiss();
+                    }else{
+                        YoYo.with(Techniques.Shake)
+                                .duration(700)
+                                .repeat(1)
+                                .playOn(passwordEditText);
+                    }
+                }else{
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(ssidEditText);
+                }
+            }
+        });
+
+        layout.addView(ssidTextView);
+        layout.addView(ssidEditText);
+        layout.addView(passwordTextView);
+        layout.addView(passwordEditText);
+        layout.addView(submitButton);
+
+        dialog.setView(layout);
+
+        dialog.show();
+    }
+
+    private void showPasswordDialog(WifiNetwork network){
+        final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.weight = 1.0f;
+        Resources r = getActivity().getResources();
+        float pxLeftMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        float pxRightMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        float pxTopMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        float pxBottomMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+        layoutParams.setMargins(Math.round(pxLeftMargin), Math.round(pxTopMargin), Math.round(pxRightMargin), Math.round(pxBottomMargin));
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+
+        TextView passwordTextView = new TextView(getActivity());
+        passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setGravity(Gravity.CENTER);
+        passwordTextView.setLayoutParams(layoutParams);
+
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.weight = 1.0f;
+        Resources r2 = getActivity().getResources();
+        float pxLeftMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
+        float pxRightMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
+        float pxTopMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
+        float pxBottomMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, r2.getDisplayMetrics());
+        layoutParams2.setMargins(Math.round(pxLeftMargin2), Math.round(pxTopMargin2), Math.round(pxRightMargin2), Math.round(pxBottomMargin2));
+        layoutParams2.gravity = Gravity.CENTER_HORIZONTAL;
+
+        final EditText passwordEditText = new EditText(getActivity());
+        passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        passwordEditText.setHint(getActivity().getResources().getString(R.string.password_hint));
+        passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        passwordEditText.setLayoutParams(layoutParams2);
+
+        Button submitButton = new Button(getActivity());
+        submitButton.setText(getActivity().getResources().getString(R.string.done));
+        submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
+        submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.blueColor));
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
+                    network.setPassword(passwordEditText.getText().toString());
+                    if(callback != null) {
+                        callback.onNetworkSelected(network);
+                    }
+                    dialog.dismiss();
+                }else{
+                    YoYo.with(Techniques.Shake)
+                            .duration(700)
+                            .repeat(1)
+                            .playOn(passwordEditText);
+                }
+            }
+        });
+
+        layout.addView(passwordTextView);
+        layout.addView(passwordEditText);
+        layout.addView(submitButton);
+
+        dialog.setView(layout);
+
+        dialog.show();
     }
 
     private void checkLocationPermissions(){

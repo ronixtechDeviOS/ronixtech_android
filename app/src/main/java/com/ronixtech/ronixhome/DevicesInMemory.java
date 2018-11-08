@@ -65,4 +65,9 @@ public class DevicesInMemory {
         }
         return null;
     }
+
+    public static void removeDevice(Device device){
+        devices.remove(device);
+        localDevices.remove(device);
+    }
 }

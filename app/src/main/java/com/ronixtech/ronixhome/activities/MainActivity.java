@@ -2,6 +2,8 @@ package com.ronixtech.ronixhome.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.firebase.auth.FirebaseAuth;
+import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
@@ -53,6 +57,8 @@ public class MainActivity extends AppCompatActivity
 
     private static MainActivity mInstance;
     public static boolean isResumed;
+
+    NavigationView navigationView;
 
     FragmentManager fragmentManager;
     DashboardDevicesFragment dashboardDevicesFragment;
@@ -107,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
 
@@ -119,7 +125,31 @@ public class MainActivity extends AppCompatActivity
         userNameTextView.setText(MySettings.getActiveUser().getFirstName() + " " + MySettings.getActiveUser().getLastName());
         userEmailTextView.setText(MySettings.getActiveUser().getEmail());
 
+        RelativeLayout currentVersionLayout = (RelativeLayout) navigationView.getMenu().findItem(R.id.nav_current_version).getActionView();
+        TextView currentVersionTextView = currentVersionLayout.findViewById(R.id.current_version_textview);
+        try {
+            PackageInfo pInfo = mInstance.getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pInfo.versionName;
+            currentVersionTextView.setText(BuildConfig.BUILD_TYPE+"-"+version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            currentVersionTextView.setText("0.0");
+        }
+
+        //getLatestAppVersion();
+
         getLatestFirmwareVersion();
+    }
+
+    private void getLatestAppVersion(){
+        new Utils.GooglePlayAppVersion(mInstance.getPackageName(), new Utils.GooglePlayAppVersion.Listener() {
+            @Override
+            public void result(String version) {
+                RelativeLayout latestVersionLayout = (RelativeLayout) navigationView.getMenu().findItem(R.id.nav_latest_version).getActionView();
+                TextView latestVersionTextView = latestVersionLayout.findViewById(R.id.latest_version_textview);
+                latestVersionTextView.setText("release"+"-"+version);
+            }
+        }).execute();
     }
 
     private void getLatestFirmwareVersion(){

@@ -79,7 +79,7 @@ public class DashboardDevicesFragment extends Fragment {
     TimerTask doAsynchronousTask;
     Handler handler;
 
-    private Room room;
+    private static Room room;
     public DashboardDevicesFragment() {
         // Required empty public constructor
     }
