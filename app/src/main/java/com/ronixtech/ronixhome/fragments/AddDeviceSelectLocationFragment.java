@@ -144,20 +144,24 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         placeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // DialogFragment.show() will take care of adding the fragment
-                // in a transaction.  We also want to remove any currently showing
-                // dialog, so make our own transaction and take care of that here.
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
+                if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
+                }else{
+                    // DialogFragment.show() will take care of adding the fragment
+                    // in a transaction.  We also want to remove any currently showing
+                    // dialog, so make our own transaction and take care of that here.
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
 
-                // Create and show the dialog.
-                PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
-                fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
-                fragment.show(ft, "pickPlaceDialogFragment");
+                    // Create and show the dialog.
+                    PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
+                    fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                    fragment.show(ft, "pickPlaceDialogFragment");
+                }
             }
         });
 
@@ -202,21 +206,25 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             public void onClick(View view) {
                 if(selectedPlace != null){
                     if(selectedFloor != null){
-                        // DialogFragment.show() will take care of adding the fragment
-                        // in a transaction.  We also want to remove any currently showing
-                        // dialog, so make our own transaction and take care of that here.
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
-                        if (prev != null) {
-                            ft.remove(prev);
-                        }
-                        ft.addToBackStack(null);
+                        if(MySettings.getFloorRooms(selectedFloor.getId()) == null || MySettings.getFloorRooms(selectedFloor.getId()).size() < 1){
+                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_SHORT).show();
+                        }else{
+                            // DialogFragment.show() will take care of adding the fragment
+                            // in a transaction.  We also want to remove any currently showing
+                            // dialog, so make our own transaction and take care of that here.
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
+                            if (prev != null) {
+                                ft.remove(prev);
+                            }
+                            ft.addToBackStack(null);
 
-                        // Create and show the dialog.
-                        PickRoomDialogFragment fragment = PickRoomDialogFragment.newInstance();
-                        fragment.setFloorID(selectedFloor.getId());
-                        fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
-                        fragment.show(ft, "pickRoomDialogFragment");
+                            // Create and show the dialog.
+                            PickRoomDialogFragment fragment = PickRoomDialogFragment.newInstance();
+                            fragment.setFloorID(selectedFloor.getId());
+                            fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                            fragment.show(ft, "pickRoomDialogFragment");
+                        }
                     }else{
                         YoYo.with(Techniques.Shake)
                                 .duration(700)

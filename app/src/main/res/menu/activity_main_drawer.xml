@@ -42,6 +42,10 @@
     <item android:title="@string/account">
         <menu>
             <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/about_icon_gray"
+                android:title="@string/help" />
+            <item
                 android:id="@+id/log_out"
                 android:icon="@drawable/ic_keyboard_arrow_left_black_24dp"
                 android:title="@string/logout" />

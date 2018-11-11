@@ -36,6 +36,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.fragments.AboutFragment;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
@@ -319,6 +320,14 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
             fragmentTransaction.addToBackStack("roomsFragment");
+            fragmentTransaction.commit();
+        }else if (id == R.id.nav_about) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AboutFragment aboutFragment = new AboutFragment();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.replace(R.id.fragment_view, aboutFragment, "aboutFragment");
+            fragmentTransaction.addToBackStack("aboutFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
             if(MySettings.getActiveUser() != null) {

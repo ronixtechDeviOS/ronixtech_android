@@ -5,13 +5,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.ronixtech.ronixhome.R;
 
 public class SplashActivity extends AppCompatActivity {
 
     /** Duration of wait **/
-    private final int SPLASH_DISPLAY_LENGTH = 1000;
+    private final int SPLASH_DISPLAY_LENGTH = 3000;
 
 
     @Override
@@ -27,6 +29,12 @@ public class SplashActivity extends AppCompatActivity {
         // status bar is hidden, so hide that too if necessary.
         //ActionBar actionBar = getActionBar();
         //actionBar.hide();
+
+        ImageView view = findViewById(R.id.splash_animating_view);
+        view.setImageResource(R.drawable.logo_white_big);
+        view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_animation));
+        //int widthInDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+        //int heightInDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
 
         /* New Handler to start the Menu-Activity
          * and close this Splash-Screen after some seconds.*/

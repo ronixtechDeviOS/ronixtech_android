@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".fragments.AboutFragment">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/whiteColor">
+
+            <ImageView
+                android:id="@+id/logo_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/logo_color_big"/>
+
+            <TextView
+                android:id="@+id/about_description_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/logo_imageview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/about_description"/>
+
+            <TextView
+                android:id="@+id/support_email_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/about_description_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/support_email_title"/>
+
+            <TextView
+                android:id="@+id/support_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/support_email_title"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:autoLink="email"
+                android:text="@string/support_email"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/support_email"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_centerHorizontal="true">
+                <TextView
+                    android:id="@+id/current_version_static_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:text="@string/current_version_colon" />
+
+                <TextView
+                    android:id="@+id/current_version_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toEndOf="@id/current_version_static_textview"
+                    android:layout_toRightOf="@id/current_version_static_textview"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:text="" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+</ScrollView>

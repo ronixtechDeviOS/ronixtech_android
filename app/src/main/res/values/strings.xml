@@ -16,8 +16,15 @@
     <string name="dashboard">Dashboard</string>
     <string name="refresh_devices">Refresh Devices</string>
     <string name="locations">Locations</string>
+    <string name="about_help">About and Support</string>
+    <string name="about">About</string>
+    <string name="help">Help</string>
     <string name="account">Account</string>
     <string name="logout">Logout</string>
+
+    <string name="about_description">This is the Smart Home App from RonixTech.\nYou can use it to control all your RonixTech Controllers in your home from your smart phone. Control can be done locally from your home or remotely from anywhere in the world through the internet.</string>
+    <string name="support_email_title">For support and technical assistance:</string>
+    <string name="support_email">technical@ronixtech.com</string>
 
     <string name="location">Location</string>
 
@@ -271,6 +278,7 @@
     <string name="title_activity_login">Sign in</string>
 
     <string name="current_version">Current Version</string>
+    <string name="current_version_colon">Current Version:</string>
     <string name="latest_version">Online Version</string>
 
     <string name="facebook_app_id">1276072825863636</string>

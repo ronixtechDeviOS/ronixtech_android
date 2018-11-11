@@ -24,6 +24,7 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.PlacesGridAdapter;
+import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 
 import java.util.List;
@@ -103,13 +104,26 @@ public class PlacesFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Place selectedPlace = (Place) placeAdapter.getItem(i);
                 MySettings.setCurrentPlace(selectedPlace);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                FloorsFragment floorsFragment = new FloorsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, floorsFragment, "floorsFragment");
-                fragmentTransaction.addToBackStack("floorsFragment");
-                fragmentTransaction.commit();
+                if(MySettings.getPlaceFloors(selectedPlace.getId()) != null && MySettings.getPlaceFloors(selectedPlace.getId()).size() > 1) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    FloorsFragment floorsFragment = new FloorsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, floorsFragment, "floorsFragment");
+                    fragmentTransaction.addToBackStack("floorsFragment");
+                    fragmentTransaction.commit();
+                }else if(MySettings.getPlaceFloors(selectedPlace.getId()) != null){
+                    List<Floor> floors = MySettings.getPlaceFloors(selectedPlace.getId());
+                    Floor selectedFloor= (Floor) floors.get(0);
+                    MySettings.setCurrentFloor(selectedFloor);
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    RoomsFragment roomsFragment = new RoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
+                    fragmentTransaction.addToBackStack("roomsFragment");
+                    fragmentTransaction.commit();
+                }
             }
         });
 

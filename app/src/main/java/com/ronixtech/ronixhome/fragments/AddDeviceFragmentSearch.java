@@ -275,19 +275,6 @@ public class AddDeviceFragmentSearch extends Fragment {
                                         device.setMacAddress(result.BSSID);
                                         device.setName(result.SSID);
                                         MySettings.setTempDevice(device);
-                                        List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-                                        for(WifiConfiguration i : list) {
-                                            if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
-                                                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                                                //mWifiManager.disableNetwork(i.networkId);
-                                                mWifiManager.removeNetwork(i.networkId);
-                                            }
-                                            if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
-                                                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                                                //mWifiManager.disableNetwork(i.networkId);
-                                                mWifiManager.removeNetwork(i.networkId);
-                                            }
-                                        }
                                         Log.d(TAG, "Connecting to " + result.SSID + " with default password");
                                         connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
                                         try {
@@ -386,46 +373,7 @@ public class AddDeviceFragmentSearch extends Fragment {
                                     //then send configured SSID/password to the device
                                     //getDeviceType();
                                 }else{
-                                    List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-                                    for(WifiConfiguration i : list) {
-                                        if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
-                                            Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                                            //mWifiManager.disableNetwork(i.networkId);
-                                            mWifiManager.removeNetwork(i.networkId);
-                                        }
-                                        if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
-                                            Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                                            //mWifiManager.disableNetwork(i.networkId);
-                                            mWifiManager.removeNetwork(i.networkId);
-                                        }
-                                    }
-
-                                    WifiConfiguration conf = new WifiConfiguration();
-                                    /*if(Build.VERSION.SDK_INT >= 23){
-                                        conf.SSID = ssid;
-                                    }else{
-                                        conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
-                                    }*/
-                                    conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
-                                    conf.preSharedKey = "\""+ password +"\"";
-                                    conf.status = WifiConfiguration.Status.ENABLED;
-                                    conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-                                    conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-
-                                    mWifiManager.addNetwork(conf);
-
-                                    mWifiManager.setWifiEnabled(true);
-
-                                    list = mWifiManager.getConfiguredNetworks();
-                                    for(WifiConfiguration i : list) {
-                                        if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
-                                            Log.d(TAG, "Connecting to SSID: " + i.SSID + " with password " + password);
-                                            mWifiManager.disconnect();
-                                            mWifiManager.enableNetwork(i.networkId, true);
-                                            mWifiManager.reconnect();
-                                            break;
-                                        }
-                                    }
+                                    connectToWifiNetwork(ssid, password, true);
                                 }
                             }
                         }
@@ -445,16 +393,36 @@ public class AddDeviceFragmentSearch extends Fragment {
 
         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
-            if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)) {
+            Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+            if(!mWifiManager.removeNetwork(i.networkId)){
+                Log.d(TAG, "Failed to remove network " + i.SSID + ", disabling it");
+                mWifiManager.disableNetwork(i.networkId);
+            }
+            /*if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)) {
                 Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                //mWifiManager.disableNetwork(i.networkId);
+                mWifiManager.disableNetwork(i.networkId);
                 mWifiManager.removeNetwork(i.networkId);
             }
             if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
                 Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                //mWifiManager.disableNetwork(i.networkId);
+                mWifiManager.disableNetwork(i.networkId);
                 mWifiManager.removeNetwork(i.networkId);
-            }
+            }*/
+        }
+        mWifiManager.saveConfiguration();
+
+        try {
+            Thread.sleep(1000);
+        }catch (InterruptedException e){
+
+        }
+
+        mWifiManager.setWifiEnabled(true);
+
+        try {
+            Thread.sleep(1000);
+        }catch (InterruptedException e){
+
         }
 
         WifiConfiguration conf = new WifiConfiguration();
@@ -466,14 +434,48 @@ public class AddDeviceFragmentSearch extends Fragment {
         conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
         conf.preSharedKey = "\""+ password +"\"";
         conf.status = WifiConfiguration.Status.ENABLED;
-        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        //conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
-        mWifiManager.addNetwork(conf);
+        //WPA/WPA2 Security
+        conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+        conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 
-        mWifiManager.setWifiEnabled(true);
+        int networkID = mWifiManager.addNetwork(conf);
+        mWifiManager.saveConfiguration();
 
-        list = mWifiManager.getConfiguredNetworks();
+        try {
+            Thread.sleep(1000);
+        }catch (InterruptedException e){
+
+        }
+
+        if (networkID == -1) {
+            // Get existed network id if it is already added to WiFi network
+            networkID = getExistingNetworkId(ssid);
+        }
+
+        Log.d(TAG, "Added network, new ID:" + networkID);
+
+        try {
+            Thread.sleep(1000);
+        }catch (InterruptedException e){
+
+        }
+
+        Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID);
+        mWifiManager.disconnect();
+        mWifiManager.enableNetwork(networkID, true);
+        mWifiManager.reconnect();
+
+        /*list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
             if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
                 Log.d(TAG, "Connecting to SSID: " + i.SSID + " with password: " + password);
@@ -482,7 +484,19 @@ public class AddDeviceFragmentSearch extends Fragment {
                 mWifiManager.reconnect();
                 break;
             }
+        }*/
+    }
+
+    private int getExistingNetworkId(String SSID) {
+        List<WifiConfiguration> configuredNetworks = mWifiManager.getConfiguredNetworks();
+        if (configuredNetworks != null) {
+            for (WifiConfiguration existingConfig : configuredNetworks) {
+                if (SSID.equalsIgnoreCase(existingConfig.SSID)) {
+                    return existingConfig.networkId;
+                }
+            }
         }
+        return -1;
     }
 
     @Override
