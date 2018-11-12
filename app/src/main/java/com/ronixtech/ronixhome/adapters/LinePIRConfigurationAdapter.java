@@ -13,6 +13,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -96,7 +97,11 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
                     .placeholder(activity.getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                     .into(vHolder.lineImageView);
         }else {
-            vHolder.lineImageView.setImageResource(lines.get(position).getType().getImageResourceID());
+            if(lines.get(position).getType().getImageResourceName() != null && lines.get(position).getType().getImageResourceName().length() >= 1) {
+                vHolder.lineImageView.setImageResource(activity.getResources().getIdentifier(lines.get(position).getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+            }else{
+                vHolder.lineImageView.setImageResource(lines.get(position).getType().getImageResourceID());
+            }
         }
 
         vHolder.lineTriggerActionRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

@@ -293,7 +293,11 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeTypeImageView);
             }else {
-                placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
+                if(selectedPlaceType.getImageResourceName() != null && selectedPlaceType.getImageResourceName().length() >= 1) {
+                    placeTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlaceType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
+                }
             }
         }
 
@@ -313,7 +317,11 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeTypeImageView);
             }else {
-                placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
+                if(selectedPlaceType.getImageResourceName() != null && selectedPlaceType.getImageResourceName().length() >= 1) {
+                    placeTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlaceType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
+                }
             }
             if(validateInputs()){
                 Utils.setButtonEnabled(addPlaceButton, true);

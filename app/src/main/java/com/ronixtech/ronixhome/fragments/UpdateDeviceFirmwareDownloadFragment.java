@@ -116,23 +116,31 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
     }
 
     private void goToHomeFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
-        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentTransaction.commit();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+            if(getFragmentManager() != null) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
+            }
+        }
     }
 
     public void goToUploadFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-        UpdateDeviceFirmwareUploadFragment updateDeviceFirmwareUploadFragment = new UpdateDeviceFirmwareUploadFragment();
-        fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareUploadFragment, "updateDeviceFirmwareUploadFragment");
-        fragmentTransaction.addToBackStack("updateDeviceFirmwareUploadFragment");
-        fragmentTransaction.commit();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+            if(getFragmentManager() != null) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                UpdateDeviceFirmwareUploadFragment updateDeviceFirmwareUploadFragment = new UpdateDeviceFirmwareUploadFragment();
+                fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareUploadFragment, "updateDeviceFirmwareUploadFragment");
+                fragmentTransaction.addToBackStack("updateDeviceFirmwareUploadFragment");
+                fragmentTransaction.commit();
+            }
+        }
     }
 
     @Override

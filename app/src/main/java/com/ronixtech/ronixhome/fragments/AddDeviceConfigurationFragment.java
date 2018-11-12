@@ -245,7 +245,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                         .into(firstLineTypeImageView);
             }else {
-                firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
+                if(firstLineType.getImageResourceName() != null && firstLineType.getImageResourceName().length() >= 1){
+                    firstLineTypeImageView.setImageResource(getActivity().getResources().getIdentifier(firstLineType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
+                }
             }
         }
         if(secondLineType != null) {
@@ -256,7 +260,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                         .into(secondLineTypeImageView);
             } else {
-                secondLineTypeImageView.setImageResource(secondLineType.getImageResourceID());
+                if(secondLineType.getImageResourceName() != null && secondLineType.getImageResourceName().length() >= 1){
+                    secondLineTypeImageView.setImageResource(getActivity().getResources().getIdentifier(secondLineType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    secondLineTypeImageView.setImageResource(secondLineType.getImageResourceID());
+                }
             }
         }
         if(thirdLineType != null){
@@ -267,7 +275,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                         .into(thirdLineTypeImageView);
             }else {
-                thirdLineTypeImageView.setImageResource(thirdLineType.getImageResourceID());
+                if(thirdLineType.getImageResourceName() != null && thirdLineType.getImageResourceName().length() >= 1){
+                    thirdLineTypeImageView.setImageResource(getActivity().getResources().getIdentifier(thirdLineType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    thirdLineTypeImageView.setImageResource(thirdLineType.getImageResourceID());
+                }
             }
         }
 
@@ -695,7 +707,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                                 .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_led__lamp))
                                 .into(firstLineTypeImageView);
                     }else {
-                        firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
+                        if(firstLineType.getImageResourceName() != null && firstLineType.getImageResourceName().length() >= 1) {
+                            firstLineTypeImageView.setImageResource(getActivity().getResources().getIdentifier(firstLineType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                        }else{
+                            firstLineTypeImageView.setImageResource(firstLineType.getImageResourceID());
+                        }
                     }
                     if(validateInputsWithoutYoyo()){
                         Utils.setButtonEnabled(continueButton, true);
@@ -712,7 +728,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                                 .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_led__lamp))
                                 .into(secondLineTypeImageView);
                     }else {
-                        secondLineTypeImageView.setImageResource(secondLineType.getImageResourceID());
+                        if(secondLineType.getImageResourceName() != null && secondLineType.getImageResourceName().length() >= 1) {
+                            secondLineTypeImageView.setImageResource(getActivity().getResources().getIdentifier(secondLineType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                        }else{
+                            secondLineTypeImageView.setImageResource(secondLineType.getImageResourceID());
+                        }
                     }
                     if(validateInputsWithoutYoyo()){
                         Utils.setButtonEnabled(continueButton, true);
@@ -729,7 +749,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                                 .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_led__lamp))
                                 .into(thirdLineTypeImageView);
                     }else {
-                        thirdLineTypeImageView.setImageResource(thirdLineType.getImageResourceID());
+                        if(thirdLineType.getImageResourceName() != null && thirdLineType.getImageResourceName().length() >= 1) {
+                            thirdLineTypeImageView.setImageResource(getActivity().getResources().getIdentifier(thirdLineType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                        }else{
+                            thirdLineTypeImageView.setImageResource(thirdLineType.getImageResourceID());
+                        }
                     }
                     if(validateInputsWithoutYoyo()){
                         Utils.setButtonEnabled(continueButton, true);
@@ -762,7 +786,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                                 .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                                 .into(firstLineSelectedLineImageView);
                     }else {
-                        firstLineSelectedLineImageView.setImageResource(firstLineSelectedLine.getType().getImageResourceID());
+                        if(firstLineSelectedLine.getType().getImageResourceName() != null && firstLineSelectedLine.getType().getImageResourceName().length() >= 1) {
+                            firstLineSelectedLineImageView.setImageResource(getActivity().getResources().getIdentifier(firstLineSelectedLine.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                        }else{
+                            firstLineSelectedLineImageView.setImageResource(firstLineSelectedLine.getType().getImageResourceID());
+                        }
                     }
 
                     break;
@@ -780,7 +808,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                                 .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                                 .into(secondLineSelectedLineImageView);
                     }else {
-                        secondLineSelectedLineImageView.setImageResource(secondLineSelectedLine.getType().getImageResourceID());
+                        if(secondLineSelectedLine.getType().getImageResourceName() != null && secondLineSelectedLine.getType().getImageResourceName().length() >= 1) {
+                            secondLineSelectedLineImageView.setImageResource(getActivity().getResources().getIdentifier(secondLineSelectedLine.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                        }else{
+                            secondLineSelectedLineImageView.setImageResource(secondLineSelectedLine.getType().getImageResourceID());
+                        }
                     }
                     break;
                 case 2:
@@ -797,7 +829,11 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                                 .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
                                 .into(thirdLineSelectedLineImageView);
                     }else {
-                        thirdLineSelectedLineImageView.setImageResource(thirdLineSelectedLine.getType().getImageResourceID());
+                        if(thirdLineSelectedLine.getType().getImageResourceName() != null && thirdLineSelectedLine.getType().getImageResourceName().length() >= 1) {
+                            thirdLineSelectedLineImageView.setImageResource(getActivity().getResources().getIdentifier(thirdLineSelectedLine.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                        }else{
+                            thirdLineSelectedLineImageView.setImageResource(thirdLineSelectedLine.getType().getImageResourceID());
+                        }
                     }
                     break;
             }

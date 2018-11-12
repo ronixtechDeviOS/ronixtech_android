@@ -999,7 +999,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
                             .into(vHolder.firstLineTypeImageView);
                 }else {
-                    vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
+                        vHolder.firstLineTypeImageView.setImageResource(activity.getResources().getIdentifier(line.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     vHolder.firstLineSwitch.setChecked(true);
@@ -1023,7 +1027,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
                             .into(vHolder.secondLineTypeImageView);
                 }else {
-                    vHolder.secondLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
+                        vHolder.secondLineTypeImageView.setImageResource(activity.getResources().getIdentifier(line.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        vHolder.secondLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     vHolder.secondLineSwitch.setChecked(true);
@@ -1047,7 +1055,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
                             .into(vHolder.thirdLineTypeImageView);
                 }else {
-                    vHolder.thirdLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
+                        vHolder.thirdLineTypeImageView.setImageResource(activity.getResources().getIdentifier(line.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        vHolder.thirdLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     vHolder.thirdLineSwitch.setChecked(true);
@@ -1081,7 +1093,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
                             .into(vHolder.firstLineTypeImageView);
                 }else {
-                    vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
+                        vHolder.firstLineTypeImageView.setImageResource(activity.getResources().getIdentifier(line.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     vHolder.firstLineSwitch.setChecked(true);
@@ -1097,7 +1113,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
                             .into(vHolder.secondLineTypeImageView);
                 }else {
-                    vHolder.secondLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
+                        vHolder.secondLineTypeImageView.setImageResource(activity.getResources().getIdentifier(line.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        vHolder.secondLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     vHolder.secondLineSwitch.setChecked(true);
@@ -1113,7 +1133,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
                             .into(vHolder.thirdLineTypeImageView);
                 }else {
-                    vHolder.thirdLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
+                        vHolder.thirdLineTypeImageView.setImageResource(activity.getResources().getIdentifier(line.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        vHolder.thirdLineTypeImageView.setImageResource(line.getType().getImageResourceID());
+                    }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
                     vHolder.thirdLineSwitch.setChecked(true);

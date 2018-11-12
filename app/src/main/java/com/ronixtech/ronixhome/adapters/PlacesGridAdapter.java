@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Place;
@@ -62,7 +63,11 @@ public class PlacesGridAdapter extends BaseAdapter {
                 .placeholder(activity.getResources().getDrawable(R.drawable.place_type_house))
                 .into(vHolder.placeImageView);
         }else {
-            vHolder.placeImageView.setImageResource(item.getType().getImageResourceID());
+            if(item.getType().getImageResourceName() != null && item.getType().getImageResourceName().length() >= 1){
+                vHolder.placeImageView.setImageResource(activity.getResources().getIdentifier(item.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+            }else {
+                vHolder.placeImageView.setImageResource(item.getType().getImageResourceID());
+            }
         }
 
 

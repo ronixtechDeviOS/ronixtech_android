@@ -434,19 +434,22 @@ public class AddDeviceFragmentSearch extends Fragment {
         conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
         conf.preSharedKey = "\""+ password +"\"";
         conf.status = WifiConfiguration.Status.ENABLED;
-        //conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
         //WPA/WPA2 Security
-        conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+
+        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+
+
         conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
         conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
 
         int networkID = mWifiManager.addNetwork(conf);
         mWifiManager.saveConfiguration();

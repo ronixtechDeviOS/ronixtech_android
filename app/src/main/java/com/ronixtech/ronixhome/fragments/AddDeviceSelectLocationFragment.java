@@ -114,7 +114,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeImageView);
             }else {
-                placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                if(selectedPlace.getType().getImageResourceName() != null && selectedPlace.getType().getImageResourceName().length() >= 1){
+                    placeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlace.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                }
             }
 
             if(MySettings.getCurrentFloor() != null){
@@ -137,7 +141,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.room_type_living_room))
                         .into(roomImageView);
             }else {
-                roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                if(selectedRoom.getType().getImageResourceName() != null && selectedRoom.getType().getImageResourceName().length() >= 1) {
+                    roomImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoom.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                }
             }
         }
 
@@ -346,7 +354,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeImageView);
             }else {
-                placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                if(selectedPlace.getType().getImageResourceName() != null && selectedPlace.getType().getImageResourceName().length() >= 1){
+                    placeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlace.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                }
             }
             selectedFloorIndex = 0;
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
@@ -363,7 +375,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                                     .placeholder(getActivity().getResources().getDrawable(R.drawable.room_type_living_room))
                                     .into(roomImageView);
                         }else {
-                            roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                            if(selectedRoom.getType().getImageResourceName() != null && selectedRoom.getType().getImageResourceName().length() >= 1) {
+                                roomImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoom.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                            }else{
+                                roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                            }
                         }
                     }
                 }
@@ -388,7 +404,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.room_type_living_room))
                         .into(roomImageView);
             }else {
-                roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                if(selectedRoom.getType().getImageResourceName() != null && selectedRoom.getType().getImageResourceName().length() >= 1) {
+                    roomImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoom.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
+                }
             }
         }
         if(validateInputs()){

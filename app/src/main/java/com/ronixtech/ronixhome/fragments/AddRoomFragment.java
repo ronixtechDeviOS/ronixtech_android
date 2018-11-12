@@ -117,7 +117,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeImageView);
             }else {
-                placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                if(selectedPlace.getType().getImageResourceName() != null && selectedPlace.getType().getImageResourceName().length() >= 1) {
+                    placeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlace.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                }
             }
             selectedFloorIndex = 0;
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
@@ -226,7 +230,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(roomTypeImageView);
             }else {
-                roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+                if(selectedRoomType.getImageResourceName() != null && selectedRoomType.getImageResourceName().length() >= 1) {
+                    roomTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoomType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+                }
             }
         }
 
@@ -265,7 +273,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeImageView);
             }else {
-                placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                if(selectedPlace.getType().getImageResourceName() != null && selectedPlace.getType().getImageResourceName().length() >= 1) {
+                    placeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlace.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                }
             }
             selectedFloorIndex = 0;
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
@@ -284,7 +296,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(roomTypeImageView);
             }else {
-                roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+                if(selectedRoomType.getImageResourceName() != null && selectedRoomType.getImageResourceName().length() >= 1) {
+                    roomTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoomType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else{
+                    roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+                }
             }
             if(validateInputs()){
                 Utils.setButtonEnabled(addRoomButton, true);

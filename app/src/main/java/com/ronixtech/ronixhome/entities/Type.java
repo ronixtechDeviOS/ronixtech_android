@@ -7,15 +7,17 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class Type {
     @PrimaryKey(autoGenerate = true)
-    public long id;
+    private long id;
     @ColumnInfo(name = "name")
-    public String name;
+    private String name;
     @ColumnInfo(name = "category_id")
-    public int categoryID;
+    private int categoryID;
     @ColumnInfo(name = "image_url")
-    public String imageUrl;
+    private String imageUrl;
     @ColumnInfo(name = "image_resource_id")
-    public int imageResourceID;
+    private int imageResourceID;
+    @ColumnInfo(name = "image_resource_name")
+    private String imageResourceName;
 
     public Type(){
         this.categoryID = 0;
@@ -23,13 +25,15 @@ public class Type {
         this.name = "";
         this.imageUrl = "";
         this.imageResourceID = 0;
+        this.imageResourceName = "";
     }
 
-    public Type(int categoryID, String typeName, String typeImageUrl, int typeImageResourceID){
+    public Type(int categoryID, String typeName, String typeImageUrl, int typeImageResourceID, String imageResourceName){
         this.categoryID = categoryID;
         this.name = typeName;
         this.imageUrl = typeImageUrl;
         this.imageResourceID = typeImageResourceID;
+        this.imageResourceName = imageResourceName;
     }
 
     public long getId() {
@@ -38,6 +42,14 @@ public class Type {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
     }
 
     public String getName() {
@@ -62,5 +74,13 @@ public class Type {
 
     public void setImageResourceID(int imageResourceID) {
         this.imageResourceID = imageResourceID;
+    }
+
+    public String getImageResourceName() {
+        return imageResourceName;
+    }
+
+    public void setImageResourceName(String imageResourceName) {
+        this.imageResourceName = imageResourceName;
     }
 }

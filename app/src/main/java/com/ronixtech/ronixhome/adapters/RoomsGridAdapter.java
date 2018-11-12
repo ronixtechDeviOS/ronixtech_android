@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Room;
@@ -67,7 +68,11 @@ public class RoomsGridAdapter extends BaseAdapter{
                     .placeholder(activity.getResources().getDrawable(R.drawable.room_type_living_room))
                     .into(vHolder.roomImageView);
         }else {
-            vHolder.roomImageView.setImageResource(item.getType().getImageResourceID());
+            if(item.getType().getImageResourceName() != null && item.getType().getImageResourceName().length() >= 1){
+                vHolder.roomImageView.setImageResource(activity.getResources().getIdentifier(item.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+            }else{
+                vHolder.roomImageView.setImageResource(item.getType().getImageResourceID());
+            }
         }
 
         return rowView;

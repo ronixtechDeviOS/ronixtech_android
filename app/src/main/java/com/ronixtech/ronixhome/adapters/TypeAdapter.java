@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Type;
 
@@ -60,7 +61,12 @@ public class TypeAdapter extends ArrayAdapter {
         }
 
         vHolder.typeNameTextView.setText(""+types.get(position).getName());
-        vHolder.typeImageView.setImageResource(types.get(position).getImageResourceID());
+        if(types.get(position).getImageResourceName() != null && types.get(position).getImageResourceName().length() >= 1){
+            vHolder.typeImageView.setImageResource(activity.getResources().getIdentifier(types.get(position).getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+
+        }else{
+            vHolder.typeImageView.setImageResource(types.get(position).getImageResourceID());
+        }
 
         return rowView;
     }

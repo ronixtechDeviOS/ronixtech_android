@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Room;
@@ -69,7 +70,11 @@ public class RoomAdapter extends ArrayAdapter {
                     .placeholder(activity.getResources().getDrawable(R.drawable.room_type_living_room))
                     .into(vHolder.roomImageView);
         }else {
-            vHolder.roomImageView.setImageResource(rooms.get(position).getType().getImageResourceID());
+            if(rooms.get(position).getType().getImageResourceName() != null && rooms.get(position).getType().getImageResourceName().length() >= 1){
+                vHolder.roomImageView.setImageResource(activity.getResources().getIdentifier(rooms.get(position).getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+            }else {
+                vHolder.roomImageView.setImageResource(rooms.get(position).getType().getImageResourceID());
+            }
         }
 
         return rowView;
