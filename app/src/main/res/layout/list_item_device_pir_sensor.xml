@@ -118,7 +118,9 @@
                 android:layout_height="75dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/motion_sensor_icon"/>
+                android:background="@drawable/circle_indicator_gray"
+                android:padding="8dp"
+                android:src="@drawable/line_type_motion_sensor"/>
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -441,6 +441,35 @@ public class MySettings {
         MySettings.initDB().roomDAO().removeRoomsWithDevices(room);
     }
 
+    public static List<com.ronixtech.ronixhome.entities.Room> getPlaceRooms(Place place){
+        List<com.ronixtech.ronixhome.entities.Room> placeRooms = new ArrayList<>();
+        if(place != null){
+            List<Floor> placeFloors = MySettings.getPlaceFloors(place.getId());
+            if(placeFloors != null && placeFloors.size() >= 1){
+                for (Floor floor : placeFloors) {
+                    List<com.ronixtech.ronixhome.entities.Room> floorRooms = MySettings.getFloorRooms(floor.getId());
+                    if(floorRooms != null && floorRooms.size() >= 1) {
+                        placeRooms.addAll(floorRooms);
+                    }
+                }
+            }
+        }
+        return placeRooms;
+    }
+    public static List<Device> getPlaceDevices(Place place){
+        List<Device> placeDevices= new ArrayList<>();
+        List<com.ronixtech.ronixhome.entities.Room> placeRooms = MySettings.getPlaceRooms(place);
+        if(placeRooms != null && placeRooms.size() >= 1){
+            for (com.ronixtech.ronixhome.entities.Room room : placeRooms) {
+                List<Device> roomDevices = MySettings.getRoomDevices(room.getId());
+                if(roomDevices != null && roomDevices.size() >= 1) {
+                    placeDevices.addAll(roomDevices);
+                }
+            }
+        }
+        return placeDevices;
+    }
+
     public static Type getType(long typeID){
         return MySettings.initDB().typeDAO().getType(typeID);
     }

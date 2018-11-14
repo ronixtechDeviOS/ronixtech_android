@@ -102,7 +102,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.8"
                 android:layout_marginTop="32dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
                 <RelativeLayout
                     android:id="@+id/add_new_place_layout"
                     android:layout_width="match_parent"
@@ -113,6 +114,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/add_place_icon"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -134,6 +136,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/add_room_icon"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -155,6 +158,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/add_device_icon"/>
                     <TextView
                         android:layout_width="wrap_content"

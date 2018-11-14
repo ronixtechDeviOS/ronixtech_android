@@ -59,7 +59,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
 
     TextView addPlaceTitleTextView, addPlaceDescriptionTextView, numberOfFloorsTextView;
     EditText placeNameEditText;
-    RelativeLayout placeTypeSelectionLayout, wifiNetworkSelectionLayout, wifiNetworkAddLayout;
+    RelativeLayout placeTypeSelectionLayout, wifiNetworkSelectionLayout;
     ImageView placeTypeImageView;
     TextView placeTypeNameTextView;
     ListView selectedWifiNetworksListView;
@@ -108,7 +108,6 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         placeTypeImageView = view.findViewById(R.id.type_imageview);
         placeTypeNameTextView = view.findViewById(R.id.type_name_textview);
         wifiNetworkSelectionLayout = view.findViewById(R.id.wifi_network_selection_layout);
-        wifiNetworkAddLayout = view.findViewById(R.id.wifi_network_add_layout);
         selectedWifiNetworksListView = view.findViewById(R.id.selected_wifi_networks_listview);
         if(selectedWifiNetworks == null) {
             selectedWifiNetworks = new ArrayList<>();
@@ -184,6 +183,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     // Create and show the dialog.
                     PickWifiNetworkDialogFragment fragment = PickWifiNetworkDialogFragment.newInstance();
                     fragment.setTargetFragment(AddPlaceFragment.this, 0);
+                    fragment.setParentFragment(AddPlaceFragment.this);
                     fragment.show(ft, "wifiNetworkPickerDialogFragment");
                 }else{
                     //go to add wifi network sequence and then come back here
@@ -197,22 +197,6 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     fragmentTransaction.addToBackStack("wifiInfoFragment");
                     fragmentTransaction.commit();
                 }
-            }
-        });
-
-        wifiNetworkAddLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //go to add wifi network sequence and then come back here
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
-                wifiInfoFragment.setSource(Constants.SOURCE_NEW_PLACE);
-                wifiInfoFragment.setTargetFragment(AddPlaceFragment.this, 0);
-                fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
-                fragmentTransaction.addToBackStack("wifiInfoFragment");
-                fragmentTransaction.commit();
             }
         });
 
@@ -276,8 +260,10 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                             MySettings.updateWifiNetworkPlace(network, dbPlace.getId());
                         }
                         MySettings.setCurrentPlace(dbPlace);
+
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
+
                         getFragmentManager().popBackStack();
                     }
                 }
@@ -337,12 +323,12 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             if(!selectedWifiNetworks.contains(network)){
                 selectedWifiNetworks.add(network);
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
-                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
-                if(validateInputs()){
-                    Utils.setButtonEnabled(addPlaceButton, true);
-                }else{
-                    Utils.setButtonEnabled(addPlaceButton, false);
-                }
+            }
+            Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+            if(validateInputs()){
+                Utils.setButtonEnabled(addPlaceButton, true);
+            }else{
+                Utils.setButtonEnabled(addPlaceButton, false);
             }
         }
     }
@@ -353,14 +339,18 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             if(!selectedWifiNetworks.contains(wifiNetwork)){
                 selectedWifiNetworks.add(wifiNetwork);
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
-                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
-                if(validateInputs()){
-                    Utils.setButtonEnabled(addPlaceButton, true);
-                }else{
-                    Utils.setButtonEnabled(addPlaceButton, false);
-                }
+            }
+            Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+            if(validateInputs()){
+                Utils.setButtonEnabled(addPlaceButton, true);
+            }else{
+                Utils.setButtonEnabled(addPlaceButton, false);
             }
         }
+    }
+
+    public AddPlaceFragment getFragment(){
+        return this;
     }
 
     private boolean validateInputs(){
@@ -384,10 +374,6 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     .duration(700)
                     .repeat(1)
                     .playOn(wifiNetworkSelectionLayout);
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(wifiNetworkAddLayout);
         }
 
         return inputsValid;

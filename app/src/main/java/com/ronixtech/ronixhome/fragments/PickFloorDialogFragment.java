@@ -5,6 +5,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -50,6 +51,9 @@ public class PickFloorDialogFragment extends DialogFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_fragment_floor_selection, container, false);
+
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         ListView listView = new ListView(getActivity());
         if(MySettings.getCurrentPlace() != null){
             floors = MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors();

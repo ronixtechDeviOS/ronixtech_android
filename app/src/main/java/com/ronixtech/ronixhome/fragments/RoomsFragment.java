@@ -132,7 +132,7 @@ public class RoomsFragment extends Fragment {
                                 MySettings.removeRoom(selectedRoom);
                                 MySettings.setCurrentRoom(null);
                                 rooms.clear();
-                                rooms.addAll(MySettings.getAllRooms());
+                                rooms.addAll(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()));
                                 roomAdapter.notifyDataSetChanged();
                             }
                         })

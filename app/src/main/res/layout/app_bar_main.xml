@@ -27,6 +27,13 @@
                 style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                 android:text="@string/app_name"
                 android:textColor="@color/whiteColor" />
+            <ImageView
+                android:id="@+id/toolbar_change_home_imageview"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/quantum_ic_keyboard_arrow_down_white_36"/>
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

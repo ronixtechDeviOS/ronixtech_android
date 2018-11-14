@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,6 +28,7 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.RoomsGridAdapter;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 
@@ -41,7 +44,7 @@ import java.util.List;
  * create an instance of this fragment.
  *
  */
-public class DashboardRoomsFragment extends Fragment {
+public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener{
     private static final String TAG = DashboardRoomsFragment.class.getSimpleName();
 
     FloatingActionMenu addFabMenu;
@@ -86,10 +89,11 @@ public class DashboardRoomsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard_rooms, container, false);
+        place = MySettings.getCurrentPlace();
         if(place != null){
             MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.home), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 
@@ -117,43 +121,71 @@ public class DashboardRoomsFragment extends Fragment {
                     }
                 }
             }
-
         }
 
         rooms = new ArrayList<>();
-        if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
-            rooms.addAll(MySettings.getAllRooms());
+        if(place != null){
+            List<Floor> floors = MySettings.getPlaceFloors(place.getId());
+            if(floors != null && floors.size() >= 1){
+                for (Floor floor : floors) {
+                    if(MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1)
+                    rooms.addAll(MySettings.getFloorRooms(floor.getId()));
+                }
+            }
+        }else{
+            if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
+                rooms.addAll(MySettings.getAllRooms());
+            }
         }
         roomsGridView = view.findViewById(R.id.rooms_gridview);
         adapter = new RoomsGridAdapter(getActivity(), rooms);
         roomsGridView.setAdapter(adapter);
 
-        boolean showAddLayout = false;
-        if(MySettings.getAllPlaces() != null && MySettings.getAllPlaces().size() >= 1){
-            //addPlaceLayout.setVisibility(View.GONE);
-        }else{
-            //addPlaceLayout.setVisibility(View.VISIBLE);
-            showAddLayout = true;
-        }
-        if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
-            //addRoomLayout.setVisibility(View.GONE);
-        }else{
-            //addRoomLayout.setVisibility(View.VISIBLE);
-            showAddLayout = true;
-        }
-        if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
-            //addDeviceLayout.setVisibility(View.GONE);
-        }else{
-            //addDeviceLayout.setVisibility(View.VISIBLE);
-            showAddLayout = true;
+        boolean showAddPlaceLayout = false;
+        boolean showAddRoomLayout = false;
+        boolean showAddDeviceLayout = false;
+        if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+            showAddPlaceLayout = true;
         }
 
-        if(showAddLayout){
-            addLayout.setVisibility(View.VISIBLE);
+        if(place != null){
+            if(MySettings.getPlaceRooms(place) == null || MySettings.getPlaceRooms(place).size() < 1){
+                showAddRoomLayout = true;
+            }
+        }else{
+            showAddRoomLayout = true;
+        }
+
+        if(place != null){
+            if(MySettings.getPlaceDevices(place) == null || MySettings.getPlaceDevices(place).size() < 1){
+                showAddDeviceLayout = true;
+            }
+        }else{
+            if(MySettings.getAllDevices() == null || MySettings.getAllDevices().size() < 1){
+                showAddDeviceLayout = true;
+            }
+        }
+
+        if(showAddPlaceLayout){
+            addPlaceLayout.setVisibility(View.VISIBLE);
+        }else{
+            addPlaceLayout.setVisibility(View.GONE);
+        }
+        if(showAddRoomLayout){
+            addRoomLayout.setVisibility(View.VISIBLE);
+        }else{
+            addRoomLayout.setVisibility(View.GONE);
+        }
+        if(showAddDeviceLayout){
+            addDeviceLayout.setVisibility(View.VISIBLE);
+        }else{
+            addDeviceLayout.setVisibility(View.GONE);
+        }
+
+        if(showAddPlaceLayout || showAddRoomLayout || showAddDeviceLayout){
             addFabMenu.setVisibility(View.GONE);
             roomsGridView.setVisibility(View.GONE);
         }else{
-            addLayout.setVisibility(View.GONE);
             addFabMenu.setVisibility(View.VISIBLE);
             roomsGridView.setVisibility(View.VISIBLE);
         }
@@ -348,6 +380,71 @@ public class DashboardRoomsFragment extends Fragment {
     }
 
     @Override
+    public void onPlaceSelected(Place place){
+        boolean showAddPlaceLayout = false;
+        boolean showAddRoomLayout = false;
+        boolean showAddDeviceLayout = false;
+        if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+            showAddPlaceLayout = true;
+        }
+
+        if(place != null){
+            if(MySettings.getPlaceRooms(place) == null || MySettings.getPlaceRooms(place).size() < 1){
+                showAddRoomLayout = true;
+            }
+        }else{
+            showAddRoomLayout = true;
+        }
+
+        if(place != null){
+            if(MySettings.getPlaceDevices(place) == null || MySettings.getPlaceDevices(place).size() < 1){
+                showAddDeviceLayout = true;
+            }
+        }else{
+            if(MySettings.getAllDevices() == null || MySettings.getAllDevices().size() < 1){
+                showAddDeviceLayout = true;
+            }
+        }
+
+        if(showAddPlaceLayout){
+            addPlaceLayout.setVisibility(View.VISIBLE);
+        }else{
+            addPlaceLayout.setVisibility(View.GONE);
+        }
+        if(showAddRoomLayout){
+            addRoomLayout.setVisibility(View.VISIBLE);
+        }else{
+            addRoomLayout.setVisibility(View.GONE);
+        }
+        if(showAddDeviceLayout){
+            addDeviceLayout.setVisibility(View.VISIBLE);
+        }else{
+            addDeviceLayout.setVisibility(View.GONE);
+        }
+
+        if(showAddPlaceLayout || showAddRoomLayout || showAddDeviceLayout){
+            addFabMenu.setVisibility(View.GONE);
+            roomsGridView.setVisibility(View.GONE);
+        }else{
+            addFabMenu.setVisibility(View.VISIBLE);
+            roomsGridView.setVisibility(View.VISIBLE);
+        }
+
+        if(place != null){
+            MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+            rooms.clear();
+            List<Floor> floors = MySettings.getPlaceFloors(place.getId());
+            if(floors != null && floors.size() >= 1){
+                for (Floor floor : floors) {
+                    if(MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1)
+                        rooms.addAll(MySettings.getFloorRooms(floor.getId()));
+                }
+            }
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
@@ -357,6 +454,59 @@ public class DashboardRoomsFragment extends Fragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
+            if(toolbar != null){
+                ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
+                arrowImageView.setVisibility(View.GONE);
+                toolbar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
+            if(toolbar != null){
+                ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
+                arrowImageView.setVisibility(View.VISIBLE);
+                toolbar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
+                        }else{
+                            // DialogFragment.show() will take care of adding the fragment
+                            // in a transaction.  We also want to remove any currently showing
+                            // dialog, so make our own transaction and take care of that here.
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                            if (prev != null) {
+                                ft.remove(prev);
+                            }
+                            ft.addToBackStack(null);
+
+                            // Create and show the dialog.
+                            PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
+                            fragment.setTargetFragment(DashboardRoomsFragment.this, 0);
+                            fragment.show(ft, "pickPlaceDialogFragment");
+                        }
+                    }
+                });
+            }
         }
     }
 

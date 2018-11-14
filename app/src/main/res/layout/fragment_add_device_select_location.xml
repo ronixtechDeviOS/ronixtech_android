@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.AddDeviceSelectLocationFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -186,7 +187,7 @@
                     android:id="@+id/selected_room_image_view"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/place_icon"
+                    android:src="@drawable/room_icon"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>

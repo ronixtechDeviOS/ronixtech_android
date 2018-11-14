@@ -667,4 +667,8 @@ public class Utils {
         }
 
     }
+
+    public static int difference(int firstNumber, int secondNumber){
+        return Math.abs(firstNumber - secondNumber);
+    }
 }

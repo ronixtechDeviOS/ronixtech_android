@@ -37,7 +37,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,7 +82,6 @@ public class WifiListFragment extends Fragment {
     ListView networksListView;
     WifiNetworkItemAdapter networksAdapter;
     TextView searchStatusTextView;
-    RelativeLayout hiddenNetworkLayout;
 
     private WifiNetwork preferredNetwork;
 
@@ -131,11 +129,19 @@ public class WifiListFragment extends Fragment {
         //setHasOptionsMenu(true);
 
         searchStatusTextView = view.findViewById(R.id.search_status_textview);
-        hiddenNetworkLayout = view.findViewById(R.id.hidden_network_layout);
         networksListView = view.findViewById(R.id.networks_listview);
         networks = new ArrayList<>();
         networksAdapter = new WifiNetworkItemAdapter(getActivity(), networks);
+        View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
+        networksListView.addFooterView(footerView);
         networksListView.setAdapter(networksAdapter);
+
+        footerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showManualNetworkDialog();
+            }
+        });
 
         continueButton = view.findViewById(R.id.continue_button);
 
@@ -144,13 +150,6 @@ public class WifiListFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
                 WifiNetwork clickedNetwork = (WifiNetwork) networksAdapter.getItem(i);
                 showPasswordDialog(clickedNetwork);
-            }
-        });
-
-        hiddenNetworkLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showManualNetworkDialog();
             }
         });
 

@@ -22,7 +22,7 @@
     <string name="account">Account</string>
     <string name="logout">Logout</string>
 
-    <string name="about_description">This is the Smart Home App from RonixTech.\nYou can use it to control all your RonixTech Controllers in your home from your smart phone. Control can be done locally from your home or remotely from anywhere in the world through the internet.</string>
+    <string name="about_description">This is the Smart Home App from RonixTech.\nYou can use it to monitor/control all your RonixTech Controllers in your home from your smart phone. Control can be done locally from your home or remotely from anywhere in the world through the internet.</string>
     <string name="support_email_title">For support and technical assistance:</string>
     <string name="support_email">technical@ronixtech.com</string>
 
@@ -81,6 +81,7 @@
     <string name="add_a_room">Add a room</string>
     <string name="no_rooms">No rooms</string>
     <string name="add_room_first">Add a room first</string>
+    <string name="all_rooms">All Rooms</string>
 
     <string name="add_room_description">To begin, please enter the name and type of your room then click Add</string>
     <string name="room_name">Room Name</string>
@@ -218,6 +219,7 @@
     <string name="add_wifi_network_hint">Tap here to add a new WiFi network</string>
     <string name="add_network">Save Network</string>
     <string name="enter_network_details_manually">Enter network details manually</string>
+    <string name="add_new_network">Add network</string>
 
 
     <string name="ip_address_title">Enter the controller\'s IP Address manually, in case the app doesn\'t auto detect it or is taking too long</string>

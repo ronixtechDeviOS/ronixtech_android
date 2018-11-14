@@ -5,6 +5,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -52,6 +53,8 @@ public class TypePickerDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_fragment_type_selection, container, false);
+
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         ListView listView = new ListView(getActivity());
         types = MySettings.getTypes(typesCategory);

@@ -107,7 +107,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         roomTypeImageView = view.findViewById(R.id.room_type_imageview);
         addRoomButton = view.findViewById(R.id.add_room_button);
 
-        selectedPlace = MySettings.getCurrentPlace();
+        if(selectedPlace == null) {
+            selectedPlace = MySettings.getCurrentPlace();
+        }
         if(selectedPlace != null){
             selectedPlace = MySettings.getPlace(selectedPlace.getId());
             placeNameTextView.setText(selectedPlace.getName());
@@ -221,7 +223,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
-        selectedRoomType = MySettings.getTypeByName("Living Room");
+        if(selectedRoomType == null) {
+            selectedRoomType = MySettings.getTypeByName("Living Room");
+        }
         if(selectedRoomType != null){
             roomTypeNameTextView.setText(selectedRoomType.getName());
             if(selectedRoomType.getImageUrl() != null && selectedRoomType.getImageUrl().length() >= 1){
@@ -248,6 +252,8 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     room.setFloorID(selectedFloor.getId());
                     room.setTypeID(selectedRoomType.getId());
                     MySettings.addRoom(room);
+
+                    MySettings.setCurrentRoom(room);
 
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);

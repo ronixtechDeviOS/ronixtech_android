@@ -105,8 +105,12 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
 
         doneButton = view.findViewById(R.id.done_button);
 
-        if(MySettings.getCurrentPlace() != null){
-            selectedPlace = MySettings.getPlace(MySettings.getCurrentPlace().getId());
+        if(selectedPlace == null){
+            if(MySettings.getCurrentPlace() != null) {
+                selectedPlace = MySettings.getPlace(MySettings.getCurrentPlace().getId());
+            }
+        }
+        if(selectedPlace != null){
             placeNameTextView.setText(selectedPlace.getName());
             if(selectedPlace.getType().getImageUrl() != null && selectedPlace.getType().getImageUrl().length() >= 1){
                 GlideApp.with(getActivity())
@@ -132,8 +136,12 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }
         }
 
-        if(MySettings.getCurrentRoom() != null){
-            selectedRoom = MySettings.getRoom(MySettings.getCurrentRoom().getId());
+        if(selectedRoom == null){
+            if(MySettings.getCurrentRoom() != null) {
+                selectedRoom = MySettings.getRoom(MySettings.getCurrentRoom().getId());
+            }
+        }
+        if(selectedRoom != null){
             roomNameTextView.setText(selectedRoom.getName());
             if(selectedRoom.getType().getImageUrl() != null && selectedRoom.getType().getImageUrl().length() >= 1){
                 GlideApp.with(getActivity())
@@ -231,6 +239,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                             PickRoomDialogFragment fragment = PickRoomDialogFragment.newInstance();
                             fragment.setFloorID(selectedFloor.getId());
                             fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                            fragment.setParentFragment(AddDeviceSelectLocationFragment.this);
                             fragment.show(ft, "pickRoomDialogFragment");
                         }
                     }else{
@@ -301,7 +310,6 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             public void onClick(View view) {
                 if(validateInputs()){
                     Device device = MySettings.getTempDevice();
-
                     //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
                     //tempDevice.setRoomID(clickedRoom.getId());
                     device.setRoomID(selectedRoom.getId());
@@ -364,7 +372,6 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
             if(selectedFloor != null){
                 selectedFloorTextView.setText(""+selectedFloor.getLevel());
-
                 if(MySettings.getFloorRooms(selectedFloor.getId()) != null && MySettings.getFloorRooms(selectedFloor.getId()).size() >= 1){
                     selectedRoom = MySettings.getRoom(MySettings.getFloorRooms(selectedFloor.getId()).get(0).getId());
                     if(selectedRoom != null){
@@ -381,8 +388,20 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                                 roomImageView.setImageResource(selectedRoom.getType().getImageResourceID());
                             }
                         }
+                    }else{
+                        selectedRoom = null;
+                        roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                        roomImageView.setImageResource(R.drawable.room_icon);
                     }
+                }else{
+                    selectedRoom = null;
+                    roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                    roomImageView.setImageResource(R.drawable.room_icon);
                 }
+            }else{
+                selectedRoom = null;
+                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                roomImageView.setImageResource(R.drawable.room_icon);
             }
         }
 

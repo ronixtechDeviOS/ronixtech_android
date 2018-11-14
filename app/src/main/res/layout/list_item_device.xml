@@ -118,6 +118,8 @@
                 android:layout_height="75dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
+                android:background="@drawable/circle_indicator_gray"
+                android:padding="8dp"
                 android:src="@drawable/device_colored_icon"/>
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -137,6 +139,7 @@
                     android:id="@+id/first_line_switch"
                     android:layout_width="60dp"
                     android:layout_height="45dp"
+                    android:visibility="gone"
                     android:layout_toLeftOf="@id/first_line_advanced_options_button"
                     android:layout_toStartOf="@id/first_line_advanced_options_button"
                     android:layout_marginEnd="8dp"
@@ -183,6 +186,8 @@
                 android:layout_height="75dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
+                android:background="@drawable/circle_indicator_gray"
+                android:padding="8dp"
                 android:src="@drawable/device_colored_icon"/>
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -202,6 +207,7 @@
                     android:id="@+id/second_line_switch"
                     android:layout_width="60dp"
                     android:layout_height="45dp"
+                    android:visibility="gone"
                     android:layout_toLeftOf="@id/second_line_advanced_options_button"
                     android:layout_toStartOf="@id/second_line_advanced_options_button"
                     android:layout_marginEnd="8dp"
@@ -248,6 +254,8 @@
                 android:layout_height="75dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
+                android:background="@drawable/circle_indicator_gray"
+                android:padding="8dp"
                 android:src="@drawable/device_colored_icon"/>
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -267,6 +275,7 @@
                     android:id="@+id/third_line_switch"
                     android:layout_width="60dp"
                     android:layout_height="45dp"
+                    android:visibility="gone"
                     android:layout_toLeftOf="@id/third_line_advanced_options_button"
                     android:layout_toStartOf="@id/third_line_advanced_options_button"
                     android:layout_marginEnd="8dp"

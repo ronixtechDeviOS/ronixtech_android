@@ -12,6 +12,7 @@
             android:id="@+id/search_status_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
@@ -20,36 +21,6 @@
             android:textColor="@color/blackColor"
             android:textSize="16sp"
             android:text="@string/searching_for_networks"/>
-
-        <RelativeLayout
-            android:id="@+id/hidden_network_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:padding="4dp"
-            android:background="@drawable/button_background_round_border_blue">
-            <ImageView
-                android:id="@+id/hidden_network_imageview"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:src="@drawable/add"/>
-            <TextView
-                android:id="@+id/hidden_network_buttin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/hidden_network_imageview"
-                android:layout_toRightOf="@id/hidden_network_imageview"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_centerVertical="true"
-                android:textColor="@color/blackColor"
-                android:textSize="16sp"
-                android:text="@string/enter_network_details_manually"/>
-        </RelativeLayout>
 
         <Button
             android:id="@+id/continue_button"
@@ -70,7 +41,8 @@
             android:id="@+id/networks_listview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/hidden_network_layout"/>
+            android:layout_below="@id/search_status_textview"
+            android:layout_above="@id/continue_button"/>
     </RelativeLayout>
 
 

@@ -110,6 +110,11 @@ public class Constants {
     public static final int TYPE_ROOM = 2;
     public static final int TYPE_LINE = 3;
 
+    //action constants
+    public static final int ACTION_YES = 0;
+    public static final int ACTION_NO = 1;
+    public static final int ACTION_CANCEL = 2;
+
     //notification channel constant, only for api26+
     public static final String CHANNEL_ID = "4";
 

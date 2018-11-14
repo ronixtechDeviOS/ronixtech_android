@@ -274,6 +274,33 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
             ssidRetrieved = true;
             passwordRetrieved = true;
             Utils.setButtonEnabled(continueButton, true);
+
+
+            //as if continue button is clicked
+            WifiNetwork wifiNetwork = new WifiNetwork();
+            wifiNetwork.setSsid(ssid);
+            wifiNetwork.setPassword(password.trim());
+            //MySettings.setHomeNetwork(wifiNetwork);
+            MySettings.addWifiNetwork(wifiNetwork);
+            if(source == Constants.SOURCE_NAV_DRAWER) {
+                if(callback != null) {
+                    callback.onNetworkAdded(wifiNetwork);
+                }
+                getFragmentManager().popBackStack();
+            }else if(source == Constants.SOURCE_NEW_DEVICE){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                fragmentTransaction.commit();
+            }else if(source == Constants.SOURCE_NEW_PLACE){
+                if(callback != null) {
+                    callback.onNetworkAdded(wifiNetwork);
+                }
+                getFragmentManager().popBackStack();
+            }
         }else{
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
