@@ -473,10 +473,23 @@ public class AddDeviceFragmentSearch extends Fragment {
 
         }
 
-        Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID);
-        mWifiManager.disconnect();
-        mWifiManager.enableNetwork(networkID, true);
-        mWifiManager.reconnect();
+        if(networkID != -1) {
+            Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID);
+            mWifiManager.disconnect();
+            mWifiManager.enableNetwork(networkID, true);
+            mWifiManager.reconnect();
+        }else{
+            list = mWifiManager.getConfiguredNetworks();
+            for(WifiConfiguration i : list) {
+                if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
+                    Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + conf.networkId);
+                    mWifiManager.disconnect();
+                    mWifiManager.enableNetwork(i.networkId, true);
+                    mWifiManager.reconnect();
+                    break;
+                }
+            }
+        }
 
         /*list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {

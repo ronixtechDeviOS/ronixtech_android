@@ -30,7 +30,7 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_PLUG_2lines = 100032;
     public static final int DEVICE_TYPE_PLUG_3lines = 100033;
     public static final int DEVICE_NUMBER_OF_TYPES = 3; //lines, pir sensor, speaker controller
-    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 40;
+    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 30;
 
     public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
@@ -47,6 +47,7 @@ public class Device implements Comparable {
 
     public static final String DEVICE_BASE_FIRMWARE = "101400";
     public static final int SYNC_CONTROLS_STATUS_FIRMWARE_VERSION = 101405;
+    public static final int DEVICE_FIRMWARE_VERSION_AUTO_UPDATE_METHOD = 101500;
 
     @PrimaryKey(autoGenerate = true)
     long id;

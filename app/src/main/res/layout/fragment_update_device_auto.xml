@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.UpdateDeviceFirmwareDownloadFragment">
+    tools:context=".fragments.UpdateDeviceAutoFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             android:textAlignment="center"
             android:textSize="24sp"
             android:textColor="@color/blackColor"
-            android:text="@string/downloading_firmware_files"/>
+            android:text="@string/updating_firmware"/>
 
         <com.github.lzyzsd.circleprogress.DonutProgress
             android:id="@+id/progress_circle"
@@ -33,17 +33,6 @@
             app:donut_unfinished_color="@color/lightGrayColor"
             app:donut_text_color="@color/blueColor"
             app:donut_circle_starting_degree="270"/>
-
-        <TextView
-            android:id="@+id/progress_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/progress_circle"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/blackColor"
-            android:textSize="18sp"
-            android:text="Downloading files"/>
 
     </RelativeLayout>
 

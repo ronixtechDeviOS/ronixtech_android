@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -142,7 +143,8 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private void readAddresses() {
         Log.d(TAG, "Reading addresses from local /proc/net/arp file");
-        List<Device> devices = MySettings.getAllDevices();
+        List<Device> devices = new ArrayList<>();
+        devices.addAll(DevicesInMemory.getDevices());
         //List<WifiDevice> wifiDevices = new ArrayList<>();
         BufferedReader bufferedReader = null;
 
@@ -167,11 +169,19 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                             //Log.d(TAG, "Checking if device " + device.getName() + " has an IP in the local /proc/net/arp file");
                             if(device.getMacAddress().toLowerCase().substring(2).equals(mac.toLowerCase().substring(2))){
                                 if(!arpResult.equals("0x0")) {//failed arp request has 0x0 in 3rd entry in the arp file, so it's not an up to date ip address
-                                    Log.d(TAG, "Device " + device.getName() + " updated with IP: " + ip);
-                                    Utils.showNotification(device);
-                                    MySettings.updateDeviceIP(device, ip);
-                                    if(MainActivity.getInstance() != null) {
-                                        MainActivity.getInstance().refreshDeviceListFromDatabase();
+                                    if(!device.getIpAddress().equals(ip)){
+                                        Log.d(TAG, "Device " + device.getName() + " updated with IP: " + ip);
+                                        Utils.showNotification(device);
+
+                                        device.setIpAddress(ip);
+                                        MySettings.updateDeviceIP(device, ip);
+                                        DevicesInMemory.updateDevice(device);
+
+                                        if(MainActivity.getInstance() != null) {
+                                            MainActivity.getInstance().refreshDevicesListFromMemory();
+                                        }
+                                    }else{
+                                        Log.d(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + ip);
                                     }
                                 }
                             }else{
@@ -204,7 +214,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                 e.printStackTrace();
             }
             if(MainActivity.getInstance() != null){
-                MainActivity.getInstance().refreshDeviceListFromDatabase();
+                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
         }
     }

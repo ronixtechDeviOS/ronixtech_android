@@ -56,7 +56,6 @@ public class Constants {
     public static final String DEVICE_FIRMWARE_FILE_NAME_1 = "user1.bin";
     public static final String DEVICE_FIRMWARE_FILE_NAME_2 = "user2.bin";
 
-
     //post parameters
     public static final String PARAMETER_ERROR = "error";
     public static final String PARAMETER_ID = "id";
@@ -78,6 +77,7 @@ public class Constants {
     public static final String PARAMETER_SOUND_CONTROLLER_SHUTDOWN_MODE = "option";
     public static final String PARAMETER_SOUND_CONTROLLER_OPTION_SHUTDOWN = "shutdown";
     public static final String PARAMETER_SOUND_CONTROLLER_OPTION_REBOOT = "reboot";
+    public static final String PARAMETER_DEVICE_FIRMWARE_URL = "R_FWURL";
 
     public static final String PARAMETER_FIRST_LINE_DIMMING_CONTROL_STATE = "B";
     public static final String PARAMETER_SECOND_LINE_DIMMING_CONTROL_STATE = "C";

@@ -196,6 +196,8 @@
     <string name="unable_to_upload_firmware">Unable to upload firmware, please try again</string>
     <string name="unable_to_reboot_device">Unable to reboot Smart Controller, try again or reboot it manually</string>
     <string name="firmware_update_successfull">Firmware updated successfully, rebooting device now</string>
+    <string name="updating_firmware">Updating firmware</string>
+    <string name="firmware_update_failed">Failed to update Controller\'s firmware. Please try again later, or contact support</string>
 
     <string name="home_network">Home Network</string>
     <string name="configure_home_network_title">Please select your home network, where all your Smart Controllers will be connected to</string>
@@ -270,6 +272,8 @@
     <string name="add">Add</string>
     <string name="start">Start</string>
     <string name="cancel">Cancel</string>
+
+    <string name="seconds">%d seconds</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

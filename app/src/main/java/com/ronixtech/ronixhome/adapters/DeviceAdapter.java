@@ -10,10 +10,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -265,6 +267,44 @@ public class DeviceAdapter extends ArrayAdapter {
                         }*/
                         if(controlsEnabled){
                             if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                                MySettings.setControlState(true);
+                                if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
+                                    //turn on this line
+                                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    toggleLine(item, 0, Line.LINE_STATE_ON);
+                                } else {
+                                    //turn off this line
+                                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    toggleLine(item, 0, Line.LINE_STATE_OFF);
+                                }
+                            }
+                        }else{
+                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                vHolder.firstLineLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        /*if(!MySettings.isControlActive()){
+                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                boolean checked = ((ToggleButton) view).isChecked();
+                                MySettings.setControlState(true);
+                                if (checked) {
+                                    //turn on this line
+                                    toggleLine(item, 0, Line.LINE_STATE_ON);
+                                } else {
+                                    //turn off this line
+                                    toggleLine(item, 0, Line.LINE_STATE_OFF);
+                                }
+                            }
+                        }*/
+                        if(controlsEnabled){
+                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                vHolder.firstLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                                 MySettings.setControlState(true);
                                 if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
                                     //turn on this line
@@ -333,6 +373,45 @@ public class DeviceAdapter extends ArrayAdapter {
                         }*/
                         if(controlsEnabled) {
                             if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                                MySettings.setControlState(true);
+                                if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
+                                    //turn on this line
+                                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    toggleLine(item, 1, Line.LINE_STATE_ON);
+                                } else {
+                                    //turn off this line
+                                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    toggleLine(item, 1, Line.LINE_STATE_OFF);
+                                }
+                            }
+                        }else{
+                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                });
+                vHolder.secondLineLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        /*if(!MySettings.isControlActive()){
+                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                boolean checked = ((ToggleButton) view).isChecked();
+                                MySettings.setControlState(true);
+                                if (checked) {
+                                    //turn on this line
+                                    toggleLine(item, 1, Line.LINE_STATE_ON);
+                                } else {
+                                    //turn off this line
+                                    toggleLine(item, 1, Line.LINE_STATE_OFF);
+                                }
+                            }
+                        }*/
+                        if(controlsEnabled) {
+                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                vHolder.secondLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                                 MySettings.setControlState(true);
                                 if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
                                     //turn on this line
@@ -401,6 +480,44 @@ public class DeviceAdapter extends ArrayAdapter {
                         }*/
                         if(controlsEnabled) {
                             if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                                MySettings.setControlState(true);
+                                if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
+                                    //turn on this line
+                                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    toggleLine(item, 2, Line.LINE_STATE_ON);
+                                } else {
+                                    //turn off this line
+                                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    toggleLine(item, 2, Line.LINE_STATE_OFF);
+                                }
+                            }
+                        }else{
+                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                vHolder.thirdLineLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        /*if(!MySettings.isControlActive()){
+                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                MySettings.setControlState(true);
+                                boolean checked = ((ToggleButton) view).isChecked();
+                                if (checked) {
+                                    //turn on this line
+                                    toggleLine(item, 2, Line.LINE_STATE_ON);
+                                } else {
+                                    //turn off this line
+                                    toggleLine(item, 2, Line.LINE_STATE_OFF);
+                                }
+                            }
+                        }*/
+                        if(controlsEnabled) {
+                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                vHolder.thirdLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                                 MySettings.setControlState(true);
                                 if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
                                     //turn on this line

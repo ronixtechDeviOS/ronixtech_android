@@ -207,7 +207,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result){
-            if(getActivity() != null){
+            if(MainActivity.getInstance() != null && MainActivity.isResumed){
                 if(statusCode == 200) {
                     currentFile++;
 
@@ -215,15 +215,15 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
                     if (currentFile <= 2) {
                         String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user2.bin");
-                        DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
+                        DownloadTask downloadTask = new DownloadTask(context, fragment);
                         downloadTask.execute(url);
                     } else {
                         progressTextView.setText(context.getResources().getString(R.string.download_complete));
                         fragment.goToUploadFragment();
                     }
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.download_firmware_failed), Toast.LENGTH_SHORT).show();
-                    goToHomeFragment();
+                    Toast.makeText(context, context.getResources().getString(R.string.download_firmware_failed), Toast.LENGTH_SHORT).show();
+                    fragment.goToHomeFragment();
                 }
             }
         }

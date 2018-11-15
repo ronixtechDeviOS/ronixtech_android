@@ -12,9 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Device;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,13 +67,38 @@ public class UpdateDeviceIntroFragment extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
-                fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
-                fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
-                fragmentTransaction.commit();
+                Device device = MySettings.getTempDevice();
+                if(device != null){
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
+                            || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        UpdateDeviceAutoFragment updateDeviceAutoFragment = new UpdateDeviceAutoFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceAutoFragment, "updateDeviceAutoFragment");
+                        fragmentTransaction.addToBackStack("updateDeviceAutoFragment");
+                        fragmentTransaction.commit();
+                    }else{
+                        int firmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                        if(firmwareVersion >= Device.DEVICE_FIRMWARE_VERSION_AUTO_UPDATE_METHOD){
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                            UpdateDeviceAutoFragment updateDeviceAutoFragment = new UpdateDeviceAutoFragment();
+                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceAutoFragment, "updateDeviceAutoFragment");
+                            fragmentTransaction.addToBackStack("updateDeviceAutoFragment");
+                            fragmentTransaction.commit();
+                        }else{
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                            UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
+                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
+                            fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
+                            fragmentTransaction.commit();
+                        }
+                    }
+                }
             }
         });
 

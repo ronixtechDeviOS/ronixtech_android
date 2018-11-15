@@ -561,17 +561,19 @@ public class DashboardDevicesFragment extends Fragment {
                                 }
                                 if(wifiStatus.has("U_W_FWV")) {
                                     String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
-                                    if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1 ){
+                                    if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
                                         device.setFirmwareVersion(currentFirmwareVersion);
                                         if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
                                             int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                            int latestVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
-                                            if (latestVersion > currentVersion) {
+                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                            if (onlineVersion != currentVersion) {
                                                 device.setFirmwareUpdateAvailable(true);
                                             }else{
                                                 device.setFirmwareUpdateAvailable(false);
                                             }
                                         }
+                                    }else{
+                                        device.setFirmwareUpdateAvailable(true);
                                     }
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
@@ -869,13 +871,15 @@ public class DashboardDevicesFragment extends Fragment {
                                         device.setFirmwareVersion(currentFirmwareVersion);
                                         if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
                                             int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                            int latestVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
-                                            if (latestVersion > currentVersion) {
+                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                            if (onlineVersion != currentVersion) {
                                                 device.setFirmwareUpdateAvailable(true);
                                             }else{
                                                 device.setFirmwareUpdateAvailable(false);
                                             }
                                         }
+                                    }else{
+                                        device.setFirmwareUpdateAvailable(true);
                                     }
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
