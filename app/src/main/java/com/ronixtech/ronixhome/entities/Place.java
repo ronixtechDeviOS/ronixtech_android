@@ -12,6 +12,10 @@ import java.util.List;
 
 @Entity
 public class Place {
+    public static final int PLACE_MODE_LOCAL = 0;
+    public static final int PLACE_MODE_REMOTE = 1;
+    public static final int PLACE_MODE_UNDEFINED = 2;
+
     @PrimaryKey(autoGenerate = true)
     long id;
     @ColumnInfo(name = "name")
@@ -20,12 +24,15 @@ public class Place {
     List<Floor> floors;
     @ColumnInfo(name = "type_id")
     public long typeID;
+    @ColumnInfo(name = "mode")
+    public int mode;
 
     public Place(){
         this.id = 0;
         this.name = "";
         this.floors = new ArrayList<>();
         this.typeID = -1;
+        this.mode = Place.PLACE_MODE_REMOTE;
     }
 
     public long getId() {
@@ -66,5 +73,13 @@ public class Place {
         }else{
             return MySettings.getTypeByName("House");
         }
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 }

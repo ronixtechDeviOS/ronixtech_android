@@ -3,10 +3,6 @@ package com.ronixtech.ronixhome;
 public class Constants {
     public static final String PACKAGE_NAME = "com.ronixtech.ronixhome";
 
-    public static final String MQTT_USERNAME = "qumrwmme";
-    public static final String MQTT_PASSWORD = "oJHjXS7Xi0F9";
-    public static final int MQTT_PORT = 11853;
-
     //endpoint URLs
     public static final String DEVICE_URL = "http://192.168.4.1";
     public static final String DEVICE_STATUS_CONTROL_URL = "/ronix/json/post";
@@ -25,8 +21,12 @@ public class Constants {
     public static final String DEVICE_ADD_LINE_PAIRINGS_URL = "/ronix/pair_device";
 
     public static final String GET_SSID_URL = "http://ronixtech.com/ronix_services/task/srv.php";
-    public static final String MQTT_URL = "tcp://m13.cloudmqtt.com";
-    public static final String MQTT_TOPIC = "ronix/network";
+    public static final String MQTT_URL = "tcp://207.191.231.32"; //tcp://m13.cloudmqtt.com"
+    public static final int MQTT_PORT = 1993; //11853
+    public static final String MQTT_USERNAME = "ronixtech"; //"qumrwmme"
+    public static final String MQTT_PASSWORD = "12345678?"; //"oJHjXS7Xi0F9"
+    public static final String MQTT_TOPIC_STATUS = "ronix/status/%s"; //%s is the chip_id
+    public static final String MQTT_TOPIC_CONTROL = "ronix/control/%s"; //%s is the chip_id
 
     public static final String DEVICE_FIRMWARE_URL = "http://ronixtech.com/ronix_services/wifi_updates/%s/%s/%s";
     //http://ronixtech.com/ronix_services/wifi_updates/%FIRMWARE_VERSION%/%DEVICE_TYPE%/%user1/2.bin%

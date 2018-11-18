@@ -20,6 +20,7 @@
         android:roundIcon="@drawable/logo_color_big"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <!--<meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>-->

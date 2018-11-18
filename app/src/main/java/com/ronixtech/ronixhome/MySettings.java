@@ -53,6 +53,7 @@ public class MySettings {
     private static boolean scanningActive;
     private static boolean controlActive;
     private static boolean gettingStatusActive;
+    private static boolean internetConnectivityActive;
     private static WifiNetwork homeNetwork;
     private static String tempDeviceMACAddress;
     private static int tempDeviceTypeID;
@@ -392,6 +393,9 @@ public class MySettings {
     public static List<Place> getAllPlaces(){
         return MySettings.initDB().placeDAO().getAll();
     }
+    public static void updatePlaceMode(Place place, int mode){
+        MySettings.initDB().placeDAO().updatePlaceMode(place.getId(), mode);
+    }
     public static void removePlace(Place place){
         //remove floor from DB
         MySettings.initDB().placeDAO().removePlaceWithFloors(place);
@@ -599,6 +603,19 @@ public class MySettings {
         //SharedPreferences prefs = getSettings();
         //scanningActive = prefs.getBoolean(PREF_GETSTATUS_ACTIVE, true);
         return gettingStatusActive;
+    }
+
+    public static void setInternetConnectivityState(boolean state) {
+        MySettings.internetConnectivityActive = state;
+
+        //SharedPreferences.Editor editor = getSettings().edit();
+        //editor.putBoolean(PREF_GETSTATUS_ACTIVE, controlActive);
+        //editor.apply();
+    }
+    public static boolean isInternetConnectivityActive() {
+        //SharedPreferences prefs = getSettings();
+        //scanningActive = prefs.getBoolean(PREF_GETSTATUS_ACTIVE, true);
+        return internetConnectivityActive;
     }
 
     public static void setDeviceLatestFirmwareVersion(int deviceType, String latestVersion){
@@ -892,8 +909,30 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_13_14 = new Migration(13, 14) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN mode INTEGER NOT NULL DEFAULT " + Place.PLACE_MODE_REMOTE);
+                }
+            };
+
+            Migration MIGRATION_14_15 = new Migration(14, 15) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN mqtt_reachable INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
                             .allowMainThreadQueries().
                             build();
             return database;

@@ -103,7 +103,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
                 @Override
                 public void onConnectionFail(String errorMsg) {
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
                     goToHomeFragment();
                 }
             }).execute();

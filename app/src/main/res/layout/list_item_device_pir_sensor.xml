@@ -10,6 +10,7 @@
         android:id="@+id/scanning_network_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:padding="4dp">
         <ProgressBar
             android:id="@+id/scanning_network_progress_circle"
@@ -29,10 +30,37 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/mqtt_reachability_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@id/scanning_network_layout"
+        android:padding="4dp">
+        <ImageView
+            android:id="@+id/mqtt_reachability_imageview"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_dialog_alert"/>
+        <TextView
+            android:id="@+id/mqtt_reachability_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/mqtt_reachability_imageview"
+            android:layout_toRightOf="@id/mqtt_reachability_imageview"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:textSize="14sp"
+            android:textColor="@color/redColor"
+            android:text="@string/device_unreachable"/>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/firmware_available_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/scanning_network_layout"
+        android:visibility="gone"
+        android:layout_below="@id/mqtt_reachability_layout"
         android:padding="4dp">
         <ImageView
             android:id="@+id/firmware_available_imageview"

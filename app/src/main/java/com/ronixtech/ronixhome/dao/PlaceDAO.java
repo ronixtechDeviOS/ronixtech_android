@@ -31,6 +31,11 @@ public abstract class PlaceDAO {
     @Query("SELECT * FROM floor WHERE place_id =:placeID")
     public abstract List<Floor> getFloorList(long placeID);
 
+
+    @Query("UPDATE place SET mode =:mode WHERE id =:placeID")
+    public abstract void updatePlaceMode(long placeID, int mode);
+
+
     @Query("DELETE from place WHERE id=:placeID")
     public abstract void removePlace(long placeID);
 

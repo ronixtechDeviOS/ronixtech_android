@@ -2,9 +2,11 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
@@ -35,9 +37,21 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -60,13 +74,19 @@ public class DeviceAdapter extends ArrayAdapter {
     FragmentManager fragmentManager;
     SimpleDateFormat simpleDateFormat;
     boolean controlsEnabled;
+    int placeMode;
+    //Stuff for remote/MQTT mode
+    MqttAndroidClient mqttAndroidClient;
 
-    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager){
+    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode){
         super(activity, R.layout.list_item_device, devices);
         this.activity = activity;
         this.devices = devices;
         mHandler = new android.os.Handler();
         this.fragmentManager = fragmentManager;
+        this.placeMode = mode;
+        String clientId = MqttClient.generateClientId();
+        getMqttClient(activity, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
         simpleDateFormat = new SimpleDateFormat("h:mm a");
     }
 
@@ -139,6 +159,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
 
                 vHolder.firstLineSeekBar.setMax(100);
                 vHolder.secondLineSeekBar.setMax(100);
@@ -169,21 +190,44 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-                    vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                    vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                    vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                if(placeMode == Place.PLACE_MODE_LOCAL){
+                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
 
-                    vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
-                }else{
-                    vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                    vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                    vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                    if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
+                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                    }else{
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                    }
+                }else if(placeMode == Place.PLACE_MODE_REMOTE){
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+
+                    if(item.isDeviceMQTTReachable()){
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                    }else{
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
+                    }
                 }
+
 
                 if(item.getLastSeenTimestamp() != 0) {
                     vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, simpleDateFormat.format(item.getLastSeenTimestamp())));
@@ -233,16 +277,14 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                boolean checked = ((ToggleButton) view).isChecked();
-                                MySettings.setControlState(true);
-                                if (checked) {
-                                    //turn on this line
-                                    toggleLine(item, 0, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    toggleLine(item, 0, Line.LINE_STATE_OFF);
-                                }
+                            boolean checked = ((ToggleButton) view).isChecked();
+                            MySettings.setControlState(true);
+                            if (checked) {
+                                //turn on this line
+                                toggleLine(item, 0, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -266,19 +308,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                                MySettings.setControlState(true);
-                                if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
-                                    //turn on this line
-                                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                    toggleLine(item, 0, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                    toggleLine(item, 0, Line.LINE_STATE_OFF);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            MySettings.setControlState(true);
+                            if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                toggleLine(item, 0, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -302,19 +342,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                vHolder.firstLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                                MySettings.setControlState(true);
-                                if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
-                                    //turn on this line
-                                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                    toggleLine(item, 0, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                    toggleLine(item, 0, Line.LINE_STATE_OFF);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            MySettings.setControlState(true);
+                            if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                toggleLine(item, 0, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -338,16 +376,14 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                boolean checked = ((ToggleButton) view).isChecked();
-                                MySettings.setControlState(true);
-                                if (checked) {
-                                    //turn on this line
-                                    toggleLine(item, 1, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    toggleLine(item, 1, Line.LINE_STATE_OFF);
-                                }
+                            boolean checked = ((ToggleButton) view).isChecked();
+                            MySettings.setControlState(true);
+                            if (checked) {
+                                //turn on this line
+                                toggleLine(item, 1, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -372,19 +408,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                                MySettings.setControlState(true);
-                                if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
-                                    //turn on this line
-                                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                    toggleLine(item, 1, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                    toggleLine(item, 1, Line.LINE_STATE_OFF);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            MySettings.setControlState(true);
+                            if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                toggleLine(item, 1, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -409,19 +443,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                vHolder.secondLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                                MySettings.setControlState(true);
-                                if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
-                                    //turn on this line
-                                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                    toggleLine(item, 1, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                    toggleLine(item, 1, Line.LINE_STATE_OFF);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            MySettings.setControlState(true);
+                            if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                toggleLine(item, 1, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -446,16 +478,14 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                MySettings.setControlState(true);
-                                boolean checked = ((ToggleButton) view).isChecked();
-                                if (checked) {
-                                    //turn on this line
-                                    toggleLine(item, 2, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    toggleLine(item, 2, Line.LINE_STATE_OFF);
-                                }
+                            MySettings.setControlState(true);
+                            boolean checked = ((ToggleButton) view).isChecked();
+                            if (checked) {
+                                //turn on this line
+                                toggleLine(item, 2, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -479,19 +509,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                                MySettings.setControlState(true);
-                                if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
-                                    //turn on this line
-                                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                    toggleLine(item, 2, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                    toggleLine(item, 2, Line.LINE_STATE_OFF);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            MySettings.setControlState(true);
+                            if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                toggleLine(item, 2, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -515,19 +543,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                vHolder.thirdLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                                MySettings.setControlState(true);
-                                if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
-                                    //turn on this line
-                                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                    toggleLine(item, 2, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                    toggleLine(item, 2, Line.LINE_STATE_OFF);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            MySettings.setControlState(true);
+                            if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                toggleLine(item, 2, Line.LINE_STATE_ON);
+                            } else {
+                                //turn off this line
+                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -555,7 +581,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 MySettings.setControlState(true);
                             }
                         }*/
-                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                        if(controlsEnabled) {
                             MySettings.setControlState(true);
                         }
                     }
@@ -569,12 +595,10 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                int i = seekBar.getProgress();
-                                double progressValue = i/10.0;
-                                int progress = (int) (progressValue);
-                                controlDimming(item, 0, progress);
-                            }
+                            int i = seekBar.getProgress();
+                            double progressValue = i/10.0;
+                            int progress = (int) (progressValue);
+                            controlDimming(item, 0, progress);
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                         }
@@ -600,7 +624,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 MySettings.setControlState(true);
                             }
                         }*/
-                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                        if(controlsEnabled) {
                             MySettings.setControlState(true);
                         }
                     }
@@ -614,12 +638,10 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                int i = seekBar.getProgress();
-                                double progressValue = i/10.0;
-                                int progress = (int) (progressValue);
-                                controlDimming(item, 1, progress);
-                            }
+                            int i = seekBar.getProgress();
+                            double progressValue = i/10.0;
+                            int progress = (int) (progressValue);
+                            controlDimming(item, 1, progress);
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                         }
@@ -645,7 +667,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 MySettings.setControlState(true);
                             }
                         }*/
-                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
+                        if(controlsEnabled) {
                             MySettings.setControlState(true);
                         }
                     }
@@ -659,12 +681,10 @@ public class DeviceAdapter extends ArrayAdapter {
                             }
                         }*/
                         if(controlsEnabled) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                int i = seekBar.getProgress();
-                                double progressValue = i/10.0;
-                                int progress = (int) (progressValue);
-                                controlDimming(item, 2, progress);
-                            }
+                            int i = seekBar.getProgress();
+                            double progressValue = i/10.0;
+                            int progress = (int) (progressValue);
+                            controlDimming(item, 2, progress);
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                         }
@@ -674,6 +694,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.firstLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
@@ -701,16 +722,17 @@ public class DeviceAdapter extends ArrayAdapter {
                                 if(id == R.id.action_toggle_dimming){
                                     if(controlsEnabled) {
                                         if (!MySettings.isControlActive()) {
-                                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                                MySettings.setControlState(true);
-                                                int dimmingState = item.getLines().get(0).getDimmingState();
-                                                if (dimmingState == Line.DIMMING_STATE_OFF) {
-                                                    toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                                                } else {
-                                                    toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                                                }
+                                            MySettings.setControlState(true);
+                                            int dimmingState = item.getLines().get(0).getDimmingState();
+                                            if (dimmingState == Line.DIMMING_STATE_OFF) {
+                                                toggleDimming(item, 0, Line.DIMMING_STATE_ON);
+                                            } else {
+                                                toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
                                             }
+                                        }else{
+                                            Toast.makeText(activity, "controls active", Toast.LENGTH_SHORT).show();
                                         }
+
                                     }else{
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
@@ -756,6 +778,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.secondLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
@@ -783,14 +806,12 @@ public class DeviceAdapter extends ArrayAdapter {
                                 if(id == R.id.action_toggle_dimming){
                                     if(controlsEnabled) {
                                         if (!MySettings.isControlActive()) {
-                                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                                MySettings.setControlState(true);
-                                                int dimmingState = item.getLines().get(1).getDimmingState();
-                                                if (dimmingState == Line.DIMMING_STATE_OFF) {
-                                                    toggleDimming(item, 1, Line.DIMMING_STATE_ON);
-                                                } else {
-                                                    toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
-                                                }
+                                            MySettings.setControlState(true);
+                                            int dimmingState = item.getLines().get(1).getDimmingState();
+                                            if (dimmingState == Line.DIMMING_STATE_OFF) {
+                                                toggleDimming(item, 1, Line.DIMMING_STATE_ON);
+                                            } else {
+                                                toggleDimming(item, 1, Line.DIMMING_STATE_OFF);
                                             }
                                         }
                                     }else{
@@ -838,6 +859,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.thirdLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
@@ -865,14 +887,12 @@ public class DeviceAdapter extends ArrayAdapter {
                                 if(id == R.id.action_toggle_dimming){
                                     if(controlsEnabled) {
                                         if (!MySettings.isControlActive()) {
-                                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                                MySettings.setControlState(true);
-                                                int dimmingState = item.getLines().get(2).getDimmingState();
-                                                if (dimmingState == Line.DIMMING_STATE_OFF) {
-                                                    toggleDimming(item, 2, Line.DIMMING_STATE_ON);
-                                                } else {
-                                                    toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
-                                                }
+                                            MySettings.setControlState(true);
+                                            int dimmingState = item.getLines().get(2).getDimmingState();
+                                            if (dimmingState == Line.DIMMING_STATE_OFF) {
+                                                toggleDimming(item, 2, Line.DIMMING_STATE_ON);
+                                            } else {
+                                                toggleDimming(item, 2, Line.DIMMING_STATE_OFF);
                                             }
                                         }
                                     }else{
@@ -934,6 +954,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
 
                 vHolder.speakerVolumeSeekBar.setMax(100);
 
@@ -947,16 +968,34 @@ public class DeviceAdapter extends ArrayAdapter {
 
                 populateSoundSystemDeviceData(item);
 
-                if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-                    //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                if(placeMode == Place.PLACE_MODE_LOCAL) {
+                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
 
-                    vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
-                }else{
-                    //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                    if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
+                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                    }
+                }else if(placeMode == Place.PLACE_MODE_REMOTE){
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+
+                    if(item.isDeviceMQTTReachable()){
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                    }else{
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 if(item.getLastSeenTimestamp() != 0) {
@@ -978,16 +1017,15 @@ public class DeviceAdapter extends ArrayAdapter {
                     @Override
                     public void onClick(View view) {
                         if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                MySettings.setControlState(true);
-                                if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
-                                    changeMode(item, SoundDeviceData.MODE_UPNP);
-                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
-                                }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
-                                    changeMode(item, SoundDeviceData.MODE_USB);
-                                }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
-                                    changeMode(item, SoundDeviceData.MODE_LINE_IN);
-                                }
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            MySettings.setControlState(true);
+                            if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
+                                changeMode(item, SoundDeviceData.MODE_UPNP);
+                                Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
+                            }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
+                                changeMode(item, SoundDeviceData.MODE_USB);
+                            }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
+                                changeMode(item, SoundDeviceData.MODE_LINE_IN);
                             }
                         }
                     }
@@ -1016,16 +1054,15 @@ public class DeviceAdapter extends ArrayAdapter {
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         if(!MySettings.isControlActive()) {
-                            if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                int i = seekBar.getProgress();
-                                //controlDimming(item, 0, i); control Volume
-                            }
+                            int i = seekBar.getProgress();
+                            //controlDimming(item, 0, i); control Volume
                         }
                     }
                 });
                 vHolder.soundDeviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_device_sound_system, popup.getMenu());
 
@@ -1036,19 +1073,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             @Override
                             public boolean onMenuItemClick(MenuItem item1) {
                                 int id = item1.getItemId();
-                                if(id == R.id.action_toggle_dimming){
-                                    if(!MySettings.isControlActive()) {
-                                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                            MySettings.setControlState(true);
-                                            int dimmingState = item.getLines().get(0).getDimmingState();
-                                            if (dimmingState == Line.DIMMING_STATE_OFF) {
-                                                toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                                            } else {
-                                                toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                                            }
-                                        }
-                                    }
-                                }else if(id == R.id.action_update){
+                                if(id == R.id.action_update){
                                     MySettings.setTempDevice(item);
 
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -1104,6 +1129,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
 
                 rowView.setTag(vHolder);
             }
@@ -1114,16 +1140,34 @@ public class DeviceAdapter extends ArrayAdapter {
             if(item != null){
                 populatePIRData(item);
 
-                if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-                    //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                if(placeMode == Place.PLACE_MODE_LOCAL) {
+                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
 
-                    vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
-                }else{
-                    //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                    if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
+                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                    }
+                }else if(placeMode == Place.PLACE_MODE_REMOTE){
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+
+                    if(item.isDeviceMQTTReachable()){
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                    }else{
+                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 if(item.getLastSeenTimestamp() != 0) {
@@ -1144,8 +1188,9 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.pirAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_device_sound_system, popup.getMenu());
+                        popup.getMenuInflater().inflate(R.menu.menu_pir, popup.getMenu());
 
                         popup.getMenu().findItem(R.id.action_update).setVisible(true);
 
@@ -1154,19 +1199,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             @Override
                             public boolean onMenuItemClick(MenuItem item1) {
                                 int id = item1.getItemId();
-                                if(id == R.id.action_toggle_dimming){
-                                    if(!MySettings.isControlActive()) {
-                                        if (item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                            MySettings.setControlState(true);
-                                            int dimmingState = item.getLines().get(0).getDimmingState();
-                                            if (dimmingState == Line.DIMMING_STATE_OFF) {
-                                                toggleDimming(item, 0, Line.DIMMING_STATE_ON);
-                                            } else {
-                                                toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
-                                            }
-                                        }
-                                    }
-                                }else if(id == R.id.action_update){
+                                if(id == R.id.action_update){
                                     MySettings.setTempDevice(item);
 
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -1508,13 +1541,14 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void toggleLine(Device device, int position, final int state){
-        if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
-            Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
-            if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                //old method for controls
-                LineToggler lineToggler = new LineToggler(device, position, state);
-                lineToggler.execute();
-                //temp hack for deviator demo, will be removed
+        if(placeMode == Place.PLACE_MODE_LOCAL){
+            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    //old method for controls
+                    LineToggler lineToggler = new LineToggler(device, position, state);
+                    lineToggler.execute();
+                    //temp hack for deviator demo, will be removed
                 /*Line clickedLine = device.getLines().get(position);
                 if(clickedLine.getMode() == Line.MODE_PRIMARY){
                     List<Line> secondaryLines = MySettings.getSecondaryLines(device);
@@ -1534,27 +1568,27 @@ public class DeviceAdapter extends ArrayAdapter {
                     LineToggler lineToggler1 = new LineToggler(mainDevice, mainLinePosition, state);
                     lineToggler1.execute();
                 }*/
-            }else{
-                //new method for controls
-                Device localDevice = DevicesInMemory.getLocalDevice(device);
-                List<Line> lines = localDevice.getLines();
-                Line line = lines.get(position);
+                }else{
+                    //new method for controls
+                    Device localDevice = DevicesInMemory.getLocalDevice(device);
+                    List<Line> lines = localDevice.getLines();
+                    Line line = lines.get(position);
 
-                line.setPowerState(state);
-                if(state == Line.LINE_STATE_ON){
-                    line.setDimmingVvalue(10);
-                }else if(state == Line.LINE_STATE_OFF){
-                    line.setDimmingVvalue(0);
-                }
-                lines.remove(line);
-                lines.add(position, line);
-                localDevice.setLines(lines);
+                    line.setPowerState(state);
+                    if(state == Line.LINE_STATE_ON){
+                        line.setDimmingVvalue(10);
+                    }else if(state == Line.LINE_STATE_OFF){
+                        line.setDimmingVvalue(0);
+                    }
+                    lines.remove(line);
+                    lines.add(position, line);
+                    localDevice.setLines(lines);
 
-                DevicesInMemory.updateLocalDevice(localDevice);
+                    DevicesInMemory.updateLocalDevice(localDevice);
 
-                MySettings.setControlState(false);
+                    MySettings.setControlState(false);
 
-                //temp hack for deviator demo, will be removed
+                    //temp hack for deviator demo, will be removed
                 /*if(line.getMode() == Line.MODE_PRIMARY){
                     List<Line> secondaryLines = MySettings.getSecondaryLines(device);
                     if(secondaryLines != null && secondaryLines.size() >= 1){
@@ -1573,64 +1607,226 @@ public class DeviceAdapter extends ArrayAdapter {
                     LineToggler lineToggler1 = new LineToggler(mainDevice, mainLinePosition, state);
                     lineToggler1.execute();
                 }*/
+                }
+            }else{
+                MySettings.setControlState(false);
             }
         }else{
+            //send command usint MQTT
+            if(mqttAndroidClient != null){
+                try{
+                    JSONObject jsonObject = new JSONObject();
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                        if(state == Line.LINE_STATE_ON){
+                            switch(position){
+                                case 0:
+                                    jsonObject.put("L_0_DIM", ":");
+                                    break;
+                                case 1:
+                                    jsonObject.put("L_1_DIM", ":");
+                                    break;
+                                case 2:
+                                    jsonObject.put("L_2_DIM", ":");
+                                    break;
+                            }
+                        }else if(state == Line.LINE_STATE_OFF){
+                            switch (position){
+                                case 0:
+                                    jsonObject.put("L_0_DIM", "0");
+                                    break;
+                                case 1:
+                                    jsonObject.put("L_1_DIM", "0");
+                                    break;
+                                case 2:
+                                    jsonObject.put("L_2_DIM", "0");
+                                    break;
+                            }
+                        }
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        if(state == Line.LINE_STATE_ON){
+                            switch(position){
+                                case 0:
+                                    jsonObject.put("L_0_STT", 1);
+                                    break;
+                                case 1:
+                                    jsonObject.put("L_1_STT", 1);
+                                    break;
+                                case 2:
+                                    jsonObject.put("L_2_STT", 1);
+                                    break;
+                            }
+                        }else if(state == Line.LINE_STATE_OFF){
+                            switch(position){
+                                case 0:
+                                    jsonObject.put("L_0_STT", 0);
+                                    break;
+                                case 1:
+                                    jsonObject.put("L_1_STT", 0);
+                                    break;
+                                case 2:
+                                    jsonObject.put("L_2_STT", 0);
+                                    break;
+                            }
+                        }
+                    }
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                    MqttMessage mqttMessage = new MqttMessage();
+                    mqttMessage.setPayload(jsonObject.toString().getBytes());
+                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                    mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (MqttException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }
+            }
             MySettings.setControlState(false);
         }
     }
 
     private void toggleDimming(Device device, int position, int state){
-        if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
-            Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
-            if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                //old method for controls
-                DimmingToggler dimmingToggler = new DimmingToggler(device, position, state);
-                dimmingToggler.execute();
+        if(placeMode == Place.PLACE_MODE_LOCAL){
+            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    //old method for controls
+                    DimmingToggler dimmingToggler = new DimmingToggler(device, position, state);
+                    dimmingToggler.execute();
+                }else{
+                    //new method for controls
+                    Device localDevice = DevicesInMemory.getLocalDevice(device);
+                    List<Line> lines = localDevice.getLines();
+                    Line line = lines.get(position);
+
+                    line.setDimmingState(state);
+
+                    lines.remove(line);
+                    lines.add(position, line);
+                    localDevice.setLines(lines);
+
+                    DevicesInMemory.updateLocalDevice(localDevice);
+
+                    MySettings.setControlState(false);
+                }
             }else{
-                //new method for controls
-                Device localDevice = DevicesInMemory.getLocalDevice(device);
-                List<Line> lines = localDevice.getLines();
-                Line line = lines.get(position);
-
-                line.setDimmingState(state);
-
-                lines.remove(line);
-                lines.add(position, line);
-                localDevice.setLines(lines);
-
-                DevicesInMemory.updateLocalDevice(localDevice);
-
                 MySettings.setControlState(false);
             }
         }else{
+            //send command usint MQTT
+            if(mqttAndroidClient != null){
+                try{
+                    JSONObject jsonObject = new JSONObject();
+                    if(state == Line.DIMMING_STATE_ON){
+                        switch(position){
+                            case 0:
+                                jsonObject.put("L_0_D_S", "1");
+                                break;
+                            case 1:
+                                jsonObject.put("L_1_D_S", "1");
+                                break;
+                            case 2:
+                                jsonObject.put("L_2_D_S", "1");
+                                break;
+                        }
+                    }else if(state == Line.DIMMING_STATE_OFF){
+                        switch (position){
+                            case 0:
+                                jsonObject.put("L_0_D_S", "0");
+                                break;
+                            case 1:
+                                jsonObject.put("L_1_D_S", "0");
+                                break;
+                            case 2:
+                                jsonObject.put("L_2_D_S", "0");
+                                break;
+                        }
+                    }
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                    MqttMessage mqttMessage = new MqttMessage();
+                    mqttMessage.setPayload(jsonObject.toString().getBytes());
+                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                    mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (MqttException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }
+            }
             MySettings.setControlState(false);
         }
     }
 
     private void controlDimming(Device device, int position, int value){
-        if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
-            Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
-            if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                //old method for controls
-                DimmingController dimmingController = new DimmingController(device, position, value);
-                dimmingController.execute();
+        if(placeMode == Place.PLACE_MODE_LOCAL){
+            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    //old method for controls
+                    DimmingController dimmingController = new DimmingController(device, position, value);
+                    dimmingController.execute();
+                }else{
+                    //new method for controls
+                    Device localDevice = DevicesInMemory.getLocalDevice(device);
+                    List<Line> lines = localDevice.getLines();
+                    Line line = lines.get(position);
+
+                    line.setDimmingVvalue(value);
+
+                    lines.remove(line);
+                    lines.add(position, line);
+                    localDevice.setLines(lines);
+
+                    DevicesInMemory.updateLocalDevice(localDevice);
+
+                    MySettings.setControlState(false);
+                }
             }else{
-                //new method for controls
-                Device localDevice = DevicesInMemory.getLocalDevice(device);
-                List<Line> lines = localDevice.getLines();
-                Line line = lines.get(position);
-
-                line.setDimmingVvalue(value);
-
-                lines.remove(line);
-                lines.add(position, line);
-                localDevice.setLines(lines);
-
-                DevicesInMemory.updateLocalDevice(localDevice);
-
                 MySettings.setControlState(false);
             }
         }else{
+            //send command usint MQTT
+            if(mqttAndroidClient != null){
+                try{
+                    JSONObject jsonObject = new JSONObject();
+                    switch(position){
+                        case 0:
+                            if(value == 10){
+                                jsonObject.put("L_0_DIM", ":");
+                            }else{
+                                jsonObject.put("L_0_DIM", ""+value);
+                            }
+                            break;
+                        case 1:
+                            if(value == 10){
+                                jsonObject.put("L_1_DIM", ":");
+                            }else{
+                                jsonObject.put("L_1_DIM", ""+value);
+                            }
+                            break;
+                        case 2:
+                            if(value == 10){
+                                jsonObject.put("L_2_DIM", ":");
+                            }else{
+                                jsonObject.put("L_2_DIM", ""+value);
+                            }
+                            break;
+                    }
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                    MqttMessage mqttMessage = new MqttMessage();
+                    mqttMessage.setPayload(jsonObject.toString().getBytes());
+                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                    mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (MqttException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }
+            }
             MySettings.setControlState(false);
         }
     }
@@ -1665,6 +1861,8 @@ public class DeviceAdapter extends ArrayAdapter {
         RelativeLayout lastSeenLayout;
         TextView lastSeenTextView;
         ImageView lastSeenImageView;
+
+        RelativeLayout mqttReachabilityLayout;
 
         RelativeLayout firmwareUpadteAvailableLayout;
     }
@@ -2490,5 +2688,103 @@ public class DeviceAdapter extends ArrayAdapter {
 
             return null;
         }
+    }
+
+    public void getMqttClient(Context context, String brokerUrl, String clientId) {
+        mqttAndroidClient = new MqttAndroidClient(context, brokerUrl, clientId);
+        /*mqttAndroidClient.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable throwable) {
+                Log.d(TAG, "Connection lost");
+            }
+
+            @Override
+            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+                Log.d(TAG, "Message arrived: " + mqttMessage.toString());
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                Log.d(TAG, "Delivery complete");
+            }
+        });*/
+        mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean b, String s) {
+                Log.d(TAG, "Connection complete on " + s);
+            }
+            @Override
+            public void connectionLost(Throwable throwable) {
+                Log.d(TAG, "Connection lost");
+            }
+            @Override
+            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+                //setMessageNotification(s, new String(mqttMessage.getPayload()));
+                Log.d(TAG, "Message arrived: 's': " + s);
+                Log.d(TAG, "Message arrived: 'mqttMessage': " + new String(mqttMessage.getPayload()));
+            }
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                Log.d(TAG, "Delivery complete");
+            }
+        });
+        try {
+            IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
+                    Log.d(TAG, "Success");
+                    try {
+                        for (Device device:devices) {
+                            subscribe(mqttAndroidClient, String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), 1);
+                        }
+                    }catch (MqttException e){
+                        Log.d(TAG, "Exception " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.d(TAG, "Failure " + exception.toString());
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void subscribe(@NonNull final MqttAndroidClient client,
+                          @NonNull final String topic, int qos) throws MqttException {
+        final IMqttToken token = client.subscribe(topic, qos);
+        token.setActionCallback(new IMqttActionListener() {
+            @Override
+            public void onSuccess(IMqttToken iMqttToken) {
+                Log.d(TAG, "Subscribe Successfully on " + topic);
+            }
+
+            @Override
+            public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                Log.e(TAG, "Subscribe Failed on " + topic);
+            }
+        });
+    }
+
+    private MqttConnectOptions getMqttConnectionOption() {
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setCleanSession(true);
+        mqttConnectOptions.setAutomaticReconnect(true);
+        //mqttConnectOptions.setWill(Constants.MQTT_URL, "I am going offline".getBytes(), 1, false);
+        mqttConnectOptions.setUserName(Constants.MQTT_USERNAME);
+        mqttConnectOptions.setPassword(Constants.MQTT_PASSWORD.toCharArray());
+        return mqttConnectOptions;
+    }
+    private DisconnectedBufferOptions getDisconnectedBufferOptions() {
+        DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+        disconnectedBufferOptions.setBufferEnabled(true);
+        disconnectedBufferOptions.setBufferSize(100);
+        disconnectedBufferOptions.setPersistBuffer(true);
+        disconnectedBufferOptions.setDeleteOldestMessages(false);
+        return disconnectedBufferOptions;
     }
 }

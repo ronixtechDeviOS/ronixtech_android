@@ -66,6 +66,18 @@ public class DevicesInMemory {
         return null;
     }
 
+    public static Device getDeviceByChipID(String chipID){
+        if(devices != null && devices.size() >= 1){
+            for (Device device:devices) {
+                if(device.getChipID().equals(chipID)){
+                    return device;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
+
     public static void removeDevice(Device device){
         devices.remove(device);
         localDevices.remove(device);

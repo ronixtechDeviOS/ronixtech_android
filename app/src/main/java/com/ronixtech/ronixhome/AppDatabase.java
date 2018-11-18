@@ -23,7 +23,7 @@ import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
-@Database(entities = {Type.class, WifiNetwork.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 13, exportSchema =  false)
+@Database(entities = {Type.class, WifiNetwork.class, Line.class, SoundDeviceData.class, PIRData.class, Device.class, Room.class, Floor.class, Place.class, User.class}, version = 15, exportSchema =  false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TypeDAO typeDAO();

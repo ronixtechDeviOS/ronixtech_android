@@ -35,7 +35,7 @@ public class Device implements Comparable {
     public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
 
-    public static final int REFRESH_RATE_MS = 800;
+    public static final int REFRESH_RATE_MS = 500;
     public static final int REFRESH_TIMEOUT = 250;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;
 
@@ -80,6 +80,8 @@ public class Device implements Comparable {
     String firmwareVersion;
     @ColumnInfo(name = "firmware_update_available")
     boolean firmwareUpdateAvailable;
+    @ColumnInfo(name = "mqtt_reachable")
+    boolean isDeviceMQTTReachable;
 
     public Device(){
         this.id = 0;
@@ -97,6 +99,7 @@ public class Device implements Comparable {
         this.pirData = new PIRData();
         this.firmwareUpdateAvailable = false;
         this.firmwareVersion = Device.DEVICE_BASE_FIRMWARE;
+        this.isDeviceMQTTReachable = false;
     }
 
     public Device(Device device){
@@ -119,6 +122,7 @@ public class Device implements Comparable {
         this.pirData = new PIRData(device.getPIRData());
         this.firmwareUpdateAvailable = device.isFirmwareUpdateAvailable();
         this.firmwareVersion = device.getFirmwareVersion();
+        this.isDeviceMQTTReachable = device.isDeviceMQTTReachable();
     }
 
     public long getId() {
@@ -239,6 +243,14 @@ public class Device implements Comparable {
 
     public void setFirmwareVersion(String firmwareVersion) {
         this.firmwareVersion = firmwareVersion;
+    }
+
+    public boolean isDeviceMQTTReachable() {
+        return isDeviceMQTTReachable;
+    }
+
+    public void setDeviceMQTTReachable(boolean deviceMQTTReachable) {
+        isDeviceMQTTReachable = deviceMQTTReachable;
     }
 
     @Override
