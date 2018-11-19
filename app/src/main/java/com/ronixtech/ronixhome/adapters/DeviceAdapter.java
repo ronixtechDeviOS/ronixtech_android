@@ -256,10 +256,28 @@ public class DeviceAdapter extends ArrayAdapter {
                             controlsEnabled = false;
                         }
                     }
+                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
+                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }else{
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
+                final ViewHolder tempViewHolder = vHolder;
                 vHolder.firstLineSwitch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -313,12 +331,12 @@ public class DeviceAdapter extends ArrayAdapter {
                             MySettings.setControlState(true);
                             if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
-                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                toggleLine(item, 0, Line.LINE_STATE_ON);
+                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                //toggleLine(item, 0, Line.LINE_STATE_ON);
                             } else {
                                 //turn off this line
-                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                toggleLine(item, 0, Line.LINE_STATE_OFF);
+                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                //toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
                             Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
@@ -343,15 +361,15 @@ public class DeviceAdapter extends ArrayAdapter {
                         }*/
                         if(controlsEnabled){
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            tempViewHolder.firstLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                             MySettings.setControlState(true);
                             if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
-                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
                                 toggleLine(item, 0, Line.LINE_STATE_ON);
                             } else {
                                 //turn off this line
-                                vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
@@ -413,11 +431,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             MySettings.setControlState(true);
                             if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
-                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
                                 toggleLine(item, 1, Line.LINE_STATE_ON);
                             } else {
                                 //turn off this line
-                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
@@ -444,15 +462,15 @@ public class DeviceAdapter extends ArrayAdapter {
                         }*/
                         if(controlsEnabled) {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            tempViewHolder.secondLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                             MySettings.setControlState(true);
                             if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
-                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
                                 toggleLine(item, 1, Line.LINE_STATE_ON);
                             } else {
                                 //turn off this line
-                                vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
@@ -514,11 +532,11 @@ public class DeviceAdapter extends ArrayAdapter {
                             MySettings.setControlState(true);
                             if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
-                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
                                 toggleLine(item, 2, Line.LINE_STATE_ON);
                             } else {
                                 //turn off this line
-                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
@@ -544,15 +562,15 @@ public class DeviceAdapter extends ArrayAdapter {
                         }*/
                         if(controlsEnabled) {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            tempViewHolder.thirdLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                             MySettings.setControlState(true);
                             if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
-                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
                                 toggleLine(item, 2, Line.LINE_STATE_ON);
                             } else {
                                 //turn off this line
-                                vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
@@ -737,14 +755,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_update){
-                                    MySettings.setTempDevice(item);
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
 
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                    fragmentTransaction.commit();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                    }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
@@ -818,14 +840,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_update){
-                                    MySettings.setTempDevice(item);
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
 
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                    fragmentTransaction.commit();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                    }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
@@ -899,14 +925,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_update){
-                                    MySettings.setTempDevice(item);
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
 
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                    fragmentTransaction.commit();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                    }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
@@ -1009,6 +1039,23 @@ public class DeviceAdapter extends ArrayAdapter {
 
                 if(item.isFirmwareUpdateAvailable()){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
+                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }else{
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
@@ -1074,14 +1121,18 @@ public class DeviceAdapter extends ArrayAdapter {
                             public boolean onMenuItemClick(MenuItem item1) {
                                 int id = item1.getItemId();
                                 if(id == R.id.action_update){
-                                    MySettings.setTempDevice(item);
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
 
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                    fragmentTransaction.commit();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                    }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
@@ -1181,6 +1232,23 @@ public class DeviceAdapter extends ArrayAdapter {
 
                 if(item.isFirmwareUpdateAvailable()){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
+                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }else{
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
@@ -1200,14 +1268,18 @@ public class DeviceAdapter extends ArrayAdapter {
                             public boolean onMenuItemClick(MenuItem item1) {
                                 int id = item1.getItemId();
                                 if(id == R.id.action_update){
-                                    MySettings.setTempDevice(item);
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
 
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                    fragmentTransaction.commit();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                    }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
@@ -1246,7 +1318,9 @@ public class DeviceAdapter extends ArrayAdapter {
 
     private void populateLineData(Device item){
         vHolder.deviceNameTextView.setText(""+item.getName()/* + " (" + item.getLines().size() + " lines)"*/);
-        vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
+        if(MySettings.getRoom(item.getRoomID()) != null){
+            vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
+        }
         List<Line> lines = new ArrayList<>();
         lines.addAll(item.getLines());
         for (Line line : lines) {
@@ -1352,7 +1426,9 @@ public class DeviceAdapter extends ArrayAdapter {
 
     private void populatePlugLineData(Device item){
         vHolder.deviceNameTextView.setText(""+item.getName()/* + " (" + item.getLines().size() + " lines)"*/);
-        vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
+        if(MySettings.getRoom(item.getRoomID()) != null){
+            vHolder.deviceLocationTextView.setText(""+MySettings.getRoom(item.getRoomID()).getName());
+        }
         List<Line> lines = new ArrayList<>();
         lines.addAll(item.getLines());
         for (Line line : lines) {

@@ -660,6 +660,8 @@ public class DashboardDevicesFragment extends Fragment {
             @Override
             public void onSuccess(IMqttToken iMqttToken) {
                 Log.d(TAG, "Subscribe Successfully on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                device.setDeviceMQTTReachable(false);
+                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
 
             @Override

@@ -1,11 +1,15 @@
 package com.ronixtech.ronixhome.fragments;
 
+import android.content.Context;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +35,7 @@ import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -376,7 +381,70 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
         });
 
+        checkWifiConnection();
+        checkCellularConnection();
+
         return view;
+    }
+
+    private void checkWifiConnection(){
+        WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(mWifiManager != null){
+            //Wifi is available
+            if(mWifiManager.isWifiEnabled()){
+                //Wifi is ON, check which SSID is currently associated with this device
+                Log.d(TAG, "Wifi is ON, check which SSID is currently associated with this device");
+                WifiInfo mWifiInfo = mWifiManager.getConnectionInfo();
+                if(mWifiInfo != null){
+                    //Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode
+                    Log.d(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode");
+                    String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
+                    Log.d(TAG, "Currently connected to: " + ssid);
+                    WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
+                    if(wifiNetwork != null){
+                        Log.d(TAG, "wifinetwork DB id: " + wifiNetwork.getId());
+                        long placeID = wifiNetwork.getPlaceID();
+                        Log.d(TAG, "wifinetwork placeID: " + placeID);
+                        if(placeID != -1){
+                            Place localPlace = MySettings.getPlace(placeID);
+                            if(localPlace != null){
+                                Log.d(TAG, "wifinetwork DB placeName: " + localPlace.getName());
+                                localPlace.setMode(Place.PLACE_MODE_LOCAL);
+                                MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
+                                if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
+                                    MySettings.setCurrentPlace(localPlace);
+                                }
+                            }
+                        }
+                    }else{
+                        //Wifi network is NOT associated with any Place
+                        Log.d(TAG, "Wifi network is NOT associated with any Place");
+                    }
+                }else{
+                    //Wifi is ON but not connected to any ssid
+                    Log.d(TAG, "Wifi is ON but not connected to any ssid");
+                }
+            }else{
+                //Wifi is OFF
+                Log.d(TAG, "Wifi is OFF");
+            }
+        }else {
+            //Wifi is not available
+        }
+    }
+
+    private void checkCellularConnection(){
+        new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
+            @Override
+            public void onConnectionSuccess() {
+                MySettings.setInternetConnectivityState(true);
+            }
+
+            @Override
+            public void onConnectionFail(String errorMsg) {
+                MySettings.setInternetConnectivityState(false);
+            }
+        });
     }
 
     @Override
@@ -442,6 +510,9 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
             adapter.notifyDataSetChanged();
         }
+
+        checkWifiConnection();
+        checkCellularConnection();
     }
 
     @Override

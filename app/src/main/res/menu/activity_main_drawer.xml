@@ -7,17 +7,8 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_dashboard"
-            android:icon="@drawable/baseline_dashboard_black_36"
+            android:icon="@drawable/baseline_dashboard_gray_48"
             android:title="@string/dashboard" />
-        <item
-            android:id="@+id/nav_home_network"
-            android:icon="@drawable/baseline_network_wifi_black_36"
-            android:visible="false"
-            android:title="@string/home_network" />
-        <item
-            android:id="@+id/nav_refresh_devices"
-            android:icon="@drawable/baseline_refresh_black_48"
-            android:title="@string/refresh_devices" />
     </group>
 
     <item android:title="@string/locations">
@@ -39,15 +30,32 @@
         </menu>
     </item>
 
-    <item android:title="@string/account">
+    <item android:title="@string/settings">
         <menu>
+            <item
+                android:id="@+id/nav_home_network"
+                android:icon="@drawable/baseline_network_wifi_black_36"
+                android:title="@string/home_network" />
+            <item
+                android:id="@+id/nav_refresh_devices"
+                android:icon="@drawable/baseline_refresh_gray_48"
+                android:title="@string/refresh_devices" />
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/about_icon_gray"
                 android:title="@string/help" />
+        </menu>
+    </item>
+
+    <item android:title="@string/account">
+        <menu>
+            <item
+                android:id="@+id/nav_profile"
+                android:icon="@drawable/baseline_person_gray_48"
+                android:title="@string/profile" />
             <item
                 android:id="@+id/log_out"
-                android:icon="@drawable/ic_keyboard_arrow_left_black_24dp"
+                android:icon="@drawable/ic_keyboard_arrow_left_gray_24dp"
                 android:title="@string/logout" />
         </menu>
     </item>

@@ -83,7 +83,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
             InetAddress host = InetAddress.getByName(intToIp(dhcpInfo.gateway));
             byte[] ip = host.getAddress();
 
-            NUMBER_OF_THREADS = Utils.getNumCores() - 2;
+            NUMBER_OF_THREADS = Utils.getNumCores();
 
             RANGE = 254 / NUMBER_OF_THREADS;
             START_IP = 1;
@@ -167,9 +167,9 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
 
                         for (Device device : devices) {
                             //Log.d(TAG, "Checking if device " + device.getName() + " has an IP in the local /proc/net/arp file");
-                            if(device.getMacAddress().toLowerCase().substring(2).equals(mac.toLowerCase().substring(2))){
+                            if(device.getMacAddress().toLowerCase().substring(2).equals(mac.toLowerCase().substring(2))){//skip the first 2 letters as each ESP unit has 2 MAC addresses with 2 different beginnings
                                 if(!arpResult.equals("0x0")) {//failed arp request has 0x0 in 3rd entry in the arp file, so it's not an up to date ip address
-                                    if(!device.getIpAddress().equals(ip)){
+                                    if(device.getIpAddress() == null || !device.getIpAddress().equals(ip)){
                                         Log.d(TAG, "Device " + device.getName() + " updated with IP: " + ip);
                                         Utils.showNotification(device);
 

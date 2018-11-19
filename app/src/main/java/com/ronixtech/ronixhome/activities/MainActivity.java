@@ -1,11 +1,9 @@
 package com.ronixtech.ronixhome.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,7 +38,6 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Place;
-import com.ronixtech.ronixhome.entities.WifiNetwork;
 import com.ronixtech.ronixhome.fragments.AboutFragment;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
@@ -47,6 +45,7 @@ import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.RoomsFragment;
+import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 import com.ronixtech.ronixhome.fragments.WifiInfoFragment;
 
 import org.json.JSONArray;
@@ -126,6 +125,18 @@ public class MainActivity extends AppCompatActivity
 
 
         LinearLayout headerLayout = (LinearLayout) navigationView.getHeaderView(0);
+        headerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                UserProfileFragment userProfileFragment = new UserProfileFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
+                fragmentTransaction.addToBackStack("userProfileFragment");
+                fragmentTransaction.commit();
+            }
+        });
         userNameTextView = headerLayout.findViewById(R.id.user_name_textview);
         userEmailTextView = headerLayout.findViewById(R.id.user_email_textview);
 
@@ -153,72 +164,10 @@ public class MainActivity extends AppCompatActivity
             currentPlace.setMode(Place.PLACE_MODE_REMOTE);
             MySettings.setCurrentPlace(currentPlace);
         }
-        checkWifiConnection();
-        checkCellularConnection();
 
         //getLatestAppVersion();
 
         getLatestFirmwareVersion();
-    }
-
-    private void checkWifiConnection(){
-        WifiManager mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if(mWifiManager != null){
-            //Wifi is available
-            if(mWifiManager.isWifiEnabled()){
-                //Wifi is ON, check which SSID is currently associated with this device
-                Log.d(TAG, "Wifi is ON, check which SSID is currently associated with this device");
-                WifiInfo mWifiInfo = mWifiManager.getConnectionInfo();
-                if(mWifiInfo != null){
-                    //Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode
-                    Log.d(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode");
-                    String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
-                    Log.d(TAG, "Currently connected to: " + ssid);
-                    WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
-                    if(wifiNetwork != null){
-                        Log.d(TAG, "wifinetwork DB id: " + wifiNetwork.getId());
-                        long placeID = wifiNetwork.getPlaceID();
-                        Log.d(TAG, "wifinetwork placeID: " + placeID);
-                        if(placeID != -1){
-                            Place localPlace = MySettings.getPlace(placeID);
-                            if(localPlace != null){
-                                Log.d(TAG, "wifinetwork DB placeName: " + localPlace.getName());
-                                localPlace.setMode(Place.PLACE_MODE_LOCAL);
-                                MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
-                                if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
-                                    MySettings.setCurrentPlace(localPlace);
-                                }
-                            }
-                        }
-                    }else{
-                        //Wifi network is NOT associated with any Place
-                        Log.d(TAG, "Wifi network is NOT associated with any Place");
-                    }
-                }else{
-                    //Wifi is ON but not connected to any ssid
-                    Log.d(TAG, "Wifi is ON but not connected to any ssid");
-                }
-            }else{
-                //Wifi is OFF
-                Log.d(TAG, "Wifi is OFF");
-            }
-        }else {
-            //Wifi is not available
-        }
-    }
-
-    private void checkCellularConnection(){
-        new Utils.InternetChecker(mInstance, new Utils.InternetChecker.OnConnectionCallback() {
-            @Override
-            public void onConnectionSuccess() {
-                MySettings.setInternetConnectivityState(true);
-            }
-
-            @Override
-            public void onConnectionFail(String errorMsg) {
-                MySettings.setInternetConnectivityState(false);
-            }
-        });
     }
 
     private void getLatestAppVersion(){
@@ -407,6 +356,14 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.replace(R.id.fragment_view, aboutFragment, "aboutFragment");
             fragmentTransaction.addToBackStack("aboutFragment");
+            fragmentTransaction.commit();
+        } else if (id == R.id.nav_profile) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            UserProfileFragment userProfileFragment = new UserProfileFragment();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
+            fragmentTransaction.addToBackStack("userProfileFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
             if(MySettings.getActiveUser() != null) {

@@ -20,7 +20,7 @@ public abstract class WifiNetworkDao {
     @Query("SELECT * FROM wifinetwork WHERE id =:id")
     public abstract WifiNetwork getWifiNetwork(long id);
 
-    @Query("SELECT * FROM wifinetwork WHERE ssid =:ssid")
+    @Query("SELECT * FROM wifinetwork WHERE ssid LIKE :ssid")
     public abstract WifiNetwork getWifiNetworkBySSID(String ssid);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
