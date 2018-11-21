@@ -274,9 +274,13 @@ public class DashboardDevicesFragment extends Fragment {
     }
 
     private void stopTimer(){
-        doAsynchronousTask.cancel();
-        timer.cancel();
-        timer.purge();
+        if(doAsynchronousTask != null) {
+            doAsynchronousTask.cancel();
+        }
+        if(timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
     }
 
     public void setRoom(Room room){
@@ -461,6 +465,9 @@ public class DashboardDevicesFragment extends Fragment {
                 }catch (MqttException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
+            }
+            if(deviceAdapter != null){
+                deviceAdapter.disconnectMQTT();
             }
         }
 
@@ -861,17 +868,21 @@ public class DashboardDevicesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200) {
-                if (MainActivity.getInstance() != null) {
-                    MainActivity.getInstance().refreshDevicesListFromMemory();
-                }
-            }else{
-                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+            if(statusCode != 200) {
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    MySettings.updateDeviceErrorCount(device, 0);
-                    MySettings.scanNetwork();
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
                 }
+            }
+            if (MainActivity.getInstance() != null) {
+                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
             MySettings.setGetStatusState(false);
         }
@@ -1058,17 +1069,21 @@ public class DashboardDevicesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200) {
-                if (MainActivity.getInstance() != null) {
-                    MainActivity.getInstance().refreshDevicesListFromMemory();
-                }
-            }else{
-                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+            if(statusCode != 200) {
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    MySettings.updateDeviceErrorCount(device, 0);
-                    MySettings.scanNetwork();
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
                 }
+            }
+            if (MainActivity.getInstance() != null) {
+                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
             MySettings.setGetStatusState(false);
         }
@@ -1431,17 +1446,21 @@ public class DashboardDevicesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200) {
-                if (MainActivity.getInstance() != null) {
-                    MainActivity.getInstance().refreshDevicesListFromMemory();
-                }
-            }else{
-                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+            if(statusCode != 200) {
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    MySettings.updateDeviceErrorCount(device, 0);
-                    MySettings.scanNetwork();
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
                 }
+            }
+            if (MainActivity.getInstance() != null) {
+                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
             MySettings.setGetStatusState(false);
         }

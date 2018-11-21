@@ -90,7 +90,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
             END_IP = START_IP + RANGE;
             ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-            Log.d(TAG, "resetting counter");
+            Log.d(TAG, "Resetting counter");
             Count.reset();
 
             for(CURRENT_THREAD = 0; CURRENT_THREAD < NUMBER_OF_THREADS; CURRENT_THREAD++){
@@ -107,15 +107,15 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                                 InetAddress address = InetAddress.getByAddress(ip);
                                 if(address != null){
                                     if (address.isReachable(150)) {
-                                        Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is turned on and can be pinged");
+                                        //Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is turned on and can be pinged");
                                     } /*else if (!address.getHostAddress().equals(address.getHostName())) {
                                         Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is known in a DNS lookup");
 
                                     }*/ else {
-                                        Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable");
+                                        //Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable");
                                     }
                                 }else{
-                                    Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable");
+                                    //Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable");
                                 }
                             }
                             readAddresses();
@@ -153,11 +153,11 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                Log.d(TAG, "rawfiledata " + line);
+                //Log.d(TAG, "rawfiledata " + line);
                 String[] splitted = line.split(" +");
                 if (splitted != null && splitted.length >= 4) {
                     String arpResult = splitted[2];
-                    String ip = splitted[0];
+                    String scannedIP = splitted[0];
                     String mac = splitted[3];
                     if (mac.matches("..:..:..:..:..:..")) {
                         /*WifiDevice wifiDevice = new WifiDevice();
@@ -169,19 +169,19 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                             //Log.d(TAG, "Checking if device " + device.getName() + " has an IP in the local /proc/net/arp file");
                             if(device.getMacAddress().toLowerCase().substring(2).equals(mac.toLowerCase().substring(2))){//skip the first 2 letters as each ESP unit has 2 MAC addresses with 2 different beginnings
                                 if(!arpResult.equals("0x0")) {//failed arp request has 0x0 in 3rd entry in the arp file, so it's not an up to date ip address
-                                    if(device.getIpAddress() == null || !device.getIpAddress().equals(ip)){
-                                        Log.d(TAG, "Device " + device.getName() + " updated with IP: " + ip);
+                                    if(device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(scannedIP)){
+                                        Log.d(TAG, "Device " + device.getName() + " updated with IP: " + scannedIP);
                                         Utils.showNotification(device);
 
-                                        device.setIpAddress(ip);
-                                        MySettings.updateDeviceIP(device, ip);
+                                        device.setIpAddress(scannedIP);
                                         DevicesInMemory.updateDevice(device);
+                                        MySettings.updateDeviceIP(device, scannedIP);
 
                                         if(MainActivity.getInstance() != null) {
                                             MainActivity.getInstance().refreshDevicesListFromMemory();
                                         }
                                     }else{
-                                        Log.d(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + ip);
+                                        Log.d(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + scannedIP);
                                     }
                                 }
                             }else{

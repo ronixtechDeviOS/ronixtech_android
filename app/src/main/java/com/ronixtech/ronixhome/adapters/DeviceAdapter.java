@@ -2767,6 +2767,17 @@ public class DeviceAdapter extends ArrayAdapter {
         }
     }
 
+    public void disconnectMQTT(){
+        //stop MQTT
+        if(mqttAndroidClient != null){
+            try {
+                mqttAndroidClient.disconnect();
+            }catch (MqttException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }
+        }
+    }
+
     private void getMqttClient(Context context, String brokerUrl, String clientId) {
         mqttAndroidClient = new MqttAndroidClient(context, brokerUrl, clientId);
         /*mqttAndroidClient.setCallback(new MqttCallback() {
