@@ -35,8 +35,8 @@ public class Device implements Comparable {
     public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
 
-    public static final int REFRESH_RATE_MS = 750;
-    public static final int REFRESH_TIMEOUT = 200;
+    public static final int REFRESH_RATE_MS = 1000;
+    public static final int REFRESH_TIMEOUT = 250;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;
 
     public static final int CONFIG_TIMEOUT = 1000;

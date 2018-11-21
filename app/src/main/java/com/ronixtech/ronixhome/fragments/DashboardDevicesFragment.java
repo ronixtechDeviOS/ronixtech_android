@@ -510,11 +510,11 @@ public class DashboardDevicesFragment extends Fragment {
             }
             @Override
             public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                if(MySettings.isGetStatusActive()){
+                /*if(MySettings.isGetStatusActive()){
                    return;
-                }
-                if(MySettings.isControlActive()){
-                    return;
+                }*/
+                while (MySettings.isControlActive()){
+                    Log.d(TAG, "Controls active, do nothing");
                 }
                 MySettings.setGetStatusState(true);
                 //setMessageNotification(s, new String(mqttMessage.getPayload()));
@@ -524,8 +524,7 @@ public class DashboardDevicesFragment extends Fragment {
                 int index = s.lastIndexOf("/");
                 Device device = DevicesInMemory.getDeviceByChipID(s.substring(index+1));
                 if(device != null){
-                    device.setDeviceMQTTReachable(true);
-                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                    device.setDeviceMQTTReachable(true); //TODO zabat deh 3la 7asab el flag el 7ab3ato awel marra (L_A_D_S)
                     if(response != null && response.length() >= 1 && response.contains("UNIT_STATUS")){
                         JSONObject jsonObject = new JSONObject(response);
                         if(jsonObject.has("UNIT_STATUS")){
@@ -629,11 +628,9 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
 
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                    DevicesInMemory.updateDevice(device);
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                                MainActivity.getInstance().refreshDevicesListFromMemory();
                             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
@@ -658,13 +655,17 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
 
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                    DevicesInMemory.updateDevice(device);
                                 }else {
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                                MainActivity.getInstance().refreshDevicesListFromMemory();
                             }
                         }
+                    }else{
+                        device.setFirmwareUpdateAvailable(true);
+                    }
+                    DevicesInMemory.updateDevice(device);
+                    if (MainActivity.getInstance() != null) {
+                        MainActivity.getInstance().refreshDevicesListFromMemory();
                     }
                 }
                 MySettings.setGetStatusState(false);
