@@ -2767,7 +2767,7 @@ public class DeviceAdapter extends ArrayAdapter {
         }
     }
 
-    public void getMqttClient(Context context, String brokerUrl, String clientId) {
+    private void getMqttClient(Context context, String brokerUrl, String clientId) {
         mqttAndroidClient = new MqttAndroidClient(context, brokerUrl, clientId);
         /*mqttAndroidClient.setCallback(new MqttCallback() {
             @Override
@@ -2831,7 +2831,7 @@ public class DeviceAdapter extends ArrayAdapter {
         }
     }
 
-    public void subscribe(@NonNull final MqttAndroidClient client,
+    private void subscribe(@NonNull final MqttAndroidClient client,
                           @NonNull final String topic, int qos) throws MqttException {
         final IMqttToken token = client.subscribe(topic, qos);
         token.setActionCallback(new IMqttActionListener() {

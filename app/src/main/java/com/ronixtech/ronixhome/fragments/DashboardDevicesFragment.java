@@ -222,6 +222,23 @@ public class DashboardDevicesFragment extends Fragment {
         return view;
     }
 
+    public void updateUI(){
+        if(room != null){
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+            }
+        }else{
+            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
+        }
+
+        deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+        devicesListView.setAdapter(deviceAdapter);
+
+        loadDevicesFromMemory();
+    }
+
     private void startTimer(){
         timer = new Timer();
         handler = new Handler();

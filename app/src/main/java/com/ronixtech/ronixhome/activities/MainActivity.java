@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -170,6 +171,8 @@ public class MainActivity extends AppCompatActivity
                     }else{
 
                     }*/
+                }else if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)){
+                    checkWifiConnection();
                 }
                 /*SupplicantState newState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
 
@@ -187,6 +190,7 @@ public class MainActivity extends AppCompatActivity
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         this.registerReceiver(myWifiReceiver, intentFilter);
 
         //getLatestAppVersion();
@@ -247,6 +251,10 @@ public class MainActivity extends AppCompatActivity
             }
         }else {
             //Wifi is not available
+        }
+        DashboardDevicesFragment fragment = (DashboardDevicesFragment) getSupportFragmentManager().findFragmentByTag("dashboardDevicesFragment");
+        if(fragment != null){
+            fragment.updateUI();
         }
     }
 

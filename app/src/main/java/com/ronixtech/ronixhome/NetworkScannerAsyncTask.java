@@ -106,7 +106,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                                 ip[3] = (byte) i;
                                 InetAddress address = InetAddress.getByAddress(ip);
                                 if(address != null){
-                                    if (address.isReachable(50)) {
+                                    if (address.isReachable(150)) {
                                         Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is turned on and can be pinged");
                                     } /*else if (!address.getHostAddress().equals(address.getHostName())) {
                                         Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is known in a DNS lookup");
