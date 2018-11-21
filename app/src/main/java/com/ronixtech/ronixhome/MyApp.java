@@ -1,13 +1,13 @@
 package com.ronixtech.ronixhome;
 
-import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.support.multidex.MultiDexApplication;
 
-public class MyApp extends Application{
+public class MyApp extends MultiDexApplication {
     private static MyApp mInstance;
 
 

@@ -269,7 +269,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                 fragmentTransaction.commit();
                             }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -765,7 +765,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -850,7 +850,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -935,7 +935,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -1052,7 +1052,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                 fragmentTransaction.commit();
                             }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -1131,7 +1131,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -1245,7 +1245,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                 fragmentTransaction.commit();
                             }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -1278,7 +1278,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
                                 }else if(id == R.id.action_delete){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -1614,6 +1614,7 @@ public class DeviceAdapter extends ArrayAdapter {
         MySettings.removeDevice(device);
         DevicesInMemory.removeDevice(device);
         notifyDataSetChanged();
+        MainActivity.getInstance().refreshDevicesListFromMemory();
     }
 
     private void toggleLine(Device device, int position, final int state){

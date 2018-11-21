@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +18,9 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -54,17 +53,15 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
-    Button addPlaceButton, addRoomButton, addDeviceButton;
-
-    LinearLayout addLayout;
     RelativeLayout addPlaceLayout, addRoomLayout, addDeviceLayout;
+
     GridView roomsGridView;
     RoomsGridAdapter adapter;
     List<Room> rooms;
-    TextView emptyTextView;
-
 
     Place place;
+
+    private boolean showPlaceArrow = false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -97,12 +94,13 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         place = MySettings.getCurrentPlace();
         if(place != null){
             MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+            showPlaceArrow = true;
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.dashboard), getResources().getColor(R.color.whiteColor));
+            showPlaceArrow = false;
         }
         setHasOptionsMenu(true);
 
-        addLayout = view.findViewById(R.id.add_layout);
         addPlaceLayout = view.findViewById(R.id.add_new_place_layout);
         addRoomLayout = view.findViewById(R.id.add_new_room_layout);
         addDeviceLayout = view.findViewById(R.id.add_new_device_layout);
@@ -111,11 +109,6 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
-
-        emptyTextView = view.findViewById(R.id.empty_textview);
-        addPlaceButton = view.findViewById(R.id.add_place_button);
-        addRoomButton = view.findViewById(R.id.add_room_button);
-        addDeviceButton = view.findViewById(R.id.add_device_button);
 
         if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
             List<Device> devices = MySettings.getAllDevices();
@@ -146,93 +139,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         adapter = new RoomsGridAdapter(getActivity(), rooms);
         roomsGridView.setAdapter(adapter);
 
-        boolean showAddPlaceLayout = false;
-        boolean showAddRoomLayout = false;
-        boolean showAddDeviceLayout = false;
-        if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-            showAddPlaceLayout = true;
-        }
-
-        if(place != null){
-            if(MySettings.getPlaceRooms(place) == null || MySettings.getPlaceRooms(place).size() < 1){
-                showAddRoomLayout = true;
-            }
-        }else{
-            showAddRoomLayout = true;
-        }
-
-        if(place != null){
-            if(MySettings.getPlaceDevices(place) == null || MySettings.getPlaceDevices(place).size() < 1){
-                showAddDeviceLayout = true;
-            }
-        }else{
-            if(MySettings.getAllDevices() == null || MySettings.getAllDevices().size() < 1){
-                showAddDeviceLayout = true;
-            }
-        }
-
-        if(showAddPlaceLayout){
-            addPlaceLayout.setVisibility(View.VISIBLE);
-        }else{
-            addPlaceLayout.setVisibility(View.GONE);
-        }
-        if(showAddRoomLayout){
-            addRoomLayout.setVisibility(View.VISIBLE);
-        }else{
-            addRoomLayout.setVisibility(View.GONE);
-        }
-        if(showAddDeviceLayout){
-            addDeviceLayout.setVisibility(View.VISIBLE);
-        }else{
-            addDeviceLayout.setVisibility(View.GONE);
-        }
-
-        if(showAddPlaceLayout || showAddRoomLayout || showAddDeviceLayout){
-            addFabMenu.setVisibility(View.GONE);
-            roomsGridView.setVisibility(View.GONE);
-        }else{
-            addFabMenu.setVisibility(View.VISIBLE);
-            roomsGridView.setVisibility(View.VISIBLE);
-        }
-
-        /*if(MySettings.getAllPlaces() != null && MySettings.getAllPlaces().size() >= 1){
-            addPlaceButton.setVisibility(View.GONE);
-            if(MySettings.getAllFloors() != null && MySettings.getAllFloors().size() >= 1){
-                addFloorButton.setVisibility(View.GONE);
-                if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
-                    addRoomButton.setVisibility(View.GONE);
-                *//*if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1) {
-                    addDeviceButton.setVisibility(View.GONE);
-                    emptyTextView.setVisibility(View.GONE);
-                }else{
-                    emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a unit by clicking the button below.");
-                    emptyTextView.setVisibility(View.VISIBLE);
-                    addDeviceButton.setVisibility(View.VISIBLE);
-                }*//*
-                    addDeviceButton.setVisibility(View.GONE);
-                    emptyTextView.setVisibility(View.GONE);
-                }else{
-                    emptyTextView.setText("You don't have any rooms added yet.\nAdd a room by clicking the button below.");
-                    emptyTextView.setVisibility(View.VISIBLE);
-                    addRoomButton.setVisibility(View.VISIBLE);
-                    addDeviceButton.setVisibility(View.GONE);
-                }
-            }else{
-                emptyTextView.setText("You don't have any floors added yet.\nAdd a floor by clicking the button below.");
-                emptyTextView.setVisibility(View.VISIBLE);
-                addPlaceButton.setVisibility(View.GONE);
-                addFloorButton.setVisibility(View.VISIBLE);
-                addRoomButton.setVisibility(View.GONE);
-                addDeviceButton.setVisibility(View.GONE);
-            }
-        }else{
-            emptyTextView.setText("You don't have any places added yet.\nAdd a place by clicking the button below.");
-            emptyTextView.setVisibility(View.VISIBLE);
-            addPlaceButton.setVisibility(View.VISIBLE);
-            addFloorButton.setVisibility(View.GONE);
-            addRoomButton.setVisibility(View.GONE);
-            addDeviceButton.setVisibility(View.GONE);
-        }*/
+        setLayoutVisibility();
 
         roomsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -247,6 +154,38 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 fragmentTransaction.replace(R.id.fragment_view, dashboardDevicesFragment, "dashboardDevicesFragment");
                 fragmentTransaction.addToBackStack("dashboardDevicesFragment");
                 fragmentTransaction.commit();
+            }
+        });
+
+        roomsGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final Room selectedRoom = (Room) adapter.getItem(i);
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(getActivity().getResources().getString(R.string.remove_room_question))
+                        .setMessage(getActivity().getResources().getString(R.string.remove_room_description))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                MySettings.removeRoom(selectedRoom);
+                                MySettings.setCurrentRoom(null);
+                                rooms.clear();
+                                rooms.addAll(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()));
+                                adapter.notifyDataSetChanged();
+                                setLayoutVisibility();
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                            }
+                        })
+                        .show();
+                return true;
             }
         });
 
@@ -280,51 +219,6 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
                 }else {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
-                    fragmentTransaction.commit();
-                }
-            }
-        });
-
-        addPlaceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
-                fragmentTransaction.addToBackStack("addPlaceFragment");
-                fragmentTransaction.commit();
-            }
-        });
-        addRoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
-                }else{
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddRoomFragment addRoomFragment = new AddRoomFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
-                    fragmentTransaction.addToBackStack("addRoomFragment");
-                    fragmentTransaction.commit();
-                }
-            }
-        });
-        addDeviceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
-                }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -388,6 +282,16 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     }
 
     private void checkWifiConnection(){
+        List<Place> allPlaces = MySettings.getAllPlaces();
+        for (Place place : allPlaces) {
+            place.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
+        }
+        if(MySettings.getCurrentPlace() != null ){
+            Place currentPlace = MySettings.getCurrentPlace();
+            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.setCurrentPlace(currentPlace);
+        }
         WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(mWifiManager != null){
             //Wifi is available
@@ -447,8 +351,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         });
     }
 
-    @Override
-    public void onPlaceSelected(Place place){
+    private void setLayoutVisibility(){
         boolean showAddPlaceLayout = false;
         boolean showAddRoomLayout = false;
         boolean showAddDeviceLayout = false;
@@ -464,7 +367,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             showAddRoomLayout = true;
         }
 
-        if(place != null){
+        /*if(place != null){
             if(MySettings.getPlaceDevices(place) == null || MySettings.getPlaceDevices(place).size() < 1){
                 showAddDeviceLayout = true;
             }
@@ -472,7 +375,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             if(MySettings.getAllDevices() == null || MySettings.getAllDevices().size() < 1){
                 showAddDeviceLayout = true;
             }
-        }
+        }*/
 
         if(showAddPlaceLayout){
             addPlaceLayout.setVisibility(View.VISIBLE);
@@ -481,22 +384,30 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         }
         if(showAddRoomLayout){
             addRoomLayout.setVisibility(View.VISIBLE);
-        }else{
-            addRoomLayout.setVisibility(View.GONE);
-        }
-        if(showAddDeviceLayout){
             addDeviceLayout.setVisibility(View.VISIBLE);
         }else{
+            addRoomLayout.setVisibility(View.GONE);
             addDeviceLayout.setVisibility(View.GONE);
         }
+        /*if(showAddDeviceLayout){
+            addRoomLayout.setVisibility(View.VISIBLE);
+        }else{
+            addDeviceLayout.setVisibility(View.GONE);
 
-        if(showAddPlaceLayout || showAddRoomLayout || showAddDeviceLayout){
+        }*/
+
+        if(showAddPlaceLayout || showAddRoomLayout){
             addFabMenu.setVisibility(View.GONE);
             roomsGridView.setVisibility(View.GONE);
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             roomsGridView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onPlaceSelected(Place place){
+        setLayoutVisibility();
 
         if(place != null){
             MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
@@ -549,34 +460,48 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     @Override
     public void onResume(){
         super.onResume();
-        if(MainActivity.getInstance() != null && MainActivity.isResumed){
-            Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
-            if(toolbar != null){
-                ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
-                arrowImageView.setVisibility(View.VISIBLE);
-                toolbar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
-                        }else{
-                            // DialogFragment.show() will take care of adding the fragment
-                            // in a transaction.  We also want to remove any currently showing
-                            // dialog, so make our own transaction and take care of that here.
-                            FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
-                            if (prev != null) {
-                                ft.remove(prev);
-                            }
-                            ft.addToBackStack(null);
+        if (MainActivity.getInstance() != null && MainActivity.isResumed) {
+            if(showPlaceArrow) {
+                Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
+                if (toolbar != null) {
+                    ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
+                    arrowImageView.setVisibility(View.VISIBLE);
+                    toolbar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1) {
+                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
+                            } else {
+                                // DialogFragment.show() will take care of adding the fragment
+                                // in a transaction.  We also want to remove any currently showing
+                                // dialog, so make our own transaction and take care of that here.
+                                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                                if (prev != null) {
+                                    ft.remove(prev);
+                                }
+                                ft.addToBackStack(null);
 
-                            // Create and show the dialog.
-                            PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
-                            fragment.setTargetFragment(DashboardRoomsFragment.this, 0);
-                            fragment.show(ft, "pickPlaceDialogFragment");
+                                // Create and show the dialog.
+                                PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
+                                fragment.setTargetFragment(DashboardRoomsFragment.this, 0);
+                                fragment.show(ft, "pickPlaceDialogFragment");
+                            }
                         }
-                    }
-                });
+                    });
+                }
+            }else{
+                Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
+                if(toolbar != null){
+                    ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
+                    arrowImageView.setVisibility(View.GONE);
+                    toolbar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                        }
+                    });
+                }
             }
         }
     }

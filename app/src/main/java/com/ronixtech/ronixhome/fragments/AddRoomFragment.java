@@ -246,19 +246,28 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
-                    Room room = new Room();
-                    //room.setId(Long.valueOf(roomLocationEditText.getText().toString()));
-                    room.setName(roomNameEditText.getText().toString());
-                    room.setFloorID(selectedFloor.getId());
-                    room.setTypeID(selectedRoomType.getId());
-                    MySettings.addRoom(room);
+                    Room oldRoom = MySettings.getRoomByName(roomNameEditText.getText().toString());
+                    if(oldRoom != null){
+                        roomNameEditText.setError(getActivity().getResources().getString(R.string.room_already_exists_error));
+                        YoYo.with(Techniques.Shake)
+                                .duration(700)
+                                .repeat(1)
+                                .playOn(roomNameEditText);
+                    }else{
+                        Room room = new Room();
+                        //room.setId(Long.valueOf(roomLocationEditText.getText().toString()));
+                        room.setName(roomNameEditText.getText().toString());
+                        room.setFloorID(selectedFloor.getId());
+                        room.setTypeID(selectedRoomType.getId());
+                        MySettings.addRoom(room);
 
-                    MySettings.setCurrentRoom(room);
+                        MySettings.setCurrentRoom(room);
 
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);
 
-                    getFragmentManager().popBackStack();
+                        getFragmentManager().popBackStack();
+                    }
                 }
             }
         });

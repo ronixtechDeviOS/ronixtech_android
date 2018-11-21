@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RonixTech</string>
+    <string name="app_name">RonixTech Home</string>
 
 
     <string name="login">Login</string>
@@ -90,6 +90,7 @@
     <string name="room_type_hint">Tap here to select the room type</string>
     <string name="room_location">Floor</string>
     <string name="room_selection_hint">Tap here to select a room</string>
+    <string name="room_already_exists_error">A room already exists with this name</string>
 
     <string name="pir_pairing_description">Please select which device(s) this PIR controller will be paired to</string>
     <string name="line_addition_hint">Tap here to add a device</string>

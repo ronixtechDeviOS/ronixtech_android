@@ -19,7 +19,7 @@ public abstract class PlaceDAO {
     @Query("SELECT * FROM place WHERE id =:id")
     public abstract Place getPlace(long id);
 
-    @Query("SELECT * FROM place WHERE name =:placeName")
+    @Query("SELECT * FROM place WHERE name LIKE :placeName")
     public abstract Place getPlaceByName(String placeName);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

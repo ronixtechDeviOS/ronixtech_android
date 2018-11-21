@@ -114,9 +114,9 @@ public class FloorsFragment extends Fragment{
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                RoomsFragment roomsFragment = new RoomsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
-                fragmentTransaction.addToBackStack("roomsFragment");
+                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                fragmentTransaction.addToBackStack("dashboardRoomsFragment");
                 fragmentTransaction.commit();
             }
         });

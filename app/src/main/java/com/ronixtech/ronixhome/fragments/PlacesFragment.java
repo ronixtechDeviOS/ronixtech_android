@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -42,10 +42,9 @@ public class PlacesFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    FloatingActionMenu addMenu;
+    FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
-
-    TextView noPlacesTextView;
+    RelativeLayout addPlaceLayout;
 
     GridView placesGridView;
     PlacesGridAdapter placeAdapter;
@@ -82,22 +81,19 @@ public class PlacesFragment extends Fragment {
         setHasOptionsMenu(true);
 
 
-        addMenu = view.findViewById(R.id.add_layout);
+        addFabMenu = view.findViewById(R.id.add_fab_menu);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
 
+        addPlaceLayout = view.findViewById(R.id.add_new_place_layout);
+
         placesGridView = view.findViewById(R.id.places_gridview);
-        noPlacesTextView = view.findViewById(R.id.no_places_textview);
         places = MySettings.getAllPlaces();
         placeAdapter = new PlacesGridAdapter(getActivity(), places);
         placesGridView.setAdapter(placeAdapter);
 
-        if(places != null && places.size() >= 1){
-            noPlacesTextView.setVisibility(View.GONE);
-        }else{
-            noPlacesTextView.setVisibility(View.VISIBLE);
-        }
+        setLayoutVisibility();
 
         placesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -119,9 +115,9 @@ public class PlacesFragment extends Fragment {
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    RoomsFragment roomsFragment = new RoomsFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
-                    fragmentTransaction.addToBackStack("roomsFragment");
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentTransaction.addToBackStack("dashboardRoomsFragment");
                     fragmentTransaction.commit();
                 }
             }
@@ -146,6 +142,7 @@ public class PlacesFragment extends Fragment {
                                 places.clear();
                                 places.addAll(MySettings.getAllPlaces());
                                 placeAdapter.notifyDataSetChanged();
+                                setLayoutVisibility();
                             }
                         })
                         //set negative button
@@ -157,6 +154,19 @@ public class PlacesFragment extends Fragment {
                         })
                         .show();
                 return true;
+            }
+        });
+
+        addPlaceLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
+                fragmentTransaction.addToBackStack("addPlaceFragment");
+                fragmentTransaction.commit();
             }
         });
 
@@ -207,6 +217,27 @@ public class PlacesFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void setLayoutVisibility(){
+        boolean showAddPlaceLayout = false;
+        if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
+            showAddPlaceLayout = true;
+        }
+
+        if(showAddPlaceLayout){
+            addPlaceLayout.setVisibility(View.VISIBLE);
+        }else{
+            addPlaceLayout.setVisibility(View.GONE);
+        }
+
+        if(showAddPlaceLayout){
+            addFabMenu.setVisibility(View.GONE);
+            placesGridView.setVisibility(View.GONE);
+        }else{
+            addFabMenu.setVisibility(View.VISIBLE);
+            placesGridView.setVisibility(View.VISIBLE);
+        }
     }
 
     public void onButtonPressed(Uri uri) {

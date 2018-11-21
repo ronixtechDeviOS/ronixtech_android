@@ -18,12 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.MySettings;
@@ -78,13 +78,13 @@ public class DashboardDevicesFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
-    Button addDeviceButton;
+    RelativeLayout addDeviceLayout;
 
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
     static List<Device> devices;
-    TextView emptyTextView;
 
     Handler listHandler;
 
@@ -133,11 +133,12 @@ public class DashboardDevicesFragment extends Fragment {
 
         listHandler = new Handler();
 
-        emptyTextView = view.findViewById(R.id.empty_textview);
+        addDeviceLayout = view.findViewById(R.id.add_new_device_layout);
+
+        addFabMenu = view.findViewById(R.id.add_fab_menu);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
-        addDeviceButton = view.findViewById(R.id.add_device_button);
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = DevicesInMemory.getDevices();
@@ -147,6 +148,8 @@ public class DashboardDevicesFragment extends Fragment {
         loadDevicesFromDatabase();
 
         MySettings.setControlState(false);
+
+        setLayoutVisibility();
 
         //startTimer();
 
@@ -195,7 +198,7 @@ public class DashboardDevicesFragment extends Fragment {
             }
         });
 
-        addDeviceButton.setOnClickListener(new View.OnClickListener() {
+        addDeviceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
@@ -259,6 +262,36 @@ public class DashboardDevicesFragment extends Fragment {
         this.room = room;
     }
 
+    private void setLayoutVisibility(){
+        boolean showAddDeviceLayout = false;
+
+
+        Place place = MySettings.getCurrentPlace();
+        if(place != null){
+            if(MySettings.getPlaceDevices(place) == null || MySettings.getPlaceDevices(place).size() < 1){
+                showAddDeviceLayout = true;
+            }
+        }else{
+            if(MySettings.getAllDevices() == null || MySettings.getAllDevices().size() < 1){
+                showAddDeviceLayout = true;
+            }
+        }
+
+        if(showAddDeviceLayout){
+            addDeviceLayout.setVisibility(View.VISIBLE);
+        }else{
+            addDeviceLayout.setVisibility(View.GONE);
+        }
+
+        if(showAddDeviceLayout){
+            addFabMenu.setVisibility(View.GONE);
+            devicesListView.setVisibility(View.GONE);
+        }else{
+            addFabMenu.setVisibility(View.VISIBLE);
+            devicesListView.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void loadDevicesFromDatabase(){
         if(room != null){
             if(listHandler != null) {
@@ -301,12 +334,9 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }*/
                 //devices.addAll(DevicesInMemory.getDevices());
-                emptyTextView.setVisibility(View.GONE);
-                addDeviceButton.setVisibility(View.GONE);
+                setLayoutVisibility();
             } else {
-                emptyTextView.setText("You don't have any RonixTech smart controllers added yet.\nAdd a smart controller by clicking the button below.");
-                emptyTextView.setVisibility(View.VISIBLE);
-                addDeviceButton.setVisibility(View.VISIBLE);
+                setLayoutVisibility();
             }
             /*if(devices.size() >= 1) {
                 Collections.sort(devices);

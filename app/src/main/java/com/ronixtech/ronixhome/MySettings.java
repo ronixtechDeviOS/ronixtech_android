@@ -426,6 +426,9 @@ public class MySettings {
     public static com.ronixtech.ronixhome.entities.Room getRoom(long roomID) {
         return MySettings.initDB().roomDAO().getRoomWithDevices(roomID);
     }
+    public static com.ronixtech.ronixhome.entities.Room getRoomByName(String roomName) {
+        return MySettings.initDB().roomDAO().getRoomByName(roomName);
+    }
     public static List<com.ronixtech.ronixhome.entities.Room> getAllRooms(){
         List<com.ronixtech.ronixhome.entities.Room> roomsWithDevices = new ArrayList<>();
         List<com.ronixtech.ronixhome.entities.Room> rooms = MySettings.initDB().roomDAO().getAll();

@@ -16,6 +16,9 @@ public abstract class RoomDAO {
     @Query("SELECT * FROM room")
     public abstract List<Room> getAll();
 
+    @Query("SELECT * FROM room WHERE name LIKE :roomName")
+    public abstract Room getRoomByName(String roomName);
+
     @Query("SELECT * FROM room WHERE floor_id=:floorID")
     public abstract List<Room> getFloorRooms(long floorID);
 

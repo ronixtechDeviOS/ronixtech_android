@@ -1,9 +1,12 @@
 package com.ronixtech.ronixhome.activities;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,13 +41,13 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 import com.ronixtech.ronixhome.fragments.AboutFragment;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
-import com.ronixtech.ronixhome.fragments.RoomsFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 import com.ronixtech.ronixhome.fragments.WifiInfoFragment;
 
@@ -154,6 +157,44 @@ public class MainActivity extends AppCompatActivity
             currentVersionTextView.setText("0.0");
         }
 
+        BroadcastReceiver myWifiReceiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
+                    checkWifiConnection();
+                    /*ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+
+                    if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        checkWifiConnection();
+                    }else{
+
+                    }*/
+                }
+                /*SupplicantState newState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
+
+                switch(newState){
+                    case ASSOCIATED:
+                        Log.d("WIFI", "CONNECTED");
+                        break;
+                    case DISCONNECTED:
+                        if(!disconnected){
+                            Log.d("WIFI", "DISCONNECTED");
+                            disconnected = true;
+                        }
+                }*/
+            }};
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        this.registerReceiver(myWifiReceiver, intentFilter);
+
+        //getLatestAppVersion();
+
+        getLatestFirmwareVersion();
+    }
+
+    private void checkWifiConnection(){
         List<Place> allPlaces = MySettings.getAllPlaces();
         for (Place place : allPlaces) {
             place.setMode(Place.PLACE_MODE_REMOTE);
@@ -164,10 +205,63 @@ public class MainActivity extends AppCompatActivity
             currentPlace.setMode(Place.PLACE_MODE_REMOTE);
             MySettings.setCurrentPlace(currentPlace);
         }
+        WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(mWifiManager != null){
+            //Wifi is available
+            if(mWifiManager.isWifiEnabled()){
+                //Wifi is ON, check which SSID is currently associated with this device
+                Log.d(TAG, "Wifi is ON, check which SSID is currently associated with this device");
+                WifiInfo mWifiInfo = mWifiManager.getConnectionInfo();
+                if(mWifiInfo != null){
+                    //Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode
+                    Log.d(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode");
+                    String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
+                    Log.d(TAG, "Currently connected to: " + ssid);
+                    WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
+                    if(wifiNetwork != null){
+                        Log.d(TAG, "wifinetwork DB id: " + wifiNetwork.getId());
+                        long placeID = wifiNetwork.getPlaceID();
+                        Log.d(TAG, "wifinetwork placeID: " + placeID);
+                        if(placeID != -1){
+                            Place localPlace = MySettings.getPlace(placeID);
+                            if(localPlace != null){
+                                Log.d(TAG, "wifinetwork DB placeName: " + localPlace.getName());
+                                localPlace.setMode(Place.PLACE_MODE_LOCAL);
+                                MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
+                                if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
+                                    MySettings.setCurrentPlace(localPlace);
+                                }
+                            }
+                        }
+                    }else{
+                        //Wifi network is NOT associated with any Place
+                        Log.d(TAG, "Wifi network is NOT associated with any Place");
+                    }
+                }else{
+                    //Wifi is ON but not connected to any ssid
+                    Log.d(TAG, "Wifi is ON but not connected to any ssid");
+                }
+            }else{
+                //Wifi is OFF
+                Log.d(TAG, "Wifi is OFF");
+            }
+        }else {
+            //Wifi is not available
+        }
+    }
 
-        //getLatestAppVersion();
+    private void checkCellularConnection(){
+        new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
+            @Override
+            public void onConnectionSuccess() {
+                MySettings.setInternetConnectivityState(true);
+            }
 
-        getLatestFirmwareVersion();
+            @Override
+            public void onConnectionFail(String errorMsg) {
+                MySettings.setInternetConnectivityState(false);
+            }
+        });
     }
 
     private void getLatestAppVersion(){
@@ -344,10 +438,10 @@ public class MainActivity extends AppCompatActivity
         }*/ else if (id == R.id.nav_rooms) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            RoomsFragment roomsFragment = new RoomsFragment();
+            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.replace(R.id.fragment_view, roomsFragment, "roomsFragment");
-            fragmentTransaction.addToBackStack("roomsFragment");
+            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+            fragmentTransaction.addToBackStack("dashboardRoomsFragment");
             fragmentTransaction.commit();
         }else if (id == R.id.nav_about) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
