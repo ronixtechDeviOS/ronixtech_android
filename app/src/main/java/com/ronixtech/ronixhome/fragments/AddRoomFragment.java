@@ -33,6 +33,8 @@ import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.Type;
 
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -246,8 +248,16 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
-                    Room oldRoom = MySettings.getRoomByName(roomNameEditText.getText().toString());
-                    if(oldRoom != null){
+                    boolean roomNameDuplicate = false;
+                    List<Room> placeRooms = MySettings.getPlaceRooms(selectedPlace);
+                    if(placeRooms != null && placeRooms.size() >= 1){
+                        for (Room room : placeRooms) {
+                            if(room.getName().equals(roomNameEditText.getText().toString())){
+                                roomNameDuplicate = true;
+                            }
+                        }
+                    }
+                    if(roomNameDuplicate){
                         roomNameEditText.setError(getActivity().getResources().getString(R.string.room_already_exists_error));
                         YoYo.with(Techniques.Shake)
                                 .duration(700)

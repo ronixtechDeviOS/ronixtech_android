@@ -165,23 +165,12 @@
                     android:src="@drawable/overflow_3_dots_gray"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>
-                <ToggleButton
-                    android:id="@+id/first_line_switch"
-                    android:layout_width="60dp"
-                    android:layout_height="45dp"
-                    android:visibility="gone"
-                    android:layout_toLeftOf="@id/first_line_advanced_options_button"
-                    android:layout_toStartOf="@id/first_line_advanced_options_button"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:theme="@style/ToggleButton" />
                 <TextView
                     android:id="@+id/first_line_textvie"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_alignBaseline="@id/first_line_switch"
                     android:textColor="@color/blackColor"
                     android:textSize="16sp"
                     android:textAlignment="center"
@@ -235,23 +224,12 @@
                     android:src="@drawable/overflow_3_dots_gray"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>
-                <ToggleButton
-                    android:id="@+id/second_line_switch"
-                    android:layout_width="60dp"
-                    android:layout_height="45dp"
-                    android:visibility="gone"
-                    android:layout_toLeftOf="@id/second_line_advanced_options_button"
-                    android:layout_toStartOf="@id/second_line_advanced_options_button"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:theme="@style/ToggleButton"/>
                 <TextView
                     android:id="@+id/second_line_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_alignBaseline="@id/second_line_switch"
                     android:textColor="@color/blackColor"
                     android:textSize="16sp"
                     android:textAlignment="center"
@@ -305,23 +283,12 @@
                     android:src="@drawable/overflow_3_dots_gray"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>
-                <ToggleButton
-                    android:id="@+id/third_line_switch"
-                    android:layout_width="60dp"
-                    android:layout_height="45dp"
-                    android:visibility="gone"
-                    android:layout_toLeftOf="@id/third_line_advanced_options_button"
-                    android:layout_toStartOf="@id/third_line_advanced_options_button"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:theme="@style/ToggleButton"/>
                 <TextView
                     android:id="@+id/third_line_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_alignBaseline="@id/third_line_switch"
                     android:textColor="@color/blackColor"
                     android:textSize="16sp"
                     android:textAlignment="center"
