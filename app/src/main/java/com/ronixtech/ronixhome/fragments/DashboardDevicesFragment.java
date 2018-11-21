@@ -125,9 +125,13 @@ public class DashboardDevicesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard_devices, container, false);
         if(room != null){
-            MainActivity.setActionBarTitle(room.getName(), getResources().getColor(R.color.whiteColor));
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+            }
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.home), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 

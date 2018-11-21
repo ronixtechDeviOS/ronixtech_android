@@ -549,6 +549,16 @@ public class AddDeviceFragmentSendData extends Fragment {
                             deviceRebooterGet.execute();
                         }
                     }, 1000);
+                }else{
+                    //reboot the device
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
+                            deviceRebooterGet.execute();
+                        }
+                    }, 1000);
                 }
 
             }else{

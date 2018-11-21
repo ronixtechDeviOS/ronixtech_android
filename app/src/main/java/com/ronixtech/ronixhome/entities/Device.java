@@ -30,13 +30,13 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_PLUG_2lines = 100032;
     public static final int DEVICE_TYPE_PLUG_3lines = 100033;
     public static final int DEVICE_NUMBER_OF_TYPES = 3; //lines, pir sensor, speaker controller
-    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 20;
+    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10;
 
     public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;
 
     public static final int REFRESH_RATE_MS = 750;
-    public static final int REFRESH_TIMEOUT = 100;
+    public static final int REFRESH_TIMEOUT = 150;
     public static final int REFRESH_NUMBER_OF_RETRIES = 0;
 
     public static final int CONFIG_TIMEOUT = 1000;

@@ -172,7 +172,9 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                                 MySettings.removeRoom(selectedRoom);
                                 MySettings.setCurrentRoom(null);
                                 rooms.clear();
-                                rooms.addAll(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()));
+                                if(MySettings.getCurrentFloor() != null && MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()).size() >= 1){
+                                    rooms.addAll(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()));
+                                }
                                 adapter.notifyDataSetChanged();
                                 setLayoutVisibility();
                             }
