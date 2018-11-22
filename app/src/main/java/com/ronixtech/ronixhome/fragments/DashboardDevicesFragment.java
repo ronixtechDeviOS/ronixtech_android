@@ -96,6 +96,8 @@ public class DashboardDevicesFragment extends Fragment {
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
 
+    private boolean isResumed;
+
     private static Room room;
     public DashboardDevicesFragment() {
         // Required empty public constructor
@@ -146,7 +148,7 @@ public class DashboardDevicesFragment extends Fragment {
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = DevicesInMemory.getDevices();
-        deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+        deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode(), mqttAndroidClient);
         devicesListView.setAdapter(deviceAdapter);
 
         loadDevicesFromDatabase();
@@ -223,20 +225,22 @@ public class DashboardDevicesFragment extends Fragment {
     }
 
     public void updateUI(){
-        if(room != null){
-            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-                MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
-            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-                MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+        if(isResumed) {
+            if (room != null) {
+                if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                    MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
+                } else if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE) {
+                    MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+                }
+            } else {
+                MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
             }
-        }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
+
+            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode(), mqttAndroidClient);
+            devicesListView.setAdapter(deviceAdapter);
+
+            loadDevicesFromMemory();
         }
-
-        deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
-        devicesListView.setAdapter(deviceAdapter);
-
-        loadDevicesFromMemory();
     }
 
     private void startTimer(){
@@ -290,14 +294,8 @@ public class DashboardDevicesFragment extends Fragment {
     private void setLayoutVisibility(){
         boolean showAddDeviceLayout = false;
 
-
-        Place place = MySettings.getCurrentPlace();
-        if(place != null){
-            if(MySettings.getPlaceDevices(place) == null || MySettings.getPlaceDevices(place).size() < 1){
-                showAddDeviceLayout = true;
-            }
-        }else{
-            if(MySettings.getAllDevices() == null || MySettings.getAllDevices().size() < 1){
+        if(room != null){
+            if(MySettings.getRoomDevices(room.getId()) == null || MySettings.getRoomDevices(room.getId()).size() < 1){
                 showAddDeviceLayout = true;
             }
         }
@@ -442,6 +440,7 @@ public class DashboardDevicesFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        isResumed = true;
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
             Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
             startTimer();
@@ -455,6 +454,7 @@ public class DashboardDevicesFragment extends Fragment {
 
     @Override
     public void onPause(){
+        isResumed = false;
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
             stopTimer();
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
@@ -462,7 +462,11 @@ public class DashboardDevicesFragment extends Fragment {
             if(mqttAndroidClient != null){
                 try {
                     mqttAndroidClient.disconnect();
+                    mqttAndroidClient.unregisterResources();
+                    mqttAndroidClient.close();
                 }catch (MqttException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (Exception e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
             }

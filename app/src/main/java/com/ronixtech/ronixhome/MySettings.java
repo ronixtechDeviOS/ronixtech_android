@@ -515,9 +515,14 @@ public class MySettings {
     }
 
     public static void scanNetwork(){
+        NetworkDiscovery.init();
+
         if(!MySettings.getCurrentScanningState()){
             MySettings.setCurrentScanningState(true);
             Utils.showUpdatingNotification();
+
+            NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask();
+            networkScannerAsyncTask.execute();
             /*// Create a Constraints that defines when the task should run
             Constraints myConstraints = new Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -541,8 +546,6 @@ public class MySettings {
                             .build();
             WorkManager.getInstance().cancelAllWorkByTag("NetworkScanner");
             WorkManager.getInstance().enqueue(scannerWork2);*/
-            NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask();
-            networkScannerAsyncTask.execute();
         }
     }
     public static void scanDevices(){

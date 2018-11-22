@@ -77,7 +77,7 @@ public class DeviceAdapter extends ArrayAdapter {
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
 
-    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode){
+    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode, MqttAndroidClient mqttAndroidClient){
         super(activity, R.layout.list_item_device, devices);
         this.activity = activity;
         this.devices = devices;
@@ -85,8 +85,9 @@ public class DeviceAdapter extends ArrayAdapter {
         this.fragmentManager = fragmentManager;
         this.placeMode = mode;
         String clientId = MqttClient.generateClientId();
-        getMqttClient(activity, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
-        simpleDateFormat = new SimpleDateFormat("h:mm a");
+        this.mqttAndroidClient = mqttAndroidClient;
+        //getMqttClient(activity, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+        simpleDateFormat = new SimpleDateFormat("h:mm:ss a");
     }
 
     @Override
@@ -2593,6 +2594,8 @@ public class DeviceAdapter extends ArrayAdapter {
         if(mqttAndroidClient != null){
             try {
                 mqttAndroidClient.disconnect();
+                mqttAndroidClient.unregisterResources();
+                mqttAndroidClient.close();
             }catch (MqttException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
             }
@@ -2639,27 +2642,29 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
             });
             try {
-                IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
-                if(token != null){
-                    token.setActionCallback(new IMqttActionListener() {
-                        @Override
-                        public void onSuccess(IMqttToken asyncActionToken) {
-                            mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
-                            Log.d(TAG, "Success");
-                            try {
-                                for (Device device:devices) {
-                                    subscribe(mqttAndroidClient, String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), 1);
+                if(!mqttAndroidClient.isConnected()){
+                    IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
+                    if(token != null){
+                        token.setActionCallback(new IMqttActionListener() {
+                            @Override
+                            public void onSuccess(IMqttToken asyncActionToken) {
+                                mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
+                                Log.d(TAG, "Success");
+                                try {
+                                    for (Device device:devices) {
+                                        subscribe(mqttAndroidClient, String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), 1);
+                                    }
+                                }catch (MqttException e){
+                                    Log.d(TAG, "Exception " + e.getMessage());
                                 }
-                            }catch (MqttException e){
-                                Log.d(TAG, "Exception " + e.getMessage());
                             }
-                        }
 
-                        @Override
-                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            Log.d(TAG, "Failure " + exception.toString());
-                        }
-                    });
+                            @Override
+                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                                Log.d(TAG, "Failure " + exception.toString());
+                            }
+                        });
+                    }
                 }
             } catch (MqttException e) {
                 e.printStackTrace();

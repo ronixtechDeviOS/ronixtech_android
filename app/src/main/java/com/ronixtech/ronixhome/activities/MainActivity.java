@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity
 
     TextView userNameTextView, userEmailTextView;
 
+    BroadcastReceiver myWifiReceiver;
+    IntentFilter intentFilter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,7 +161,7 @@ public class MainActivity extends AppCompatActivity
             currentVersionTextView.setText("0.0");
         }
 
-        BroadcastReceiver myWifiReceiver = new BroadcastReceiver(){
+        myWifiReceiver = new BroadcastReceiver(){
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
@@ -188,10 +191,10 @@ public class MainActivity extends AppCompatActivity
                 }*/
             }};
 
-        IntentFilter intentFilter = new IntentFilter();
+        intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        this.registerReceiver(myWifiReceiver, intentFilter);
+        registerReceiver(myWifiReceiver, intentFilter);
 
         //getLatestAppVersion();
 
@@ -354,11 +357,13 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
         isResumed = true;
+        registerReceiver(myWifiReceiver, intentFilter);
     }
 
     @Override
     public void onPause() {
         isResumed = false;
+        unregisterReceiver(myWifiReceiver);
         super.onPause();
     }
 

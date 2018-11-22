@@ -509,54 +509,58 @@ public class AddDeviceFragmentGetData extends Fragment {
             if(statusCode == 200){
                 if(MySettings.getDeviceByChipID2(mChipID) != null){
                     //remove device and re-add it again, or just go back?
-                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                            //set icon
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            //set title
-                            .setTitle(activity.getResources().getString(R.string.duplicate_unit_title))
-                            //set message
-                            .setMessage(activity.getResources().getString(R.string.duplicate_unit_message))
-                            //set positive button
-                            .setPositiveButton(activity.getResources().getString(R.string.remove_duplicate_smart_controller), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    //set what would happen when positive button is clicked
-                                    MySettings.removeDevice(MySettings.getDeviceByChipID2(mChipID));
-                                    Device device = MySettings.getTempDevice();
-                                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                                        fragment.goToPIRConfigurationFragment();
-                                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                                        fragment.goToConfigurationFragment();
-                                    }else {
-                                        fragment.goToLocationSelectionFragment();
+                    if(activity != null){
+                        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                //set icon
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                //set title
+                                .setTitle(activity.getResources().getString(R.string.duplicate_unit_title))
+                                //set message
+                                .setMessage(activity.getResources().getString(R.string.duplicate_unit_message))
+                                //set positive button
+                                .setPositiveButton(activity.getResources().getString(R.string.remove_duplicate_smart_controller), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        //set what would happen when positive button is clicked
+                                        MySettings.removeDevice(MySettings.getDeviceByChipID2(mChipID));
+                                        Device device = MySettings.getTempDevice();
+                                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                                            fragment.goToPIRConfigurationFragment();
+                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+                                            fragment.goToConfigurationFragment();
+                                        }else {
+                                            fragment.goToLocationSelectionFragment();
+                                        }
                                     }
-                                }
-                            })
-                            //set negative button
-                            .setNegativeButton(activity.getResources().getString(R.string.keep_smart_controller), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    //set what should happen when negative button is clicked
-                                    if(fragment.mListener != null){
-                                        fragment.mListener.onStartListening();
-                                    }
-                                    if(MySettings.getHomeNetwork() != null) {
-                                        fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
-                                    }
+                                })
+                                //set negative button
+                                .setNegativeButton(activity.getResources().getString(R.string.keep_smart_controller), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        //set what should happen when negative button is clicked
+                                        if(fragment.mListener != null){
+                                            fragment.mListener.onStartListening();
+                                        }
+                                        if(MySettings.getHomeNetwork() != null) {
+                                            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                                        }
 
-                                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
-                                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                    fragmentTransaction.commitAllowingStateLoss();
-                                }
-                            })
-                            .show();
+                                        FragmentManager fragmentManager = fragment.getFragmentManager();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                        fragmentTransaction.commitAllowingStateLoss();
+                                    }
+                                })
+                                .show();
+                    }else{
+
+                    }
                 }else {
                     //debugTextView.append("Chip ID: " + chipID + "\n");
                     Device device = MySettings.getTempDevice();
