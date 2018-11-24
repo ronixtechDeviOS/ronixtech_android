@@ -38,6 +38,7 @@ import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
+import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -46,7 +47,6 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -77,16 +77,19 @@ public class DeviceAdapter extends ArrayAdapter {
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
 
-    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode, MqttAndroidClient mqttAndroidClient){
+    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode){
         super(activity, R.layout.list_item_device, devices);
         this.activity = activity;
         this.devices = devices;
         mHandler = new android.os.Handler();
         this.fragmentManager = fragmentManager;
         this.placeMode = mode;
-        String clientId = MqttClient.generateClientId();
-        this.mqttAndroidClient = mqttAndroidClient;
+        //String clientId = MqttClient.generateClientId();
         //getMqttClient(activity, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+        DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
+        if(fragment != null){
+            mqttAndroidClient = fragment.getMqttAndroidClient();
+        }
         simpleDateFormat = new SimpleDateFormat("h:mm:ss a");
     }
 
@@ -1566,6 +1569,12 @@ public class DeviceAdapter extends ArrayAdapter {
                 MySettings.setControlState(false);
             }
         }else{
+            if(mqttAndroidClient == null) {
+                DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
+                if (fragment != null) {
+                    mqttAndroidClient = fragment.getMqttAndroidClient();
+                }
+            }
             //send command usint MQTT
             if(mqttAndroidClient != null){
                 try{
@@ -1636,6 +1645,8 @@ public class DeviceAdapter extends ArrayAdapter {
                 }catch (MqttException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
+            }else{
+                Log.d(TAG, "mqttAndroidClient is null");
             }
             MySettings.setControlState(false);
         }
@@ -1669,6 +1680,12 @@ public class DeviceAdapter extends ArrayAdapter {
                 MySettings.setControlState(false);
             }
         }else{
+            if(mqttAndroidClient == null) {
+                DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
+                if (fragment != null) {
+                    mqttAndroidClient = fragment.getMqttAndroidClient();
+                }
+            }
             //send command usint MQTT
             if(mqttAndroidClient != null){
                 try{
@@ -1742,6 +1759,12 @@ public class DeviceAdapter extends ArrayAdapter {
                 MySettings.setControlState(false);
             }
         }else{
+            if(mqttAndroidClient == null) {
+                DashboardDevicesFragment fragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
+                if (fragment != null) {
+                    mqttAndroidClient = fragment.getMqttAndroidClient();
+                }
+            }
             //send command usint MQTT
             if(mqttAndroidClient != null){
                 try{
@@ -2593,9 +2616,11 @@ public class DeviceAdapter extends ArrayAdapter {
         //stop MQTT
         if(mqttAndroidClient != null){
             try {
-                mqttAndroidClient.disconnect();
-                mqttAndroidClient.unregisterResources();
-                mqttAndroidClient.close();
+                if(mqttAndroidClient.isConnected()) {
+                    mqttAndroidClient.disconnect();
+                    mqttAndroidClient.unregisterResources();
+                    mqttAndroidClient.close();
+                }
             }catch (MqttException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
             }
