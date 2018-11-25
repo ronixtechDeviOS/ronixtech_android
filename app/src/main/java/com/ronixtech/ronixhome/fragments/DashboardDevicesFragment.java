@@ -455,6 +455,10 @@ public class DashboardDevicesFragment extends Fragment {
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
             Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
             //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
+            for (Device device:devices) {
+                device.setDeviceMQTTReachable(false);
+            }
+            MainActivity.getInstance().refreshDevicesListFromMemory();
             String clientId = MqttClient.generateClientId();
             getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
         }
@@ -526,8 +530,8 @@ public class DashboardDevicesFragment extends Fragment {
                     //make sure it's the 'status' topic, not the 'control' topic
                     if(s.contains("status")){
                         /*if(MySettings.isGetStatusActive()){
-                       return;
-                    }*/
+                           return;
+                        }*/
                         while (MySettings.isControlActive()){
                             Log.d(TAG, "Controls active, do nothing");
                         }
@@ -553,6 +557,27 @@ public class DashboardDevicesFragment extends Fragment {
                                             }else{
                                                 device.setFirmwareUpdateAvailable(true);
                                             }
+                                            if(wifiStatus.has("R_M_ALV")){
+                                                String R_M_ALV_string = wifiStatus.getString("R_M_ALV");
+                                                int R_M_ALV = Integer.parseInt(R_M_ALV_string);
+                                                if(R_M_ALV == 1){
+                                                    try {
+                                                        JSONObject jsonObject1 = new JSONObject();
+                                                        jsonObject1.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                                                        jsonObject1.put("R_M_ALV", "0");
+                                                        MqttMessage mqttMessage1 = new MqttMessage();
+                                                        mqttMessage1.setPayload(jsonObject1.toString().getBytes());
+                                                        Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                                                        Log.d(TAG, "MQTT Publish data: " + mqttMessage1);
+                                                        mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage1);
+                                                        device.setDeviceMQTTReachable(true);
+                                                    }catch (JSONException e){
+                                                        Log.d(TAG, "Exception: " + e.getMessage());
+                                                    }catch (MqttException e){
+                                                        Log.d(TAG, "Exception: " + e.getMessage());
+                                                    }
+                                                }
+                                            }
                                             if(wifiStatus.has("U_W_FWV")) {
                                                 String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
                                                 if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
@@ -577,29 +602,9 @@ public class DashboardDevicesFragment extends Fragment {
                                         device.setFirmwareUpdateAvailable(true);
                                     }
 
-                                    if(unitStatus != null && unitStatus.has("U_H_STT")) {
-                                        JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-                                        if(hardwareStatus != null && hardwareStatus.has("L_A_D_S")){
-                                            String L_A_D_S_string = hardwareStatus.getString("L_A_D_S");
-                                            int L_A_D_S = Integer.parseInt(L_A_D_S_string);
-                                            if(L_A_D_S == 0){
-                                                try {
-                                                    JSONObject jsonObject1 = new JSONObject();
-                                                    jsonObject1.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-                                                    jsonObject1.put("L_A_D_S", "1");
-                                                    MqttMessage mqttMessage1 = new MqttMessage();
-                                                    mqttMessage1.setPayload(jsonObject1.toString().getBytes());
-                                                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                                                    Log.d(TAG, "MQTT Publish data: " + mqttMessage1);
-                                                    mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage1);
-                                                    device.setDeviceMQTTReachable(true);
-                                                }catch (JSONException e){
-                                                    Log.d(TAG, "Exception: " + e.getMessage());
-                                                }catch (MqttException e){
-                                                    Log.d(TAG, "Exception: " + e.getMessage());
-                                                }
-                                            }
-                                        }
+                                    if(unitStatus != null && unitStatus.has("U_W_STT")) {
+                                        JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+
                                     }
 
                                     if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
@@ -785,7 +790,7 @@ public class DashboardDevicesFragment extends Fragment {
                     try {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-                        jsonObject.put("L_A_D_S", "0");
+                        jsonObject.put("R_M_ALV", "1");
                         MqttMessage mqttMessage = new MqttMessage();
                         mqttMessage.setPayload(jsonObject.toString().getBytes());
                         Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));

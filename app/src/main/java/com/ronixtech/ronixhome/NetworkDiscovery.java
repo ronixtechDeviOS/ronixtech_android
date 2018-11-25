@@ -1,15 +1,14 @@
 package com.ronixtech.ronixhome;
 
+import android.content.Context;
 import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
 import android.util.Log;
 
-import com.github.druk.dnssd.BrowseListener;
 import com.github.druk.dnssd.DNSSD;
-import com.github.druk.dnssd.DNSSDBindable;
 import com.github.druk.dnssd.DNSSDException;
 import com.github.druk.dnssd.DNSSDService;
 import com.github.druk.dnssd.QueryListener;
-import com.github.druk.dnssd.ResolveListener;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 
@@ -27,7 +26,7 @@ public class NetworkDiscovery {
     private static boolean started = false;
 
     public static void init(){
-        if(MainActivity.getInstance() != null) {
+        /*if(MainActivity.getInstance() != null) {
             if(!started){
                 started = true;
                 dnssd = new DNSSDBindable(MainActivity.getInstance());
@@ -74,9 +73,9 @@ public class NetworkDiscovery {
                     Log.d(TAG, "error", e);
                 }
             }
-        }
+        }*/
 
-        /*if(MainActivity.getInstance() != null){
+        if(MainActivity.getInstance() != null){
             if(mNsdManager == null) {
                 try{
                     mNsdManager = (NsdManager) MainActivity.getInstance().getSystemService(Context.NSD_SERVICE);
@@ -173,7 +172,7 @@ public class NetworkDiscovery {
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
             }
-        }*/
+        }
     }
 
     private static void startQueryRecords(int flags, int ifIndex, final String serviceName, final String regType, final String domain, final String hostName, final int port, final Map<String, String> txtRecord) {

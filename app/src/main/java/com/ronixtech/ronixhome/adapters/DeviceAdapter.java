@@ -39,6 +39,7 @@ import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
+import com.ronixtech.ronixhome.fragments.DeviceInfoFragment;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -58,7 +59,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +71,6 @@ public class DeviceAdapter extends ArrayAdapter {
     SwipeLayout swipeLayout;
     boolean layoutEnabled = true;
     FragmentManager fragmentManager;
-    SimpleDateFormat simpleDateFormat;
     boolean controlsEnabled;
     int placeMode;
     //Stuff for remote/MQTT mode
@@ -90,7 +89,6 @@ public class DeviceAdapter extends ArrayAdapter {
         if(fragment != null){
             mqttAndroidClient = fragment.getMqttAndroidClient();
         }
-        simpleDateFormat = new SimpleDateFormat("h:mm:ss a");
     }
 
     @Override
@@ -230,7 +228,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
 
                 if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, simpleDateFormat.format(item.getLastSeenTimestamp())));
+                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
@@ -653,6 +651,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else{
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
+                                }else if(id == R.id.action_device_info){
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                    deviceInfoFragment.setDevice(item);
+                                    deviceInfoFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -737,6 +744,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else{
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
+                                }else if(id == R.id.action_device_info){
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                    deviceInfoFragment.setDevice(item);
+                                    deviceInfoFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -821,6 +837,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else{
                                         Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
                                     }
+                                }else if(id == R.id.action_device_info){
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                    deviceInfoFragment.setDevice(item);
+                                    deviceInfoFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -862,6 +887,49 @@ public class DeviceAdapter extends ArrayAdapter {
                                 return true;
                             }
                         });
+                    }
+                });
+
+                vHolder.firstLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.firstLineAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.firstLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.firstLineAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.secondLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.secondLineAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.secondLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.secondLineAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.thirdLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.thirdLineAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.thirdLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.thirdLineAdvancedOptionsButton.performClick();
+                        return true;
                     }
                 });
             }
@@ -926,7 +994,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, simpleDateFormat.format(item.getLastSeenTimestamp())));
+                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
@@ -957,6 +1025,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
+                final ViewHolder tempViewHolder = vHolder;
                 vHolder.modeSwitch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -1012,7 +1081,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             @Override
                             public boolean onMenuItemClick(MenuItem item1) {
                                 int id = item1.getItemId();
-                                if(id == R.id.action_update){
+                                if(id == R.id.action_device_info){
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                    deviceInfoFragment.setDevice(item);
+                                    deviceInfoFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
+                                }
+                                else if(id == R.id.action_update){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -1053,6 +1132,14 @@ public class DeviceAdapter extends ArrayAdapter {
                                 return true;
                             }
                         });
+                    }
+                });
+
+                vHolder.soundDeviceLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.soundDeviceAdvancedOptionsButton.performClick();
+                        return true;
                     }
                 });
             }
@@ -1114,7 +1201,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, simpleDateFormat.format(item.getLastSeenTimestamp())));
+                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
@@ -1145,6 +1232,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
+                final ViewHolder tempViewHolder = vHolder;
                 vHolder.pirAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -1159,7 +1247,17 @@ public class DeviceAdapter extends ArrayAdapter {
                             @Override
                             public boolean onMenuItemClick(MenuItem item1) {
                                 int id = item1.getItemId();
-                                if(id == R.id.action_update){
+                                if(id == R.id.action_device_info){
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                    deviceInfoFragment.setDevice(item);
+                                    deviceInfoFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
+                                }
+                                else if(id == R.id.action_update){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -1200,6 +1298,14 @@ public class DeviceAdapter extends ArrayAdapter {
                                 return true;
                             }
                         });
+                    }
+                });
+
+                vHolder.pirLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.pirAdvancedOptionsButton.performClick();
+                        return true;
                     }
                 });
             }

@@ -37,6 +37,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -125,13 +126,35 @@ public class Utils {
         return dateString;
     }
 
-    public static String getTimeString(long timestamp){
+    public static String getTimeStringHoursMinutes(long timestamp){
         String timeString = "";
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
         int hour = calendar.get(Calendar.HOUR);
         int minute = calendar.get(Calendar.MINUTE);
         timeString = hour + ":" + minute;
+        return timeString;
+    }
+
+    private static SimpleDateFormat simpleDateFormatHoursMinutesSeconds;
+    public static String getTimeStringHoursMinutesSeconds(long timestamp){
+        String timeString = "";
+        /*Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        int hour = calendar.get(Calendar.HOUR);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        String amPM = "";
+        if(calendar.get(Calendar.AM_PM) == Calendar.PM){
+            amPM = "PM";
+        }else{
+            amPM = "AM";
+        }
+        timeString = hour + ":" + minute + ":" + second + " " + amPM;*/
+        if(simpleDateFormatHoursMinutesSeconds == null) {
+            simpleDateFormatHoursMinutesSeconds = new SimpleDateFormat("h:mm:ss a");
+        }
+        timeString = simpleDateFormatHoursMinutesSeconds.format(timestamp);
         return timeString;
     }
 

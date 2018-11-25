@@ -6,6 +6,10 @@
         android:orderInCategory="100"
         android:title="@string/toggle_dimming" />
     <item
+        android:id="@+id/action_device_info"
+        android:orderInCategory="100"
+        android:title="@string/device_info" />
+    <item
         android:id="@+id/action_update"
         android:orderInCategory="100"
         android:title="@string/update_device" />

@@ -118,6 +118,21 @@
     <string name="remove_device">Remove</string>
     <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
 
+    <string name="device_info">Smart Controller Info</string>
+    <string name="device_name">Name</string>
+    <string name="device_mac_address">MAC Address</string>
+    <string name="device_type">Controller Type</string>
+    <string name="device_last_seen">Last Seen</string>
+    <string name="device_status">Status</string>
+    <string name="device_mqtt_reachable">Online</string>
+    <string name="device_mqtt_unreachable">Offline/Local Mode</string>
+    <string name="device_ip_address">IP Address</string>
+    <string name="device_firmware_version">Firmware Version</string>
+    <string name="device_firmware_online_version">Online Firmware Version</string>
+    <string name="device_access_token">Access Token</string>
+    <string name="device_location">Location</string>
+    <string name="device_lines">Devices</string>
+
 
     <string name="add_device_hint_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
     <string name="add_device_hint_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
@@ -176,6 +191,7 @@
     <string name="last_seen">Last seen @ %s</string>
     <string name="firmware_available">New firmware available. Click here to update!</string>
     <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable control functionality.</string>
+    <string name="firmware_up_to_date">Controller\'s firmware is up-to-date</string>
 
     <string name="delete_device">Delete Smart Controller</string>
 
@@ -200,6 +216,7 @@
     <string name="firmware_update_successfull">Firmware updated successfully, rebooting device now</string>
     <string name="updating_firmware">Updating firmware</string>
     <string name="firmware_update_failed">Failed to update Controller\'s firmware. Please try again later, or contact support</string>
+    <string name="unable_to_obtain_online_firmware_version">Unable to obtain online firmware version</string>
 
     <string name="home_network">Home Network</string>
     <string name="configure_home_network_title">Please select your home network, where all your Smart Controllers will be connected to</string>

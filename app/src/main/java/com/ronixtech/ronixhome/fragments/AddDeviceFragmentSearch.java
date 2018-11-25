@@ -393,21 +393,13 @@ public class AddDeviceFragmentSearch extends Fragment {
 
         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
-            Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-            if(!mWifiManager.removeNetwork(i.networkId)){
-                Log.d(TAG, "Failed to remove network " + i.SSID + ", disabling it");
-                mWifiManager.disableNetwork(i.networkId);
-            }
-            /*if(i.SSID != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)) {
+            if(i != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)){
                 Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                mWifiManager.disableNetwork(i.networkId);
-                mWifiManager.removeNetwork(i.networkId);
+                if(!mWifiManager.removeNetwork(i.networkId)){
+                    Log.d(TAG, "Failed to remove network " + i.SSID + ", disabling it");
+                    mWifiManager.disableNetwork(i.networkId);
+                }
             }
-            if(MySettings.getHomeNetwork() != null && i.SSID != null && i.SSID.toLowerCase().contains(MySettings.getHomeNetwork().getSsid().toLowerCase())) {
-                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
-                mWifiManager.disableNetwork(i.networkId);
-                mWifiManager.removeNetwork(i.networkId);
-            }*/
         }
         mWifiManager.saveConfiguration();
 
@@ -467,12 +459,6 @@ public class AddDeviceFragmentSearch extends Fragment {
 
         Log.d(TAG, "Added network, new ID:" + networkID);
 
-        try {
-            Thread.sleep(1000);
-        }catch (InterruptedException e){
-
-        }
-
         if(networkID != -1) {
             Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID);
             mWifiManager.disconnect();
@@ -481,7 +467,7 @@ public class AddDeviceFragmentSearch extends Fragment {
         }else{
             list = mWifiManager.getConfiguredNetworks();
             for(WifiConfiguration i : list) {
-                if(i.SSID != null && i.SSID.toLowerCase().contains("\"" + ssid.toLowerCase() + "\"")) {
+                if(i.SSID != null && i.SSID.toLowerCase().contains(ssid.toLowerCase()/*"\"" + ssid.toLowerCase() + "\""*/)) {
                     Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + conf.networkId);
                     mWifiManager.disconnect();
                     mWifiManager.enableNetwork(i.networkId, true);

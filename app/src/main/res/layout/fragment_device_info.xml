@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".fragments.DeviceInfoFragment">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/whiteColor"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/device_name_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_name"/>
+
+            <TextView
+                android:id="@+id/device_name_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="DeviceName"/>
+
+            <TextView
+                android:id="@+id/device_mac_address_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_mac_address"/>
+
+            <TextView
+                android:id="@+id/device_mac_address_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="b2:c3:29:29:a4"/>
+
+            <TextView
+                android:id="@+id/device_type_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_type"/>
+
+            <TextView
+                android:id="@+id/device_type_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="Switch - 3 Lines - WiFi"/>
+
+
+            <TextView
+                android:id="@+id/device_last_seen_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_last_seen"/>
+
+            <TextView
+                android:id="@+id/device_last_seen_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="12:00pm"/>
+
+
+            <TextView
+                android:id="@+id/device_status_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_status"/>
+
+            <TextView
+                android:id="@+id/device_status_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="@string/device_mqtt_unreachable"/>
+
+
+            <TextView
+                android:id="@+id/device_ip_address_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_ip_address"/>
+
+            <TextView
+                android:id="@+id/device_ip_address_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="192.168.1.2"/>
+
+            <TextView
+                android:id="@+id/device_firmware_version_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_firmware_version"/>
+
+            <TextView
+                android:id="@+id/device_firmware_version_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="101416"/>
+
+            <TextView
+                android:id="@+id/device_firmware_online_version_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_firmware_online_version"/>
+
+            <TextView
+                android:id="@+id/device_firmware_online_version_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="101416"/>
+
+            <TextView
+                android:id="@+id/device_firmware_message_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/redColor"
+                android:text="@string/firmware_available"/>
+
+            <TextView
+                android:id="@+id/device_access_token_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_access_token"/>
+
+            <TextView
+                android:id="@+id/device_access_token_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="ronix_token"/>
+
+
+            <TextView
+                android:id="@+id/device_location_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_location"/>
+
+            <TextView
+                android:id="@+id/device_location_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="Place/Room"/>
+
+            <Button
+                android:id="@+id/change_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/button_background_round_blue"
+                android:textSize="18sp"
+                android:textColor="@color/whiteColor"
+                android:text="Change"/>
+
+            <TextView
+                android:id="@+id/device_lines_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_lines"/>
+
+            <TextView
+                android:id="@+id/device_lines_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text=""/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+</ScrollView>

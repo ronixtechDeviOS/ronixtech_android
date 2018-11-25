@@ -253,6 +253,26 @@ public class Device implements Comparable {
         isDeviceMQTTReachable = deviceMQTTReachable;
     }
 
+    public String getDeviceTypeString(){
+        if(deviceTypeID == Device.DEVICE_TYPE_wifi_1line_old || deviceTypeID == Device.DEVICE_TYPE_wifi_1line){
+            return "SmartSwitch - 1 Line - WiFi";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_wifi_2lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_2lines){
+            return "SmartSwitch - 2 Lines - WiFi";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_wifi_3lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_3lines || deviceTypeID == DEVICE_TYPE_wifi_3lines_workaround){
+            return "SmartSwitch - 3 Lines - WiFi";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_1lines){
+            return "SmartPlug - 1 Line - WiFi";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_2lines){
+            return "SmartPlug - 2 Lines - WiFi";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_3lines){
+            return "SmartPlug - 3 Lines - WiFi";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            return "SmartSensor - MotionSensor";
+        }else if(deviceTypeID == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            return "SmartSound";
+        }else return "Unknown Device Type";
+    }
+
     @Override
     public boolean equals(Object object){
         Device device = (Device) object;
