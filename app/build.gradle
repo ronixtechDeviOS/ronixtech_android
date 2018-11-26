@@ -7,8 +7,8 @@ android {
         applicationId "com.ronixtech.ronixhome"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 41
-        versionName "1.41"
+        versionCode 42
+        versionName "1.42"
         multiDexEnabled true
     }
     buildTypes {
@@ -72,7 +72,7 @@ dependencies {
     }
 
 
-    compile 'com.github.andriydruk:dnssd:0.9.11'
+    implementation 'com.github.andriydruk:dnssd:0.9.11'
 
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 

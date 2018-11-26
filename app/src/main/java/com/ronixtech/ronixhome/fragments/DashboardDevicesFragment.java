@@ -464,14 +464,7 @@ public class DashboardDevicesFragment extends Fragment {
                 device.setDeviceMQTTReachable(false);
             }
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
-            //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
-            for (Device device:devices) {
-                device.setDeviceMQTTReachable(false);
-            }
-            MainActivity.getInstance().refreshDevicesListFromMemory();
-            String clientId = MqttClient.generateClientId();
-            getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+            //start MQTT in onStart
         }
     }
 
@@ -482,29 +475,33 @@ public class DashboardDevicesFragment extends Fragment {
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
             stopTimer();
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            //stop MQTT
-            /*if(mqttAndroidClient != null){
-                try {
-                    mqttAndroidClient.disconnect();
-                    mqttAndroidClient.unregisterResources();
-                    mqttAndroidClient.close();
-                }catch (MqttException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
-                }catch (Exception e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
-                }
-            }*/
-            if(deviceAdapter != null){
-                //deviceAdapter.disconnectMQTT();
-            }
+            //stop MQTT in onDestroy
         }
 
         super.onPause();
-        for (Device device:devices) {
+        /*for (Device device:devices) {
             device.setDeviceMQTTReachable(false);
-        }
+        }*/
         for (Device device:devices) {
             MySettings.addDevice(device);
+        }
+    }
+
+    @Override
+    public void onStart(){
+        Log.d(TAG, "onStart");
+        super.onStart();
+        if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+            //startTimer in onResume
+        }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+            Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
+            //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
+            if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
+                String clientId = MqttClient.generateClientId();
+                getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+            }else{
+                Log.d(TAG, "MQTT is already connected");
+            }
         }
     }
 
@@ -522,6 +519,12 @@ public class DashboardDevicesFragment extends Fragment {
             }catch (Exception e){
                 Log.d(TAG, "Exception: " + e.getMessage());
             }
+        }
+        for (Device device:devices) {
+            device.setDeviceMQTTReachable(false);
+        }
+        for (Device device:devices) {
+            MySettings.addDevice(device);
         }
         super.onDestroy();
     }
@@ -639,11 +642,11 @@ public class DashboardDevicesFragment extends Fragment {
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
                 public void connectComplete(boolean b, String s) {
-                    Log.d(TAG, "Connection complete on " + s);
+                    Log.d(TAG, "MQTT connectComplete on " + s);
                 }
                 @Override
                 public void connectionLost(Throwable throwable) {
-                    Log.d(TAG, "Connection lost");
+                    Log.d(TAG, "MQTT connectionLost");
                     for (Device device:devices) {
                         device.setDeviceMQTTReachable(false);
                     }
@@ -651,18 +654,19 @@ public class DashboardDevicesFragment extends Fragment {
                 }
                 @Override
                 public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+                    //setMessageNotification(s, new String(mqttMessage.getPayload()));
+                    Log.d(TAG, "MQTT messageArrived: 'topic': " + s);
+                    Log.d(TAG, "MQTT messageArrived: 'mqttMessage': " + new String(mqttMessage.getPayload()));
                     //make sure it's the 'status' topic, not the 'control' topic
                     if(s.contains("status")){
                         /*if(MySettings.isGetStatusActive()){
                            return;
                         }*/
-                        while (MySettings.isControlActive()){
+                        if (MySettings.isControlActive()){
                             Log.d(TAG, "Controls active, do nothing");
+                            return;
                         }
                         MySettings.setGetStatusState(true);
-                        //setMessageNotification(s, new String(mqttMessage.getPayload()));
-                        Log.d(TAG, "Message arrived: 'topic': " + s);
-                        Log.d(TAG, "Message arrived: 'mqttMessage': " + new String(mqttMessage.getPayload()));
                         String response = new String(mqttMessage.getPayload());
                         int index = s.lastIndexOf("/");
                         Device device = DevicesInMemory.getDeviceByChipID(s.substring(index+1));
@@ -868,7 +872,7 @@ public class DashboardDevicesFragment extends Fragment {
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                    Log.d(TAG, "Delivery complete");
+                    Log.d(TAG, "MQTT deliveryComplete");
                 }
             });
             try {
@@ -878,7 +882,7 @@ public class DashboardDevicesFragment extends Fragment {
                         @Override
                         public void onSuccess(IMqttToken asyncActionToken) {
                             mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
-                            Log.d(TAG, "Success");
+                            Log.d(TAG, "MQTT connect onSuccess");
                             try {
                                 for (Device device:devices) {
                                     subscribe(mqttAndroidClient, device, 1);
@@ -894,7 +898,7 @@ public class DashboardDevicesFragment extends Fragment {
 
                         @Override
                         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            Log.d(TAG, "Failure " + exception.toString());
+                            Log.d(TAG, "MQTT connect onFailure: " + exception.toString());
                             for (Device device:devices) {
                                 device.setDeviceMQTTReachable(false);
                             }
@@ -918,14 +922,14 @@ public class DashboardDevicesFragment extends Fragment {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "Subscribe Successfully on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                    Log.d(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
                     device.setDeviceMQTTReachable(false);
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
 
                 @Override
                 public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
-                    Log.e(TAG, "Subscribe Failed on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                    Log.e(TAG, "MQTT subscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
                     device.setDeviceMQTTReachable(false);
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
@@ -937,15 +941,15 @@ public class DashboardDevicesFragment extends Fragment {
             token2.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "Subscribe Successfully on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Log.d(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
                     try {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                         jsonObject.put("R_M_ALV", "1");
                         MqttMessage mqttMessage = new MqttMessage();
                         mqttMessage.setPayload(jsonObject.toString().getBytes());
-                        Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                        Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                        Log.d(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                        Log.d(TAG, "MQTT publish data: " + mqttMessage);
                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                     }catch (JSONException e){
                         Log.d(TAG, "Exception: " + e.getMessage());
@@ -956,7 +960,7 @@ public class DashboardDevicesFragment extends Fragment {
 
                 @Override
                 public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
-                    Log.e(TAG, "Subscribe Failed on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Log.e(TAG, "MQTT subscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
                 }
             });
         }

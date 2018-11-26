@@ -1752,8 +1752,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                     MqttMessage mqttMessage = new MqttMessage();
                     mqttMessage.setPayload(jsonObject.toString().getBytes());
-                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                    Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                    Log.d(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Log.d(TAG, "MQTT publish data: " + mqttMessage);
                     mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                 }catch (JSONException e){
                     Log.d(TAG, "Exception: " + e.getMessage());
