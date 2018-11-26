@@ -36,7 +36,7 @@
         <GridView
             android:id="@+id/floors_gridview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@id/floors_listview_title_textview"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
@@ -52,6 +52,16 @@
             android:stretchMode="columnWidth"
             android:scrollbars="none"
             android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/floors_gridview_long_press_hint_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/floors_gridview"
+            android:textColor="@color/darkGrayColor"
+            android:textSize="16sp"
+            android:text="@string/floor_long_press_hint"/>
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/add_layout"

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -85,6 +86,7 @@ public class DashboardDevicesFragment extends Fragment {
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
     static List<Device> devices;
+    TextView devicesListViewLongPressHint;
 
     Handler listHandler;
 
@@ -124,6 +126,7 @@ public class DashboardDevicesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard_devices, container, false);
         if(room != null){
@@ -145,6 +148,8 @@ public class DashboardDevicesFragment extends Fragment {
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
+
+        devicesListViewLongPressHint = view.findViewById(R.id.devices_listview_long_press_hint_textview);
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = DevicesInMemory.getDevices();
@@ -317,9 +322,11 @@ public class DashboardDevicesFragment extends Fragment {
         if(showAddDeviceLayout){
             addFabMenu.setVisibility(View.GONE);
             devicesListView.setVisibility(View.GONE);
+            devicesListViewLongPressHint.setVisibility(View.GONE);
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             devicesListView.setVisibility(View.VISIBLE);
+            devicesListViewLongPressHint.setVisibility(View.VISIBLE);
         }
     }
 
@@ -447,11 +454,15 @@ public class DashboardDevicesFragment extends Fragment {
 
     @Override
     public void onResume(){
+        Log.d(TAG, "onResume");
         super.onResume();
         isResumed = true;
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
             Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
             startTimer();
+            for (Device device:devices) {
+                device.setDeviceMQTTReachable(false);
+            }
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
             Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
             //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
@@ -466,12 +477,13 @@ public class DashboardDevicesFragment extends Fragment {
 
     @Override
     public void onPause(){
+        Log.d(TAG, "onPause");
         isResumed = false;
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
             stopTimer();
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
             //stop MQTT
-            if(mqttAndroidClient != null){
+            /*if(mqttAndroidClient != null){
                 try {
                     mqttAndroidClient.disconnect();
                     mqttAndroidClient.unregisterResources();
@@ -481,7 +493,7 @@ public class DashboardDevicesFragment extends Fragment {
                 }catch (Exception e){
                     Log.d(TAG, "Exception: " + e.getMessage());
                 }
-            }
+            }*/
             if(deviceAdapter != null){
                 //deviceAdapter.disconnectMQTT();
             }
@@ -489,8 +501,120 @@ public class DashboardDevicesFragment extends Fragment {
 
         super.onPause();
         for (Device device:devices) {
+            device.setDeviceMQTTReachable(false);
+        }
+        for (Device device:devices) {
             MySettings.addDevice(device);
         }
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.d(TAG, "onDestroy");
+        //stop MQTT
+        if(mqttAndroidClient != null){
+            try {
+                mqttAndroidClient.disconnect();
+                mqttAndroidClient.unregisterResources();
+                mqttAndroidClient.close();
+            }catch (MqttException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (Exception e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }
+        }
+        super.onDestroy();
+    }
+
+    /*@Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        //FIXED: setUserVisibleHint() called before onCreateView() in Fragment causes NullPointerException
+        //super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser){
+            startTimer();
+        }else{
+            stopTimer();
+        }
+    }*/
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        //inflater.inflate(R.menu.menu_gym, menu);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        /*if (v.getId()==R.id.devices_listview) {
+         *//*MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.menu_device, menu);*//*
+
+            menu.add("One");
+            menu.add("Two");
+            menu.add("Three");
+        }*/
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        /*switch(item.getItemId()) {
+            case R.id.action_0:
+                // add stuff here
+                Toast.makeText(getActivity(), "action 0", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_1:
+                // add stuff here
+                Toast.makeText(getActivity(), "action 1", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_2:
+                // add stuff here
+                Toast.makeText(getActivity(), "action 2", Toast.LENGTH_SHORT).show();
+                return true;
+
+            default:
+                return super.onContextItemSelected(item);
+        }*/
+        return super.onContextItemSelected(item);
+    }
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    /*@Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }*/
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
     }
 
     public void getMqttClient(Context context, String brokerUrl, String clientId) {
@@ -602,105 +726,132 @@ public class DashboardDevicesFragment extends Fragment {
                                         device.setFirmwareUpdateAvailable(true);
                                     }
 
-                                    if(unitStatus != null && unitStatus.has("U_W_STT")) {
-                                        JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+                                    if(device.isDeviceMQTTReachable()){
+                                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+                                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                line2PowerState = Integer.valueOf(line2PowerStateString);
 
-                                    }
-
-                                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                                        if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                            JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-                                            String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                            int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                            line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                            line0PowerState = Integer.valueOf(line0PowerStateString);
-                                            line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                            line1PowerState = Integer.valueOf(line1PowerStateString);
-                                            line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                            line2PowerState = Integer.valueOf(line2PowerStateString);
-
-                                            String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
-                                            int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                                            line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                                            if(line0DimmingValueString.equals(":")){
-                                                line0DimmingValue = 10;
-                                            }else{
-                                                line0DimmingValue = Integer.valueOf(line0DimmingValueString);
-                                            }
-
-                                            line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                                            if(line1DimmingValueString.equals(":")){
-                                                line1DimmingValue = 10;
-                                            }else{
-                                                line1DimmingValue = Integer.valueOf(line1DimmingValueString);
-                                            }
-
-                                            line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                                            if(line2DimmingValueString.equals(":")){
-                                                line2DimmingValue = 10;
-                                            }else{
-                                                line2DimmingValue = Integer.valueOf(line2DimmingValueString);
-                                            }
-
-
-                                            String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
-                                            int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                                            line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                                            line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                                            line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                                            line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                                            line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                                            line2DimmingState = Integer.valueOf(line2DimmingStateString);
-
-                                            List<Line> lines = device.getLines();
-                                            for (Line line:lines) {
-                                                if(line.getPosition() == 0){
-                                                    line.setPowerState(line0PowerState);
-                                                    line.setDimmingState(line0DimmingState);
-                                                    line.setDimmingVvalue(line0DimmingValue);
-                                                }else if(line.getPosition() == 1){
-                                                    line.setPowerState(line1PowerState);
-                                                    line.setDimmingState(line1DimmingState);
-                                                    line.setDimmingVvalue(line1DimmingValue);
-                                                }else if(line.getPosition() == 2){
-                                                    line.setPowerState(line2PowerState);
-                                                    line.setDimmingState(line2DimmingState);
-                                                    line.setDimmingVvalue(line2DimmingValue);
+                                                String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
+                                                int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
+                                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
+                                                if(line0DimmingValueString.equals(":")){
+                                                    line0DimmingValue = 10;
+                                                }else{
+                                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
                                                 }
-                                            }
 
-                                            device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                        }else{
-                                            device.setFirmwareUpdateAvailable(true);
-                                        }
-                                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                        if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                            JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-                                            String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                            int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                            line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                            line0PowerState = Integer.valueOf(line0PowerStateString);
-                                            line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                            line1PowerState = Integer.valueOf(line1PowerStateString);
-                                            line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                            line2PowerState = Integer.valueOf(line2PowerStateString);
-
-                                            List<Line> lines = device.getLines();
-                                            for (Line line:lines) {
-                                                if(line.getPosition() == 0){
-                                                    line.setPowerState(line0PowerState);
-                                                }else if(line.getPosition() == 1){
-                                                    line.setPowerState(line1PowerState);
-                                                }else if(line.getPosition() == 2){
-                                                    line.setPowerState(line2PowerState);
+                                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
+                                                if(line1DimmingValueString.equals(":")){
+                                                    line1DimmingValue = 10;
+                                                }else{
+                                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
                                                 }
-                                            }
 
-                                            device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                        }else {
-                                            device.setFirmwareUpdateAvailable(true);
+                                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
+                                                if(line2DimmingValueString.equals(":")){
+                                                    line2DimmingValue = 10;
+                                                }else{
+                                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                                }
+
+
+                                                String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
+                                                int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
+                                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
+                                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
+                                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
+                                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
+                                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
+                                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
+
+                                                List<Line> lines = device.getLines();
+                                                for (Line line:lines) {
+                                                    if(line.getPosition() == 0){
+                                                        line.setPowerState(line0PowerState);
+                                                        line.setDimmingState(line0DimmingState);
+                                                        line.setDimmingVvalue(line0DimmingValue);
+                                                    }else if(line.getPosition() == 1){
+                                                        line.setPowerState(line1PowerState);
+                                                        line.setDimmingState(line1DimmingState);
+                                                        line.setDimmingVvalue(line1DimmingValue);
+                                                    }else if(line.getPosition() == 2){
+                                                        line.setPowerState(line2PowerState);
+                                                        line.setDimmingState(line2DimmingState);
+                                                        line.setDimmingVvalue(line2DimmingValue);
+                                                    }
+                                                }
+
+                                                String temperatureString, beepString, hwLockString;
+                                                int temperatureValue;
+                                                boolean beep, hwLock;
+                                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                                beepString = hardwareStatus.getString("U_BEEP_");
+                                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                                temperatureValue = Integer.parseInt(temperatureString);
+                                                beep = Boolean.parseBoolean(beepString);
+                                                hwLock = Boolean.parseBoolean(hwLockString);
+
+                                                device.setTemperature(temperatureValue);
+                                                device.setBeep(beep);
+                                                device.setHwLock(hwLock);
+
+                                                device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                                            }else{
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
+                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+                                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                                                List<Line> lines = device.getLines();
+                                                for (Line line:lines) {
+                                                    if(line.getPosition() == 0){
+                                                        line.setPowerState(line0PowerState);
+                                                    }else if(line.getPosition() == 1){
+                                                        line.setPowerState(line1PowerState);
+                                                    }else if(line.getPosition() == 2){
+                                                        line.setPowerState(line2PowerState);
+                                                    }
+                                                }
+
+                                                String temperatureString, beepString, hwLockString;
+                                                int temperatureValue;
+                                                boolean beep, hwLock;
+                                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                                beepString = hardwareStatus.getString("U_BEEP_");
+                                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                                temperatureValue = Integer.parseInt(temperatureString);
+                                                beep = Boolean.parseBoolean(beepString);
+                                                hwLock = Boolean.parseBoolean(hwLockString);
+
+                                                device.setTemperature(temperatureValue);
+                                                device.setBeep(beep);
+                                                device.setHwLock(hwLock);
+
+                                                device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                                            }else {
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
                                         }
                                     }
                                 }
@@ -827,97 +978,6 @@ public class DashboardDevicesFragment extends Fragment {
         disconnectedBufferOptions.setPersistBuffer(true);
         disconnectedBufferOptions.setDeleteOldestMessages(false);
         return disconnectedBufferOptions;
-    }
-
-    /*@Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        //FIXED: setUserVisibleHint() called before onCreateView() in Fragment causes NullPointerException
-        //super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser){
-            startTimer();
-        }else{
-            stopTimer();
-        }
-    }*/
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        //inflater.inflate(R.menu.menu_gym, menu);
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        /*if (v.getId()==R.id.devices_listview) {
-         *//*MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.menu_device, menu);*//*
-
-            menu.add("One");
-            menu.add("Two");
-            menu.add("Three");
-        }*/
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item){
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        /*switch(item.getItemId()) {
-            case R.id.action_0:
-                // add stuff here
-                Toast.makeText(getActivity(), "action 0", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.action_1:
-                // add stuff here
-                Toast.makeText(getActivity(), "action 1", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.action_2:
-                // add stuff here
-                Toast.makeText(getActivity(), "action 2", Toast.LENGTH_SHORT).show();
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-        }*/
-        return super.onContextItemSelected(item);
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    /*@Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }*/
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 
     public static class StatusGetter extends AsyncTask<Void, Void, Void>{
@@ -1094,7 +1154,22 @@ public class DashboardDevicesFragment extends Fragment {
                                     line.setDimmingVvalue(line2DimmingValue);
                                 }
                             }
-                            device.setLines(lines);
+
+                            String temperatureString, beepString, hwLockString;
+                            int temperatureValue;
+                            boolean beep, hwLock;
+                            temperatureString = hardwareStatus.getString("U_H_TMP");
+                            beepString = hardwareStatus.getString("U_BEEP_");
+                            hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                            temperatureValue = Integer.parseInt(temperatureString);
+                            beep = Boolean.parseBoolean(beepString);
+                            hwLock = Boolean.parseBoolean(hwLockString);
+
+                            device.setTemperature(temperatureValue);
+                            device.setBeep(beep);
+                            device.setHwLock(hwLock);
+
                             if(statusCode == 200) {
                                 device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                 device.setErrorCount(0);
@@ -1425,6 +1500,33 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
                                 }
 
+                                String temperatureString, beepString, hwLockString;
+                                int temperatureValue;
+                                boolean beep = true, hwLock = false;
+                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                beepString = hardwareStatus.getString("U_BEEP_");
+                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                temperatureValue = Integer.parseInt(temperatureString);
+                                if(beepString != null && beepString.length() >= 1){
+                                    if(Integer.parseInt(beepString) == 1){
+                                        beep = true;
+                                    }else{
+                                        beep = false;
+                                    }
+                                }
+                                if(hwLockString != null && hwLockString.length() >= 1){
+                                    if(Integer.parseInt(hwLockString) == 1){
+                                        hwLock = true;
+                                    }else{
+                                        hwLock = false;
+                                    }
+                                }
+
+                                device.setTemperature(temperatureValue);
+                                device.setBeep(beep);
+                                device.setHwLock(hwLock);
+
                                 if(statusCode == 200) {
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                     device.setErrorCount(0);
@@ -1467,7 +1569,21 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
                                 }
 
-                                //device.setLines(lines);
+                                String temperatureString, beepString, hwLockString;
+                                int temperatureValue;
+                                boolean beep, hwLock;
+                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                beepString = hardwareStatus.getString("U_BEEP_");
+                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                temperatureValue = Integer.parseInt(temperatureString);
+                                beep = Boolean.parseBoolean(beepString);
+                                hwLock = Boolean.parseBoolean(hwLockString);
+
+                                device.setTemperature(temperatureValue);
+                                device.setBeep(beep);
+                                device.setHwLock(hwLock);
+
                                 if(statusCode == 200) {
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                     device.setErrorCount(0);

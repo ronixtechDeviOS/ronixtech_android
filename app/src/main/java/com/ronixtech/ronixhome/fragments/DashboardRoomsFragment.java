@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -58,6 +59,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     GridView roomsGridView;
     RoomsGridAdapter adapter;
     List<Room> rooms;
+    TextView roomsGridViewLongPressHint;
 
     Place place;
 
@@ -109,6 +111,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
+
+        roomsGridViewLongPressHint = view.findViewById(R.id.rooms_gridview_long_press_hint_textview);
 
         if(MySettings.getAllDevices() != null && MySettings.getAllDevices().size() >= 1){
             List<Device> devices = MySettings.getAllDevices();
@@ -401,9 +405,11 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         if(showAddPlaceLayout || showAddRoomLayout){
             addFabMenu.setVisibility(View.GONE);
             roomsGridView.setVisibility(View.GONE);
+            roomsGridViewLongPressHint.setVisibility(View.GONE);
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             roomsGridView.setVisibility(View.VISIBLE);
+            roomsGridViewLongPressHint.setVisibility(View.VISIBLE);
         }
     }
 

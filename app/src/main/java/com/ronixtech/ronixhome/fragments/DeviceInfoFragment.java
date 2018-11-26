@@ -35,7 +35,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, ipAddressStaticTextView, ipAddressTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, firmwareMessageTextView, accessTokenTextView, locaionTextView, linesTextView;
+    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, ipAddressStaticTextView, ipAddressTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
 
     private Device device;
     private int placeMode;
@@ -85,6 +85,9 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         firmwareVersionTextView = view.findViewById(R.id.device_firmware_version_textview);
         onlineFirmwareVersionTextView = view.findViewById(R.id.device_firmware_online_version_textview);
         firmwareMessageTextView = view.findViewById(R.id.device_firmware_message_textview);
+        temperatureTextView = view.findViewById(R.id.device_temperature_textview);
+        beepStatusTextView = view.findViewById(R.id.device_beep_status_textview);
+        hwLockStatusTextView = view.findViewById(R.id.device_hw_lock_status_textview);
         accessTokenTextView = view.findViewById(R.id.device_access_token_textview);
         locaionTextView = view.findViewById(R.id.device_location_textview);
         linesTextView = view.findViewById(R.id.device_lines_textview);
@@ -104,7 +107,11 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 ipAddressTextView.setVisibility(View.VISIBLE);
                 ipAddressStaticTextView.setVisibility(View.VISIBLE);
-                ipAddressTextView.setText(""+device.getIpAddress());
+                if(device.getIpAddress().length() >= 1) {
+                    ipAddressTextView.setText("" + device.getIpAddress());
+                }else{
+                    ipAddressTextView.setText("-");
+                }
             }
 
             int currentVersion = 0, onlineVersion = 0;
@@ -124,8 +131,8 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             if(currentVersion == onlineVersion && currentVersion != 0){
                 firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
 
-                firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
-                onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
+                firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
             }else{
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
@@ -135,6 +142,24 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 }else{
                     firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
                 }
+            }
+
+            if(device.getTemperature() != 0){
+                temperatureTextView.setText(""+ device.getTemperature() + " \u2103");
+            }else{
+                temperatureTextView.setText("-");
+            }
+
+            if(device.isBeep()){
+                beepStatusTextView.setText(getActivity().getResources().getString(R.string.on));
+            }else{
+                beepStatusTextView.setText(getActivity().getResources().getString(R.string.off));
+            }
+
+            if(device.isHwLock()){
+                hwLockStatusTextView.setText(getActivity().getResources().getString(R.string.on));
+            }else{
+                hwLockStatusTextView.setText(getActivity().getResources().getString(R.string.off));
             }
 
             accessTokenTextView.setText(""+device.getAccessToken());

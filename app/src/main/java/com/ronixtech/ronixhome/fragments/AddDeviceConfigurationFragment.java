@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -63,6 +65,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
     TextView firstLineSelectedLineNameTextView, secondLineSelectedLineNameTextView, thirdLineSelectedLineNameTextView;
     TextView firstLineSelectedLineLocationTextView, secondLineSelectedLineLocationTextView, thirdLineSelectedLineLocationTextView;
     ImageView firstLineSelectedLineImageView, secondLineSelectedLineImageView, thirdLineSelectedLineImageView;
+    RelativeLayout firstLineDimmingLayout, secondLineDimmingLayout, thirdLineDimmingLayout;
+    CheckBox firstLineDimmingCheckBox, secondLineDimmingCheckBox, thirdLineDimmingCheckBox;
+    TextView firstLineDimmingTextView, secondLineDimmingTextView, thirdLineDimmingTextView;
     Button continueButton;
     TextView deviceNameTextView;
 
@@ -151,6 +156,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         firstLineSelectedLineImageView = view.findViewById(R.id.first_line_selected_line_type_imageview);
         secondLineSelectedLineImageView = view.findViewById(R.id.second_line_selected_line_type_imageview);
         thirdLineSelectedLineImageView = view.findViewById(R.id.third_line_selected_line_type_imageview);
+
+        firstLineDimmingLayout = view.findViewById(R.id.first_line_dimming__layout);
+        secondLineDimmingLayout = view.findViewById(R.id.second_line_dimming__layout);
+        thirdLineDimmingLayout = view.findViewById(R.id.third_line_dimming__layout);
+
+        firstLineDimmingCheckBox = view.findViewById(R.id.first_line_dimming_checkbox);
+        secondLineDimmingCheckBox = view.findViewById(R.id.second_line_dimming_checkbox);
+        thirdLineDimmingCheckBox = view.findViewById(R.id.third_line_dimming_checkbox);
+
+        firstLineDimmingTextView = view.findViewById(R.id.first_line_dimming_textview);
+        secondLineDimmingTextView = view.findViewById(R.id.second_line_dimming_textview);
+        thirdLineDimmingTextView = view.findViewById(R.id.third_line_dimming_textview);
+
 
         continueButton = view.findViewById(R.id.continue_button);
 
@@ -502,6 +520,55 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
             }
         });
 
+        firstLineDimmingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firstLineDimmingCheckBox.performClick();
+            }
+        });
+        firstLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    firstLineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_on));
+                }else{
+                    firstLineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
+                }
+            }
+        });
+        secondLineDimmingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                secondLineDimmingCheckBox.performClick();
+            }
+        });
+        secondLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    secondLineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_on));
+                }else{
+                    secondLineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
+                }
+            }
+        });
+        thirdLineDimmingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                thirdLineDimmingCheckBox.performClick();
+            }
+        });
+        thirdLineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    thirdLineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_on));
+                }else{
+                    thirdLineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
+                }
+            }
+        });
+
         firstLineSelectedLineLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -601,10 +668,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
                         firstLine = new Line();
                         firstLine.setPosition(0);
-                        firstLine.setName(firstLineNameEditText.getText().toString());
+                        if(firstLineNameEditText.getText().toString().length() >= 1){
+                            firstLine.setName(firstLineNameEditText.getText().toString());
+                        }else{
+                            firstLine.setName(getActivity().getResources().getString(R.string.line_1_name_hint));
+                        }
                         firstLine.setTypeID(firstLineType.getId());
                         firstLine.setPowerState(Line.LINE_STATE_OFF);
                         firstLine.setDeviceID(device.getId());
+                        if(firstLineDimmingCheckBox.isChecked()){
+                            firstLine.setDimmingState(Line.DIMMING_STATE_ON);
+                        }else{
+                            firstLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                        }
                         if(firstLine.getMode() == Line.MODE_SECONDARY){
                             firstLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID()).getChipID());
                             firstLine.setPrimaryLinePosition(firstLineSelectedLine.getPosition());
@@ -614,10 +690,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
                         firstLine = new Line();
                         firstLine.setPosition(0);
-                        firstLine.setName(firstLineNameEditText.getText().toString());
+                        if(firstLineNameEditText.getText().toString().length() >= 1){
+                            firstLine.setName(firstLineNameEditText.getText().toString());
+                        }else{
+                            firstLine.setName(getActivity().getResources().getString(R.string.line_1_name_hint));
+                        }
                         firstLine.setTypeID(firstLineType.getId());
                         firstLine.setPowerState(Line.LINE_STATE_OFF);
                         firstLine.setDeviceID(device.getId());
+                        if(firstLineDimmingCheckBox.isChecked()){
+                            firstLine.setDimmingState(Line.DIMMING_STATE_ON);
+                        }else{
+                            firstLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                        }
                         if(firstLine.getMode() == Line.MODE_SECONDARY){
                             firstLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID()).getChipID());
                             firstLine.setPrimaryLinePosition(firstLineSelectedLine.getPosition());
@@ -626,10 +711,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
 
                         secondLine = new Line();
                         secondLine.setPosition(1);
-                        secondLine.setName(secondLineNameEditText.getText().toString());
+                        if(secondLineNameEditText.getText().toString().length() >= 1){
+                            secondLine.setName(secondLineNameEditText.getText().toString());
+                        }else{
+                            secondLine.setName(getActivity().getResources().getString(R.string.line_2_name_hint));
+                        }
                         secondLine.setTypeID(secondLineType.getId());
                         secondLine.setPowerState(Line.LINE_STATE_OFF);
                         secondLine.setDeviceID(device.getId());
+                        if(secondLineDimmingCheckBox.isChecked()){
+                            secondLine.setDimmingState(Line.DIMMING_STATE_ON);
+                        }else{
+                            secondLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                        }
                         if(secondLine.getMode() == Line.MODE_SECONDARY){
                             secondLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(secondLineSelectedLine.getDeviceID()).getChipID());
                             secondLine.setPrimaryLinePosition(secondLineSelectedLine.getPosition());
@@ -639,10 +733,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                         firstLine.setPosition(0);
-                        firstLine.setName(firstLineNameEditText.getText().toString());
+                        if(firstLineNameEditText.getText().toString().length() >= 1){
+                            firstLine.setName(firstLineNameEditText.getText().toString());
+                        }else{
+                            firstLine.setName(getActivity().getResources().getString(R.string.line_1_name_hint));
+                        }
                         firstLine.setTypeID(firstLineType.getId());
                         firstLine.setPowerState(Line.LINE_STATE_OFF);
                         firstLine.setDeviceID(device.getId());
+                        if(firstLineDimmingCheckBox.isChecked()){
+                            firstLine.setDimmingState(Line.DIMMING_STATE_ON);
+                        }else{
+                            firstLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                        }
                         if(firstLine.getMode() == Line.MODE_SECONDARY){
                             firstLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(firstLineSelectedLine.getDeviceID()).getChipID());
                             firstLine.setPrimaryLinePosition(firstLineSelectedLine.getPosition());
@@ -650,10 +753,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         lines.add(firstLine);
 
                         secondLine.setPosition(1);
-                        secondLine.setName(secondLineNameEditText.getText().toString());
+                        if(secondLineNameEditText.getText().toString().length() >= 1){
+                            secondLine.setName(secondLineNameEditText.getText().toString());
+                        }else{
+                            secondLine.setName(getActivity().getResources().getString(R.string.line_2_name_hint));
+                        }
                         secondLine.setTypeID(secondLineType.getId());
                         secondLine.setPowerState(Line.LINE_STATE_OFF);
                         secondLine.setDeviceID(device.getId());
+                        if(secondLineDimmingCheckBox.isChecked()){
+                            secondLine.setDimmingState(Line.DIMMING_STATE_ON);
+                        }else{
+                            secondLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                        }
                         if(secondLine.getMode() == Line.MODE_SECONDARY){
                             secondLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(secondLineSelectedLine.getDeviceID()).getChipID());
                             secondLine.setPrimaryLinePosition(secondLineSelectedLine.getPosition());
@@ -661,10 +773,19 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                         lines.add(secondLine);
 
                         thirdLine.setPosition(2);
-                        thirdLine.setName(thirdLineNameEditText.getText().toString());
+                        if(thirdLineNameEditText.getText().toString().length() >= 1){
+                            thirdLine.setName(thirdLineNameEditText.getText().toString());
+                        }else{
+                            thirdLine.setName(getActivity().getResources().getString(R.string.line_3_name_hint));
+                        }
                         thirdLine.setTypeID(thirdLineType.getId());
                         thirdLine.setPowerState(Line.LINE_STATE_OFF);
                         thirdLine.setDeviceID(device.getId());
+                        if(thirdLineDimmingCheckBox.isChecked()){
+                            thirdLine.setDimmingState(Line.DIMMING_STATE_ON);
+                        }else{
+                            thirdLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                        }
                         if(thirdLine.getMode() == Line.MODE_SECONDARY){
                             thirdLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(thirdLineSelectedLine.getDeviceID()).getChipID());
                             thirdLine.setPrimaryLinePosition(thirdLineSelectedLine.getPosition());
@@ -844,14 +965,13 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         boolean inputsValid = true;
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+            /*if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
                 YoYo.with(Techniques.Shake)
                         .duration(700)
                         .repeat(1)
                         .playOn(firstLineNameEditText);
-            }
-
+            }*/
             if(firstLine.getMode() == Line.MODE_PRIMARY){
                 if(firstLineType == null){
                     inputsValid = false;
@@ -872,14 +992,13 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
 
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+            /*if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
                 YoYo.with(Techniques.Shake)
                         .duration(700)
                         .repeat(1)
                         .playOn(firstLineNameEditText);
-            }
-
+            }*/
             if(firstLine.getMode() == Line.MODE_PRIMARY){
                 if(firstLineType == null){
                     inputsValid = false;
@@ -898,13 +1017,13 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 }
             }
 
-            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+            /*if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
                 YoYo.with(Techniques.Shake)
                         .duration(700)
                         .repeat(1)
                         .playOn(secondLineNameEditText);
-            }
+            }*/
             if(secondLine.getMode() == Line.MODE_PRIMARY){
                 if(secondLineType == null){
                     inputsValid = false;
@@ -926,14 +1045,13 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+            /*if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
                 YoYo.with(Techniques.Shake)
                         .duration(700)
                         .repeat(1)
                         .playOn(firstLineNameEditText);
-            }
-
+            }*/
             if(firstLine.getMode() == Line.MODE_PRIMARY){
                 if(firstLineType == null){
                     inputsValid = false;
@@ -952,13 +1070,13 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 }
             }
 
-            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+            /*if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
                 YoYo.with(Techniques.Shake)
                         .duration(700)
                         .repeat(1)
                         .playOn(secondLineNameEditText);
-            }
+            }*/
             if(secondLine.getMode() == Line.MODE_PRIMARY){
                 if(secondLineType == null){
                     inputsValid = false;
@@ -977,13 +1095,13 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 }
             }
 
-            if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
+            /*if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
                 YoYo.with(Techniques.Shake)
                         .duration(700)
                         .repeat(1)
                         .playOn(thirdLineNameEditText);
-            }
+            }*/
             if(thirdLine.getMode() == Line.MODE_PRIMARY){
                 if(thirdLineType == null){
                     inputsValid = false;
@@ -1011,10 +1129,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         boolean inputsValid = true;
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+            /*if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
-            }
-
+            }*/
             if(firstLine.getMode() == Line.MODE_PRIMARY){
                 if(firstLineType == null){
                     inputsValid = false;
@@ -1027,10 +1144,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
 
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+            /*if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
-            }
-
+            }*/
             if(firstLine.getMode() == Line.MODE_PRIMARY){
                 if(firstLineType == null){
                     inputsValid = false;
@@ -1041,9 +1157,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 }
             }
 
-            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+            /*if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
-            }
+            }*/
             if(secondLine.getMode() == Line.MODE_PRIMARY){
                 if(secondLineType == null){
                     inputsValid = false;
@@ -1057,10 +1173,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
 
-            if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
+            /*if(firstLineNameEditText.getText().toString() == null || firstLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
-            }
-
+            }*/
             if(firstLine.getMode() == Line.MODE_PRIMARY){
                 if(firstLineType == null){
                     inputsValid = false;
@@ -1071,9 +1186,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 }
             }
 
-            if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
+            /*if(secondLineNameEditText.getText().toString() == null || secondLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
-            }
+            }*/
             if(secondLine.getMode() == Line.MODE_PRIMARY){
                 if(secondLineType == null){
                     inputsValid = false;
@@ -1084,9 +1199,9 @@ public class AddDeviceConfigurationFragment extends Fragment implements TypePick
                 }
             }
 
-            if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
+            /*if(thirdLineNameEditText.getText().toString() == null || thirdLineNameEditText.getText().toString().length() < 1){
                 inputsValid = false;
-            }
+            }*/
             if(thirdLine.getMode() == Line.MODE_PRIMARY){
                 if(thirdLineType == null){
                     inputsValid = false;

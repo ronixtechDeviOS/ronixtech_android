@@ -614,7 +614,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
-                        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                        /*if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
                                 deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
@@ -628,7 +628,10 @@ public class DeviceAdapter extends ArrayAdapter {
                         }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
                             popup.getMenu().removeItem(R.id.action_toggle_dimming);
-                        }
+                        }*/
+
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
+                        popup.getMenu().removeItem(R.id.action_toggle_dimming);
 
                         popup.show();
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -710,7 +713,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
-                        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                        /*if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
                                 deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
@@ -724,7 +727,10 @@ public class DeviceAdapter extends ArrayAdapter {
                         }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
                             popup.getMenu().removeItem(R.id.action_toggle_dimming);
-                        }
+                        }*/
+
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
+                        popup.getMenu().removeItem(R.id.action_toggle_dimming);
 
                         popup.show();
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -803,7 +809,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
-                        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                        /*if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
                                 deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(true);
@@ -817,7 +823,10 @@ public class DeviceAdapter extends ArrayAdapter {
                         }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
                             popup.getMenu().removeItem(R.id.action_toggle_dimming);
-                        }
+                        }*/
+
+                        popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
+                        popup.getMenu().removeItem(R.id.action_toggle_dimming);
 
                         popup.show();
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

@@ -48,8 +48,9 @@
     <string name="place_selection_hint">Tap here to select a place</string>
     <string name="place_already_exists_error">A place already exists with this name</string>
 
-    <string name="remove_place_question">Are you sure you want to delete the selected place?</string>
-    <string name="remove_place_description">Deleting the place will also delete all associated floors, rooms and devices</string>
+    <string name="place_long_press_hint">Long press on any Place to remove it</string>
+    <string name="remove_place_question">Are you sure you want to remove the selected place?</string>
+    <string name="remove_place_description">Removing the place will also remove all associated floors, rooms and devices</string>
 
 
     <string name="floor">Floor</string>
@@ -70,8 +71,9 @@
     <string name="floor_level_colon">Floor Level:</string>
     <string name="floor_location">Place</string>
 
-    <string name="remove_floor_question">Are you sure you want to delete the selected floor?</string>
-    <string name="remove_floor_description">Deleting the floor will also delete all associated rooms and devices</string>
+    <string name="floor_long_press_hint">Long press on any Floor to remove it</string>
+    <string name="remove_floor_question">Are you sure you want to remove the selected floor?</string>
+    <string name="remove_floor_description">Removing the floor will also remove all associated rooms and devices</string>
 
     <string name="room">Room</string>
     <string name="room_colon">Room:</string>
@@ -106,15 +108,16 @@
     <string name="selected_devices_colon">Selected Smart Controller(s):</string>
 
 
-    <string name="remove_room_question">Are you sure you want to delete the selected room?</string>
-    <string name="remove_room_description">Deleting the room will also delete all associated devices</string>
+    <string name="room_long_press_hint">Long press on any Room to remove it</string>
+    <string name="remove_room_question">Are you sure you want to remove the selected room?</string>
+    <string name="remove_room_description">Removing the room will also remove all associated devices</string>
 
     <string name="device">Smart Controller</string>
     <string name="device_colon">Smart Controller:</string>
     <string name="add_device_title">Locate your Smart Controller</string>
     <string name="add_device">Add Smart Controller</string>
     <string name="add_new_device">Add New Smart Controller</string>
-    <string name="no_devices">No Smart Controller</string>
+    <string name="no_devices">No Smart Controllers</string>
     <string name="remove_device">Remove</string>
     <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
 
@@ -129,6 +132,9 @@
     <string name="device_ip_address">IP Address</string>
     <string name="device_firmware_version">Firmware Version</string>
     <string name="device_firmware_online_version">Online Firmware Version</string>
+    <string name="device_temperature">Temperature</string>
+    <string name="device_beep_status">Beep Status</string>
+    <string name="device_hw_lock_status">Hardware Lock Status</string>
     <string name="device_access_token">Access Token</string>
     <string name="device_location">Location</string>
     <string name="device_lines">Devices</string>
@@ -157,6 +163,9 @@
     <string name="line_3_name_hint">Right device</string>
     <string name="line_type">Device Type</string>
     <string name="line_type_hint">Tap here to select the device type</string>
+    <string name="line_dimming_hint">Tap here to toggle dimming</string>
+    <string name="line_dimming_on">This device supports dimming</string>
+    <string name="line_dimming_off">This device doesn\'nt support dimming</string>
 
     <string name="plug_1_name_hint">Plug #1</string>
     <string name="plug_2_name_hint">Plug #2</string>
@@ -192,8 +201,6 @@
     <string name="firmware_available">New firmware available. Click here to update!</string>
     <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable control functionality.</string>
     <string name="firmware_up_to_date">Controller\'s firmware is up-to-date</string>
-
-    <string name="delete_device">Delete Smart Controller</string>
 
     <string name="no_types_available">No types available</string>
 
@@ -246,6 +253,7 @@
     <string name="ip_address_title">Enter the controller\'s IP Address manually, in case the app doesn\'t auto detect it or is taking too long</string>
     <string name="ip_address_hint">IP Address (ex 192.168.1.2)</string>
 
+    <string name="unit_long_press_hint">Long press on any Device for more options</string>
     <string name="remove_unit_question">Are you sure you want to remove this smart controller?</string>
     <string name="remove_unit_message">Removing the smart controller wil also remove all the associated devices and cannot be undone</string>
 
@@ -295,6 +303,8 @@
     <string name="add">Add</string>
     <string name="start">Start</string>
     <string name="cancel">Cancel</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
 
     <string name="seconds">%d seconds</string>
 

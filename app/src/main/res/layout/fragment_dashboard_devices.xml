@@ -21,6 +21,16 @@
             android:clipToPadding="false"
             tools:listitem="@layout/list_item_device"/>
 
+        <TextView
+            android:id="@+id/devices_listview_long_press_hint_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/devices_listview"
+            android:textColor="@color/darkGrayColor"
+            android:textSize="16sp"
+            android:text="@string/unit_long_press_hint"/>
+
         <LinearLayout
             android:id="@+id/add_layout"
             android:layout_width="match_parent"

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -49,6 +50,7 @@ public class PlacesFragment extends Fragment {
     GridView placesGridView;
     PlacesGridAdapter placeAdapter;
     List<Place> places;
+    TextView placesGridViewLongPressHint;
 
     public PlacesFragment() {
         // Required empty public constructor
@@ -85,6 +87,8 @@ public class PlacesFragment extends Fragment {
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
+
+        placesGridViewLongPressHint = view.findViewById(R.id.places_gridview_long_press_hint_textview);
 
         addPlaceLayout = view.findViewById(R.id.add_new_place_layout);
 
@@ -234,9 +238,11 @@ public class PlacesFragment extends Fragment {
         if(showAddPlaceLayout){
             addFabMenu.setVisibility(View.GONE);
             placesGridView.setVisibility(View.GONE);
+            placesGridViewLongPressHint.setVisibility(View.GONE);
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             placesGridView.setVisibility(View.VISIBLE);
+            placesGridViewLongPressHint.setVisibility(View.VISIBLE);
         }
     }
 

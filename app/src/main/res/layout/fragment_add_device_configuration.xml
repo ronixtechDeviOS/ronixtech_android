@@ -184,6 +184,32 @@
                                 android:textColor="@color/blackColor"
                                 android:text="@string/line_type_hint"/>
                         </RelativeLayout>
+                        <RelativeLayout
+                            android:id="@+id/first_line_dimming__layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/first_line_type_selection_layout"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginTop="8dp"
+                            android:padding="4dp">
+                            <CheckBox
+                                android:id="@+id/first_line_dimming_checkbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:checked="true"/>
+                            <TextView
+                                android:id="@+id/first_line_dimming_textview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@id/first_line_dimming_checkbox"
+                                android:layout_toRightOf="@id/first_line_dimming_checkbox"
+                                android:layout_centerVertical="true"
+                                android:textSize="16sp"
+                                android:textColor="@color/blackColor"
+                                android:text="@string/line_dimming_on"/>
+                        </RelativeLayout>
                     </RelativeLayout>
                     <RadioButton
                         android:id="@+id/first_line_mode_secondary_mode_radiobutton"
@@ -402,6 +428,32 @@
                                 android:textColor="@color/blackColor"
                                 android:text="@string/line_type_hint"/>
                         </RelativeLayout>
+                        <RelativeLayout
+                            android:id="@+id/second_line_dimming__layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/second_line_type_selection_layout"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginTop="8dp"
+                            android:padding="4dp">
+                            <CheckBox
+                                android:id="@+id/second_line_dimming_checkbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:checked="true"/>
+                            <TextView
+                                android:id="@+id/second_line_dimming_textview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@id/second_line_dimming_checkbox"
+                                android:layout_toRightOf="@id/second_line_dimming_checkbox"
+                                android:layout_centerVertical="true"
+                                android:textSize="16sp"
+                                android:textColor="@color/blackColor"
+                                android:text="@string/line_dimming_on"/>
+                        </RelativeLayout>
                     </RelativeLayout>
                     <RadioButton
                         android:id="@+id/second_line_mode_secondary_mode_radiobutton"
@@ -476,6 +528,7 @@
                                     android:textColor="@color/darkestGrayColor"
                                     android:text=""/>
                             </RelativeLayout>
+
                         </RelativeLayout>
                     </RelativeLayout>
                     <TextView
@@ -619,6 +672,32 @@
                                 android:text="@string/line_type_hint"
                                 android:textColor="@color/blackColor"
                                 android:textSize="16sp" />
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:id="@+id/third_line_dimming__layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/third_line_type_selection_layout"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginTop="8dp"
+                            android:padding="4dp">
+                            <CheckBox
+                                android:id="@+id/third_line_dimming_checkbox"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:checked="true"/>
+                            <TextView
+                                android:id="@+id/third_line_dimming_textview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@id/third_line_dimming_checkbox"
+                                android:layout_toRightOf="@id/third_line_dimming_checkbox"
+                                android:layout_centerVertical="true"
+                                android:textSize="16sp"
+                                android:textColor="@color/blackColor"
+                                android:text="@string/line_dimming_on"/>
                         </RelativeLayout>
                     </RelativeLayout>
                     <RadioButton

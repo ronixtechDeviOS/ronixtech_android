@@ -48,6 +48,7 @@ public class FloorsFragment extends Fragment{
     GridView floorsGridView;
     FloorsGridAdapter floorAdapter;
     List<Floor> floors;
+    TextView floorsGirdViewLongPressHint;
 
     int source = Constants.SOURCE_HOME_FRAGMENT;
 
@@ -90,6 +91,8 @@ public class FloorsFragment extends Fragment{
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
 
+        floorsGirdViewLongPressHint = view.findViewById(R.id.floors_gridview_long_press_hint_textview);
+
         floorsGridView = view.findViewById(R.id.floors_gridview);
         noFloorsTextView = view.findViewById(R.id.no_floors_textview);
         if(MySettings.getCurrentPlace() != null){
@@ -102,8 +105,10 @@ public class FloorsFragment extends Fragment{
 
         if(floors != null && floors.size() >= 1){
             noFloorsTextView.setVisibility(View.GONE);
+            floorsGirdViewLongPressHint.setVisibility(View.GONE);
         }else{
             noFloorsTextView.setVisibility(View.VISIBLE);
+            floorsGirdViewLongPressHint.setVisibility(View.VISIBLE);
         }
 
         floorsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

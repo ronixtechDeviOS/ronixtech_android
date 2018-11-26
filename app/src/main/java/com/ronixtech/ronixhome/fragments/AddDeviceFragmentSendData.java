@@ -103,10 +103,12 @@ public class AddDeviceFragmentSendData extends Fragment {
                 pirResetPairings.execute();
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                     device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                    device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-            /*ControllerAddPairings controllerAddPairings = new ControllerAddPairings(getActivity(), this);
-            controllerAddPairings.execute();*/
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                /*ControllerAddPairings controllerAddPairings = new ControllerAddPairings(getActivity(), this);
+                controllerAddPairings.execute();*/
+                DimmingControlsSenderPost dimmingControlsSenderPost = new DimmingControlsSenderPost(getActivity(), this);
+                dimmingControlsSenderPost.execute();
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                 WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
                 wiFiDataSenderGet.execute();
             }else{
@@ -433,8 +435,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200) {
-                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
-                wiFiDataSenderGet.execute();
+                DimmingControlsSenderPost dimmingControlsSenderPost = new DimmingControlsSenderPost(activity, fragment);
+                dimmingControlsSenderPost.execute();
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
                 fragment.goToSearchFragment();
@@ -484,6 +486,109 @@ public class AddDeviceFragmentSendData extends Fragment {
                             numberOfRetries++;
                         }
                     }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class DimmingControlsSenderPost extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public DimmingControlsSenderPost(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                fragment.goToSearchFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
+
+                    URL url = new URL(urlString);
+                    Log.d(TAG,  "sendDimmingControls URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jsonObject = new JSONObject();
+                    Device device = MySettings.getTempDevice();
+                    if(device.getLines() != null){
+                        for (Line line : device.getLines()) {
+                            if(line.getPosition() == 0){
+                                jsonObject.put("L_0_D_S", "" + line.getDimmingState());
+                            }else if(line.getPosition() == 1){
+                                jsonObject.put("L_1_D_S", "" + line.getDimmingState());
+                            }else if(line.getPosition() == 2){
+                                jsonObject.put("L_2_D_S", "" + line.getDimmingState());
+                            }
+                        }
+                    }
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                    Log.d(TAG,  "sendDimmingControls POST data: " + jsonObject.toString());
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jsonObject.toString());
+                    outputStreamWriter.flush();
+                    outputStreamWriter.close();
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "sendDimmingControls response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
                 }
             }
 

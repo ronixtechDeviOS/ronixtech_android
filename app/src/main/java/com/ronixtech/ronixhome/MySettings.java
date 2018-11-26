@@ -937,8 +937,23 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_15_16 = new Migration(15, 16) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN beep_state INTEGER NOT NULL DEFAULT 1");
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN hw_lock_state INTEGER NOT NULL DEFAULT 0");
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN temperature INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
                             .allowMainThreadQueries().
                             build();
             return database;

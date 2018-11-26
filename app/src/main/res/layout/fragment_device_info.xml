@@ -200,6 +200,69 @@
                 android:text="@string/firmware_available"/>
 
             <TextView
+                android:id="@+id/device_temperature_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_temperature"/>
+
+            <TextView
+                android:id="@+id/device_temperature_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="0"/>
+
+            <TextView
+                android:id="@+id/device_beep_status_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_beep_status"/>
+
+            <TextView
+                android:id="@+id/device_beep_status_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="@string/on"/>
+
+            <TextView
+                android:id="@+id/device_hw_lock_status_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_hw_lock_status"/>
+
+            <TextView
+                android:id="@+id/device_hw_lock_status_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="@string/off"/>
+
+            <TextView
                 android:id="@+id/device_access_token_static_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -270,7 +333,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textSize="18sp"
                 android:textColor="@color/blackColor"
                 android:text=""/>

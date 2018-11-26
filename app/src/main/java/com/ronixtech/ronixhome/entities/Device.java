@@ -82,6 +82,12 @@ public class Device implements Comparable {
     boolean firmwareUpdateAvailable;
     @ColumnInfo(name = "mqtt_reachable")
     boolean isDeviceMQTTReachable;
+    @ColumnInfo(name = "beep_state")
+    boolean beep;
+    @ColumnInfo(name = "hw_lock_state")
+    boolean hwLock;
+    @ColumnInfo(name = "temperature")
+    int temperature;
 
     public Device(){
         this.id = 0;
@@ -95,11 +101,14 @@ public class Device implements Comparable {
         this.lines = new ArrayList<>();
         this.soundDeviceData = new SoundDeviceData();
         this.accessToken = Constants.DEVICE_DEFAULT_ACCESS_TOKEN;
-        lastSeenTimestamp = 0;
+        this.lastSeenTimestamp = 0;
         this.pirData = new PIRData();
         this.firmwareUpdateAvailable = false;
         this.firmwareVersion = Device.DEVICE_BASE_FIRMWARE;
         this.isDeviceMQTTReachable = false;
+        this.beep = true;
+        this.hwLock = false;
+        this.temperature = 0;
     }
 
     public Device(Device device){
@@ -123,6 +132,9 @@ public class Device implements Comparable {
         this.firmwareUpdateAvailable = device.isFirmwareUpdateAvailable();
         this.firmwareVersion = device.getFirmwareVersion();
         this.isDeviceMQTTReachable = device.isDeviceMQTTReachable();
+        this.beep = device.isBeep();
+        this.hwLock = device.isHwLock();
+        this.temperature = device.getTemperature();
     }
 
     public long getId() {
@@ -251,6 +263,30 @@ public class Device implements Comparable {
 
     public void setDeviceMQTTReachable(boolean deviceMQTTReachable) {
         isDeviceMQTTReachable = deviceMQTTReachable;
+    }
+
+    public boolean isBeep() {
+        return beep;
+    }
+
+    public void setBeep(boolean beep) {
+        this.beep = beep;
+    }
+
+    public boolean isHwLock() {
+        return hwLock;
+    }
+
+    public void setHwLock(boolean hwLock) {
+        this.hwLock = hwLock;
+    }
+
+    public int getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
     }
 
     public String getDeviceTypeString(){
