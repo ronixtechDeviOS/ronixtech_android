@@ -128,11 +128,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             if(MySettings.getCurrentFloor() != null){
                 selectedFloor = MySettings.getFloor(MySettings.getCurrentFloor().getId());
                 selectedFloorIndex = selectedFloor.getLevel();
-                selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                selectedFloorTextView.setText(""+selectedFloor.getName());
             }else{
                 selectedFloor = MySettings.getFloor(selectedPlace.getFloors().get(0).getId());
                 selectedFloorIndex = selectedFloor.getLevel();
-                selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                selectedFloorTextView.setText(""+selectedFloor.getName());
             }
         }
 
@@ -188,7 +188,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                     if(selectedFloorIndex < selectedPlace.getFloors().size() - 1){
                         selectedFloorIndex++;
                         selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
-                        selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                        selectedFloorTextView.setText(""+selectedFloor.getName());
                     }
                 }else{
                     YoYo.with(Techniques.Shake)
@@ -206,7 +206,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                     if(selectedFloorIndex >= 1){
                         selectedFloorIndex--;
                         selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
-                        selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                        selectedFloorTextView.setText(""+selectedFloor.getName());
                     }
                 }else{
                     YoYo.with(Techniques.Shake)
@@ -371,7 +371,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             selectedFloorIndex = 0;
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
             if(selectedFloor != null){
-                selectedFloorTextView.setText(""+selectedFloor.getLevel());
+                selectedFloorTextView.setText(""+selectedFloor.getName());
                 if(MySettings.getFloorRooms(selectedFloor.getId()) != null && MySettings.getFloorRooms(selectedFloor.getId()).size() >= 1){
                     selectedRoom = MySettings.getRoom(MySettings.getFloorRooms(selectedFloor.getId()).get(0).getId());
                     if(selectedRoom != null){

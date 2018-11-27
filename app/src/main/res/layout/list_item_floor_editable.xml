@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/floor_remove_imageview"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_delete_gray_24dp"/>
+
+    <ImageView
+        android:id="@+id/floor_edit_imageview"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_toStartOf="@id/floor_remove_imageview"
+        android:layout_toLeftOf="@id/floor_remove_imageview"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_mode_edit_gray_24dp"/>
+
+    <TextView
+        android:id="@+id/floor_name_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/floor_edit_imageview"
+        android:layout_toLeftOf="@id/floor_edit_imageview"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/blackColor"/>
+
+</RelativeLayout>

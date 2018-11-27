@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/place_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/place_item_imageview"
@@ -10,7 +11,7 @@
         android:layout_height="150dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/floor_icon"/>
+        android:src="@drawable/place_icon"/>
 
     <TextView
         android:id="@+id/place_item_name_textview"
@@ -25,4 +26,15 @@
         android:textColor="@color/blackColor"
         android:textSize="16sp"
         android:text="PlaceName"/>
+
+    <ImageView
+        android:id="@+id/place_item_advanced_options_button"
+        android:layout_width="40dp"
+        android:layout_height="32dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:src="@drawable/overflow_3_dots_gray"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

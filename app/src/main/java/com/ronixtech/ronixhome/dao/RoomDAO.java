@@ -25,14 +25,31 @@ public abstract class RoomDAO {
     @Query("SELECT * FROM room WHERE id =:id")
     public abstract Room getRoom(long id);
 
+
+    @Query("SELECT * FROM device WHERE room_id =:roomID")
+    public abstract List<Device> getDeviceList(long roomID);
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertRoom(Room room);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertDevices(List<Device> devices);
 
-    @Query("SELECT * FROM device WHERE room_id =:roomID")
-    public abstract List<Device> getDeviceList(long roomID);
+
+    @Query("UPDATE room SET name =:newName WHERE id =:roomID")
+    public abstract void updateRoomName(long roomID, String newName);
+
+    @Query("UPDATE room SET type_id =:newType WHERE id =:roomID")
+    public abstract void updateRoomType(long roomID, long newType);
+
+    @Query("UPDATE room SET floor_id =:newFloor WHERE id =:roomID")
+    public abstract void updateRoomFloor(long roomID, long newFloor);
+
+
+    @Query("DELETE from room WHERE id=:roomID")
+    public abstract void removeRoom(long roomID);
+
 
     public void insertRoomWithDevices(Room room) {
         List<Device> devices = room.getDevices();
@@ -42,9 +59,6 @@ public abstract class RoomDAO {
         insertDevices(devices);
         insertRoom(room);
     }
-
-    @Query("DELETE from room WHERE id=:roomID")
-    public abstract void removeRoom(long roomID);
 
     public Room getRoomWithDevices(long id) {
         Room room = getRoom(id);

@@ -1,9 +1,9 @@
 package com.ronixtech.ronixhome.fragments;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,14 +38,14 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link AddRoomFragment.OnFragmentInteractionListener} interface
+ * {@link EditRoomFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AddRoomFragment#newInstance} factory method to
+ * Use the {@link EditRoomFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
-                        TypePickerDialogFragment.OnTypeSelectedListener{
-    private static final  String TAG = AddRoomFragment.class.getSimpleName();
+public class EditRoomFragment extends android.support.v4.app.Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
+        TypePickerDialogFragment.OnTypeSelectedListener{
+    private static final String TAG = EditRoomFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
@@ -58,7 +58,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
     RelativeLayout roomTypeSelectionLayout;
     TextView roomTypeNameTextView;
     ImageView roomTypeImageView;
-    Button addRoomButton;
+    Button saveRoomButton;
 
     Place selectedPlace;
     Floor selectedFloor;
@@ -66,7 +66,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
 
     Type selectedRoomType;
 
-    public AddRoomFragment() {
+    private Room room;
+
+    public EditRoomFragment() {
         // Required empty public constructor
     }
 
@@ -76,10 +78,10 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AddRoomFragment.
+     * @return A new instance of fragment EditRoomFragment.
      */
-    public static AddRoomFragment newInstance(String param1, String param2) {
-        AddRoomFragment fragment = new AddRoomFragment();
+    public static EditRoomFragment newInstance(String param1, String param2) {
+        EditRoomFragment fragment = new EditRoomFragment();
         return fragment;
     }
 
@@ -92,8 +94,12 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_add_room, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_new_room), getResources().getColor(R.color.whiteColor));
+        View view = inflater.inflate(R.layout.fragment_edit_room, container, false);
+        if(room != null){
+            MainActivity.setActionBarTitle(room.getName(), getResources().getColor(R.color.whiteColor));
+        }else{
+            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.edit_room), getResources().getColor(R.color.whiteColor));
+        }
         setHasOptionsMenu(true);
 
         placeSelectionLayout = view.findViewById(R.id.place_selection_layout);
@@ -107,29 +113,50 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         roomTypeSelectionLayout = view.findViewById(R.id.room_type_selection_layout);
         roomTypeNameTextView = view.findViewById(R.id.room_type_textview);
         roomTypeImageView = view.findViewById(R.id.room_type_imageview);
-        addRoomButton = view.findViewById(R.id.add_room_button);
+        saveRoomButton = view.findViewById(R.id.save_room_button);
 
-        if(selectedPlace == null) {
-            selectedPlace = MySettings.getCurrentPlace();
-        }
-        if(selectedPlace != null){
-            selectedPlace = MySettings.getPlace(selectedPlace.getId());
-            placeNameTextView.setText(selectedPlace.getName());
-            if(selectedPlace.getType().getImageUrl() != null && selectedPlace.getType().getImageUrl().length() >= 1){
-                GlideApp.with(getActivity())
-                        .load(selectedPlace.getType().getImageUrl())
-                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
-                        .into(placeImageView);
-            }else {
-                if(selectedPlace.getType().getImageResourceName() != null && selectedPlace.getType().getImageResourceName().length() >= 1) {
-                    placeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlace.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
-                }else{
-                    placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+        if(room != null){
+            roomNameEditText.setText(room.getName());
+
+            if(selectedPlace == null) {
+                selectedFloor = MySettings.getFloor(room.getFloorID());
+                selectedPlace = MySettings.getPlace(selectedFloor.getPlaceID());
+            }
+            if(selectedPlace != null){
+                placeNameTextView.setText(selectedPlace.getName());
+                if(selectedPlace.getType().getImageUrl() != null && selectedPlace.getType().getImageUrl().length() >= 1){
+                    GlideApp.with(getActivity())
+                            .load(selectedPlace.getType().getImageUrl())
+                            .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                            .into(placeImageView);
+                }else {
+                    if(selectedPlace.getType().getImageResourceName() != null && selectedPlace.getType().getImageResourceName().length() >= 1) {
+                        placeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlace.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
+                    }
+                }
+                selectedFloorTextView.setText(""+selectedFloor.getName());
+            }
+
+            if(selectedRoomType == null) {
+                selectedRoomType = room.getType();
+            }
+            if(selectedRoomType != null){
+                roomTypeNameTextView.setText(selectedRoomType.getName());
+                if(selectedRoomType.getImageUrl() != null && selectedRoomType.getImageUrl().length() >= 1){
+                    GlideApp.with(getActivity())
+                            .load(selectedRoomType.getImageUrl())
+                            .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
+                            .into(roomTypeImageView);
+                }else {
+                    if(selectedRoomType.getImageResourceName() != null && selectedRoomType.getImageResourceName().length() >= 1) {
+                        roomTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoomType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else{
+                        roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+                    }
                 }
             }
-            selectedFloorIndex = 0;
-            selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
-            selectedFloorTextView.setText(""+selectedFloor.getName());
         }
 
         placeSelectionLayout.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +174,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
 
                 // Create and show the dialog.
                 PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
-                fragment.setTargetFragment(AddRoomFragment.this, 0);
+                fragment.setTargetFragment(EditRoomFragment.this, 0);
                 fragment.show(ft, "pickPlaceDialogFragment");
             }
         });
@@ -178,27 +205,6 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
-        roomNameEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if(validateInputs()){
-                    Utils.setButtonEnabled(addRoomButton, true);
-                }else{
-                    Utils.setButtonEnabled(addRoomButton, false);
-                }
-            }
-        });
-
         roomTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -216,7 +222,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     // Create and show the dialog.
                     TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
                     fragment.setTypesCategory(Constants.TYPE_ROOM);
-                    fragment.setTargetFragment(AddRoomFragment.this, 0);
+                    fragment.setTargetFragment(EditRoomFragment.this, 0);
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
@@ -225,34 +231,36 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
-        if(selectedRoomType == null) {
-            selectedRoomType = MySettings.getTypeByName("Living Room");
-        }
-        if(selectedRoomType != null){
-            roomTypeNameTextView.setText(selectedRoomType.getName());
-            if(selectedRoomType.getImageUrl() != null && selectedRoomType.getImageUrl().length() >= 1){
-                GlideApp.with(getActivity())
-                        .load(selectedRoomType.getImageUrl())
-                        .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
-                        .into(roomTypeImageView);
-            }else {
-                if(selectedRoomType.getImageResourceName() != null && selectedRoomType.getImageResourceName().length() >= 1) {
-                    roomTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedRoomType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+        roomNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(validateInputs()){
+                    Utils.setButtonEnabled(saveRoomButton, true);
                 }else{
-                    roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
+                    Utils.setButtonEnabled(saveRoomButton, false);
                 }
             }
-        }
+        });
 
-        addRoomButton.setOnClickListener(new View.OnClickListener() {
+        saveRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
                     boolean roomNameDuplicate = false;
                     List<Room> placeRooms = MySettings.getPlaceRooms(selectedPlace);
                     if(placeRooms != null && placeRooms.size() >= 1){
-                        for (Room room : placeRooms) {
-                            if(room.getName().equals(roomNameEditText.getText().toString())){
+                        for (Room tempRoom : placeRooms) {
+                            if(tempRoom.getName().equals(roomNameEditText.getText().toString()) && ! (tempRoom.getId() == room.getId())){
                                 roomNameDuplicate = true;
                             }
                         }
@@ -264,12 +272,13 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                                 .repeat(1)
                                 .playOn(roomNameEditText);
                     }else{
-                        Room room = new Room();
-                        //room.setId(Long.valueOf(roomLocationEditText.getText().toString()));
                         room.setName(roomNameEditText.getText().toString());
                         room.setFloorID(selectedFloor.getId());
                         room.setTypeID(selectedRoomType.getId());
-                        MySettings.addRoom(room);
+
+                        MySettings.updateRoomName(room, roomNameEditText.getText().toString());
+                        MySettings.updateRoomType(room, selectedRoomType.getId());
+                        MySettings.updateRoomFloor(room, selectedFloor.getId());
 
                         MySettings.setCurrentRoom(room);
 
@@ -282,9 +291,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
-        roomNameEditText.requestFocus();
-
         return view;
+    }
+
+    public void setRoom(Room room){
+        this.room = room;
     }
 
     @Override
@@ -328,9 +339,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                 }
             }
             if(validateInputs()){
-                Utils.setButtonEnabled(addRoomButton, true);
+                Utils.setButtonEnabled(saveRoomButton, true);
             }else{
-                Utils.setButtonEnabled(addRoomButton, false);
+                Utils.setButtonEnabled(saveRoomButton, false);
             }
         }
     }

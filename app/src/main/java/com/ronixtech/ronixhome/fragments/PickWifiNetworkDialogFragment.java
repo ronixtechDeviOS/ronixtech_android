@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -31,7 +32,7 @@ public class PickWifiNetworkDialogFragment extends DialogFragment {
 
     long placeID = -1;
 
-    AddPlaceFragment addPlaceFragment;
+    Fragment placeFragment;
 
     public interface OnNetworkSelectedListener {
         public void onWifiNetworkSelected(WifiNetwork wifiNetwork);
@@ -86,7 +87,7 @@ public class PickWifiNetworkDialogFragment extends DialogFragment {
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
                 wifiInfoFragment.setSource(Constants.SOURCE_NEW_PLACE);
-                wifiInfoFragment.setTargetFragment(addPlaceFragment, 0);
+                wifiInfoFragment.setTargetFragment(placeFragment, 0);
                 fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
                 fragmentTransaction.addToBackStack("wifiInfoFragment");
                 fragmentTransaction.commit();
@@ -105,8 +106,8 @@ public class PickWifiNetworkDialogFragment extends DialogFragment {
         return listView;
     }
 
-    public void setParentFragment(AddPlaceFragment fragment){
-        this.addPlaceFragment = fragment;
+    public void setParentFragment(Fragment fragment){
+        this.placeFragment = fragment;
     }
 
     public void setPlaceID(long placeID){

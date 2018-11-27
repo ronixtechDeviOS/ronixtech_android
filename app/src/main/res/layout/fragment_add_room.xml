@@ -120,7 +120,7 @@
                     android:layout_centerVertical="true"
                     android:textAlignment="center"
                     android:textSize="18sp"
-                    android:text="@string/floor_level_colon"/>
+                    android:text="@string/floor_colon"/>
 
                 <TextView
                     android:id="@+id/selected_floor_textview"

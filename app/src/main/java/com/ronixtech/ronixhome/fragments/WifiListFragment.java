@@ -188,15 +188,17 @@ public class WifiListFragment extends Fragment {
 
         TextView ssidTextView = new TextView(getActivity());
         ssidTextView.setText(getActivity().getResources().getString(R.string.ssid_colon));
+        ssidTextView.setTextSize(20);
         ssidTextView.setGravity(Gravity.CENTER);
         ssidTextView.setLayoutParams(layoutParams);
 
         TextView passwordTextView = new TextView(getActivity());
         passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setTextSize(20);
         passwordTextView.setGravity(Gravity.CENTER);
         passwordTextView.setLayoutParams(layoutParams);
 
-        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.weight = 1.0f;
         Resources r2 = getActivity().getResources();
         float pxLeftMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());
@@ -277,10 +279,11 @@ public class WifiListFragment extends Fragment {
 
         TextView passwordTextView = new TextView(getActivity());
         passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setTextSize(20);
         passwordTextView.setGravity(Gravity.CENTER);
         passwordTextView.setLayoutParams(layoutParams);
 
-        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.weight = 1.0f;
         Resources r2 = getActivity().getResources();
         float pxLeftMargin2 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r2.getDisplayMetrics());

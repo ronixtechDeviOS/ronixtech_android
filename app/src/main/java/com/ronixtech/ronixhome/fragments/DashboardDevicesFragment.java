@@ -326,7 +326,8 @@ public class DashboardDevicesFragment extends Fragment {
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             devicesListView.setVisibility(View.VISIBLE);
-            devicesListViewLongPressHint.setVisibility(View.VISIBLE);
+            //devicesListViewLongPressHint.setVisibility(View.VISIBLE);
+            devicesListViewLongPressHint.setVisibility(View.GONE);
         }
     }
 

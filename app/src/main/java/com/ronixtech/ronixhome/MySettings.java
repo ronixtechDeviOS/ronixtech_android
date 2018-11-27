@@ -396,6 +396,12 @@ public class MySettings {
     public static void updatePlaceMode(Place place, int mode){
         MySettings.initDB().placeDAO().updatePlaceMode(place.getId(), mode);
     }
+    public static void updatePlaceName(Place place, String newName){
+        MySettings.initDB().placeDAO().updatePlaceName(place.getId(), newName);
+    }
+    public static void updatePlaceType(Place place, long newTypeID){
+        MySettings.initDB().placeDAO().updatePlaceType(place.getId(), newTypeID);
+    }
     public static void removePlace(Place place){
         //remove floor from DB
         MySettings.initDB().placeDAO().removePlaceWithFloors(place);
@@ -413,6 +419,9 @@ public class MySettings {
     }
     public static List<com.ronixtech.ronixhome.entities.Floor> getPlaceFloors(long placeID){
         return MySettings.initDB().floorDAO().getPlaceFloors(placeID);
+    }
+    public static void updateFloorName(Floor floor, String newName){
+        MySettings.initDB().floorDAO().updateFloorName(floor.getId(), newName);
     }
     public static void removeFloor(Floor floor){
         //remove floor from DB
@@ -442,6 +451,15 @@ public class MySettings {
     }
     public static List<com.ronixtech.ronixhome.entities.Room> getFloorRooms(long floorID){
         return MySettings.initDB().roomDAO().getFloorRooms(floorID);
+    }
+    public static void updateRoomName(com.ronixtech.ronixhome.entities.Room room, String newName){
+        MySettings.initDB().roomDAO().updateRoomName(room.getId(), newName);
+    }
+    public static void updateRoomType(com.ronixtech.ronixhome.entities.Room room, long newType){
+        MySettings.initDB().roomDAO().updateRoomType(room.getId(), newType);
+    }
+    public static void updateRoomFloor(com.ronixtech.ronixhome.entities.Room room, long newFloor){
+        MySettings.initDB().roomDAO().updateRoomFloor(room.getId(), newFloor);
     }
     public static void removeRoom(com.ronixtech.ronixhome.entities.Room room){
         //remove room from DB

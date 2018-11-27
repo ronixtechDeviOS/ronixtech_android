@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_1"
+        android:id="@+id/action_edit_place"
         android:orderInCategory="100"
-        android:title="1" />
+        android:title="@string/edit_place" />
     <item
-        android:id="@+id/action_delete"
+        android:id="@+id/action_remove_place"
         android:orderInCategory="100"
-        android:title="Delete" />
+        android:title="@string/remove_place" />
 </menu>

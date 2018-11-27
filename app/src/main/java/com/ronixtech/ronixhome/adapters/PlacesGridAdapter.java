@@ -1,17 +1,30 @@
 package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.PopupMenu;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
+import com.ronixtech.ronixhome.fragments.EditPlaceFragment;
+import com.ronixtech.ronixhome.fragments.FloorsFragment;
 
 import java.util.List;
 
@@ -19,10 +32,19 @@ public class PlacesGridAdapter extends BaseAdapter {
     Activity activity;
     List<Place> places;
     ViewHolder vHolder = null;
+    FragmentManager fragmentManager;
 
-    public PlacesGridAdapter(Activity activity, List<Place> places) {
+    private PlacesListener placesListener;
+
+    public interface PlacesListener{
+        public void onPlaceDeleted();
+    }
+
+    public PlacesGridAdapter(Activity activity, List<Place> places, FragmentManager fragmentManager, PlacesListener listener) {
         this.activity = activity;
         this.places = places;
+        this.fragmentManager = fragmentManager;
+        this.placesListener = listener;
     }
 
     @Override
@@ -49,6 +71,8 @@ public class PlacesGridAdapter extends BaseAdapter {
             vHolder = new ViewHolder();
             vHolder.placeNameTextView = rowView.findViewById(R.id.place_item_name_textview);
             vHolder.placeImageView = rowView.findViewById(R.id.place_item_imageview);
+            vHolder.advancedOptionsMenuImageView = rowView.findViewById(R.id.place_item_advanced_options_button);
+            vHolder.placeItemLayout = rowView.findViewById(R.id.place_item_layout);
             rowView.setTag(vHolder);
         }
         else{
@@ -70,12 +94,139 @@ public class PlacesGridAdapter extends BaseAdapter {
             }
         }
 
+        vHolder.placeItemLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MySettings.setCurrentPlace(item);
+                if(MySettings.getPlaceFloors(item.getId()) != null && MySettings.getPlaceFloors(item.getId()).size() > 1) {
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    FloorsFragment floorsFragment = new FloorsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, floorsFragment, "floorsFragment");
+                    fragmentTransaction.addToBackStack("floorsFragment");
+                    fragmentTransaction.commit();
+                }else if(MySettings.getPlaceFloors(item.getId()) != null){
+                    List<Floor> floors = MySettings.getPlaceFloors(item.getId());
+                    Floor selectedFloor= (Floor) floors.get(0);
+                    MySettings.setCurrentFloor(selectedFloor);
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentTransaction.addToBackStack("dashboardRoomsFragment");
+                    fragmentTransaction.commit();
+                }
+            }
+        });
+
+
+        vHolder.advancedOptionsMenuImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                PopupMenu popup = new PopupMenu(activity, v);
+                popup.getMenuInflater().inflate(R.menu.menu_place_item, popup.getMenu());
+
+                popup.show();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item1) {
+                        int id = item1.getItemId();
+                        if(id == R.id.action_edit_place){
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                            EditPlaceFragment editPlaceFragment = new EditPlaceFragment();
+                            editPlaceFragment.setPlace(item);
+                            fragmentTransaction.replace(R.id.fragment_view, editPlaceFragment, "editPlaceFragment");
+                            fragmentTransaction.addToBackStack("editPlaceFragment");
+                            fragmentTransaction.commit();
+                        }else if(id == R.id.action_remove_place){
+                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
+                                    .setTitle(activity.getResources().getString(R.string.remove_place_question))
+                                    .setMessage(activity.getResources().getString(R.string.remove_place_description))
+                                    //set positive button
+                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what would happen when positive button is clicked
+                                            MySettings.removePlace(item);
+                                            places.remove(item);
+                                            placesListener.onPlaceDeleted();
+                                        }
+                                    })
+                                    //set negative button
+                                    .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what should happen when negative button is clicked
+                                        }
+                                    })
+                                    .show();
+                        }
+                        return true;
+                    }
+                });
+            }
+        });
+
+        vHolder.placeItemLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                PopupMenu popup = new PopupMenu(activity, v);
+                popup.getMenuInflater().inflate(R.menu.menu_place_item, popup.getMenu());
+
+                popup.show();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item1) {
+                        int id = item1.getItemId();
+                        if(id == R.id.action_edit_place){
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                            EditPlaceFragment editPlaceFragment = new EditPlaceFragment();
+                            editPlaceFragment.setPlace(item);
+                            fragmentTransaction.replace(R.id.fragment_view, editPlaceFragment, "editPlaceFragment");
+                            fragmentTransaction.addToBackStack("editPlaceFragment");
+                            fragmentTransaction.commit();
+                        }else if(id == R.id.action_remove_place){
+                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
+                                    .setTitle(activity.getResources().getString(R.string.remove_place_question))
+                                    .setMessage(activity.getResources().getString(R.string.remove_place_description))
+                                    //set positive button
+                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what would happen when positive button is clicked
+                                            MySettings.removePlace(item);
+                                            places.remove(item);
+                                            placesListener.onPlaceDeleted();
+                                        }
+                                    })
+                                    //set negative button
+                                    .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //set what should happen when negative button is clicked
+                                        }
+                                    })
+                                    .show();
+                        }
+                        return true;
+                    }
+                });
+                return true;
+            }
+        });
+
+
 
         return rowView;
     }
 
     private static class ViewHolder{
         TextView placeNameTextView;
-        ImageView placeImageView;
+        ImageView placeImageView, advancedOptionsMenuImageView;
+        RelativeLayout placeItemLayout;
     }
 }

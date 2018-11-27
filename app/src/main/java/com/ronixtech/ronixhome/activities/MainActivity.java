@@ -115,10 +115,17 @@ public class MainActivity extends AppCompatActivity
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentTransaction.commit();
+        if(MySettings.getCurrentPlace() != null) {
+            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.commit();
+        }else {
+            PlacesFragment placesFragment = new PlacesFragment();
+            fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.commit();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

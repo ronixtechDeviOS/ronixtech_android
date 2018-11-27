@@ -663,7 +663,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
-                                }else if(id == R.id.action_update){
+                                }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -676,7 +676,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
                                         Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
-                                }else if(id == R.id.action_delete){
+                                }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -693,7 +693,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -759,7 +759,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
-                                }else if(id == R.id.action_update){
+                                }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -772,7 +772,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
                                         Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
-                                }else if(id == R.id.action_delete){
+                                }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -789,7 +789,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -855,7 +855,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
-                                }else if(id == R.id.action_update){
+                                }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -868,7 +868,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
                                         Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
-                                }else if(id == R.id.action_delete){
+                                }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -885,7 +885,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -1083,7 +1083,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_device_sound_system, popup.getMenu());
 
-                        popup.getMenu().findItem(R.id.action_update).setVisible(false);
+                        popup.getMenu().findItem(R.id.action_update_device).setVisible(false);
 
                         popup.show();
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -1100,7 +1100,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
                                 }
-                                else if(id == R.id.action_update){
+                                else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -1113,7 +1113,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
                                         Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
-                                }else if(id == R.id.action_delete){
+                                }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -1130,7 +1130,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -1249,7 +1249,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_pir, popup.getMenu());
 
-                        popup.getMenu().findItem(R.id.action_update).setVisible(true);
+                        popup.getMenu().findItem(R.id.action_update_device).setVisible(true);
 
                         popup.show();
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -1266,7 +1266,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
                                 }
-                                else if(id == R.id.action_update){
+                                else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -1279,7 +1279,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
                                         Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
                                     }
-                                }else if(id == R.id.action_delete){
+                                }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)

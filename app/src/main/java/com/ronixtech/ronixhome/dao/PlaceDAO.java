@@ -22,18 +22,26 @@ public abstract class PlaceDAO {
     @Query("SELECT * FROM place WHERE name LIKE :placeName")
     public abstract Place getPlaceByName(String placeName);
 
+
+    @Query("SELECT * FROM floor WHERE place_id =:placeID")
+    public abstract List<Floor> getFloorList(long placeID);
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertPlace(Place place);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertFloors(List<Floor> floors);
 
-    @Query("SELECT * FROM floor WHERE place_id =:placeID")
-    public abstract List<Floor> getFloorList(long placeID);
-
 
     @Query("UPDATE place SET mode =:mode WHERE id =:placeID")
     public abstract void updatePlaceMode(long placeID, int mode);
+
+    @Query("UPDATE place SET name =:newName WHERE id =:placeID")
+    public abstract void updatePlaceName(long placeID, String newName);
+
+    @Query("UPDATE place SET type_id =:newTypeID WHERE id =:placeID")
+    public abstract void updatePlaceType(long placeID, long newTypeID);
 
 
     @Query("DELETE from place WHERE id=:placeID")

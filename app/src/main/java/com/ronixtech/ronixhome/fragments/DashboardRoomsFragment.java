@@ -1,7 +1,6 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -61,7 +58,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     List<Room> rooms;
     TextView roomsGridViewLongPressHint;
 
-    Place place;
+    private Place place;
+    private Floor floor;
 
     private boolean showPlaceArrow = false;
 
@@ -94,8 +92,13 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard_rooms, container, false);
         place = MySettings.getCurrentPlace();
+        floor = MySettings.getCurrentFloor();
         if(place != null){
-            MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+            if(floor != null){
+                MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName(), getResources().getColor(R.color.whiteColor));
+            }else{
+                MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+            }
             showPlaceArrow = true;
         }else{
             MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.dashboard), getResources().getColor(R.color.whiteColor));
@@ -127,73 +130,42 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
         rooms = new ArrayList<>();
         if(place != null){
-            List<Floor> floors = MySettings.getPlaceFloors(place.getId());
-            if(floors != null && floors.size() >= 1){
-                for (Floor floor : floors) {
-                    if(MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1)
+            if(floor != null){
+                if(MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1) {
                     rooms.addAll(MySettings.getFloorRooms(floor.getId()));
                 }
-            }
-        }else{
-            if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
-                rooms.addAll(MySettings.getAllRooms());
+            }else {
+                if(MySettings.getPlaceRooms(place) != null && MySettings.getPlaceRooms(place).size() >= 1){
+                    rooms.addAll(MySettings.getPlaceRooms(place));
+                }
             }
         }
         roomsGridView = view.findViewById(R.id.rooms_gridview);
-        adapter = new RoomsGridAdapter(getActivity(), rooms);
+        adapter = new RoomsGridAdapter(getActivity(), rooms, getFragmentManager(), new RoomsGridAdapter.RoomsListener() {
+            @Override
+            public void onRoomDeleted() {
+                MySettings.setCurrentRoom(null);
+                rooms.clear();
+                if(place != null){
+                    if(floor != null && MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1){
+                        rooms.addAll(MySettings.getFloorRooms(floor.getId()));
+                    }else{
+                        if(MySettings.getPlaceRooms(place) != null && MySettings.getPlaceRooms(place).size() >= 1){
+                            rooms.addAll(MySettings.getPlaceRooms(place));
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                setLayoutVisibility();
+            }
+            @Override
+            public void onRoomNameChanged() {
+
+            }
+        });
         roomsGridView.setAdapter(adapter);
 
         setLayoutVisibility();
-
-        roomsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Room clickedRoom = (Room) adapter.getItem(i);
-
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                DashboardDevicesFragment dashboardDevicesFragment = new DashboardDevicesFragment();
-                dashboardDevicesFragment.setRoom(clickedRoom);
-                fragmentTransaction.replace(R.id.fragment_view, dashboardDevicesFragment, "dashboardDevicesFragment");
-                fragmentTransaction.addToBackStack("dashboardDevicesFragment");
-                fragmentTransaction.commit();
-            }
-        });
-
-        roomsGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Room selectedRoom = (Room) adapter.getItem(i);
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(getActivity().getResources().getString(R.string.remove_room_question))
-                        .setMessage(getActivity().getResources().getString(R.string.remove_room_description))
-                        //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                MySettings.removeRoom(selectedRoom);
-                                MySettings.setCurrentRoom(null);
-                                rooms.clear();
-                                if(MySettings.getCurrentFloor() != null && MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()).size() >= 1){
-                                    rooms.addAll(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()));
-                                }
-                                adapter.notifyDataSetChanged();
-                                setLayoutVisibility();
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                            }
-                        })
-                        .show();
-                return true;
-            }
-        });
 
         addPlaceFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -366,8 +338,14 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         }
 
         if(place != null){
-            if(MySettings.getPlaceRooms(place) == null || MySettings.getPlaceRooms(place).size() < 1){
-                showAddRoomLayout = true;
+            if(floor != null){
+                if(MySettings.getFloorRooms(floor.getId()) == null || MySettings.getFloorRooms(floor.getId()).size() < 1){
+                    showAddRoomLayout = true;
+                }
+            }else{
+                if(MySettings.getPlaceRooms(place) == null || MySettings.getPlaceRooms(place).size() < 1){
+                    showAddRoomLayout = true;
+                }
             }
         }else{
             showAddRoomLayout = true;
@@ -409,23 +387,21 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             roomsGridView.setVisibility(View.VISIBLE);
-            roomsGridViewLongPressHint.setVisibility(View.VISIBLE);
+            //roomsGridViewLongPressHint.setVisibility(View.VISIBLE);
+            roomsGridViewLongPressHint.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void onPlaceSelected(Place place){
         setLayoutVisibility();
-
+        MySettings.setCurrentFloor(null);
         if(place != null){
-            MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+
             rooms.clear();
-            List<Floor> floors = MySettings.getPlaceFloors(place.getId());
-            if(floors != null && floors.size() >= 1){
-                for (Floor floor : floors) {
-                    if(MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1)
-                        rooms.addAll(MySettings.getFloorRooms(floor.getId()));
-                }
+            if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
+                rooms.addAll(MySettings.getAllRooms());
             }
             adapter.notifyDataSetChanged();
         }
@@ -469,9 +445,9 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     public void onResume(){
         super.onResume();
         if (MainActivity.getInstance() != null && MainActivity.isResumed) {
-            if(showPlaceArrow) {
-                Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
-                if (toolbar != null) {
+            Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
+            if(toolbar != null){
+                if(showPlaceArrow) {
                     ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
                     arrowImageView.setVisibility(View.VISIBLE);
                     toolbar.setOnClickListener(new View.OnClickListener() {
@@ -497,10 +473,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                             }
                         }
                     });
-                }
-            }else{
-                Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
-                if(toolbar != null){
+                }else{
                     ImageView arrowImageView = toolbar.findViewById(R.id.toolbar_change_home_imageview);
                     arrowImageView.setVisibility(View.GONE);
                     toolbar.setOnClickListener(new View.OnClickListener() {

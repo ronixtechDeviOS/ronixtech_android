@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,7 +99,31 @@ public class FloorsFragment extends Fragment{
         }else {
             floors = MySettings.getAllFloors();
         }
-        floorAdapter = new FloorsGridAdapter(getActivity(), floors);
+        floorAdapter = new FloorsGridAdapter(getActivity(), floors, getFragmentManager(), new FloorsGridAdapter.FloorsListener() {
+            @Override
+            public void onFloorDeleted() {
+                MySettings.setCurrentFloor(null);
+                MySettings.setCurrentRoom(null);
+
+                floors.clear();
+                if(MySettings.getCurrentPlace() != null){
+                    floors.addAll(MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors());
+                }else {
+                    floors.addAll(MySettings.getAllFloors());
+                }
+                floorAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onFloorNameChanged() {
+                floors.clear();
+                if(MySettings.getCurrentPlace() != null){
+                    floors.addAll(MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors());
+                }else {
+                    floors.addAll(MySettings.getAllFloors());
+                }
+                floorAdapter.notifyDataSetChanged();
+            }
+        });
         floorsGridView.setAdapter(floorAdapter);
 
         if(floors != null && floors.size() >= 1){
@@ -108,55 +131,9 @@ public class FloorsFragment extends Fragment{
             floorsGirdViewLongPressHint.setVisibility(View.GONE);
         }else{
             noFloorsTextView.setVisibility(View.VISIBLE);
-            floorsGirdViewLongPressHint.setVisibility(View.VISIBLE);
+            //floorsGirdViewLongPressHint.setVisibility(View.VISIBLE);
+            floorsGirdViewLongPressHint.setVisibility(View.GONE);
         }
-
-        floorsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Floor selectedFloor= (Floor) floorAdapter.getItem(i);
-                MySettings.setCurrentFloor(selectedFloor);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                fragmentTransaction.addToBackStack("dashboardRoomsFragment");
-                fragmentTransaction.commit();
-            }
-        });
-
-        /*floorsGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Floor selectedFloor = (Floor) floorAdapter.getItem(i);
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(getActivity().getResources().getString(R.string.remove_floor_question))
-                        .setMessage(getActivity().getResources().getString(R.string.remove_floor_description))
-                        //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                MySettings.removeFloor(selectedFloor);
-                                MySettings.setCurrentFloor(null);
-                                MySettings.setCurrentRoom(null);
-                                floors.clear();
-                                floors.addAll(MySettings.getAllFloors());
-                                floorAdapter.notifyDataSetChanged();
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                            }
-                        })
-                        .show();
-                return true;
-            }
-        });*/
 
         addPlaceFab.setOnClickListener(new View.OnClickListener() {
             @Override

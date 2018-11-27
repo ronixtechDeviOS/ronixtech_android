@@ -22,17 +22,25 @@ public abstract class FloorDAO {
     @Query("SELECT * FROM floor WHERE id =:id")
     public abstract Floor getFloor(long id);
 
+
+    @Query("SELECT * FROM room WHERE floor_id =:floorID")
+    public abstract List<Room> getRoomList(long floorID);
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertFloor(Floor floor);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertRooms(List<Room> rooms);
 
-    @Query("SELECT * FROM room WHERE floor_id =:floorID")
-    public abstract List<Room> getRoomList(long floorID);
+
+    @Query("UPDATE floor SET name =:newName WHERE id =:floorID")
+    public abstract void updateFloorName(long floorID, String newName);
+
 
     @Query("DELETE from floor WHERE id=:floorID")
     public abstract void removeFloor(long floorID);
+
 
     public void insertFloorWithRooms(Floor floor) {
         List<Room> rooms = floor.getRooms();

@@ -1,18 +1,15 @@
 package com.ronixtech.ronixhome.fragments;
 
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,7 +22,6 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.PlacesGridAdapter;
-import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 
 import java.util.List;
@@ -94,72 +90,21 @@ public class PlacesFragment extends Fragment {
 
         placesGridView = view.findViewById(R.id.places_gridview);
         places = MySettings.getAllPlaces();
-        placeAdapter = new PlacesGridAdapter(getActivity(), places);
+        placeAdapter = new PlacesGridAdapter(getActivity(), places, getFragmentManager(), new PlacesGridAdapter.PlacesListener() {
+            @Override
+            public void onPlaceDeleted() {
+                MySettings.setCurrentPlace(null);
+                MySettings.setCurrentFloor(null);
+                MySettings.setCurrentRoom(null);
+                places.clear();
+                places.addAll(MySettings.getAllPlaces());
+                placeAdapter.notifyDataSetChanged();
+                setLayoutVisibility();
+            }
+        });
         placesGridView.setAdapter(placeAdapter);
 
         setLayoutVisibility();
-
-        placesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Place selectedPlace = (Place) placeAdapter.getItem(i);
-                MySettings.setCurrentPlace(selectedPlace);
-                if(MySettings.getPlaceFloors(selectedPlace.getId()) != null && MySettings.getPlaceFloors(selectedPlace.getId()).size() > 1) {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    FloorsFragment floorsFragment = new FloorsFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, floorsFragment, "floorsFragment");
-                    fragmentTransaction.addToBackStack("floorsFragment");
-                    fragmentTransaction.commit();
-                }else if(MySettings.getPlaceFloors(selectedPlace.getId()) != null){
-                    List<Floor> floors = MySettings.getPlaceFloors(selectedPlace.getId());
-                    Floor selectedFloor= (Floor) floors.get(0);
-                    MySettings.setCurrentFloor(selectedFloor);
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                    fragmentTransaction.addToBackStack("dashboardRoomsFragment");
-                    fragmentTransaction.commit();
-                }
-            }
-        });
-
-        placesGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Place selectedPlace = (Place) placeAdapter.getItem(i);
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(getActivity().getResources().getString(R.string.remove_place_question))
-                        .setMessage(getActivity().getResources().getString(R.string.remove_place_description))
-                        //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                MySettings.removePlace(selectedPlace);
-                                MySettings.setCurrentPlace(null);
-                                MySettings.setCurrentFloor(null);
-                                MySettings.setCurrentRoom(null);
-                                places.clear();
-                                places.addAll(MySettings.getAllPlaces());
-                                placeAdapter.notifyDataSetChanged();
-                                setLayoutVisibility();
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                            }
-                        })
-                        .show();
-                return true;
-            }
-        });
 
         addPlaceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,7 +187,8 @@ public class PlacesFragment extends Fragment {
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
             placesGridView.setVisibility(View.VISIBLE);
-            placesGridViewLongPressHint.setVisibility(View.VISIBLE);
+            //placesGridViewLongPressHint.setVisibility(View.VISIBLE);
+            placesGridViewLongPressHint.setVisibility(View.GONE);
         }
     }
 

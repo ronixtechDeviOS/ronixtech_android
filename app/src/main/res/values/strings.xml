@@ -27,7 +27,9 @@
     <string name="support_email_title">For support and technical assistance:</string>
     <string name="support_email">technical@ronixtech.com</string>
 
+
     <string name="location">Location</string>
+
 
     <string name="place">Place</string>
     <string name="place_colon">Place:</string>
@@ -47,13 +49,20 @@
     <string name="place_type_hint">Tap here to select the place type</string>
     <string name="place_selection_hint">Tap here to select a place</string>
     <string name="place_already_exists_error">A place already exists with this name</string>
+    <string name="place_floors_error">Can\'t delete floor, as a place must have at least 1 floor</string>
 
-    <string name="place_long_press_hint">Long press on any Place to remove it</string>
+    <string name="edit_place_title">Edit your place</string>
+    <string name="remove_place">Remove Place</string>
+    <string name="edit_place">Edit Place</string>
+    <string name="edit_place_description">Edit the name, type, WiFi network(s) or floors of your place then click Save</string>
+
+    <string name="place_long_press_hint">Long press on any Place for more options</string>
     <string name="remove_place_question">Are you sure you want to remove the selected place?</string>
     <string name="remove_place_description">Removing the place will also remove all associated floors, rooms and devices</string>
 
 
     <string name="floor">Floor</string>
+    <string name="floor_colon">Floor:</string>
     <string name="floors">Floors</string>
     <string name="add_floor">Add Floor</string>
     <string name="add_new_floor">Add New Floor</string>
@@ -71,9 +80,13 @@
     <string name="floor_level_colon">Floor Level:</string>
     <string name="floor_location">Place</string>
 
-    <string name="floor_long_press_hint">Long press on any Floor to remove it</string>
+    <string name="remove_floor">Remove Floor</string>
+    <string name="edit_floor">Edit Floor</string>
+
+    <string name="floor_long_press_hint">Long press on any Floor for more options</string>
     <string name="remove_floor_question">Are you sure you want to remove the selected floor?</string>
     <string name="remove_floor_description">Removing the floor will also remove all associated rooms and devices</string>
+
 
     <string name="room">Room</string>
     <string name="room_colon">Room:</string>
@@ -94,23 +107,15 @@
     <string name="room_selection_hint">Tap here to select a room</string>
     <string name="room_already_exists_error">A room already exists with this name</string>
 
-    <string name="pir_pairing_description">Please select which device(s) this PIR controller will be paired to</string>
-    <string name="line_addition_hint">Tap here to add a device</string>
-    <string name="line_selection_hint">Tap here to select device</string>
-    <string name="selected_lines_colon">Selected devices:</string>
-    <string name="selected_line_colon">Selected device</string>
-    <string name="add_devices_first">No Smart Controllers added, please add a Smart Controller first</string>
+    <string name="edit_room_title">Edit your room</string>
+    <string name="remove_room">Remove Room</string>
+    <string name="edit_room">Edit Room</string>
+    <string name="edit_room_description">Edit the name and type of the room then click Save</string>
 
-
-    <string name="select_paired_devices">Select Smart Controller(s)</string>
-    <string name="pairing_description">Please select which controller(s) this controller will be paired to</string>
-    <string name="device_selection_hint">Tap here to select a Smart Controller</string>
-    <string name="selected_devices_colon">Selected Smart Controller(s):</string>
-
-
-    <string name="room_long_press_hint">Long press on any Room to remove it</string>
+    <string name="room_long_press_hint">Long press on any Room for more options</string>
     <string name="remove_room_question">Are you sure you want to remove the selected room?</string>
     <string name="remove_room_description">Removing the room will also remove all associated devices</string>
+
 
     <string name="device">Smart Controller</string>
     <string name="device_colon">Smart Controller:</string>
@@ -118,27 +123,7 @@
     <string name="add_device">Add Smart Controller</string>
     <string name="add_new_device">Add New Smart Controller</string>
     <string name="no_devices">No Smart Controllers</string>
-    <string name="remove_device">Remove</string>
     <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
-
-    <string name="device_info">Smart Controller Info</string>
-    <string name="device_name">Name</string>
-    <string name="device_mac_address">MAC Address</string>
-    <string name="device_type">Controller Type</string>
-    <string name="device_last_seen">Last Seen</string>
-    <string name="device_status">Status</string>
-    <string name="device_mqtt_reachable">Online</string>
-    <string name="device_mqtt_unreachable">Offline/Local Mode</string>
-    <string name="device_ip_address">IP Address</string>
-    <string name="device_firmware_version">Firmware Version</string>
-    <string name="device_firmware_online_version">Online Firmware Version</string>
-    <string name="device_temperature">Temperature</string>
-    <string name="device_beep_status">Beep Status</string>
-    <string name="device_hw_lock_status">Hardware Lock Status</string>
-    <string name="device_access_token">Access Token</string>
-    <string name="device_location">Location</string>
-    <string name="device_lines">Devices</string>
-
 
     <string name="add_device_hint_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
     <string name="add_device_hint_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
@@ -167,10 +152,6 @@
     <string name="line_dimming_on">This device supports dimming</string>
     <string name="line_dimming_off">This device doesn\'nt support dimming</string>
 
-    <string name="plug_1_name_hint">Plug #1</string>
-    <string name="plug_2_name_hint">Plug #2</string>
-    <string name="plug_3_name_hint">Plug #3</string>
-
     <string name="unit_mode_title">Smart Controller Mode</string>
     <string name="unit_mode_hint">Pick the mode which you will use for this Smart Controller</string>
     <string name="unit_mode_primary">Primary Smart Controller</string>
@@ -187,22 +168,72 @@
     <string name="line_mode_secondary_description">This mode allows the device to be paired to another device in another Smart Controller</string>
     <string name="line_mode_difference">Note: Primary devices should be electrically wired to the AC loads, while secondary devices will not be connected to any AC loads</string>
 
+    <string name="plug_1_name_hint">Plug #1</string>
+    <string name="plug_2_name_hint">Plug #2</string>
+    <string name="plug_3_name_hint">Plug #3</string>
+
+    <string name="pir_pairing_description">Please select which device(s) this PIR controller will be paired to</string>
+    <string name="line_addition_hint">Tap here to add a device</string>
+    <string name="line_selection_hint">Tap here to select device</string>
+    <string name="selected_lines_colon">Selected devices:</string>
+    <string name="selected_line_colon">Selected device</string>
+    <string name="add_devices_first">No Smart Controllers added, please add a Smart Controller first</string>
+
+    <string name="select_paired_devices">Select Smart Controller(s)</string>
+    <string name="pairing_description">Please select which controller(s) this controller will be paired to</string>
+    <string name="device_selection_hint">Tap here to select a Smart Controller</string>
+    <string name="selected_devices_colon">Selected Smart Controller(s):</string>
+
     <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
     <string name="dimming_value">Dim value</string>
 
+    <string name="remove_device">Remove Smart Controller</string>
+    <string name="edit_device">Edit Smart Controller</string>
+
+    <string name="unit_long_press_hint">Long press on any Device for more options</string>
+    <string name="remove_unit_question">Are you sure you want to remove this smart controller?</string>
+    <string name="remove_unit_message">Removing the smart controller wil also remove all the associated devices and cannot be undone</string>
+
     <string name="upnp">Stream</string>
     <string name="line_in">Line-In</string>
     <string name="usb">USB</string>
+
+    <string name="device_info">Smart Controller Info</string>
+    <string name="device_name">Name</string>
+    <string name="device_mac_address">MAC Address</string>
+    <string name="device_type">Controller Type</string>
+    <string name="device_last_seen">Last Seen</string>
+    <string name="device_status">Status</string>
+    <string name="device_mqtt_reachable">Online</string>
+    <string name="device_mqtt_unreachable">Offline/Local Mode</string>
+    <string name="device_ip_address">IP Address</string>
+    <string name="device_firmware_version">Firmware Version</string>
+    <string name="device_firmware_online_version">Online Firmware Version</string>
+    <string name="device_temperature">Temperature</string>
+    <string name="device_beep_status">Beep Status</string>
+    <string name="device_hw_lock_status">Hardware Lock Status</string>
+    <string name="device_access_token">Access Token</string>
+    <string name="device_location">Location</string>
+    <string name="device_lines">Devices</string>
+
+    <string name="pir_action">Trigger Action on this device</string>
+    <string name="pir_action_duration">Trigger Action Duration</string>
+    <string name="pir_action_turn_on">Turn on this device</string>
+    <string name="pir_action_turn_off">Turn off this device</string>
+
+    <string name="duplicate_unit_title">Duplicate Smart Controller</string>
+    <string name="duplicate_unit_message">Remove the smart controller and re-add or keep the old controller and go back?</string>
+
+    <string name="remove_duplicate_smart_controller">Remove old smart controller and re-configure it</string>
+    <string name="keep_smart_controller">Keep old smart controller and go back</string>
 
     <string name="scanning_network">Scanning network for Smart Controller</string>
     <string name="last_seen">Last seen @ %s</string>
     <string name="firmware_available">New firmware available. Click here to update!</string>
     <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable control functionality.</string>
     <string name="firmware_up_to_date">Controller\'s firmware is up-to-date</string>
-
-    <string name="no_types_available">No types available</string>
 
     <string name="update_device">Update Smart Controller Firmware</string>
     <string name="update_device_hint_1">Your device has an old firmware and needs to be updated</string>
@@ -224,6 +255,20 @@
     <string name="updating_firmware">Updating firmware</string>
     <string name="firmware_update_failed">Failed to update Controller\'s firmware. Please try again later, or contact support</string>
     <string name="unable_to_obtain_online_firmware_version">Unable to obtain online firmware version</string>
+
+    <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
+    <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>
+
+    <string name="smart_controller_connection_error">Error connecting to smart controller, please try again</string>
+    <string name="server_connection_error">Unable to connect to server, please try again</string>
+    <string name="no_internet_connection_try_later">No internet connection, please try again later</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="device_unreachable">Device unreachable</string>
+
+    <string name="device_update_disabled_only_local_mode">Firmware updates require local connectivity, try again when in the same network as the controller</string>
+
+    <string name="no_types_available">No types available</string>
+
 
     <string name="home_network">Home Network</string>
     <string name="configure_home_network_title">Please select your home network, where all your Smart Controllers will be connected to</string>
@@ -249,25 +294,15 @@
     <string name="enter_network_details_manually">Enter network details manually</string>
     <string name="add_new_network">Add network</string>
 
+    <string name="change_room_location">Moving a Room to another Place will also move all its devices to that place. The new place\'s WiFi network(s) will not take effect on any Smart Controller until you re-configure them again.</string>
+    <string name="remove_wifi_network_hint">Modifying the WiFi networks of a place will not take effect on any Smart Controller until you re-configure it again.</string>
+    <string name="remove_wifi_network_question">Are you sure you want to remove the selected WiFi network?</string>
+    <string name="remove_wifi_network_description">Removing the WiFi network will require you to re-add it if you still want to use it again</string>
+
 
     <string name="ip_address_title">Enter the controller\'s IP Address manually, in case the app doesn\'t auto detect it or is taking too long</string>
     <string name="ip_address_hint">IP Address (ex 192.168.1.2)</string>
 
-    <string name="unit_long_press_hint">Long press on any Device for more options</string>
-    <string name="remove_unit_question">Are you sure you want to remove this smart controller?</string>
-    <string name="remove_unit_message">Removing the smart controller wil also remove all the associated devices and cannot be undone</string>
-
-
-    <string name="pir_action">Trigger Action on this device</string>
-    <string name="pir_action_duration">Trigger Action Duration</string>
-    <string name="pir_action_turn_on">Turn on this device</string>
-    <string name="pir_action_turn_off">Turn off this device</string>
-
-    <string name="duplicate_unit_title">Duplicate Smart Controller</string>
-    <string name="duplicate_unit_message">Remove the smart controller and re-add or keep the old controller and go back?</string>
-
-    <string name="remove_duplicate_smart_controller">Remove old smart controller and re-configure it</string>
-    <string name="keep_smart_controller">Keep old smart controller and go back</string>
 
     <string name="wifi_required_title">WiFi required</string>
     <string name="wifi_required_message">To continue using this feature, WiFi must be turned on</string>
@@ -281,20 +316,11 @@
     <string name="upnp_app_not_available_message">To use UPnP features, please install the app</string>
     <string name="go_to_play_store">Go to Play Store</string>
 
-    <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
-    <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>
-
-    <string name="smart_controller_connection_error">Error connecting to smart controller, please try again</string>
-    <string name="server_connection_error">Unable to connect to server, please try again</string>
-    <string name="no_internet_connection_try_later">No internet connection, please try again later</string>
-    <string name="no_internet_connection">No internet connection</string>
-    <string name="device_unreachable">Device unreachable</string>
-
-    <string name="device_update_disabled_only_local_mode">Firmware updates require local connectivity, try again when in the same network as the controller</string>
 
     <string name="registration_failed">Registration failed</string>
     <string name="login_failed">Login failed</string>
     <string name="reset_password_failed">Failed to send password reset email</string>
+
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -303,10 +329,24 @@
     <string name="add">Add</string>
     <string name="start">Start</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
     <string name="on">On</string>
     <string name="off">Off</string>
 
     <string name="seconds">%d seconds</string>
+
+
+    <string name="current_version">Current Version</string>
+    <string name="current_version_colon">Current Version:</string>
+    <string name="latest_version">Online Version</string>
+
+
+    <string name="facebook_app_id">1276072825863636</string>
+    <string name="fb_login_protocol_scheme">fb1276072825863636</string>
+
+    <string name="channel_name">RonixHome Channel</string>
+    <string name="channel_description">This is the main channel for RonixHome app</string>
+
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -315,16 +355,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="settings">Settings</string>
     <string name="title_activity_login">Sign in</string>
-
-    <string name="current_version">Current Version</string>
-    <string name="current_version_colon">Current Version:</string>
-    <string name="latest_version">Online Version</string>
-
-    <string name="facebook_app_id">1276072825863636</string>
-    <string name="fb_login_protocol_scheme">fb1276072825863636</string>
-
-    <string name="channel_name">RonixHome Channel</string>
-    <string name="channel_description">This is the main channel for RonixHome app</string>
 
     <string name="title_activity_main">MainActivity</string>
 
