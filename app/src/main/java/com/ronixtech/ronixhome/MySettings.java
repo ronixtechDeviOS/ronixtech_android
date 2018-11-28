@@ -1042,7 +1042,7 @@ public class MySettings {
                     //dropAllUserTables(database);
 
                     database.execSQL("ALTER TABLE Device "
-                            + " ADD COLUMN hw_firmware_update_available INTEGER NOT NULL DEFAULT 1");
+                            + " ADD COLUMN static_ip_address INTEGER NOT NULL DEFAULT 1");
                 }
             };
 
