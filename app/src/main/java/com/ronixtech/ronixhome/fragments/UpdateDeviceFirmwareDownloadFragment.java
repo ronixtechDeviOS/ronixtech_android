@@ -88,17 +88,31 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         progressCircle = view.findViewById(R.id.progress_circle);
         progressTextView = view.findViewById(R.id.progress_textview);
 
-        progressTextView.setText(getActivity().getResources().getString(R.string.downloading_file, currentFile, totalNumberOfFiles));
-
         device = MySettings.getTempDevice();
+
+        if(device != null) {
+            if (device.isHwFirmwareUpdateAvailable()) {
+                totalNumberOfFiles = 1;
+            } else if (device.isFirmwareUpdateAvailable()) {
+                totalNumberOfFiles = 2;
+            }
+        }
+
+        progressTextView.setText(getActivity().getResources().getString(R.string.downloading_file, currentFile, totalNumberOfFiles));
 
         if(device != null){
             new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
                 @Override
                 public void onConnectionSuccess() {
-                    String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user1.bin");
-                    DownloadTask downloadTask = new DownloadTask(getActivity(), fragment);
-                    downloadTask.execute(url);
+                    if(device.isHwFirmwareUpdateAvailable()){
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME);
+                        DownloadTask downloadTask = new DownloadTask(getActivity(), fragment, device);
+                        downloadTask.execute(url);
+                    }else if(device.isFirmwareUpdateAvailable()){
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_1);
+                        DownloadTask downloadTask = new DownloadTask(getActivity(), fragment, device);
+                        downloadTask.execute(url);
+                    }
                 }
 
                 @Override
@@ -193,11 +207,14 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         private PowerManager.WakeLock mWakeLock;
         UpdateDeviceFirmwareDownloadFragment fragment;
 
+        private Device device;
+
         int statusCode;
 
-        public DownloadTask(Context context, UpdateDeviceFirmwareDownloadFragment fragment) {
+        public DownloadTask(Context context, UpdateDeviceFirmwareDownloadFragment fragment, Device device) {
             this.context = context;
             this.fragment = fragment;
+            this.device = device;
         }
 
         @Override
@@ -209,18 +226,24 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         protected void onPostExecute(String result){
             if(MainActivity.getInstance() != null && MainActivity.isResumed){
                 if(statusCode == 200) {
-                    currentFile++;
-
-                    progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
-
-                    if (currentFile <= 2) {
-                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()), "user2.bin");
-                        DownloadTask downloadTask = new DownloadTask(context, fragment);
-                        downloadTask.execute(url);
-                    } else {
+                    if(device.isHwFirmwareUpdateAvailable()){
                         progressTextView.setText(context.getResources().getString(R.string.download_complete));
                         fragment.goToUploadFragment();
+                    }else if(device.isFirmwareUpdateAvailable()){
+                        currentFile++;
+
+                        progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
+
+                        if (currentFile <= 2) {
+                            String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_2);
+                            DownloadTask downloadTask = new DownloadTask(context, fragment, device);
+                            downloadTask.execute(url);
+                        } else {
+                            progressTextView.setText(context.getResources().getString(R.string.download_complete));
+                            fragment.goToUploadFragment();
+                        }
                     }
+
                 }else{
                     Toast.makeText(context, context.getResources().getString(R.string.download_firmware_failed), Toast.LENGTH_SHORT).show();
                     fragment.goToHomeFragment();
@@ -255,12 +278,17 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                 // download the file
                 input = connection.getInputStream();
 
-                String filename = Constants.DEVICE_FIRMWARE_FILE_NAME_1;
-                if(currentFile == 1){
-                    filename = Constants.DEVICE_FIRMWARE_FILE_NAME_1;
-                }else if(currentFile == 2){
-                    filename = Constants.DEVICE_FIRMWARE_FILE_NAME_2;
+                String filename = "";
+                if(device.isHwFirmwareUpdateAvailable()){
+                    filename = Constants.DEVICE_HW_FIRMWARE_FILE_NAME;
+                }else if(device.isFirmwareUpdateAvailable()){
+                    if(currentFile == 1){
+                        filename = Constants.DEVICE_FIRMWARE_FILE_NAME_1;
+                    }else if(currentFile == 2){
+                        filename = Constants.DEVICE_FIRMWARE_FILE_NAME_2;
+                    }
                 }
+
                 output = context.openFileOutput(filename, Context.MODE_PRIVATE);
 
                 //output = new FileOutputStream("/sdcard/file_name.extension");

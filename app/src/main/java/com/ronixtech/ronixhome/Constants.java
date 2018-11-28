@@ -42,11 +42,15 @@ public class Constants {
     public static final int SERVER_TIMEOUT = 5000;
     public static final int SERVER_NUMBER_OF_RETRIES = 2;
 
-    public static final String DEVICE_DEFAULT_FIRMWARE_VERSION = "0";
+    public static final String DEVICE_DEFAULT_WIFI_FIRMWARE_VERSION = "0";
+    public static final String DEVICE_DEFAULT_HW_FIRMWARE_VERSION = "0";
 
     public static final String DEVICE_GET_FIRMWARE_FILE_NAME_URL = "/flash/next";
     public static final String DEVICE_UPLOAD_FIRMWARE_URL = "/flash/upload";
     public static final String DEVICE_FIRMWARE_REBOOT_URL = "/flash/reboot";
+
+    public static final String DEVICE_HARDWARE_SYNC_URL = "/pgm/sync";
+    public static final String DEVICE_HARDWARE_UPLOAD_FIRMWARE_URL = "/pgm/upload";
 
     public static final String DEVICE_SOUND_SYSTEM_SHUTDOWN_URL = "/shutdown";
 
@@ -55,6 +59,8 @@ public class Constants {
 
     public static final String DEVICE_FIRMWARE_FILE_NAME_1 = "user1.bin";
     public static final String DEVICE_FIRMWARE_FILE_NAME_2 = "user2.bin";
+    public static final String DEVICE_HW_FIRMWARE_FILE_NAME = "hw.hex";
+    public static final String DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME = "hw.bin";
 
     //post parameters
     public static final String PARAMETER_ERROR = "error";

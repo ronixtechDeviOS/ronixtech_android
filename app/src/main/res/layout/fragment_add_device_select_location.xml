@@ -272,12 +272,25 @@
                     android:text="@string/select_wifi_network_hint"/>
             </RelativeLayout>
 
+            <CheckBox
+                android:id="@+id/static_ip_address_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/wifi_network_selection_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:textSize="18sp"
+                android:checked="true"
+                android:textColor="@color/blackColor"
+                android:text="@string/unit_static_ip_description"/>
+
             <Button
                 android:id="@+id/done_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/wifi_network_selection_layout"
+                android:layout_below="@id/static_ip_address_checkbox"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"

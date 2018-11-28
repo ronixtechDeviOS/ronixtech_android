@@ -209,8 +209,10 @@
     <string name="device_mqtt_reachable">Online</string>
     <string name="device_mqtt_unreachable">Offline/Local Mode</string>
     <string name="device_ip_address">IP Address</string>
-    <string name="device_firmware_version">Firmware Version</string>
-    <string name="device_firmware_online_version">Online Firmware Version</string>
+    <string name="device_firmware_version">WiFi Firmware Version</string>
+    <string name="device_firmware_online_version">Online WiFi Firmware Version</string>
+    <string name="device_hw_firmware_version">Hardware Firmware Version</string>
+    <string name="device_hw_firmware_online_version">Online Hardware Firmware Version</string>
     <string name="device_temperature">Temperature</string>
     <string name="device_beep_status">Beep Status</string>
     <string name="device_hw_lock_status">Hardware Lock Status</string>
@@ -240,18 +242,25 @@
     <string name="update_device_hint_2">Hold tight, we\'ll do everything for you.</string>
     <string name="update_device_hint_3">Don\'t close the app or turn off the Smart Controller during the update process</string>
     <string name="update_device_hint_4">Press Start to begin the update process</string>
+    <string name="update_device_hint_5">Choose which firmwares you\'d like to update (we\'ve already pre-selected the updates which are newer online for you)</string>
     <string name="updating_device">Updating Smart Controller</string>
+    <string name="updating_wifi_device">Updating WiFi Controller firmware</string>
+    <string name="updating_hw_device">Updating Hardware Controller firmware</string>
+    <string name="update_wifi_firmware">Update WiFi firmware</string>
+    <string name="update_hw_firmware">Update Hardware firmware</string>
 
     <string name="downloading_firmware_files">Downloading firmware files</string>
     <string name="downloading_file">Downloading file %d/%d</string>
     <string name="download_complete">Download Complete</string>
     <string name="uploading_firmware">Uploading firmware</string>
     <string name="unable_to_get_device_firmware_file_name">Unable to get firmware configuration from Smart Controller</string>
+    <string name="unable_to_put_device_in_sync_mode">Unable to put hardware controller in Sync mode. Please try again.</string>
     <string name="unable_to_download_firmware">Unable to download firmware files, please try again</string>
     <string name="download_firmware_failed">Downloading firmware files failed, please try again</string>
     <string name="unable_to_upload_firmware">Unable to upload firmware, please try again</string>
     <string name="unable_to_reboot_device">Unable to reboot Smart Controller, try again or reboot it manually</string>
-    <string name="firmware_update_successfull">Firmware updated successfully, rebooting device now</string>
+    <string name="firmware_update_successfull_rebooting">Firmware updated successfully, rebooting device now</string>
+    <string name="firmware_update_successfull">Firmware updated successfully</string>
     <string name="updating_firmware">Updating firmware</string>
     <string name="firmware_update_failed">Failed to update Controller\'s firmware. Please try again later, or contact support</string>
     <string name="unable_to_obtain_online_firmware_version">Unable to obtain online firmware version</string>
@@ -293,6 +302,7 @@
     <string name="add_network">Save Network</string>
     <string name="enter_network_details_manually">Enter network details manually</string>
     <string name="add_new_network">Add network</string>
+    <string name="unit_static_ip_description">Give this controller a Static IP address on this WiFi network</string>
 
     <string name="change_room_location">Moving a Room to another Place will also move all its devices to that place. The new place\'s WiFi network(s) will not take effect on any Smart Controller until you re-configure them again.</string>
     <string name="remove_wifi_network_hint">Modifying the WiFi networks of a place will not take effect on any Smart Controller until you re-configure it again.</string>

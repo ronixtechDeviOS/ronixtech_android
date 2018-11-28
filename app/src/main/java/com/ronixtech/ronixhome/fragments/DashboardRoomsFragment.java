@@ -94,10 +94,14 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         place = MySettings.getCurrentPlace();
         floor = MySettings.getCurrentFloor();
         if(place != null){
-            if(floor != null){
-                MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName(), getResources().getColor(R.color.whiteColor));
+            if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
+                MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
             }else{
-                MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+                if(floor != null){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName(), getResources().getColor(R.color.whiteColor));
+                }else{
+                    MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+                }
             }
             showPlaceArrow = true;
         }else{
@@ -397,11 +401,16 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         setLayoutVisibility();
         MySettings.setCurrentFloor(null);
         if(place != null){
-            MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+            MySettings.setCurrentPlace(place);
+            if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
+                MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+            }else{
+                MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+            }
 
             rooms.clear();
-            if(MySettings.getAllRooms() != null && MySettings.getAllRooms().size() >= 1){
-                rooms.addAll(MySettings.getAllRooms());
+            if(MySettings.getPlaceRooms(place) != null && MySettings.getPlaceRooms(place).size() >= 1){
+                rooms.addAll(MySettings.getPlaceRooms(place));
             }
             adapter.notifyDataSetChanged();
         }

@@ -246,7 +246,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
                 controlsEnabled = true;
 
-                if(item.isFirmwareUpdateAvailable()){
+                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     if(item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1){
                         Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
@@ -1011,7 +1011,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(item.isFirmwareUpdateAvailable()){
+                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1218,7 +1218,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(item.isFirmwareUpdateAvailable()){
+                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                         @Override

@@ -694,4 +694,11 @@ public class Utils {
     public static int difference(int firstNumber, int secondNumber){
         return Math.abs(firstNumber - secondNumber);
     }
+
+    public static String intToIp(int i) {
+        return (i & 0xFF) + "." +
+                ((i >> 8 ) & 0xFF) + "." +
+                ((i >> 16) & 0xFF) + "." +
+                ((i >> 24) & 0xFF);
+    }
 }

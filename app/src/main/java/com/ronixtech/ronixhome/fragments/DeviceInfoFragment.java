@@ -35,7 +35,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, ipAddressStaticTextView, ipAddressTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
+    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, ipAddressStaticTextView, ipAddressTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, hwFirmwareVersionTextView, onlineHWFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
 
     private Device device;
     private int placeMode;
@@ -84,6 +84,8 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         ipAddressTextView = view.findViewById(R.id.device_ip_address_textview);
         firmwareVersionTextView = view.findViewById(R.id.device_firmware_version_textview);
         onlineFirmwareVersionTextView = view.findViewById(R.id.device_firmware_online_version_textview);
+        hwFirmwareVersionTextView = view.findViewById(R.id.device_hw_firmware_version_textview);
+        onlineHWFirmwareVersionTextView = view.findViewById(R.id.device_hw_firmware_online_version_textview);
         firmwareMessageTextView = view.findViewById(R.id.device_firmware_message_textview);
         temperatureTextView = view.findViewById(R.id.device_temperature_textview);
         beepStatusTextView = view.findViewById(R.id.device_beep_status_textview);
@@ -114,35 +116,68 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 }
             }
 
-            int currentVersion = 0, onlineVersion = 0;
+            int currentWiFiVersion = 0, onlineWiFiVersion = 0;
             if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
-                currentVersion = Integer.parseInt(device.getFirmwareVersion());
-                firmwareVersionTextView.setText(""+currentVersion);
+                currentWiFiVersion = Integer.parseInt(device.getFirmwareVersion());
+                firmwareVersionTextView.setText(""+currentWiFiVersion);
             }
 
-            if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()) != null && MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                onlineVersion = Integer.parseInt(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
-                onlineFirmwareVersionTextView.setText("" + onlineVersion);
+            if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()) != null && MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                onlineWiFiVersion = Integer.parseInt(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
+                onlineFirmwareVersionTextView.setText("" + onlineWiFiVersion);
             }else{
                 onlineFirmwareVersionTextView.setText(getActivity().getResources().getString(R.string.unable_to_obtain_online_firmware_version));
                 onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
             }
 
-            if(currentVersion == onlineVersion && currentVersion != 0){
+            int currentHWVersion = 0, onlineHWVersion = 0;
+            if(device.getHwFirmwareVersion() != null && device.getHwFirmwareVersion().length() >= 1){
+                currentHWVersion = Integer.parseInt(device.getHwFirmwareVersion());
+                hwFirmwareVersionTextView.setText(""+currentHWVersion);
+            }
+
+            if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()) != null && MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                onlineHWVersion = Integer.parseInt(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                onlineHWFirmwareVersionTextView.setText("" + onlineHWVersion);
+            }else{
+                onlineHWFirmwareVersionTextView.setText(getActivity().getResources().getString(R.string.unable_to_obtain_online_firmware_version));
+                onlineHWFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
+            }
+
+
+            boolean hwUpdateAvailable = false;
+            if(currentHWVersion == onlineHWVersion && currentHWVersion != 0){
+                hwUpdateAvailable = false;
                 firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
 
-                firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
-                onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                hwFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                onlineHWFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
             }else{
+                hwUpdateAvailable = true;
+                firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
-                if(currentVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                    firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
-                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_update_required));
+            }
+
+
+            if(!hwUpdateAvailable){
+                if(currentWiFiVersion == onlineWiFiVersion && currentWiFiVersion != 0){
+                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
+
+                    firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                    onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                    firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
                 }else{
-                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
+                    firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
+                    if(currentWiFiVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                        firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
+                        firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_update_required));
+                    }else{
+                        firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
+                    }
                 }
             }
+
 
             if(device.getTemperature() != 0){
                 temperatureTextView.setText(""+ device.getTemperature() + " \u2103");

@@ -42,7 +42,8 @@ public class MySettings {
     public static final String PREF_CONTROL_ACTIVE = "control_active";
     public static final String PREF_GETSTATUS_ACTIVE = "get_status_active";
     public static final String PREF_APP_FIRST_START = "app_first_start";
-    public static final String PREF_DEVICES_LATEST_VERSIONS = "pref_devices_latest_firmware_versions";
+    public static final String PREF_DEVICES_LATEST_WIFI_VERSIONS = "pref_devices_latest_wifi_firmware_versions";
+    public static final String PREF_DEVICES_LATEST_HW_VERSIONS = "pref_devices_latest_hw_firmware_versions";
 
 
     private static User loggedInUser;
@@ -64,7 +65,8 @@ public class MySettings {
     private static Floor currentFloor;
     private static com.ronixtech.ronixhome.entities.Room currentRoom;
 
-    private static SparseArray<String> devicesLatestVersions;
+    private static SparseArray<String> devicesLatestWiFiVersions;
+    private static SparseArray<String> devicesLatestHWVersions;
 
     private static Gson gson;
 
@@ -642,54 +644,104 @@ public class MySettings {
         return internetConnectivityActive;
     }
 
-    public static void setDeviceLatestFirmwareVersion(int deviceType, String latestVersion){
-        if(devicesLatestVersions != null){
-            devicesLatestVersions.put(deviceType, latestVersion);
+    public static void setDeviceLatestWiFiFirmwareVersion(int deviceType, String latestVersion){
+        if(devicesLatestWiFiVersions != null){
+            devicesLatestWiFiVersions.put(deviceType, latestVersion);
         }else{
             SharedPreferences prefs = getSettings();
-            String json = prefs.getString(PREF_DEVICES_LATEST_VERSIONS, "");
+            String json = prefs.getString(PREF_DEVICES_LATEST_WIFI_VERSIONS, "");
             if (json.isEmpty() || json.equals("null")) {
-                devicesLatestVersions = new SparseArray<>();
-                devicesLatestVersions.put(deviceType, latestVersion);
+                devicesLatestWiFiVersions = new SparseArray<>();
+                devicesLatestWiFiVersions.put(deviceType, latestVersion);
             } else {
                 if(gson == null){
                     gson = new Gson();
                 }
-                devicesLatestVersions = gson.fromJson(json, SparseArray.class);
-                if(devicesLatestVersions == null){
-                    devicesLatestVersions = new SparseArray<>();
+                devicesLatestWiFiVersions = gson.fromJson(json, SparseArray.class);
+                if(devicesLatestWiFiVersions == null){
+                    devicesLatestWiFiVersions = new SparseArray<>();
                 }
-                devicesLatestVersions.put(deviceType, latestVersion);
+                devicesLatestWiFiVersions.put(deviceType, latestVersion);
             }
         }
         if(gson == null){
             gson = new Gson();
         }
         SharedPreferences.Editor editor = getSettings().edit();
-        editor.putString(PREF_DEVICES_LATEST_VERSIONS, gson.toJson(devicesLatestVersions));
+        editor.putString(PREF_DEVICES_LATEST_WIFI_VERSIONS, gson.toJson(devicesLatestWiFiVersions));
         editor.apply();
     }
-    public static String getDeviceLatestFirmwareVersion(int deviceType){
-        if(devicesLatestVersions != null){
-            if(devicesLatestVersions.get(deviceType) != null && devicesLatestVersions.get(deviceType).length() >= 1){
-                return devicesLatestVersions.get(deviceType);
+    public static String getDeviceLatestWiFiFirmwareVersion(int deviceType){
+        if(devicesLatestWiFiVersions != null){
+            if(devicesLatestWiFiVersions.get(deviceType) != null && devicesLatestWiFiVersions.get(deviceType).length() >= 1){
+                return devicesLatestWiFiVersions.get(deviceType);
             }
         }else{
             SharedPreferences prefs = getSettings();
-            String json = prefs.getString(PREF_DEVICES_LATEST_VERSIONS, "");
+            String json = prefs.getString(PREF_DEVICES_LATEST_WIFI_VERSIONS, "");
             if (json.isEmpty() || json.equals("null")) {
-                return Constants.DEVICE_DEFAULT_FIRMWARE_VERSION;
+                return Constants.DEVICE_DEFAULT_WIFI_FIRMWARE_VERSION;
             } else {
                 if(gson == null){
                     gson = new Gson();
                 }
-                devicesLatestVersions = gson.fromJson(json, SparseArray.class);
-                if(devicesLatestVersions != null && devicesLatestVersions.get(deviceType) != null && devicesLatestVersions.get(deviceType).length() >= 1){
-                    return devicesLatestVersions.get(deviceType);
+                devicesLatestWiFiVersions = gson.fromJson(json, SparseArray.class);
+                if(devicesLatestWiFiVersions != null && devicesLatestWiFiVersions.get(deviceType) != null && devicesLatestWiFiVersions.get(deviceType).length() >= 1){
+                    return devicesLatestWiFiVersions.get(deviceType);
                 }
             }
         }
-        return Constants.DEVICE_DEFAULT_FIRMWARE_VERSION;
+        return Constants.DEVICE_DEFAULT_WIFI_FIRMWARE_VERSION;
+    }
+
+    public static void setDeviceLatestHWFirmwareVersion(int deviceType, String latestVersion){
+        if(devicesLatestHWVersions != null){
+            devicesLatestHWVersions.put(deviceType, latestVersion);
+        }else{
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_DEVICES_LATEST_HW_VERSIONS, "");
+            if (json.isEmpty() || json.equals("null")) {
+                devicesLatestHWVersions = new SparseArray<>();
+                devicesLatestHWVersions.put(deviceType, latestVersion);
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                devicesLatestHWVersions = gson.fromJson(json, SparseArray.class);
+                if(devicesLatestHWVersions == null){
+                    devicesLatestHWVersions = new SparseArray<>();
+                }
+                devicesLatestHWVersions.put(deviceType, latestVersion);
+            }
+        }
+        if(gson == null){
+            gson = new Gson();
+        }
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putString(PREF_DEVICES_LATEST_HW_VERSIONS, gson.toJson(devicesLatestHWVersions));
+        editor.apply();
+    }
+    public static String getDeviceLatestHWFirmwareVersion(int deviceType){
+        if(devicesLatestHWVersions != null){
+            if(devicesLatestHWVersions.get(deviceType) != null && devicesLatestHWVersions.get(deviceType).length() >= 1){
+                return devicesLatestHWVersions.get(deviceType);
+            }
+        }else{
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_DEVICES_LATEST_HW_VERSIONS, "");
+            if (json.isEmpty() || json.equals("null")) {
+                return Constants.DEVICE_DEFAULT_HW_FIRMWARE_VERSION;
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                devicesLatestHWVersions = gson.fromJson(json, SparseArray.class);
+                if(devicesLatestHWVersions != null && devicesLatestHWVersions.get(deviceType) != null && devicesLatestHWVersions.get(deviceType).length() >= 1){
+                    return devicesLatestHWVersions.get(deviceType);
+                }
+            }
+        }
+        return Constants.DEVICE_DEFAULT_HW_FIRMWARE_VERSION;
     }
 
     public static void setAppFirstStart(boolean state) {
@@ -970,8 +1022,32 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_16_17 = new Migration(16, 17) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN hw_firmware_update_available INTEGER NOT NULL DEFAULT 0");
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN hw_firmware_version TEXT DEFAULT '0'");
+                }
+            };
+
+            Migration MIGRATION_17_18 = new Migration(17, 18) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN hw_firmware_update_available INTEGER NOT NULL DEFAULT 1");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18)
                             .allowMainThreadQueries().
                             build();
             return database;

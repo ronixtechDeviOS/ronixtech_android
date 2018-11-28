@@ -173,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="4dp"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/darkGrayColor"
@@ -190,10 +190,53 @@
                 android:text="101416"/>
 
             <TextView
+                android:id="@+id/device_hw_firmware_version_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_hw_firmware_version"/>
+
+            <TextView
+                android:id="@+id/device_hw_firmware_version_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="146"/>
+
+            <TextView
+                android:id="@+id/device_hw_firmware_online_version_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_hw_firmware_online_version"/>
+
+            <TextView
+                android:id="@+id/device_hw_firmware_online_version_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="147"/>
+
+            <TextView
                 android:id="@+id/device_firmware_message_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/redColor"

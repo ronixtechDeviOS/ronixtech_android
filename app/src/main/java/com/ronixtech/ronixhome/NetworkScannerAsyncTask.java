@@ -74,13 +74,13 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try
         {
-            Log.d(TAG, "DHCP: gateway: " + intToIp(dhcpInfo.gateway));
-            Log.d(TAG, "DHCP: dns1: " + intToIp(dhcpInfo.dns1));
-            Log.d(TAG, "DHCP: dns2: " + intToIp(dhcpInfo.dns2));
-            Log.d(TAG, "DHCP: ipAddress: " + intToIp(dhcpInfo.ipAddress));
-            Log.d(TAG, "DHCP: netmask: " + intToIp(dhcpInfo.netmask));
-            Log.d(TAG, "DHCP: serverAddress: " + intToIp(dhcpInfo.serverAddress));
-            InetAddress host = InetAddress.getByName(intToIp(dhcpInfo.gateway));
+            Log.d(TAG, "DHCP: gateway: " + Utils.intToIp(dhcpInfo.gateway));
+            Log.d(TAG, "DHCP: dns1: " + Utils.intToIp(dhcpInfo.dns1));
+            Log.d(TAG, "DHCP: dns2: " + Utils.intToIp(dhcpInfo.dns2));
+            Log.d(TAG, "DHCP: ipAddress: " + Utils.intToIp(dhcpInfo.ipAddress));
+            Log.d(TAG, "DHCP: netmask: " + Utils.intToIp(dhcpInfo.netmask));
+            Log.d(TAG, "DHCP: serverAddress: " + Utils.intToIp(dhcpInfo.serverAddress));
+            InetAddress host = InetAddress.getByName(Utils.intToIp(dhcpInfo.gateway));
             byte[] ip = host.getAddress();
 
             NUMBER_OF_THREADS = Utils.getNumCores();
@@ -217,13 +217,5 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                 MainActivity.getInstance().refreshDevicesListFromMemory();
             }
         }
-    }
-
-
-    public String intToIp(int i) {
-        return (i & 0xFF) + "." +
-                ((i >> 8 ) & 0xFF) + "." +
-                ((i >> 16) & 0xFF) + "." +
-                ((i >> 24) & 0xFF);
     }
 }

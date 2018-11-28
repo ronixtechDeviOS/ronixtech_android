@@ -88,6 +88,12 @@ public class Device implements Comparable {
     boolean hwLock;
     @ColumnInfo(name = "temperature")
     int temperature;
+    @ColumnInfo(name = "hw_firmware_version")
+    String hwFirmwareVersion;
+    @ColumnInfo(name = "hw_firmware_update_available")
+    boolean hwFirmwareUpdateAvailable;
+    @ColumnInfo(name = "static_ip_address")
+    boolean staticIPAddress;
 
     public Device(){
         this.id = 0;
@@ -109,6 +115,9 @@ public class Device implements Comparable {
         this.beep = true;
         this.hwLock = false;
         this.temperature = 0;
+        this.hwFirmwareVersion = "";
+        this.hwFirmwareUpdateAvailable = false;
+        this.staticIPAddress = true;
     }
 
     public Device(Device device){
@@ -135,6 +144,9 @@ public class Device implements Comparable {
         this.beep = device.isBeep();
         this.hwLock = device.isHwLock();
         this.temperature = device.getTemperature();
+        this.hwFirmwareUpdateAvailable = device.isHwFirmwareUpdateAvailable();
+        this.hwFirmwareVersion = device.getHwFirmwareVersion();
+        this.staticIPAddress = device.isStaticIPAddress();
     }
 
     public long getId() {
@@ -287,6 +299,30 @@ public class Device implements Comparable {
 
     public void setTemperature(int temperature) {
         this.temperature = temperature;
+    }
+
+    public String getHwFirmwareVersion() {
+        return hwFirmwareVersion;
+    }
+
+    public void setHwFirmwareVersion(String hwFirmwareVersion) {
+        this.hwFirmwareVersion = hwFirmwareVersion;
+    }
+
+    public boolean isHwFirmwareUpdateAvailable() {
+        return hwFirmwareUpdateAvailable;
+    }
+
+    public void setHwFirmwareUpdateAvailable(boolean hwFirmwareUpdateAvailable) {
+        this.hwFirmwareUpdateAvailable = hwFirmwareUpdateAvailable;
+    }
+
+    public boolean isStaticIPAddress() {
+        return staticIPAddress;
+    }
+
+    public void setStaticIPAddress(boolean staticIPAddress) {
+        this.staticIPAddress = staticIPAddress;
     }
 
     public String getDeviceTypeString(){

@@ -88,7 +88,11 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
         if(device != null){
-            getFirmwareFileName();
+            if(device.isHwFirmwareUpdateAvailable()){
+                putHardwareInSync();
+            }else if(device.isFirmwareUpdateAvailable()){
+                getFirmwareFileName();
+            }
         }
 
         return view;
@@ -108,6 +112,20 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         }
     }
 
+    private void goToDownloadFragment(){
+        if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+            if(getFragmentManager() != null) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
+                fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
+            }
+        }
+    }
+
     public void getFirmwareFileName(){
         /*6. Get information about the device:
         - Device chip id (unique)
@@ -115,7 +133,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 - Device type id, defines what is the device for and what is its features and version
                 => HTTP GET: "LOCAL_HOST/ronix/gettypeid"*/
         //debugTextView.append("Getting device type...\n");
-        FirmwareFileNameGetter firmwareFileNameGetter = new FirmwareFileNameGetter(getActivity(), this);
+        FirmwareFileNameGetter firmwareFileNameGetter = new FirmwareFileNameGetter(getActivity(), this, device);
         firmwareFileNameGetter.execute();
 
         //volley request to device to send ssid/password and then get device info for next steps
@@ -177,6 +195,11 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);*/
     }
 
+    public void putHardwareInSync(){
+        HardwareSyncMode hardwareSyncMode = new HardwareSyncMode(getActivity(), this, device);
+        hardwareSyncMode.execute();
+    }
+
     public void notifyCrashlyticsOfAffectedDeviceUpdate(){
         Bundle bundle = new Bundle();
         bundle.putString("device_type_id", ""+device.getDeviceTypeID());
@@ -230,16 +253,17 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
     }
 
     public class FirmwareFileNameGetter extends AsyncTask<Void, Void, Void> {
-        private final String TAG = UpdateDeviceFirmwareUploadFragment.FirmwareFileNameGetter.class.getSimpleName();
-
         int statusCode;
+
+        Device device;
 
         Activity activity;
         UpdateDeviceFirmwareUploadFragment fragment;
 
-        public FirmwareFileNameGetter(Activity activity, UpdateDeviceFirmwareUploadFragment fragment) {
+        public FirmwareFileNameGetter(Activity activity, UpdateDeviceFirmwareUploadFragment fragment, Device device) {
             this.activity = activity;
             this.fragment = fragment;
+            this.device = device;
         }
 
         @Override
@@ -255,7 +279,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                FirmwareUploader firmwareUploader = new FirmwareUploader(activity, fragment);
+                FirmwareUploader firmwareUploader = new FirmwareUploader(activity, fragment, device);
                 firmwareUploader.execute();
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_firmware_file_name), Toast.LENGTH_SHORT).show();
@@ -303,17 +327,177 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         }
     }
 
-    public class FirmwareUploader extends AsyncTask<Void, Void, Void> {
-        private final String TAG = UpdateDeviceFirmwareUploadFragment.FirmwareUploader.class.getSimpleName();
-
+    public class HardwareSyncMode extends AsyncTask<Void, Void, Void> {
         int statusCode;
+
+        Device device;
 
         Activity activity;
         UpdateDeviceFirmwareUploadFragment fragment;
 
-        public FirmwareUploader(Activity activity, UpdateDeviceFirmwareUploadFragment fragment) {
+        public HardwareSyncMode(Activity activity, UpdateDeviceFirmwareUploadFragment fragment, Device device) {
             this.activity = activity;
             this.fragment = fragment;
+            this.device = device;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 204){
+                HardwareDeviceSyncChecker hardwareDeviceSyncChecker = new HardwareDeviceSyncChecker(activity, fragment, device);
+                hardwareDeviceSyncChecker.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_put_device_in_sync_mode), Toast.LENGTH_SHORT).show();
+                fragment.goToHomeFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 204 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_HARDWARE_SYNC_URL);
+                    Log.d(TAG,  "hardwareSync URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "hardwareSync response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public class HardwareDeviceSyncChecker extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+        String statusResult = "";
+
+        Device device;
+
+        Activity activity;
+        UpdateDeviceFirmwareUploadFragment fragment;
+
+        public HardwareDeviceSyncChecker(Activity activity, UpdateDeviceFirmwareUploadFragment fragment, Device device) {
+            this.activity = activity;
+            this.fragment = fragment;
+            this.device = device;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200 && statusResult.contains("SYNC")){
+                FirmwareUploader firmwareUploader = new FirmwareUploader(activity, fragment, device);
+                firmwareUploader.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_put_device_in_sync_mode), Toast.LENGTH_SHORT).show();
+                fragment.goToHomeFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(!statusResult.contains("SYNC") && numberOfRetries <= 100){
+                try{
+                    URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_HARDWARE_SYNC_URL);
+                    Log.d(TAG,  "hardwareSyncChecker URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    statusResult = result.toString();
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "hardwareSyncChecker response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    urlConnection.disconnect();
+                    numberOfRetries++;
+                    try{
+                        Thread.sleep(100);
+                    }catch (InterruptedException e){
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public class FirmwareUploader extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Device device;
+
+        Activity activity;
+        UpdateDeviceFirmwareUploadFragment fragment;
+
+        public FirmwareUploader(Activity activity, UpdateDeviceFirmwareUploadFragment fragment, Device device) {
+            this.activity = activity;
+            this.fragment = fragment;
+            this.device = device;
         }
 
         @Override
@@ -329,13 +513,27 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment);
+                /*if(device.isHwFirmwareUpdateAvailable()){
+                    Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
+                    device.setHwFirmwareUpdateAvailable(false);
+                    MySettings.setTempDevice(device);
+                    if(device.isFirmwareUpdateAvailable()){
+                        fragment.goToDownloadFragment();
+                    }
+                }else if(device.isFirmwareUpdateAvailable()){
+                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
+                    deviceRebooter.execute();
+                    Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
+                }*/
+
+                DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
                 deviceRebooter.execute();
+                Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
+
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     fragment.notifyCrashlyticsOfAffectedDeviceUpdate();
                     MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
                 }
-                Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_upload_firmware), Toast.LENGTH_SHORT).show();
                 fragment.goToHomeFragment();
@@ -360,11 +558,16 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 int maxBufferSize = 1 * 1024 * 1024;
 
                 try {
-                    String upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_UPLOAD_FIRMWARE_URL;
+                    String upLoadServerUri = "";
+                    if(device.isHwFirmwareUpdateAvailable()){
+                        upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_HARDWARE_UPLOAD_FIRMWARE_URL;
+                    }else if(device.isFirmwareUpdateAvailable()){
+                        upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_UPLOAD_FIRMWARE_URL;
+                    }
+
                     Log.d(TAG, "uploadFirmware URL: " + upLoadServerUri);
 
                     // open a URL connection to the Servlet
-                    fileInputStream = activity.openFileInput(filename);
                     URL url = new URL(upLoadServerUri);
 
                     // Open a HTTP connection to the URL
@@ -384,6 +587,14 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     //dos.writeBytes("Content-Disposition: form-data; name=\""+filename+"\";filename=\"" + filename + "\"" + lineEnd);
 
                     //dos.writeBytes(lineEnd);
+
+                    if(device.isHwFirmwareUpdateAvailable()){
+                        fileInputStream = activity.openFileInput(Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
+                        Log.d(TAG, "uploadFirmware file: " + Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
+                    }else if(device.isFirmwareUpdateAvailable()){
+                        fileInputStream = activity.openFileInput(filename);
+                        Log.d(TAG, "uploadFirmware file: " + filename);
+                    }
 
                     // create a buffer of maximum size
                     bytesAvailable = fileInputStream.available();
@@ -428,7 +639,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     in.close();
                     bufferedReader.close();
                 } catch (Exception e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Log.d(TAG, "Exception: " + e.getMessage() + " - " + e.getStackTrace());
                 }finally {
                     try {
                         if (dos != null) {
@@ -456,16 +667,17 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
     }
 
     public class DeviceRebooter extends AsyncTask<Void, Void, Void> {
-        private final String TAG = UpdateDeviceFirmwareUploadFragment.DeviceRebooter.class.getSimpleName();
-
         int statusCode;
+
+        Device device;
 
         Activity activity;
         UpdateDeviceFirmwareUploadFragment fragment;
 
-        public DeviceRebooter(Activity activity, UpdateDeviceFirmwareUploadFragment fragment) {
+        public DeviceRebooter(Activity activity, UpdateDeviceFirmwareUploadFragment fragment, Device device) {
             this.activity = activity;
             this.fragment = fragment;
+            this.device = device;
         }
 
         @Override

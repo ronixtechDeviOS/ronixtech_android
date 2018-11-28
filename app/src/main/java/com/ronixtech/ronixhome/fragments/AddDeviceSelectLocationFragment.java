@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,6 +53,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
     ImageView placeImageView, roomImageView;
     TextView selectedFloorTextView;
     Button incrementFloorButton, decremetnFloorButton;
+    CheckBox staticIPAddressCheckBox;
 
     Button doneButton;
 
@@ -59,6 +62,8 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
     private int selectedFloorIndex = 0;
     private Room selectedRoom;
     private WifiNetwork selectedWifiNetwork;
+
+    private boolean ipAddressStatic = true;
 
     public AddDeviceSelectLocationFragment() {
         // Required empty public constructor
@@ -102,6 +107,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         wifiNetworkNameTextView = view.findViewById(R.id.selected_wifi_network_name_textview);
         incrementFloorButton = view.findViewById(R.id.increment_button);
         decremetnFloorButton = view.findViewById(R.id.decrement_button);
+        staticIPAddressCheckBox = view.findViewById(R.id.static_ip_address_checkbox);
 
         doneButton = view.findViewById(R.id.done_button);
 
@@ -156,6 +162,13 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 }
             }
         }
+
+        staticIPAddressCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ipAddressStatic = isChecked;
+            }
+        });
 
         placeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -313,6 +326,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                     //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
                     //tempDevice.setRoomID(clickedRoom.getId());
                     device.setRoomID(selectedRoom.getId());
+                    device.setStaticIPAddress(ipAddressStatic);
                     MySettings.addDevice(device);
                     MySettings.setHomeNetwork(selectedWifiNetwork);
                     /*if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){

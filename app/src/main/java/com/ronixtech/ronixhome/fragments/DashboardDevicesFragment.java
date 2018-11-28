@@ -1,7 +1,9 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.net.DhcpInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -253,6 +255,40 @@ public class DashboardDevicesFragment extends Fragment {
             devicesListView.setAdapter(deviceAdapter);
 
             loadDevicesFromMemory();
+
+
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                //stop MQTT
+                if(mqttAndroidClient != null){
+                    try {
+                        mqttAndroidClient.disconnect();
+                        mqttAndroidClient.unregisterResources();
+                        mqttAndroidClient.close();
+                    }catch (MqttException e){
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }catch (Exception e){
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                }
+                //startTimer
+                Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
+                startTimer();
+                for (Device device:devices) {
+                    device.setDeviceMQTTReachable(false);
+                }
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                //stopTimer
+                stopTimer();
+                //start MQTT in onStart
+                Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
+                //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
+                if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
+                    String clientId = MqttClient.generateClientId();
+                    getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+                }else{
+                    Log.d(TAG, "MQTT is already connected");
+                }
+            }
         }
     }
 
@@ -711,9 +747,9 @@ public class DashboardDevicesFragment extends Fragment {
                                                 String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
                                                 if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
                                                     device.setFirmwareVersion(currentFirmwareVersion);
-                                                    if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                    if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
                                                         int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                                        int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                                        int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
                                                         if (onlineVersion != currentVersion) {
                                                             device.setFirmwareUpdateAvailable(true);
                                                         }else{
@@ -737,6 +773,28 @@ public class DashboardDevicesFragment extends Fragment {
                                                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                                if(hardwareStatus.has("U_H_FWV")) {
+                                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                                            if (onlineHWVersion != currentHWVersion) {
+                                                                device.setHwFirmwareUpdateAvailable(true);
+                                                            }else{
+                                                                device.setHwFirmwareUpdateAvailable(false);
+                                                            }
+                                                        }
+                                                    }else{
+                                                        device.setHwFirmwareUpdateAvailable(true);
+                                                    }
+                                                }else{
+                                                    device.setHwFirmwareUpdateAvailable(true);
+                                                }
+
+
                                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
                                                 line0PowerStateString = hardwareStatus.getString("L_0_STT");
@@ -818,6 +876,28 @@ public class DashboardDevicesFragment extends Fragment {
                                         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                                if(hardwareStatus.has("U_H_FWV")) {
+                                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                                            if (onlineHWVersion != currentHWVersion) {
+                                                                device.setHwFirmwareUpdateAvailable(true);
+                                                            }else{
+                                                                device.setHwFirmwareUpdateAvailable(false);
+                                                            }
+                                                        }
+                                                    }else{
+                                                        device.setHwFirmwareUpdateAvailable(true);
+                                                    }
+                                                }else{
+                                                    device.setHwFirmwareUpdateAvailable(true);
+                                                }
+
+
                                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
                                                 line0PowerStateString = hardwareStatus.getString("L_0_STT");
@@ -1079,9 +1159,9 @@ public class DashboardDevicesFragment extends Fragment {
                                     String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
                                     if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
                                         device.setFirmwareVersion(currentFirmwareVersion);
-                                        if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                        if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
                                             int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
                                             if (onlineVersion != currentVersion) {
                                                 device.setFirmwareUpdateAvailable(true);
                                             }else{
@@ -1101,6 +1181,28 @@ public class DashboardDevicesFragment extends Fragment {
 
                         if(unitStatus != null && unitStatus.has("U_H_STT")){
                             JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                            if(hardwareStatus.has("U_H_FWV")) {
+                                String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                    device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                    if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                        int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                        int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                        if (onlineHWVersion != currentHWVersion) {
+                                            device.setHwFirmwareUpdateAvailable(true);
+                                        }else{
+                                            device.setHwFirmwareUpdateAvailable(false);
+                                        }
+                                    }
+                                }else{
+                                    device.setHwFirmwareUpdateAvailable(true);
+                                }
+                            }else{
+                                device.setHwFirmwareUpdateAvailable(true);
+                            }
+
+
                             String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                             int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
                             line0PowerStateString = hardwareStatus.getString("L_0_STT");
@@ -1210,8 +1312,6 @@ public class DashboardDevicesFragment extends Fragment {
         Device device;
 
         int statusCode;
-
-        int updateValuesCounter = 2;
 
         public DeviceSyncer(Device device) {
             this.device = device;
@@ -1362,6 +1462,16 @@ public class DashboardDevicesFragment extends Fragment {
                 }
 
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                if(device.isStaticIPAddress()){
+                    WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+                    jObject.put("R_W_DHC", "off");
+                    jObject.put("R_W_IP_", device.getIpAddress());
+                    jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
+                    jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
+                }
+
                 Log.d(TAG,  "statusGetter POST data: " + jObject.toString());
 
 
@@ -1405,9 +1515,9 @@ public class DashboardDevicesFragment extends Fragment {
                                     String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
                                     if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
                                         device.setFirmwareVersion(currentFirmwareVersion);
-                                        if(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                        if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
                                             int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestFirmwareVersion(device.getDeviceTypeID()));
+                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
                                             if (onlineVersion != currentVersion) {
                                                 device.setFirmwareUpdateAvailable(true);
                                             }else{
@@ -1420,6 +1530,15 @@ public class DashboardDevicesFragment extends Fragment {
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
+
+                                if(wifiStatus.has("R_W_DHC")){
+                                    String dhcpStatus = wifiStatus.getString("R_W_DHC");
+                                    if(dhcpStatus.equalsIgnoreCase("on")){
+                                        device.setStaticIPAddress(true);
+                                    }else if(dhcpStatus.equalsIgnoreCase("off")){
+                                        device.setStaticIPAddress(false);
+                                    }
+                                }
                             }
                         }else{
                             device.setFirmwareUpdateAvailable(true);
@@ -1430,6 +1549,27 @@ public class DashboardDevicesFragment extends Fragment {
                                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                if(hardwareStatus.has("U_H_FWV")) {
+                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                            if (onlineHWVersion != currentHWVersion) {
+                                                device.setHwFirmwareUpdateAvailable(true);
+                                            }else{
+                                                device.setHwFirmwareUpdateAvailable(false);
+                                            }
+                                        }
+                                    }else{
+                                        device.setHwFirmwareUpdateAvailable(true);
+                                    }
+                                }else{
+                                    device.setHwFirmwareUpdateAvailable(true);
+                                }
+
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
                                 line0PowerStateString = hardwareStatus.getString("L_0_STT");
@@ -1544,6 +1684,28 @@ public class DashboardDevicesFragment extends Fragment {
                         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                if(hardwareStatus.has("U_H_FWV")) {
+                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                            if (onlineHWVersion != currentHWVersion) {
+                                                device.setHwFirmwareUpdateAvailable(true);
+                                            }else{
+                                                device.setHwFirmwareUpdateAvailable(false);
+                                            }
+                                        }
+                                    }else{
+                                        device.setHwFirmwareUpdateAvailable(true);
+                                    }
+                                }else{
+                                    device.setHwFirmwareUpdateAvailable(true);
+                                }
+
+
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
                                 line0PowerStateString = hardwareStatus.getString("L_0_STT");

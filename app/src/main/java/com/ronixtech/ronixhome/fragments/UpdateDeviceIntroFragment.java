@@ -11,6 +11,9 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -31,7 +34,11 @@ public class UpdateDeviceIntroFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    CheckBox updateWifiCheckBox, updateHWCheckbox;
+    TextView updateTypeInstructionsTextView;
     Button startButton;
+
+    Device device;
 
     public UpdateDeviceIntroFragment() {
         // Required empty public constructor
@@ -63,11 +70,47 @@ public class UpdateDeviceIntroFragment extends Fragment {
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.update_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
+        updateTypeInstructionsTextView = view.findViewById(R.id.instructions_5_textview);
+        updateWifiCheckBox = view.findViewById(R.id.update_wifi_checkbox);
+        updateHWCheckbox = view.findViewById(R.id.update_hw_checkbox);
+
+        device = MySettings.getTempDevice();
+        if(device != null){
+            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
+                    || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                updateTypeInstructionsTextView.setVisibility(View.GONE);
+                updateHWCheckbox.setVisibility(View.GONE);
+                updateWifiCheckBox.setVisibility(View.GONE);
+            }else{
+                updateTypeInstructionsTextView.setVisibility(View.VISIBLE);
+                updateHWCheckbox.setVisibility(View.VISIBLE);
+                updateWifiCheckBox.setVisibility(View.VISIBLE);
+
+                updateHWCheckbox.setChecked(device.isHwFirmwareUpdateAvailable());
+                updateWifiCheckBox.setChecked(device.isFirmwareUpdateAvailable());
+            }
+        }else{
+            startButton.setEnabled(false);
+            startButton.setBackground(getActivity().getResources().getDrawable(R.drawable.button_background_round_gray));
+        }
+
+        updateHWCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                device.setHwFirmwareUpdateAvailable(isChecked);
+            }
+        });
+        updateWifiCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                device.setFirmwareUpdateAvailable(isChecked);
+            }
+        });
+
         startButton = view.findViewById(R.id.start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Device device = MySettings.getTempDevice();
                 if(device != null){
                     if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
                             || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
@@ -79,16 +122,7 @@ public class UpdateDeviceIntroFragment extends Fragment {
                         fragmentTransaction.addToBackStack("updateDeviceAutoFragment");
                         fragmentTransaction.commit();
                     }else{
-                        int firmwareVersion = Integer.valueOf(device.getFirmwareVersion());
-                        if(firmwareVersion >= Device.DEVICE_FIRMWARE_VERSION_AUTO_UPDATE_METHOD){
-                            FragmentManager fragmentManager = getFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                            UpdateDeviceAutoFragment updateDeviceAutoFragment = new UpdateDeviceAutoFragment();
-                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceAutoFragment, "updateDeviceAutoFragment");
-                            fragmentTransaction.addToBackStack("updateDeviceAutoFragment");
-                            fragmentTransaction.commit();
-                        }else{
+                        if(device.isHwFirmwareUpdateAvailable()){
                             FragmentManager fragmentManager = getFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -96,6 +130,25 @@ public class UpdateDeviceIntroFragment extends Fragment {
                             fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
                             fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
                             fragmentTransaction.commit();
+                        }else if(device.isFirmwareUpdateAvailable()){
+                            int firmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                            if(firmwareVersion >= Device.DEVICE_FIRMWARE_VERSION_AUTO_UPDATE_METHOD){
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceAutoFragment updateDeviceAutoFragment = new UpdateDeviceAutoFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceAutoFragment, "updateDeviceAutoFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceAutoFragment");
+                                fragmentTransaction.commit();
+                            }else{
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
+                                fragmentTransaction.commit();
+                            }
                         }
                     }
                 }

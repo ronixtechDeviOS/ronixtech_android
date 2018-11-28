@@ -161,10 +161,10 @@
                 android:id="@+id/selected_wifi_networks_listview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/place_wifi_network_textview"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_below="@id/place_wifi_network_textview"
                 tools:listitem="@layout/list_item_wifi_network_editable"/>
 
             <RelativeLayout
@@ -220,7 +220,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:textSize="16sp"
-                android:textColor="@color/blackColor"
+                android:textColor="@color/blueColor"
                 android:text="@string/remove_wifi_network_hint"/>
 
             <Button
