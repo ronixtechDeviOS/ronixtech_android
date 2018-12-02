@@ -701,4 +701,27 @@ public class Utils {
                 ((i >> 16) & 0xFF) + "." +
                 ((i >> 24) & 0xFF);
     }
+
+    public static long getTimeUnitMilliseconds(int timeUnit, int value){
+        long milliseconds = 0;
+        switch (timeUnit){
+            case TimeUnit.UNIT_SECONDS:
+                milliseconds = value * 60;
+                break;
+            case TimeUnit.UNIT_MINUTES:
+                milliseconds = value * 60 * 60;
+                break;
+            case TimeUnit.UNIT_HOURS:
+                milliseconds = value * 60 * 60 * 60;
+                break;
+            case TimeUnit.UNIT_DAYS:
+                milliseconds = value * 60 * 60 * 60 * 24;
+                break;
+            case TimeUnit.UNIT_INDEFINITE:
+                milliseconds = Long.MAX_VALUE;
+                break;
+        }
+
+        return milliseconds;
+    }
 }

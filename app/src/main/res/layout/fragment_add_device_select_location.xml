@@ -282,7 +282,7 @@
                 android:layout_marginTop="16dp"
                 android:textSize="18sp"
                 android:checked="true"
-                android:textColor="@color/blackColor"
+                android:textColor="@color/blueColor"
                 android:text="@string/unit_static_ip_description"/>
 
             <Button

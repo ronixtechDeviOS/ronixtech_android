@@ -36,6 +36,7 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.DeviceAdapter;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.PIRData;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
@@ -433,7 +434,7 @@ public class DashboardDevicesFragment extends Fragment {
                     statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }else{
                     DeviceSyncer deviceSyncer = new DeviceSyncer(device);
-                    deviceSyncer .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }else{
                 StatusGetter statusGetter = new StatusGetter(device);
@@ -443,7 +444,8 @@ public class DashboardDevicesFragment extends Fragment {
             ModeGetter modeGetter = new ModeGetter(device);
             modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-
+            DeviceSyncer deviceSyncer = new DeviceSyncer(device);
+            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         /*//volley request to device to get its status
@@ -494,6 +496,7 @@ public class DashboardDevicesFragment extends Fragment {
         Log.d(TAG, "onResume");
         super.onResume();
         isResumed = true;
+        loadDevicesFromDatabase();
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
             Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
             startTimer();
@@ -1463,13 +1466,22 @@ public class DashboardDevicesFragment extends Fragment {
 
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                if(device.isStaticIPAddress()){
-                    WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
-                    jObject.put("R_W_DHC", "off");
-                    jObject.put("R_W_IP_", device.getIpAddress());
-                    jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
-                    jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
+                if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                    int currentFirmwareVersion = Integer.parseInt(device.getFirmwareVersion());
+                    if(currentFirmwareVersion >= Device.DEVICE_FIRMWARE_DHCP_FIRMWARE){
+                        if(device.isStaticIPAddress() && !device.isStaticIPSyncedState()){
+                            WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                            DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+                            jObject.put("R_W_DHC", "off");
+                            jObject.put("R_W_IP_", device.getIpAddress());
+                            if(Utils.intToIp(dhcpInfo.netmask) == null || Utils.intToIp(dhcpInfo.netmask).length() < 1 || Utils.intToIp(dhcpInfo.netmask).equalsIgnoreCase("0.0.0.0")){
+                                jObject.put("R_W_NMK", "255.255.255.0");
+                            }else{
+                                jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
+                            }
+                            jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
+                        }
+                    }
                 }
 
                 Log.d(TAG,  "statusGetter POST data: " + jObject.toString());
@@ -1533,10 +1545,35 @@ public class DashboardDevicesFragment extends Fragment {
 
                                 if(wifiStatus.has("R_W_DHC")){
                                     String dhcpStatus = wifiStatus.getString("R_W_DHC");
-                                    if(dhcpStatus.equalsIgnoreCase("on")){
-                                        device.setStaticIPAddress(true);
-                                    }else if(dhcpStatus.equalsIgnoreCase("off")){
-                                        device.setStaticIPAddress(false);
+                                    if(dhcpStatus.equalsIgnoreCase("on") && !device.isStaticIPAddress()){
+                                        device.setStaticIPSyncedState(true);
+                                    }else if(dhcpStatus.equalsIgnoreCase("off") && device.isStaticIPAddress()){
+                                        device.setStaticIPSyncedState(true);
+                                    }else{
+                                        device.setStaticIPSyncedState(false);
+                                    }
+                                }else{
+                                    device.setStaticIPSyncedState(false);
+                                }
+
+                                if(wifiStatus.has("R_W_IP_")){
+                                    String ipAddress = wifiStatus.getString("R_W_IP_");
+                                    if(ipAddress != null && ipAddress.length() >= 1){
+                                        device.setIpAddress(ipAddress);
+                                    }
+                                }
+
+                                if(wifiStatus.has("R_W_GWY")){
+                                    String getway = wifiStatus.getString("R_W_GWY");
+                                    if(getway != null && getway.length() >= 1){
+                                        device.setGateway(getway);
+                                    }
+                                }
+
+                                if(wifiStatus.has("R_W_NMK")){
+                                    String subnetmask = wifiStatus.getString("R_W_NMK");
+                                    if(subnetmask != null && subnetmask.length() >= 1){
+                                        device.setSubnetMask(subnetmask);
                                     }
                                 }
                             }
@@ -1756,6 +1793,50 @@ public class DashboardDevicesFragment extends Fragment {
                                     device.setErrorCount(0);
                                     DevicesInMemory.updateDevice(device);
                                     DevicesInMemory.updateLocalDevice(localDevice);
+                                }
+                                //MySettings.addDevice(device);
+                            }else {
+                                device.setFirmwareUpdateAvailable(true);
+                            }
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                if(hardwareStatus.has("U_H_FWV")) {
+                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                            if (onlineHWVersion != currentHWVersion) {
+                                                device.setHwFirmwareUpdateAvailable(true);
+                                            }else{
+                                                device.setHwFirmwareUpdateAvailable(false);
+                                            }
+                                        }
+                                    }else{
+                                        device.setHwFirmwareUpdateAvailable(true);
+                                    }
+                                }else{
+                                    device.setHwFirmwareUpdateAvailable(true);
+                                }
+
+
+                                String pirStateString;
+                                int pirState = 0;
+                                pirStateString = hardwareStatus.getString("L_0_STT");
+                                pirState = Integer.valueOf(pirStateString);
+
+                                PIRData pirData = device.getPIRData();
+                                pirData.setState(pirState);
+
+                                device.setPIRData(pirData);
+
+                                if(statusCode == 200) {
+                                    device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                                    device.setErrorCount(0);
+                                    DevicesInMemory.updateDevice(device);
                                 }
                                 //MySettings.addDevice(device);
                             }else {

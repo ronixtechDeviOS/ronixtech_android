@@ -355,6 +355,8 @@ public class MySettings {
             MySettings.initDB().deviceDAO().removeDeviceWithLines(device);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             MySettings.initDB().deviceDAO().removeDeviceWithSoundDeviceData(device);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            MySettings.initDB().deviceDAO().removeDeviceWithPIRData(device);
         }
 
     }
@@ -376,6 +378,15 @@ public class MySettings {
     }
     public static void updateLineDimmingValue(Line line, int dimmingValue){
         MySettings.initDB().lineDAO().updateLineDimmingValue(line.getId(), dimmingValue);
+    }
+    public static void updateLine(long lineID, Line newLine){
+        MySettings.initDB().lineDAO().updateLineDimmingState(lineID, newLine.getDimmingState());
+        MySettings.initDB().lineDAO().updateLineName(lineID, newLine.getName());
+        MySettings.initDB().lineDAO().updateLinePowerUsage(lineID, newLine.getLinePowerUsage());
+        MySettings.initDB().lineDAO().updateLineTypeID(lineID, newLine.getTypeID());
+        MySettings.initDB().lineDAO().updateLineMode(lineID, newLine.getMode());
+        MySettings.initDB().lineDAO().updateLinePrimaryDeviceChipID(lineID, newLine.getPrimaryDeviceChipID());
+        MySettings.initDB().lineDAO().updateLinePrimaryLinePosition(lineID, newLine.getPrimaryLinePosition());
     }
 
     public static void updateSoundMode(SoundDeviceData soundDeviceData, int mode){
@@ -1046,8 +1057,32 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_18_19 = new Migration(18, 19) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN static_ip_address_sync_state INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
+            Migration MIGRATION_19_20 = new Migration(19, 20) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN ip_gateway TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Device "
+                            + " ADD COLUMN ip_subnet_mask TEXT DEFAULT ''");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20)
                             .allowMainThreadQueries().
                             build();
             return database;

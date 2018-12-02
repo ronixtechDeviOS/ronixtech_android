@@ -40,6 +40,7 @@ import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DeviceInfoFragment;
+import com.ronixtech.ronixhome.fragments.EditDeviceFragment;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -54,7 +55,11 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -96,15 +101,26 @@ public class DeviceAdapter extends ArrayAdapter {
         super.notifyDataSetChanged();
     }
 
-    /*@Override
+    @Override
     public int getViewTypeCount() {
-        return Device.DEVICE_NUMBER_OF_TYPES;
+        return 3;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return devices.get(position).getDeviceTypeID();
-    }*/
+        int deviceType = devices.get(position).getDeviceTypeID();
+        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
+                deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
+                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
+            return 0;
+        }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            return 1;
+        }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            return 2;
+        }
+        return 0;
+    }
 
     @Override
     public Object getItem(int position) {
@@ -124,13 +140,10 @@ public class DeviceAdapter extends ArrayAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent){
         View rowView = convertView;
-        //int deviceType = getItemViewType(position);
+        int viewType = getItemViewType(position);
         Device item = (Device) devices.get(position);
-        int deviceType = item.getDeviceTypeID();
-        if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
-                deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
-                deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
+        //int deviceType = item.getDeviceTypeID();
+        if(viewType == 0){
             if(rowView == null){
                 LayoutInflater inflater = activity.getLayoutInflater();
                 rowView = inflater.inflate(R.layout.list_item_device, null);
@@ -236,11 +249,11 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
-                        deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     populateLineData(item);
-                }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
+                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                     populatePlugLineData(item);
                 }
 
@@ -663,6 +676,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -758,6 +780,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                     deviceInfoFragment.setPlaceMode(placeMode);
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceFragment");
                                     fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
@@ -855,6 +886,15 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -942,7 +982,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 });
             }
-        }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+        }else if(viewType == 1){
             if(rowView == null){
                 LayoutInflater inflater = activity.getLayoutInflater();
                 rowView = inflater.inflate(R.layout.list_item_device_sound_system_controller, null);
@@ -1152,7 +1192,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 });
             }
-        }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+        }else if(viewType == 2){
             if(rowView == null){
                 LayoutInflater inflater = activity.getLayoutInflater();
                 rowView = inflater.inflate(R.layout.list_item_device_pir_sensor, null);
@@ -1605,11 +1645,36 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void removeDevice(Device device){
-        devices.remove(device);
-        MySettings.removeDevice(device);
-        DevicesInMemory.removeDevice(device);
-        notifyDataSetChanged();
-        MainActivity.getInstance().refreshDevicesListFromMemory();
+        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                //set icon
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                //set title
+                .setTitle(activity.getResources().getString(R.string.factory_reset_unit_question))
+                //set message
+                .setMessage(activity.getResources().getString(R.string.factory_reset_unit_message))
+                //set positive button
+                .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //set what would happen when positive button is clicked
+                        FactoryResetter factoryResetter = new FactoryResetter(device);
+                        factoryResetter.execute();
+
+                        devices.remove(device);
+                        MySettings.removeDevice(device);
+                        DevicesInMemory.removeDevice(device);
+                        notifyDataSetChanged();
+                        MainActivity.getInstance().refreshDevicesListFromMemory();
+                    }
+                })
+                //set negative button
+                .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //set what should happen when negative button is clicked
+                    }
+                })
+                .show();
     }
 
     private void toggleLine(Device device, int position, final int state){
@@ -2722,6 +2787,119 @@ public class DeviceAdapter extends ArrayAdapter {
                 MainActivity.getInstance().refreshDevicesListFromMemory();
             }
             MySettings.setControlState(false);
+
+            return null;
+        }
+    }
+
+    public class FactoryResetter extends AsyncTask<Void, Void, Void> {
+        private final String TAG = DeviceAdapter.LineToggler.class.getSimpleName();
+
+        Device device;
+        int statusCode;
+
+        public FactoryResetter(Device device) {
+            this.device = device;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            /*layoutEnabled = false;
+            notifyDataSetChanged();
+            //setLayoutEnabledDelayed(true);
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldState = line.getPowerState();
+
+            line.setPowerState(state);
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);*/
+            /*if(MainActivity.getInstance() != null){
+                MainActivity.getInstance().refreshDevicesListFromMemory();
+            }*/
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_failed), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            boolean statusWasActive = false;
+            while(MySettings.isGetStatusActive()){
+                Log.d(TAG, "getStatusActive, doing nothing...");
+                statusWasActive = true;
+            }
+            if(statusWasActive) {
+                try {
+                    Thread.sleep(Constants.DELAY_TIME_MS);
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }
+            }
+
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfAttempts = 0;
+            boolean delay = false;
+            while(statusCode != 200 && numberOfAttempts <= Device.CONFIG_NUMBER_OF_RETRIES){
+                if(delay){
+                    try {
+                        Thread.sleep(Constants.DELAY_TIME_MS);
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                }
+                try{
+                    Log.d(TAG, "factoryReset attempt #"+numberOfAttempts);
+                    String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_FACTORY_RESET;
+
+                    URL url = new URL(urlString);
+
+                    Log.d(TAG,  "factoryReset URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setDoInput(false);
+                    urlConnection.setDoOutput(false);
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    Log.d(TAG,  "factoryReset response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                }catch (Exception e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfAttempts++;
+                    delay = true;
+                }
+            }
 
             return null;
         }

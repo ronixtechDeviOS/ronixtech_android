@@ -35,7 +35,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, ipAddressStaticTextView, ipAddressTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, hwFirmwareVersionTextView, onlineHWFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
+    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, dhcpTextView, dhcpStaticTextView, ipAddressStaticTextView, ipAddressTextView, gatewayTextView, gatewayStaticTextView, subnetmaskTextView, subnetmaskStaticTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, hwFirmwareVersionTextView, onlineHWFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
 
     private Device device;
     private int placeMode;
@@ -80,8 +80,14 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         typeTextView = view.findViewById(R.id.device_type_textview);
         lastSeenTextView = view.findViewById(R.id.device_last_seen_textview);
         statusTextVuew = view.findViewById(R.id.device_status_textview);
+        dhcpStaticTextView = view.findViewById(R.id.device_dhcp_info_static_textview);
+        dhcpTextView = view.findViewById(R.id.device_dhcp_info_textview);
         ipAddressStaticTextView = view.findViewById(R.id.device_ip_address_static_textview);
         ipAddressTextView = view.findViewById(R.id.device_ip_address_textview);
+        gatewayStaticTextView = view.findViewById(R.id.device_dhcp_gateway_static_textview);
+        gatewayTextView = view.findViewById(R.id.device_dhcp_gateway_textview);
+        subnetmaskStaticTextView = view.findViewById(R.id.device_dhcp_subnet_mask_static_textview);
+        subnetmaskTextView = view.findViewById(R.id.device_dhcp_subnet_mask_textview);
         firmwareVersionTextView = view.findViewById(R.id.device_firmware_version_textview);
         onlineFirmwareVersionTextView = view.findViewById(R.id.device_firmware_online_version_textview);
         hwFirmwareVersionTextView = view.findViewById(R.id.device_hw_firmware_version_textview);
@@ -102,17 +108,44 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             if(device.isDeviceMQTTReachable()){
                 statusTextVuew.setText(getActivity().getResources().getString(R.string.device_mqtt_reachable));
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
+                dhcpTextView.setVisibility(View.GONE);
+                dhcpStaticTextView.setVisibility(View.GONE);
                 ipAddressTextView.setVisibility(View.GONE);
                 ipAddressStaticTextView.setVisibility(View.GONE);
+                gatewayStaticTextView.setVisibility(View.GONE);
+                gatewayTextView.setVisibility(View.GONE);
+                subnetmaskStaticTextView.setVisibility(View.GONE);
+                subnetmaskTextView.setVisibility(View.GONE);
             }else{
                 statusTextVuew.setText(getActivity().getResources().getString(R.string.device_mqtt_unreachable));
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                dhcpTextView.setVisibility(View.VISIBLE);
+                dhcpStaticTextView.setVisibility(View.VISIBLE);
                 ipAddressTextView.setVisibility(View.VISIBLE);
                 ipAddressStaticTextView.setVisibility(View.VISIBLE);
+                gatewayStaticTextView.setVisibility(View.VISIBLE);
+                gatewayTextView.setVisibility(View.VISIBLE);
+                subnetmaskStaticTextView.setVisibility(View.VISIBLE);
+                subnetmaskTextView.setVisibility(View.VISIBLE);
+                if(device.isStaticIPAddress()){
+                    dhcpTextView.setText(getActivity().getResources().getString(R.string.off));
+                }else{
+                    dhcpTextView.setText(getActivity().getResources().getString(R.string.on));
+                }
                 if(device.getIpAddress().length() >= 1) {
                     ipAddressTextView.setText("" + device.getIpAddress());
                 }else{
                     ipAddressTextView.setText("-");
+                }
+                if(device.getGateway().length() >= 1) {
+                    gatewayTextView.setText("" + device.getGateway());
+                }else{
+                    gatewayTextView.setText("-");
+                }
+                if(device.getSubnetMask().length() >= 1) {
+                    subnetmaskTextView.setText("" + device.getSubnetMask());
+                }else{
+                    subnetmaskTextView.setText("-");
                 }
             }
 

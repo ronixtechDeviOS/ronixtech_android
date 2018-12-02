@@ -163,6 +163,10 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
     @Override
     public void onLineSelected(Line line){
         if(line != null && !selectedLines.contains(line)){
+            if(selectedLines.size() >= 9){
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.pir_max_devices_reached), Toast.LENGTH_SHORT).show();
+                return;
+            }
             this.selectedLines.add(line);
             adapter.notifyDataSetChanged();
             Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);

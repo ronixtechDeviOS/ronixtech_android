@@ -152,6 +152,9 @@
     <string name="line_dimming_on">This device supports dimming</string>
     <string name="line_dimming_off">This device doesn\'nt support dimming</string>
 
+    <string name="unit_name_edit">Pick a name for your RonixTech Smart Controller</string>
+    <string name="edit_lines_title">Edit the devices of this controller</string>
+
     <string name="unit_mode_title">Smart Controller Mode</string>
     <string name="unit_mode_hint">Pick the mode which you will use for this Smart Controller</string>
     <string name="unit_mode_primary">Primary Smart Controller</string>
@@ -178,6 +181,7 @@
     <string name="selected_lines_colon">Selected devices:</string>
     <string name="selected_line_colon">Selected device</string>
     <string name="add_devices_first">No Smart Controllers added, please add a Smart Controller first</string>
+    <string name="pir_max_devices_reached">Maximum number of devices is 9</string>
 
     <string name="select_paired_devices">Select Smart Controller(s)</string>
     <string name="pairing_description">Please select which controller(s) this controller will be paired to</string>
@@ -192,9 +196,19 @@
     <string name="remove_device">Remove Smart Controller</string>
     <string name="edit_device">Edit Smart Controller</string>
 
+    <string name="edit_device_unsaved_changes_title">Unsaved Changes</string>
+    <string name="edit_device_unsaved_changes_message">You have some unfinished changes. Are you sure you want to go back and discard these changes?</string>
+    <string name="edit_device_unsaved_changes_discard">Yes, discard unsaved changes</string>
+    <string name="edit_device_unsaved_changes_finish_changes_first">No, I\'ll continue editing</string>
+
     <string name="unit_long_press_hint">Long press on any Device for more options</string>
     <string name="remove_unit_question">Are you sure you want to remove this smart controller?</string>
     <string name="remove_unit_message">Removing the smart controller wil also remove all the associated devices and cannot be undone</string>
+
+    <string name="factory_reset_unit_question">Do you want to factory reset the smart controller as well?</string>
+    <string name="factory_reset_unit_message">Resetting the smart controller will remove it from the network and cannot be undone</string>
+    <string name="factory_reset_unit_successfull">Smart controller reset successfully.</string>
+    <string name="factory_reset_unit_failed">Failed to factory reset controller.</string>
 
     <string name="upnp">Stream</string>
     <string name="line_in">Line-In</string>
@@ -208,7 +222,10 @@
     <string name="device_status">Status</string>
     <string name="device_mqtt_reachable">Online</string>
     <string name="device_mqtt_unreachable">Offline/Local Mode</string>
+    <string name="device_dhcp_info">DHCP Status</string>
     <string name="device_ip_address">IP Address</string>
+    <string name="device_dhcp_gateway">Gateway</string>
+    <string name="device_dhcp_subnet_mask">Subnet Mask</string>
     <string name="device_firmware_version">WiFi Firmware Version</string>
     <string name="device_firmware_online_version">Online WiFi Firmware Version</string>
     <string name="device_hw_firmware_version">Hardware Firmware Version</string>
@@ -336,6 +353,7 @@
     <string name="no">No</string>
     <string name="done">Done</string>
     <string name="continue_button">Continue</string>
+    <string name="save_continue_button">Save &amp; Continue</string>
     <string name="add">Add</string>
     <string name="start">Start</string>
     <string name="cancel">Cancel</string>

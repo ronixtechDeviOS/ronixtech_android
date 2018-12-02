@@ -14,6 +14,7 @@ public class Constants {
     public static final String CONTROL_SOUND_DEVICE_CHANGE_MODE_URL = "/change_mode";
     public static final String GET_DEVICE_STATUS = "/ronix/status";
     public static final String DEVICE_REBOOT_URL = "/ronix/reboot";
+    public static final String DEVICE_FACTORY_RESET = "/ronix/factory_reset";
 
     public static final String DEVICE_RESET_PAIRINGS_URL = "/ronix/reset_pairings";
     public static final String DEVICE_ADD_PAIRINGS_URL = "/ronix/pair_controller";

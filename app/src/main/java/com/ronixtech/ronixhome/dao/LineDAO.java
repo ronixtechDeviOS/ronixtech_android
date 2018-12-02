@@ -26,6 +26,26 @@ public abstract class LineDAO{
     @Query("UPDATE line SET dimming_value =:dimmingValue WHERE id =:lineID")
     public abstract void updateLineDimmingValue(long lineID, int dimmingValue);
 
+
+    @Query("UPDATE line SET name =:name WHERE id =:lineID")
+    public abstract void updateLineName(long lineID, String name);
+
+    @Query("UPDATE line SET power_usage =:powerUsage WHERE id =:lineID")
+    public abstract void updateLinePowerUsage(long lineID, double powerUsage);
+
+    @Query("UPDATE line SET type_id =:typeID WHERE id =:lineID")
+    public abstract void updateLineTypeID(long lineID, long typeID);
+
+    @Query("UPDATE line SET mode =:mode WHERE id =:lineID")
+    public abstract void updateLineMode(long lineID, int mode);
+
+    @Query("UPDATE line SET primary_device_chip_id =:primaryDeviceChipID WHERE id =:lineID")
+    public abstract void updateLinePrimaryDeviceChipID(long lineID, String primaryDeviceChipID);
+
+    @Query("UPDATE line SET primary_line_position =:primaryLinePosition WHERE id =:lineID")
+    public abstract void updateLinePrimaryLinePosition(long lineID, int primaryLinePosition);
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertLine(Line line);
 
@@ -33,3 +53,4 @@ public abstract class LineDAO{
     @Query("SELECT * FROM line WHERE primary_device_chip_id =:mainDeviceChipID")
     public abstract List<Line> getSecondaryLine(String mainDeviceChipID);
 }
+

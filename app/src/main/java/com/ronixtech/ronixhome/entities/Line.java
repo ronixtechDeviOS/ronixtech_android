@@ -63,7 +63,7 @@ public class Line {
         this.name = "";
         this.powerState = Line.LINE_STATE_OFF;
         this.dimmingState = Line.DIMMING_STATE_OFF;
-        this.dimmingVvalue = 0;
+        this.dimmingVvalue = 10;
         this.deviceID = -1;
         this.lineTypeString = "";
         this.lineTypeImageUrl = "";

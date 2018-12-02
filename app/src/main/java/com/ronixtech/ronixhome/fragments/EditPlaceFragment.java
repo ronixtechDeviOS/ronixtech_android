@@ -167,29 +167,33 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
 
         savePlaceButton = view.findViewById(R.id.save_place_button);
 
-        if(place != null){
+        if(place != null) {
             place = MySettings.getPlace(place.getId());
             placeNameEditText.setText(place.getName());
             selectedPlaceType = place.getType();
             placeTypeNameTextView.setText(selectedPlaceType.getName());
-            if(selectedPlaceType.getImageUrl() != null && selectedPlaceType.getImageUrl().length() >= 1){
+            if (selectedPlaceType.getImageUrl() != null && selectedPlaceType.getImageUrl().length() >= 1) {
                 GlideApp.with(getActivity())
                         .load(selectedPlaceType.getImageUrl())
                         .placeholder(getActivity().getResources().getDrawable(R.drawable.place_type_house))
                         .into(placeTypeImageView);
-            }else {
-                if(selectedPlaceType.getImageResourceName() != null && selectedPlaceType.getImageResourceName().length() >= 1) {
+            } else {
+                if (selectedPlaceType.getImageResourceName() != null && selectedPlaceType.getImageResourceName().length() >= 1) {
                     placeTypeImageView.setImageResource(getActivity().getResources().getIdentifier(selectedPlaceType.getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
-                }else{
+                } else {
                     placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
                 }
             }
 
-            placeFloors.addAll(place.getFloors());
+            if(placeFloors.size() < 1){
+                placeFloors.addAll(place.getFloors());
+            }
             placeFloorsAdapter.notifyDataSetChanged();
             Utils.justifyListViewHeightBasedOnChildren(placeFloorsListView);
 
-            selectedWifiNetworks.addAll(MySettings.getPlaceWifiNetworks(place.getId()));
+            if(selectedWifiNetworks.size() < 1) {
+                selectedWifiNetworks.addAll(MySettings.getPlaceWifiNetworks(place.getId()));
+            }
             selectedWifiNetworksAdapter.notifyDataSetChanged();
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
         }

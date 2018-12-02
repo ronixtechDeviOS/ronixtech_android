@@ -29,7 +29,6 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_PLUG_1lines = 100031;
     public static final int DEVICE_TYPE_PLUG_2lines = 100032;
     public static final int DEVICE_TYPE_PLUG_3lines = 100033;
-    public static final int DEVICE_NUMBER_OF_TYPES = 3; //lines, pir sensor, speaker controller
     public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10;
 
     public static final int CONTROL_TIMEOUT = 350;
@@ -48,6 +47,7 @@ public class Device implements Comparable {
     public static final String DEVICE_BASE_FIRMWARE = "101400";
     public static final int SYNC_CONTROLS_STATUS_FIRMWARE_VERSION = 101405;
     public static final int DEVICE_FIRMWARE_VERSION_AUTO_UPDATE_METHOD = 101500;
+    public static final int DEVICE_FIRMWARE_DHCP_FIRMWARE = 101419;
 
     @PrimaryKey(autoGenerate = true)
     long id;
@@ -94,6 +94,12 @@ public class Device implements Comparable {
     boolean hwFirmwareUpdateAvailable;
     @ColumnInfo(name = "static_ip_address")
     boolean staticIPAddress;
+    @ColumnInfo(name = "static_ip_address_sync_state")
+    boolean staticIPSyncedState;
+    @ColumnInfo(name = "ip_gateway")
+    String gateway;
+    @ColumnInfo(name = "ip_subnet_mask")
+    String subnetMask;
 
     public Device(){
         this.id = 0;
@@ -118,6 +124,9 @@ public class Device implements Comparable {
         this.hwFirmwareVersion = "";
         this.hwFirmwareUpdateAvailable = false;
         this.staticIPAddress = true;
+        this.staticIPSyncedState = false;
+        this.gateway = "";
+        this.subnetMask = "";
     }
 
     public Device(Device device){
@@ -147,6 +156,9 @@ public class Device implements Comparable {
         this.hwFirmwareUpdateAvailable = device.isHwFirmwareUpdateAvailable();
         this.hwFirmwareVersion = device.getHwFirmwareVersion();
         this.staticIPAddress = device.isStaticIPAddress();
+        this.staticIPSyncedState = device.isStaticIPSyncedState();
+        this.gateway = device.getGateway();
+        this.subnetMask = device.getSubnetMask();
     }
 
     public long getId() {
@@ -323,6 +335,30 @@ public class Device implements Comparable {
 
     public void setStaticIPAddress(boolean staticIPAddress) {
         this.staticIPAddress = staticIPAddress;
+    }
+
+    public boolean isStaticIPSyncedState() {
+        return staticIPSyncedState;
+    }
+
+    public void setStaticIPSyncedState(boolean staticIPSyncedState) {
+        this.staticIPSyncedState = staticIPSyncedState;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
+    }
+
+    public String getSubnetMask() {
+        return subnetMask;
+    }
+
+    public void setSubnetMask(String subnetMask) {
+        this.subnetMask = subnetMask;
     }
 
     public String getDeviceTypeString(){

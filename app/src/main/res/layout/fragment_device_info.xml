@@ -125,13 +125,33 @@
                 android:textColor="@color/blackColor"
                 android:text="@string/device_mqtt_unreachable"/>
 
+            <TextView
+                android:id="@+id/device_dhcp_info_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_dhcp_info"/>
+
+            <TextView
+                android:id="@+id/device_dhcp_info_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="On/Off"/>
 
             <TextView
                 android:id="@+id/device_ip_address_static_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="4dp"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/darkGrayColor"
@@ -145,7 +165,49 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/blackColor"
-                android:text="192.168.1.2"/>
+                android:text="-"/>
+
+            <TextView
+                android:id="@+id/device_dhcp_gateway_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_dhcp_gateway"/>
+
+            <TextView
+                android:id="@+id/device_dhcp_gateway_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="-"/>
+
+            <TextView
+                android:id="@+id/device_dhcp_subnet_mask_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_dhcp_subnet_mask"/>
+
+            <TextView
+                android:id="@+id/device_dhcp_subnet_mask_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="-"/>
 
             <TextView
                 android:id="@+id/device_firmware_version_static_textview"

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.ronixtech.ronixhome.fragments.AddDeviceConfigurationFragment">
+    tools:context="com.ronixtech.ronixhome.fragments.EditDeviceFragment">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -55,7 +55,7 @@
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textColor="@color/blackColor"
-                android:text="@string/configure_lines_title" />
+                android:text="@string/edit_lines_title" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/devices_tabs"
