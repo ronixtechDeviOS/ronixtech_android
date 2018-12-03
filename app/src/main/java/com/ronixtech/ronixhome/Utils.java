@@ -6,10 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -723,5 +727,114 @@ public class Utils {
         }
 
         return milliseconds;
+    }
+
+    public static class AddressGeocoder extends AsyncTask<Void, Void, Boolean>{
+
+        private OnGeocodingCallback onGeocodingCallback;
+        private Context context;
+        double latitude, longitude;
+        String errorMessage = "";
+
+        String addressString = "";
+        String city = "";
+        String state = "";
+        String country = "";
+        String zipCode = "";
+
+        public AddressGeocoder(Context context, double latitude, double longitude, OnGeocodingCallback onGeocodingCallback) {
+            super();
+            this.onGeocodingCallback = onGeocodingCallback;
+            this.context = context;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if (context == null) {
+                errorMessage = "No Internet Connection";
+                return false;
+            }
+
+            List<Address> addresses = null;
+
+            try {
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            } catch (IOException ioException) {
+                // Catch network or other I/O problems.
+                errorMessage = context.getResources().getString(R.string.geocoding_error_service_not_available);
+                Log.d(TAG, errorMessage, ioException);
+                return false;
+            } catch (IllegalArgumentException illegalArgumentException) {
+                // Catch invalid latitude or longitude values.
+                errorMessage = context.getResources().getString(R.string.geocoding_error_invalid_lat_long);
+                Log.d(TAG, errorMessage + ". " + "Latitude = " + latitude + ", Longitude = " + longitude, illegalArgumentException);
+                return false;
+            }catch (Exception e) {
+                errorMessage = errorMessage;
+                Log.d(TAG, "Exception: " + e.getMessage());
+                return false;
+            }
+
+            // Handle case where no address was found.
+            if (addresses == null || addresses.size()  == 0) {
+                if (errorMessage.isEmpty()) {
+                    errorMessage = context.getResources().getString(R.string.geocoding_error_no_address_found);
+                    Log.d(TAG, errorMessage);
+                }
+                return false;
+            } else {
+                Log.d(TAG, context.getResources().getString(R.string.geocoding_error_address_found));
+                Address address = addresses.get(0);
+                ArrayList<String> addressFragments = new ArrayList<>();
+
+                // Fetch the address lines using getAddressLine,
+                // join them, and send them to the thread.
+                for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                    addressFragments.add(address.getAddressLine(i));
+                }
+
+                addressString = TextUtils.join(System.getProperty("line.separator"), addressFragments);
+                if(address.getLocality() != null && address.getLocality().length() >= 1){
+                    city = address.getLocality();
+                }
+                if(address.getAdminArea() != null && address.getAdminArea().length() >= 1){
+                    state = address.getAdminArea();
+                }
+                if(address.getCountryName() != null && address.getCountryName().length() >= 1){
+                    country = address.getCountryName();
+                }
+                if(address.getPostalCode() != null && address.getPostalCode().length() >= 1){
+                    zipCode = address.getPostalCode();
+                }
+
+                return true;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+
+            if(b){
+                onGeocodingCallback.onGeocodingSuccess(addressString, city, state, country, zipCode);
+            }else{
+                onGeocodingCallback.onGeocodingFail(errorMessage);
+            }
+
+        }
+
+        public interface OnGeocodingCallback {
+            void onGeocodingSuccess(String address, String city, String state, String country, String zipCode);
+            void onGeocodingFail(String errorMsg);
+        }
     }
 }

@@ -39,6 +39,40 @@
                 android:textColor="@color/blackColor"
                 android:text="DeviceName"/>
 
+
+            <TextView
+                android:id="@+id/device_location_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_location"/>
+
+            <TextView
+                android:id="@+id/device_location_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="Place:Room"/>
+
+            <Button
+                android:id="@+id/change_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/button_background_round_blue"
+                android:textSize="18sp"
+                android:textColor="@color/whiteColor"
+                android:text="Change"/>
+
             <TextView
                 android:id="@+id/device_mac_address_static_textview"
                 android:layout_width="wrap_content"
@@ -388,44 +422,11 @@
                 android:textColor="@color/blackColor"
                 android:text="ronix_token"/>
 
-
-            <TextView
-                android:id="@+id/device_location_static_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textColor="@color/darkGrayColor"
-                android:text="@string/device_location"/>
-
-            <TextView
-                android:id="@+id/device_location_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textColor="@color/blackColor"
-                android:text="Place/Room"/>
-
-            <Button
-                android:id="@+id/change_location_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginTop="16dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/button_background_round_blue"
-                android:textSize="18sp"
-                android:textColor="@color/whiteColor"
-                android:text="Change"/>
-
             <TextView
                 android:id="@+id/device_lines_static_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
@@ -437,6 +438,7 @@
                 android:id="@+id/device_lines_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_gravity="center_horizontal"
                 android:textAlignment="textStart"
                 android:textSize="18sp"

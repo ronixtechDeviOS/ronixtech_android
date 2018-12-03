@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".fragments.AddPlaceLocationFragment">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_1">
+
+            <TextView
+                android:id="@+id/add_place_location_title_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="24sp"
+                android:textColor="@color/blueColor"
+                android:textAlignment="center"
+                android:text="@string/add_place_location_title"/>
+
+            <TextView
+                android:id="@+id/add_place_location_description_1_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_place_location_title_textview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="16sp"
+                android:textColor="@color/blackColor"
+                android:textAlignment="center"
+                android:text="@string/add_place_location_description_1"/>
+
+            <TextView
+                android:id="@+id/add_place_location_description_2_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_place_location_description_1_textview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="16sp"
+                android:textColor="@color/blackColor"
+                android:textAlignment="center"
+                android:text="@string/add_place_location_description_2"/>
+
+            <Button
+                android:id="@+id/add_place_get_location_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_place_location_description_2_textview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/button_background_round_blue"
+                android:textColor="@color/whiteColor"
+                android:text="@string/add_place_get_location"/>
+
+            <Button
+                android:id="@+id/add_place_enter_address_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_place_get_location_button"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/button_background_round_blue"
+                android:textColor="@color/whiteColor"
+                android:text="@string/add_place_enter_address"/>
+
+            <Button
+                android:id="@+id/add_place_skip_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_place_enter_address_button"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/transparentColor"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/add_place_skip"/>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+</ScrollView>

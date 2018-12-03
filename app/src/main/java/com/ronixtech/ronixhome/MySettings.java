@@ -37,6 +37,7 @@ public class MySettings {
     public static final String PREF_TEMP_DEVICE = "temp_device";
     public static final String PREF_SCANNING_ACTIVE = "scanning_active";
     public static final String PREF_CURRENT_PLACE = "pref_current_place";
+    public static final String PREF_DEFAULT_PLACE_ID = "pref_default_place_id";
     public static final String PREF_CURRENT_FLOOR = "pref_current_floor";
     public static final String PREF_CURRENT_ROOM = "pref_current_room";
     public static final String PREF_CONTROL_ACTIVE = "control_active";
@@ -64,6 +65,8 @@ public class MySettings {
     private static Place currentPlace;
     private static Floor currentFloor;
     private static com.ronixtech.ronixhome.entities.Room currentRoom;
+
+    private static long defaultPlaceID = -1;
 
     private static SparseArray<String> devicesLatestWiFiVersions;
     private static SparseArray<String> devicesLatestHWVersions;
@@ -131,6 +134,23 @@ public class MySettings {
                 currentPlace = gson.fromJson(json, Place.class);
                 return currentPlace;
             }
+        }
+    }
+
+    public static void setDefaultPlaceID(long placeID) {
+        MySettings.defaultPlaceID = placeID;
+
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putLong(PREF_DEFAULT_PLACE_ID, defaultPlaceID);
+        editor.apply();
+    }
+    public static long getDefaultPlaceID() {
+        if (defaultPlaceID != -1) {
+            return defaultPlaceID;
+        } else {
+            SharedPreferences prefs = getSettings();
+            defaultPlaceID = prefs.getLong(PREF_DEFAULT_PLACE_ID, -1);
+            return defaultPlaceID;
         }
     }
 
@@ -414,6 +434,27 @@ public class MySettings {
     }
     public static void updatePlaceType(Place place, long newTypeID){
         MySettings.initDB().placeDAO().updatePlaceType(place.getId(), newTypeID);
+    }
+    public static void updatePlaceLatitude(Place place, double newLatitude){
+        MySettings.initDB().placeDAO().updatePlaceLatitude(place.getId(), newLatitude);
+    }
+    public static void updatePlaceLongitude(Place place, double newLongitude){
+        MySettings.initDB().placeDAO().updatePlaceLongitude(place.getId(), newLongitude);
+    }
+    public static void updatePlaceAddress(Place place, String newAddress){
+        MySettings.initDB().placeDAO().updatePlaceAddress(place.getId(), newAddress);
+    }
+    public static void updatePlaceCity(Place place, String newCity){
+        MySettings.initDB().placeDAO().updatePlaceCity(place.getId(), newCity);
+    }
+    public static void updatePlaceState(Place place, String newState){
+        MySettings.initDB().placeDAO().updatePlaceState(place.getId(), newState);
+    }
+    public static void updatePlaceCountry(Place place, String newCountry){
+        MySettings.initDB().placeDAO().updatePlaceCountry(place.getId(), newCountry);
+    }
+    public static void updatePlaceZipCode(Place place, String newZipCode){
+        MySettings.initDB().placeDAO().updatePlaceZipCode(place.getId(), newZipCode);
     }
     public static void removePlace(Place place){
         //remove floor from DB
@@ -1081,8 +1122,31 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_20_21 = new Migration(20, 21) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN latitude REAL NOT NULL DEFAULT 0");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN longitude REAL NOT NULL DEFAULT 0");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN address TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN city TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN state TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN country TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Place "
+                            + " ADD COLUMN zip_code TEXT DEFAULT ''");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21)
                             .allowMainThreadQueries().
                             build();
             return database;

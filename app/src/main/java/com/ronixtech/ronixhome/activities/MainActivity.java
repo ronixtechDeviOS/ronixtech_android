@@ -115,6 +115,12 @@ public class MainActivity extends AppCompatActivity
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if(MySettings.getDefaultPlaceID() != -1){
+            Place defaultPlace = MySettings.getPlace(MySettings.getDefaultPlaceID());
+            if(defaultPlace != null){
+                MySettings.setCurrentPlace(defaultPlace);
+            }
+        }
         if(MySettings.getCurrentPlace() != null) {
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
             fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
@@ -279,7 +285,7 @@ public class MainActivity extends AppCompatActivity
             public void onConnectionFail(String errorMsg) {
                 MySettings.setInternetConnectivityState(false);
             }
-        });
+        }).execute();
     }
 
     private void getLatestAppVersion(){
@@ -446,7 +452,7 @@ public class MainActivity extends AppCompatActivity
             PlacesFragment placesFragment = new PlacesFragment();
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
-            fragmentTransaction.addToBackStack("placesFragment");
+            //fragmentTransaction.addToBackStack("placesFragment");
             fragmentTransaction.commit();
         } /*else if (id == R.id.nav_floors) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

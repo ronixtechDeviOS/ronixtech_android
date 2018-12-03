@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -63,6 +64,8 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
     WifiNetworkItemAdapterEditable selectedWifiNetworksAdapter;
     List<Floor> placeFloors;
     FloorAdapterEditable placeFloorsAdapter;
+    RelativeLayout editPlaceLocationLayout;
+    CheckBox defaultPlaceCheckBox;
     Button savePlaceButton;
 
     Type selectedPlaceType;
@@ -97,6 +100,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_place, container, false);
+        place = MySettings.getCurrentPlace();
         if(place != null){
             MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
         }else{
@@ -110,6 +114,8 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
         placeTypeSelectionLayout = view.findViewById(R.id.place_type_selection_layout);
         placeTypeImageView = view.findViewById(R.id.type_imageview);
         placeTypeNameTextView = view.findViewById(R.id.type_name_textview);
+        editPlaceLocationLayout = view.findViewById(R.id.place_address_edit_layout);
+        defaultPlaceCheckBox = view.findViewById(R.id.default_place_checkbox);
         wifiNetworkSelectionLayout = view.findViewById(R.id.wifi_network_selection_layout);
 
         selectedWifiNetworksListView = view.findViewById(R.id.selected_wifi_networks_listview);
@@ -196,6 +202,12 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
             }
             selectedWifiNetworksAdapter.notifyDataSetChanged();
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+
+            if(MySettings.getDefaultPlaceID() == place.getId()){
+                defaultPlaceCheckBox.setChecked(true);
+            }else{
+                defaultPlaceCheckBox.setChecked(false);
+            }
         }
 
         placeNameEditText.addTextChangedListener(new TextWatcher() {
@@ -280,6 +292,57 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
             }
         });
 
+        editPlaceLocationLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(validateInputs()){
+                    Place oldPlace = MySettings.getPlaceByName(placeNameEditText.getText().toString());
+                    if(oldPlace != null && oldPlace.getId() != place.getId()){
+                        placeNameEditText.setError(getActivity().getResources().getString(R.string.place_already_exists_error));
+                        YoYo.with(Techniques.Shake)
+                                .duration(700)
+                                .repeat(1)
+                                .playOn(placeNameEditText);
+                    }else{
+                        MySettings.updatePlaceName(place, placeNameEditText.getText().toString());
+                        MySettings.updatePlaceType(place, selectedPlaceType.getId());
+                        if(placeFloors != null && placeFloors.size() >= 1){
+                            for (Floor floor : placeFloors) {
+                                if(floor.getId() == -1){
+                                    floor.setId(0);
+                                    MySettings.addFloor(floor);
+                                }else {
+                                    MySettings.updateFloorName(floor, floor.getName());
+                                }
+                            }
+                        }
+                        place = MySettings.getPlace(place.getId());
+                        MySettings.setCurrentPlace(place);
+
+                        for (WifiNetwork network : selectedWifiNetworks) {
+                            network.setPlaceID(place.getId());
+                            MySettings.addWifiNetwork(network);
+                            MySettings.updateWifiNetworkPlace(network, place.getId());
+                        }
+
+                        if(defaultPlaceCheckBox.isChecked()){
+                            MySettings.setDefaultPlaceID(place.getId());
+                        }
+
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
+
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddPlaceLocationFragment addPlaceLocationFragment = new AddPlaceLocationFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, addPlaceLocationFragment, "addPlaceLocationFragment");
+                        fragmentTransaction.addToBackStack("addPlaceLocationFragment");
+                        fragmentTransaction.commit();
+                    }
+                }
+            }
+        });
+
         savePlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -313,6 +376,10 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                             MySettings.updateWifiNetworkPlace(network, place.getId());
                         }
 
+                        if(defaultPlaceCheckBox.isChecked()){
+                            MySettings.setDefaultPlaceID(place.getId());
+                        }
+
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
 
@@ -323,10 +390,6 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
         });
 
         return view;
-    }
-
-    public void setPlace(Place place){
-        this.place = place;
     }
 
     @Override

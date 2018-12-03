@@ -26,6 +26,20 @@ public class Place {
     public long typeID;
     @ColumnInfo(name = "mode")
     public int mode;
+    @ColumnInfo(name = "latitude")
+    double latitude;
+    @ColumnInfo(name = "longitude")
+    double longitude;
+    @ColumnInfo(name = "address")
+    String address;
+    @ColumnInfo(name = "city")
+    String city;
+    @ColumnInfo(name = "state")
+    String state;
+    @ColumnInfo(name = "country")
+    String country;
+    @ColumnInfo(name = "zip_code")
+    String zipCode;
 
     public Place(){
         this.id = 0;
@@ -33,6 +47,13 @@ public class Place {
         this.floors = new ArrayList<>();
         this.typeID = -1;
         this.mode = Place.PLACE_MODE_REMOTE;
+        this.latitude = 0;
+        this.longitude = 0;
+        this.address = "";
+        this.city = "";
+        this.state = "";
+        this.country = "";
+        this.zipCode = "";
     }
 
     public long getId() {
@@ -81,5 +102,61 @@ public class Place {
 
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 }

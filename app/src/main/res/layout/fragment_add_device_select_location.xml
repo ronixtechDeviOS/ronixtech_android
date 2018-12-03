@@ -274,7 +274,7 @@
 
             <CheckBox
                 android:id="@+id/static_ip_address_checkbox"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/wifi_network_selection_layout"
                 android:layout_marginStart="16dp"

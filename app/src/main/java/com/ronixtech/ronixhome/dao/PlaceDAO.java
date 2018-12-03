@@ -43,6 +43,28 @@ public abstract class PlaceDAO {
     @Query("UPDATE place SET type_id =:newTypeID WHERE id =:placeID")
     public abstract void updatePlaceType(long placeID, long newTypeID);
 
+    @Query("UPDATE place SET latitude =:newLatitude WHERE id =:placeID")
+    public abstract void updatePlaceLatitude(long placeID, double newLatitude);
+
+    @Query("UPDATE place SET longitude =:newLongitude WHERE id =:placeID")
+    public abstract void updatePlaceLongitude(long placeID, double newLongitude);
+
+    @Query("UPDATE place SET address =:newAddress WHERE id =:placeID")
+    public abstract void updatePlaceAddress(long placeID, String newAddress);
+
+    @Query("UPDATE place SET city =:newCity WHERE id =:placeID")
+    public abstract void updatePlaceCity(long placeID, String newCity);
+
+    @Query("UPDATE place SET state =:newState WHERE id =:placeID")
+    public abstract void updatePlaceState(long placeID, String newState);
+
+    @Query("UPDATE place SET country =:newCountry WHERE id =:placeID")
+    public abstract void updatePlaceCountry(long placeID, String newCountry);
+
+    @Query("UPDATE place SET zip_code =:newZipCode WHERE id =:placeID")
+    public abstract void updatePlaceZipCode(long placeID, String newZipCode);
+
+
 
     @Query("DELETE from place WHERE id=:placeID")
     public abstract void removePlace(long placeID);

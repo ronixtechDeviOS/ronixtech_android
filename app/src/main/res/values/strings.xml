@@ -40,6 +40,27 @@
     <string name="no_places">No places</string>
     <string name="add_place_first">Add a place first</string>
     <string name="select_place_first">Select a place first</string>
+    <string name="default_place_hint">Make this my Default place for this app</string>
+
+    <string name="add_place_location">Add Location</string>
+    <string name="add_place_location_title">Location-Based Features</string>
+    <string name="add_place_location_description_1">The scheduling features of this app require access to your location.</string>
+    <string name="add_place_location_description_2">With your permission, this app can determine your location automatically. You may also choose to enter your full address or skip this setup altogether. If you skip this setup, scheduling features will not work until you enter an address for this place.</string>
+    <string name="add_place_get_location">Get My Location</string>
+    <string name="add_place_enter_address">Enter Address</string>
+    <string name="add_place_skip">Skip this for now</string>
+    <string name="add_place_location_address_title">Setup Place Address</string>
+    <string name="place_address">Address</string>
+    <string name="place_city">City</string>
+    <string name="place_state">State</string>
+    <string name="place_country">Country</string>
+    <string name="place_zip_code">Zip Code</string>
+
+    <string name="geocoding_error_address_found">Address found</string>
+
+    <string name="geocoding_error_service_not_available">Geocoding service not available, enter address details manually</string>
+    <string name="geocoding_error_invalid_lat_long">Invalid location selected, enter address details manually</string>
+    <string name="geocoding_error_no_address_found">No address found for specified location, please enter it manually</string>
 
     <string name="add_place_title">Setup your place</string>
     <string name="add_place_description">To begin, please enter the name, type, WiFi network and the number of floors of your place then click Add</string>
@@ -50,6 +71,7 @@
     <string name="place_selection_hint">Tap here to select a place</string>
     <string name="place_already_exists_error">A place already exists with this name</string>
     <string name="place_floors_error">Can\'t delete floor, as a place must have at least 1 floor</string>
+    <string name="place_address_hint">Tap here to edit place address</string>
 
     <string name="edit_place_title">Edit your place</string>
     <string name="remove_place">Remove Place</string>

@@ -14,10 +14,10 @@
     <color name="lightestGrayColor">#f0f0f0</color>
     <color name="lightGrayColor">#d3d3d3</color>
     <color name="darkGrayColor">#aaa</color>
+    <color name="darkestGrayColor">#767676</color>
     <color name="listFragmentBackgroundColor">#f3f3f3</color>
     <color name="chatPageFragmentGrayBackground">#f8f8f8</color>
     <color name="shadowColor">#B3000000</color>
-    <color name="darkestGrayColor">#767676</color>
     <color name="lightestOrangeColor">#ffb300</color>
     <color name="lightOrangeColor">#ff9100</color>
     <color name="darkOrangeColor">#ff6d00</color>

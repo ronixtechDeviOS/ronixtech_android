@@ -330,7 +330,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             public void onConnectionFail(String errorMsg) {
                 MySettings.setInternetConnectivityState(false);
             }
-        });
+        }).execute();
     }
 
     private void setLayoutVisibility(){
@@ -397,10 +397,11 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     }
 
     @Override
-    public void onPlaceSelected(Place place){
-        setLayoutVisibility();
-        MySettings.setCurrentFloor(null);
-        if(place != null){
+    public void onPlaceSelected(Place selectedPlace){
+        if(selectedPlace != null){
+            floor = null;
+            MySettings.setCurrentFloor(null);
+            this.place = selectedPlace;
             MySettings.setCurrentPlace(place);
             if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
                 MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
@@ -413,10 +414,12 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 rooms.addAll(MySettings.getPlaceRooms(place));
             }
             adapter.notifyDataSetChanged();
-        }
 
-        checkWifiConnection();
-        checkCellularConnection();
+            setLayoutVisibility();
+
+            checkWifiConnection();
+            checkCellularConnection();
+        }
     }
 
     @Override

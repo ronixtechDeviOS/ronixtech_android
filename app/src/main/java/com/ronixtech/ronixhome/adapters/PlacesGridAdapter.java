@@ -133,10 +133,10 @@ public class PlacesGridAdapter extends BaseAdapter {
                     public boolean onMenuItemClick(MenuItem item1) {
                         int id = item1.getItemId();
                         if(id == R.id.action_edit_place){
+                            MySettings.setCurrentPlace(item);
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                             EditPlaceFragment editPlaceFragment = new EditPlaceFragment();
-                            editPlaceFragment.setPlace(item);
                             fragmentTransaction.replace(R.id.fragment_view, editPlaceFragment, "editPlaceFragment");
                             fragmentTransaction.addToBackStack("editPlaceFragment");
                             fragmentTransaction.commit();
@@ -182,10 +182,10 @@ public class PlacesGridAdapter extends BaseAdapter {
                     public boolean onMenuItemClick(MenuItem item1) {
                         int id = item1.getItemId();
                         if(id == R.id.action_edit_place){
+                            MySettings.setCurrentPlace(item);
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                             EditPlaceFragment editPlaceFragment = new EditPlaceFragment();
-                            editPlaceFragment.setPlace(item);
                             fragmentTransaction.replace(R.id.fragment_view, editPlaceFragment, "editPlaceFragment");
                             fragmentTransaction.addToBackStack("editPlaceFragment");
                             fragmentTransaction.commit();

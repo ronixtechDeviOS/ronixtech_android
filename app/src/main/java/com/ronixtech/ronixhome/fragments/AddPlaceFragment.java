@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -65,6 +66,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
     ListView selectedWifiNetworksListView;
     WifiNetworkItemAdapter selectedWifiNetworksAdapter;
     Button incrementFloorsButton, decrementFloorsButton;
+    CheckBox defaultPlaceCheckBox;
     Button addPlaceButton;
 
     Type selectedPlaceType;
@@ -116,6 +118,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         selectedWifiNetworksListView.setAdapter(selectedWifiNetworksAdapter);
         incrementFloorsButton = view.findViewById(R.id.increment_button);
         decrementFloorsButton = view.findViewById(R.id.decrement_button);
+        defaultPlaceCheckBox = view.findViewById(R.id.default_place_checkbox);
         addPlaceButton= view.findViewById(R.id.add_place_button);
 
         placeNameEditText.addTextChangedListener(new TextWatcher() {
@@ -261,10 +264,19 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                         }
                         MySettings.setCurrentPlace(dbPlace);
 
+                        if(defaultPlaceCheckBox.isChecked()){
+                            MySettings.setDefaultPlaceID(dbPlace.getId());
+                        }
+
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
 
-                        getFragmentManager().popBackStack();
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddPlaceLocationFragment addPlaceLocationFragment = new AddPlaceLocationFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, addPlaceLocationFragment, "addPlaceLocationFragment");
+                        fragmentTransaction.addToBackStack("addPlaceLocationFragment");
+                        fragmentTransaction.commit();
                     }
                 }
             }
