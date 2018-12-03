@@ -1,10 +1,12 @@
 package com.ronixtech.ronixhome.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -37,6 +39,19 @@ import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.Type;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -386,7 +401,10 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
         lineDimmingLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lineDimmingCheckBox.performClick();
+                //try to sync with device
+                DimmingSyncer dimmingSyncer = new DimmingSyncer(getActivity(), device, currentLine);
+                dimmingSyncer.execute();
+                //lineDimmingCheckBox.performClick();
             }
         });
         lineDimmingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -397,8 +415,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 }else{
                     lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
                 }
-
-                if(isChecked && currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+                /*if(isChecked && currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
                     unsavedChanges = false;
                     parentFragment.tabUserChangesState(LINE_POSITION, false);
                     Log.d("AAAA", "lineDimmingCheckBox - onCheckedChanged - no changes");
@@ -410,7 +427,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     unsavedChanges = true;
                     parentFragment.tabUserChangesState(LINE_POSITION, true);
                     Log.d("AAAA", "lineDimmingCheckBox - onCheckedChanged - changes");
-                }
+                }*/
             }
         });
 
@@ -466,11 +483,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     newLine.setTypeID(lineType.getId());
                     newLine.setPowerState(Line.LINE_STATE_OFF);
                     newLine.setDeviceID(device.getId());
-                    if(lineDimmingCheckBox.isChecked()){
+                    /*if(lineDimmingCheckBox.isChecked()){
                         newLine.setDimmingState(Line.DIMMING_STATE_ON);
                     }else{
                         newLine.setDimmingState(Line.DIMMING_STATE_OFF);
-                    }
+                    }*/
                     newLine.setMode(lineMode);
                     if(lineMode == Line.MODE_SECONDARY){
                         newLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
@@ -723,4 +740,128 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
+
+    public class DimmingSyncer extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        Device device;
+        Line line;
+
+        public DimmingSyncer(Activity activity, Device device, Line line) {
+            this.activity = activity;
+            this.device = device;
+            this.line = line;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            Utils.showLoading(activity);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                //sync success
+                Utils.dismissLoading();
+
+                int newDimmingState = 0;
+                if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                    newDimmingState = Line.DIMMING_STATE_OFF;
+                }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    newDimmingState = Line.DIMMING_STATE_ON;
+                }
+
+                currentLine.setDimmingState(newDimmingState);
+
+                if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+                    lineDimmingCheckBox.setChecked(true);
+                }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
+                    lineDimmingCheckBox.setChecked(false);
+                }
+
+                MySettings.updateLineDimmingState(currentLine, currentLine.getDimmingState());
+            }else{
+                Utils.dismissLoading();
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
+
+                    URL url = new URL(urlString);
+                    Log.d(TAG,  "syncDimmingState URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONTROL_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jsonObject = new JSONObject();
+                    int newDimmingState = 0;
+                    if(line.getDimmingState() == Line.DIMMING_STATE_ON){
+                        newDimmingState = Line.DIMMING_STATE_OFF;
+                    }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
+                        newDimmingState = Line.DIMMING_STATE_ON;
+                    }
+                    if(line.getPosition() == 0){
+                        jsonObject.put("L_0_D_S", "" + newDimmingState);
+                    }else if(line.getPosition() == 1){
+                        jsonObject.put("L_1_D_S", "" + newDimmingState);
+                    }else if(line.getPosition() == 2){
+                        jsonObject.put("L_2_D_S", "" + newDimmingState);
+                    }
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                    Log.d(TAG,  "syncDimmingState POST data: " + jsonObject.toString());
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jsonObject.toString());
+                    outputStreamWriter.flush();
+                    outputStreamWriter.close();
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "syncDimmingState response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
 }
