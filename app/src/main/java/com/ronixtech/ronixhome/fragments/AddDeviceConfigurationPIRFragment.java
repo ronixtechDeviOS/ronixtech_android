@@ -89,7 +89,13 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
         lineImageView = view.findViewById(R.id.selected_line_image_view);
         selectedLinesListView = view.findViewById(R.id.selected_lines_listview);
         selectedLines = new ArrayList<>();
-        adapter = new LinePIRConfigurationAdapter(getActivity(), selectedLines);
+        adapter = new LinePIRConfigurationAdapter(getActivity(), selectedLines, new LinePIRConfigurationAdapter.OnLineRemovedListener() {
+            @Override
+            public void onLineRemoved() {
+                adapter.notifyDataSetChanged();
+                Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
+            }
+        });
         selectedLinesListView.setAdapter(adapter);
         continueButton = view.findViewById(R.id.continue_button);
 

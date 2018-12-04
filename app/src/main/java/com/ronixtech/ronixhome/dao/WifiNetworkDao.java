@@ -29,6 +29,9 @@ public abstract class WifiNetworkDao {
     @Query("UPDATE wifinetwork SET place_id =:placeID WHERE id =:wifiNetworkID")
     public abstract void updateWifiNetworkPlaceID(long wifiNetworkID, long placeID);
 
+    @Query("UPDATE wifinetwork SET password =:password WHERE id =:wifiNetworkID")
+    public abstract void updateWifiNetworkPassword(long wifiNetworkID, String password);
+
     @Query("DELETE from wifinetwork WHERE id=:wifiNetworkID")
     public abstract void removeWifiNetwork(long wifiNetworkID);
 }

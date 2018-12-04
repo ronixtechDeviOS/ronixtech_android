@@ -32,10 +32,16 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
     List<Line> lines;
     ViewHolder vHolder = null;
 
-    public LinePIRConfigurationAdapter(Activity activity, List lines){
+    private OnLineRemovedListener callback;
+    public interface OnLineRemovedListener{
+        public void onLineRemoved();
+    }
+
+    public LinePIRConfigurationAdapter(Activity activity, List lines, OnLineRemovedListener listener){
         super(activity, R.layout.list_item_line_pir_configuration, lines);
         this.activity = activity;
         this.lines = lines;
+        this.callback = listener;
     }
 
     @Override
@@ -76,6 +82,7 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
             vHolder.triggerActionDurationTimeUnitSpinner = rowView.findViewById(R.id.line_trigger_action_duration_spinner);
             vHolder.triggerActionDurationSeekBar = rowView.findViewById(R.id.line_trigger_action_duration_seekbar);
             vHolder.triggerActionDurationTextView = rowView.findViewById(R.id.line_trigger_action_duration_textview);
+            vHolder.removeLineImageView = rowView.findViewById(R.id.line_remove_imageview);
             rowView.setTag(vHolder);
         }
         else{
@@ -259,6 +266,15 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
 
             }
         });
+
+        vHolder.removeLineImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lines.remove(item);
+                callback.onLineRemoved();
+            }
+        });
+
         return rowView;
     }
 
@@ -270,5 +286,6 @@ public class LinePIRConfigurationAdapter extends ArrayAdapter {
         SeekBar dimmingValueSeekBar, triggerActionDurationSeekBar;
         Spinner triggerActionDurationTimeUnitSpinner;
         TextView triggerActionDurationTextView;
+        ImageView removeLineImageView;
     }
 }

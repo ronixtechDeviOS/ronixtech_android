@@ -322,7 +322,9 @@ public class Device implements Comparable {
     }
 
     public boolean isHwFirmwareUpdateAvailable() {
-        return hwFirmwareUpdateAvailable;
+        //TODO add this later when HW upgrading works as expected
+        //return hwFirmwareUpdateAvailable;
+        return false;
     }
 
     public void setHwFirmwareUpdateAvailable(boolean hwFirmwareUpdateAvailable) {

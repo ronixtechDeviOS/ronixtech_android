@@ -581,6 +581,9 @@ public class MySettings {
     public static void updateWifiNetworkPlace(WifiNetwork network, long placeID){
         MySettings.initDB().wifiNetworkDao().updateWifiNetworkPlaceID(network.getId(), placeID);
     }
+    public static void updateWifiNetworkPassword(WifiNetwork network, String password){
+        MySettings.initDB().wifiNetworkDao().updateWifiNetworkPassword(network.getId(), password);
+    }
     public static void removeWifiNetwork(WifiNetwork wifiNetwork){
         //remove floor from DB
         MySettings.initDB().wifiNetworkDao().removeWifiNetwork(wifiNetwork.getId());

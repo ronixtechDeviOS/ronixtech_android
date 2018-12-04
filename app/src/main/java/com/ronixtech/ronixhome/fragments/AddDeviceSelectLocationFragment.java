@@ -163,6 +163,10 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }
         }
 
+        if(selectedWifiNetwork != null) {
+            wifiNetworkNameTextView.setText("" + selectedWifiNetwork.getSsid());
+        }
+
         staticIPAddressCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -322,6 +326,8 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
+                    MySettings.updateWifiNetworkPlace(selectedWifiNetwork, selectedPlace.getId());
+
                     Device device = MySettings.getTempDevice();
                     //Device tempDevice = MySettings.getDeviceByMAC(device.getMacAddress());
                     //tempDevice.setRoomID(clickedRoom.getId());

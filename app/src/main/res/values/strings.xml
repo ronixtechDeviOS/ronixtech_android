@@ -319,6 +319,7 @@
 
 
     <string name="home_network">Home Network</string>
+    <string name="home_networks">Home Networks</string>
     <string name="configure_home_network_title">Please select your home network, where all your Smart Controllers will be connected to</string>
     <string name="ssid">SSID</string>
     <string name="ssid_colon">SSID:</string>

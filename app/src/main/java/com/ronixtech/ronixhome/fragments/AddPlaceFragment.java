@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -32,7 +31,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
-import com.ronixtech.ronixhome.adapters.WifiNetworkItemAdapter;
+import com.ronixtech.ronixhome.adapters.WifiNetworkItemAdapterEditable;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Type;
@@ -64,7 +63,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
     ImageView placeTypeImageView;
     TextView placeTypeNameTextView;
     ListView selectedWifiNetworksListView;
-    WifiNetworkItemAdapter selectedWifiNetworksAdapter;
+    WifiNetworkItemAdapterEditable selectedWifiNetworksAdapter;
     Button incrementFloorsButton, decrementFloorsButton;
     CheckBox defaultPlaceCheckBox;
     Button addPlaceButton;
@@ -114,7 +113,15 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         if(selectedWifiNetworks == null) {
             selectedWifiNetworks = new ArrayList<>();
         }
-        selectedWifiNetworksAdapter = new WifiNetworkItemAdapter(getActivity(), selectedWifiNetworks);
+        selectedWifiNetworksAdapter = new WifiNetworkItemAdapterEditable(getActivity(), selectedWifiNetworks, new WifiNetworkItemAdapterEditable.WifiNetworksListener() {
+            @Override
+            public void onNetworkDeleted() {
+                //selectedWifiNetworks.clear();
+                //selectedWifiNetworks.addAll(MySettings.getPlaceWifiNetworks(place.getId()));
+                selectedWifiNetworksAdapter.notifyDataSetChanged();
+                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
+            }
+        });
         selectedWifiNetworksListView.setAdapter(selectedWifiNetworksAdapter);
         incrementFloorsButton = view.findViewById(R.id.increment_button);
         decrementFloorsButton = view.findViewById(R.id.decrement_button);
@@ -200,16 +207,6 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     fragmentTransaction.addToBackStack("wifiInfoFragment");
                     fragmentTransaction.commit();
                 }
-            }
-        });
-
-        selectedWifiNetworksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                WifiNetwork clickedWifiNetwork = (WifiNetwork) selectedWifiNetworksAdapter.getItem(position);
-                selectedWifiNetworks.remove(clickedWifiNetwork);
-                selectedWifiNetworksAdapter.notifyDataSetChanged();
-                Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
             }
         });
 

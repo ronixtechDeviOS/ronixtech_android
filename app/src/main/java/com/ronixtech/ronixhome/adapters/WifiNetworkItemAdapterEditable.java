@@ -156,6 +156,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
                     public void onClick(View v) {
                         if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
                             item.setPassword(passwordEditText.getText().toString());
+                            MySettings.updateWifiNetworkPassword(item, passwordEditText.getText().toString());
                             dialog.dismiss();
                         }else{
                             YoYo.with(Techniques.Shake)

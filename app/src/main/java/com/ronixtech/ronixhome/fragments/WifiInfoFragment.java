@@ -282,6 +282,7 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
             wifiNetwork.setPassword(password.trim());
             //MySettings.setHomeNetwork(wifiNetwork);
             MySettings.addWifiNetwork(wifiNetwork);
+            wifiNetwork = MySettings.getWifiNetworkBySSID(wifiNetwork.getSsid());
             if(source == Constants.SOURCE_NAV_DRAWER) {
                 if(callback != null) {
                     callback.onNetworkAdded(wifiNetwork);

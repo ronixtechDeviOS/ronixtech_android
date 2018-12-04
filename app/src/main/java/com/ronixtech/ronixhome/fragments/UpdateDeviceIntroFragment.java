@@ -82,11 +82,19 @@ public class UpdateDeviceIntroFragment extends Fragment {
                 updateHWCheckbox.setVisibility(View.GONE);
                 updateWifiCheckBox.setVisibility(View.GONE);
             }else{
-                updateTypeInstructionsTextView.setVisibility(View.VISIBLE);
+                //TODO add this later when HW upgrading works as expected
+                /*updateTypeInstructionsTextView.setVisibility(View.VISIBLE);
                 updateHWCheckbox.setVisibility(View.VISIBLE);
                 updateWifiCheckBox.setVisibility(View.VISIBLE);
 
                 updateHWCheckbox.setChecked(device.isHwFirmwareUpdateAvailable());
+                updateWifiCheckBox.setChecked(device.isFirmwareUpdateAvailable());*/
+
+                updateTypeInstructionsTextView.setVisibility(View.GONE);
+                updateHWCheckbox.setVisibility(View.GONE);
+                updateWifiCheckBox.setVisibility(View.GONE);
+
+                updateHWCheckbox.setChecked(false);
                 updateWifiCheckBox.setChecked(device.isFirmwareUpdateAvailable());
             }
         }else{

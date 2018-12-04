@@ -178,7 +178,8 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             }
 
 
-            boolean hwUpdateAvailable = false;
+            //TODO add this later when HW upgrading works as expected
+            /*boolean hwUpdateAvailable = false;
             if(currentHWVersion == onlineHWVersion && currentHWVersion != 0){
                 hwUpdateAvailable = false;
                 firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
@@ -208,6 +209,22 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                     }else{
                         firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
                     }
+                }
+            }*/
+
+            if(currentWiFiVersion == onlineWiFiVersion && currentWiFiVersion != 0){
+                firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
+
+                firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+                firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
+            }else{
+                firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
+                if(currentWiFiVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
+                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_update_required));
+                }else{
+                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
                 }
             }
 

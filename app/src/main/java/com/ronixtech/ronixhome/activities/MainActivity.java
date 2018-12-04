@@ -48,9 +48,9 @@ import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
+import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
-import com.ronixtech.ronixhome.fragments.WifiInfoFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity
             Place defaultPlace = MySettings.getPlace(MySettings.getDefaultPlaceID());
             if(defaultPlace != null){
                 MySettings.setCurrentPlace(defaultPlace);
+                MySettings.setCurrentFloor(null);
             }
         }
         if(MySettings.getCurrentPlace() != null) {
@@ -433,11 +434,10 @@ public class MainActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
-            wifiInfoFragment.setSource(Constants.SOURCE_NAV_DRAWER);
+            HomeNetworksFragment homeNetworksFragment = new HomeNetworksFragment();
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
-            fragmentTransaction.addToBackStack("wifiInfoFragment");
+            fragmentTransaction.replace(R.id.fragment_view, homeNetworksFragment, "homeNetworksFragment");
+            fragmentTransaction.addToBackStack("homeNetworksFragment");
             fragmentTransaction.commit();
         } else if(id == R.id.nav_refresh_devices){
             Toast.makeText(mInstance, "Refreshing devices", Toast.LENGTH_SHORT).show();
