@@ -1,7 +1,6 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -510,7 +509,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 if(MySettings.getDeviceByChipID2(mChipID) != null){
                     //remove device and re-add it again, or just go back?
                     if(activity != null){
-                        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                        android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
                                 //set icon
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 //set title

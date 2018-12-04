@@ -61,7 +61,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1474,12 +1477,28 @@ public class DashboardDevicesFragment extends Fragment {
                             DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
                             jObject.put("R_W_DHC", "off");
                             jObject.put("R_W_IP_", device.getIpAddress());
+                            jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
                             if(Utils.intToIp(dhcpInfo.netmask) == null || Utils.intToIp(dhcpInfo.netmask).length() < 1 || Utils.intToIp(dhcpInfo.netmask).equalsIgnoreCase("0.0.0.0")){
-                                jObject.put("R_W_NMK", "255.255.255.0");
+                                try {
+                                    InetAddress inetAddress = Utils.intToInet(dhcpInfo.ipAddress);
+                                    NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
+                                    if(networkInterface != null){
+                                        for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
+                                            String submask = Utils.prefixToSubmask(address.getNetworkPrefixLength());
+                                            Log.d("AAAA", address.toString());
+                                            jObject.put("R_W_NMK", submask);
+                                        }
+                                    }else{
+                                        jObject.put("R_W_NMK", "255.255.255.0");
+                                    }
+
+                                } catch (IOException e) {
+                                    Log.e(TAG, "Exception: " + e.getMessage());
+                                    jObject.put("R_W_NMK", "255.255.255.0");
+                                }
                             }else{
                                 jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
                             }
-                            jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
                         }
                     }
                 }

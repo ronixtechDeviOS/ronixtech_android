@@ -40,6 +40,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -836,5 +837,34 @@ public class Utils {
             void onGeocodingSuccess(String address, String city, String state, String country, String zipCode);
             void onGeocodingFail(String errorMsg);
         }
+    }
+
+    public static byte byteOfInt(int value, int which) {
+        int shift = which * 8;
+        return (byte)(value >> shift);
+    }
+
+    public static InetAddress intToInet(int value) {
+        byte[] bytes = new byte[4];
+        for(int i = 0; i<4; i++) {
+            bytes[i] = byteOfInt(value, i);
+        }
+        try {
+            return InetAddress.getByAddress(bytes);
+        } catch (UnknownHostException e) {
+            // This only happens if the byte array has a bad length
+            return null;
+        }
+    }
+
+    public static String prefixToSubmask(short netPrefix){
+        String submask = "";
+        int shft = 0xffffffff<<(32-netPrefix);
+        int oct1 = ((byte) ((shft&0xff000000)>>24)) & 0xff;
+        int oct2 = ((byte) ((shft&0x00ff0000)>>16)) & 0xff;
+        int oct3 = ((byte) ((shft&0x0000ff00)>>8)) & 0xff;
+        int oct4 = ((byte) (shft&0x000000ff)) & 0xff;
+        submask = oct1+"."+oct2+"."+oct3+"."+oct4;
+        return submask;
     }
 }

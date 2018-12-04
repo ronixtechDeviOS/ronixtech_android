@@ -1,7 +1,6 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -466,10 +465,10 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("continueButton", "onClick");
+                Log.d(TAG, "continueButton onClick");
                 //if all valid
                 if(validateInputs()){
-                    Log.d("continueButton", "validateInputs()");
+                    Log.d(TAG, "continueButton validateInputs()");
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(lineNameEditText.getWindowToken(), 0);
 
@@ -500,14 +499,14 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     parentFragment.tabUserChangesState(LINE_POSITION, false);
 
                     int last = DEVICE_NUMBER_OF_LINES - 1;
-                    Log.d("continueButton", "last: " + last);
-                    Log.d("continueButton", "LINE_POSITION: " + LINE_POSITION);
+                    Log.d(TAG, "continueButton last: " + last);
+                    Log.d(TAG, "continueButton LINE_POSITION: " + LINE_POSITION);
                     if(LINE_POSITION < last){
-                        Log.d("AAAA", "move to next fragment");
+                        Log.d(TAG, "AAAA move to next fragment");
                         parentFragment.moveToNextFragment();
                     }else{
                         if(parentFragment.getUnsavedChanges()){
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(getActivity())
                                     //set icon
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     //set title
@@ -534,7 +533,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                                     })
                                     .show();
                         }else{
-                            Log.d("continueButton", "pop backstack!");
+                            Log.d(TAG, "continueButton pop backstack!");
                             if(parentFragment.getFragmentManager() != null){
                                 parentFragment.getFragmentManager().popBackStack();
                             }
