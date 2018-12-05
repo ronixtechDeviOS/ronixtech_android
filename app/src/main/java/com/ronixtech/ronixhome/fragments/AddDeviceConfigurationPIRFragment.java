@@ -131,7 +131,6 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
                     fragment.show(ft, "pickLineDialogFragment");
                 }else{
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
-                    goToSearchFragment();
                 }
             }
         });

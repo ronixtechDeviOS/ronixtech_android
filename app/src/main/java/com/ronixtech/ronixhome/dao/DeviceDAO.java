@@ -5,6 +5,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.PIRData;
@@ -54,15 +55,6 @@ public abstract class DeviceDAO {
 
     @Query("DELETE from line WHERE device_id=:deviceID")
     public abstract void removeDeviceLines(long deviceID);
-
-
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insertSoundData(SoundDeviceData soundDeviceData);
-    @Query("SELECT * FROM sounddevicedata WHERE device_id =:deviceID")
-    public abstract SoundDeviceData getSoundSystemData(long deviceID);
-    @Query("DELETE from sounddevicedata WHERE device_id=:deviceID")
-    public abstract void removeDeviceSoundDeviceData(long deviceID);
 
 
 
@@ -125,14 +117,14 @@ public abstract class DeviceDAO {
         if(device.getSoundDeviceData() != null) {
             SoundDeviceData soundDeviceData = device.getSoundDeviceData();
             soundDeviceData.setDeviceID(device.getId());
-            insertSoundData(soundDeviceData);
+            MySettings.insertSoundDeviceData(soundDeviceData);
         }
         insertDevice(device);
     }
     public Device getDeviceWithSoundSystemDataByID(long id) {
         Device device = findByID(id);
         if(device != null) {
-            SoundDeviceData soundDeviceData = getSoundSystemData(id);
+            SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(id);
             if (device != null) {
                 device.setSoundDeviceData(soundDeviceData);
             }
@@ -142,7 +134,7 @@ public abstract class DeviceDAO {
     public Device getDeviceWithSoundSystemDataByMacAddress(String macAddress) {
         Device device = findByMAC(macAddress);
         if(device != null) {
-            SoundDeviceData soundDeviceData = getSoundSystemData(device.getId());
+            SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(device.getId());
             if (device != null) {
                 device.setSoundDeviceData(soundDeviceData);
             }
@@ -152,7 +144,7 @@ public abstract class DeviceDAO {
     public Device getDeviceWithSoundSystemDataByChipID(String chipID) {
         Device device = findByChipID(chipID);
         if(device != null) {
-            SoundDeviceData soundDeviceData = getSoundSystemData(device.getId());
+            SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(device.getId());
             if (device != null) {
                 device.setSoundDeviceData(soundDeviceData);
             }
@@ -160,7 +152,7 @@ public abstract class DeviceDAO {
         return device;
     }
     public void removeDeviceWithSoundDeviceData(Device device){
-        removeDeviceSoundDeviceData(device.getId());
+        MySettings.removeSoundDeviceData(device.getId());
         removeDevice(device.getId());
     }
 

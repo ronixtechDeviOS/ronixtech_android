@@ -412,9 +412,8 @@ public class Utils {
         roomTypes.add(type);
         type = new Type(Constants.TYPE_ROOM, "Terrace", "", R.drawable.room_type_terrace, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_terrace));
         roomTypes.add(type);
-        roomTypes.add(type);
         type = new Type(Constants.TYPE_ROOM, "Toilet", "", R.drawable.room_type_toilet, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_toilet));
-
+        roomTypes.add(type);
         for (Type ty: roomTypes) {
             MySettings.addType(ty);
         }

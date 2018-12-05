@@ -121,7 +121,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
                 Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
             }
-        });
+        }, Constants.REMOVE_NETWORK_FROM_DB_NO);
         selectedWifiNetworksListView.setAdapter(selectedWifiNetworksAdapter);
         incrementFloorsButton = view.findViewById(R.id.increment_button);
         decrementFloorsButton = view.findViewById(R.id.decrement_button);
@@ -229,6 +229,10 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 }
             }
         });
+
+        if(MySettings.getDefaultPlaceID() != -1){
+            defaultPlaceCheckBox.setChecked(false);
+        }
 
         addPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override

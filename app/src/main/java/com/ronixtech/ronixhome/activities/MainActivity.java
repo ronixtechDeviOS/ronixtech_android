@@ -113,8 +113,6 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(MySettings.getDefaultPlaceID() != -1){
             Place defaultPlace = MySettings.getPlace(MySettings.getDefaultPlaceID());
             if(defaultPlace != null){
@@ -122,6 +120,28 @@ public class MainActivity extends AppCompatActivity
                 MySettings.setCurrentFloor(null);
             }
         }
+
+        /*if (savedInstanceState == null) {
+            // only create fragment if activity is started for the first time
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            if(MySettings.getCurrentPlace() != null) {
+                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
+            }else {
+                PlacesFragment placesFragment = new PlacesFragment();
+                fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
+            }
+        } else {
+            // do nothing - fragment is recreated automatically
+        }*/
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(MySettings.getCurrentPlace() != null) {
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
             fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");

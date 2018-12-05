@@ -1,5 +1,7 @@
 package com.ronixtech.ronixhome.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,7 +36,7 @@ import java.util.List;
  * Use the {@link PlacesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PlacesFragment extends Fragment {
+public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener{
     private static final String TAG = PlacesFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
@@ -100,6 +102,47 @@ public class PlacesFragment extends Fragment {
                 places.addAll(MySettings.getAllPlaces());
                 placeAdapter.notifyDataSetChanged();
                 setLayoutVisibility();
+            }
+            @Override
+            public void onDefaultPlaceRequested() {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(getActivity().getResources().getString(R.string.select_default_place_title))
+                        //set message
+                        .setMessage(getActivity().getResources().getString(R.string.select_default_place_message))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                if(MySettings.getAllPlaces() != null || MySettings.getAllPlaces().size() >= 1){
+                                    // DialogFragment.show() will take care of adding the fragment
+                                    // in a transaction.  We also want to remove any currently showing
+                                    // dialog, so make our own transaction and take care of that here.
+                                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                                    if (prev != null) {
+                                        ft.remove(prev);
+                                    }
+                                    ft.addToBackStack(null);
+
+                                    // Create and show the dialog.
+                                    PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
+                                    fragment.setTargetFragment(PlacesFragment.this, 0);
+                                    fragment.show(ft, "pickPlaceDialogFragment");
+                                }
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.later), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                            }
+                        })
+                        .show();
             }
         });
         placesGridView.setAdapter(placeAdapter);
@@ -189,6 +232,13 @@ public class PlacesFragment extends Fragment {
             placesGridView.setVisibility(View.VISIBLE);
             //placesGridViewLongPressHint.setVisibility(View.VISIBLE);
             placesGridViewLongPressHint.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onPlaceSelected(Place place){
+        if(place != null){
+            MySettings.setDefaultPlaceID(place.getId());
         }
     }
 

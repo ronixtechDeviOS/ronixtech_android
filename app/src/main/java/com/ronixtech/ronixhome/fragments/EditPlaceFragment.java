@@ -130,7 +130,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
                 Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
             }
-        });
+        }, Constants.REMOVE_NETWORK_FROM_DB_NO);
         selectedWifiNetworksListView.setAdapter(selectedWifiNetworksAdapter);
 
         placeFloorsListView = view.findViewById(R.id.place_floors_listview);

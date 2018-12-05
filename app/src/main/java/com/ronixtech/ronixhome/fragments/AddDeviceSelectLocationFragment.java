@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -335,28 +336,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                     device.setStaticIPAddress(ipAddressStatic);
                     MySettings.addDevice(device);
                     MySettings.setHomeNetwork(selectedWifiNetwork);
-                    /*if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                        Device tempDevice = MySettings.getTempDevice();
-                        tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
-                        MySettings.setTempDevice(tempDevice);
-                        FragmentManager fragmentManager = getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                        fragmentTransaction.commit();
-                    }else{
-                        MySettings.setTempDevice(null);
 
-                        FragmentManager fragmentManager = getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                        AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
-                        fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
-                        //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                        fragmentTransaction.commitAllowingStateLoss();
-                    }*/
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -468,12 +448,16 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         if(selectedRoom == null){
             inputsValid = false;
         }
+        if(selectedWifiNetwork == null){
+            inputsValid = false;
+        }
 
         return inputsValid;
     }
 
     @Override
     public void onWifiNetworkSelected(WifiNetwork wifiNetwork){
+        Log.d("AAAA", "AddDeviceSelectLocationFragment onWifiNetworkSelected - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
@@ -487,6 +471,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
 
     @Override
     public void onNetworkAdded(WifiNetwork wifiNetwork){
+        Log.d("AAAA", "AddDeviceSelectLocationFragment onNetworkAdded - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());

@@ -36,9 +36,13 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.Type;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -90,6 +94,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
 
     Device device;
     Line currentLine;
+    int placeMode;
 
     private int DEVICE_NUMBER_OF_LINES;
     private int LINE_POSITION;
@@ -98,6 +103,9 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
     EditDeviceFragment parentFragment;
 
     boolean unsavedChanges = false;
+
+    //Stuff for remote/MQTT mode
+    MqttAndroidClient mqttAndroidClient;
 
     public EditDeviceLineFragment() {
         // Required empty public constructor
@@ -401,8 +409,62 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             @Override
             public void onClick(View v) {
                 //try to sync with device
-                DimmingSyncer dimmingSyncer = new DimmingSyncer(getActivity(), device, currentLine);
-                dimmingSyncer.execute();
+                if(placeMode == Place.PLACE_MODE_LOCAL) {
+                    DimmingSyncer dimmingSyncer = new DimmingSyncer(getActivity(), device, currentLine);
+                    dimmingSyncer.execute();
+                }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                    Utils.showLoading(getActivity());
+                    //send command usint MQTT
+                    if(mqttAndroidClient != null){
+                        try{
+                            JSONObject jsonObject = new JSONObject();
+                            int newDimmingState = 0;
+                            if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+                                newDimmingState = Line.DIMMING_STATE_OFF;
+                            }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
+                                newDimmingState = Line.DIMMING_STATE_ON;
+                            }
+                            switch(LINE_POSITION){
+                                case 0:
+                                    jsonObject.put("L_0_D_S", ""+newDimmingState);
+                                    break;
+                                case 1:
+                                    jsonObject.put("L_1_D_S", ""+newDimmingState);
+                                    break;
+                                case 2:
+                                    jsonObject.put("L_2_D_S", ""+newDimmingState);
+                                    break;
+                            }
+                            jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                            MqttMessage mqttMessage = new MqttMessage();
+                            mqttMessage.setPayload(jsonObject.toString().getBytes());
+                            Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                            Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                            mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+
+                            //sync success
+                            currentLine.setDimmingState(newDimmingState);
+
+                            if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+                                lineDimmingCheckBox.setChecked(true);
+                            }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
+                                lineDimmingCheckBox.setChecked(false);
+                            }
+                            MySettings.updateLineDimmingState(currentLine, currentLine.getDimmingState());
+                        }catch (JSONException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.dismissLoading();
+                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                        }catch (MqttException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.dismissLoading();
+                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                        }finally {
+                            Utils.dismissLoading();
+                        }
+                    }
+                    MySettings.setControlState(false);
+                }
                 //lineDimmingCheckBox.performClick();
             }
         });
@@ -645,6 +707,14 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 parentFragment.tabUserChangesState(LINE_POSITION, true);
             }
         }
+    }
+
+    public void setPlaceMode(int placeMode){
+        this.placeMode = placeMode;
+    }
+
+    public void setMqttClient(MqttAndroidClient mqttClient){
+        this.mqttAndroidClient = mqttClient;
     }
 
     public void setDeviceNumberOfLines(int numberOfLines){

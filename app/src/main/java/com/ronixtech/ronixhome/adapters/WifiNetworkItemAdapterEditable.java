@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
@@ -30,6 +31,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
     Activity activity ;
     List<WifiNetwork> networks;
     ViewHolder vHolder = null;
+    int removeNetworkFromDB = Constants.REMOVE_NETWORK_FROM_DB_NO;
 
     private WifiNetworksListener wifiNetworksListener;
 
@@ -37,11 +39,12 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
         public void onNetworkDeleted();
     }
 
-    public WifiNetworkItemAdapterEditable(Activity activity, List networks, WifiNetworksListener wifiNetworksListener){
+    public WifiNetworkItemAdapterEditable(Activity activity, List networks, WifiNetworksListener wifiNetworksListener, int removeNetworkFromDB){
         super(activity, R.layout.list_item_wifi_network_editable, networks);
         this.activity = activity;
         this.networks = networks;
         this.wifiNetworksListener = wifiNetworksListener;
+        this.removeNetworkFromDB = removeNetworkFromDB;
     }
 
     @Override
@@ -179,27 +182,50 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
         vHolder.networkRemoveImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                        .setTitle(activity.getResources().getString(R.string.remove_wifi_network_question))
-                        .setMessage(activity.getResources().getString(R.string.remove_wifi_network_description))
-                        //set positive button
-                        .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                MySettings.removeWifiNetwork(item);
-                                networks.remove(item);
-                                wifiNetworksListener.onNetworkDeleted();
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                            }
-                        })
-                        .show();
+                if(removeNetworkFromDB == Constants.REMOVE_NETWORK_FROM_DB_YES) {
+                    android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                            .setTitle(activity.getResources().getString(R.string.remove_wifi_network_question))
+                            .setMessage(activity.getResources().getString(R.string.remove_wifi_network_description))
+                            //set positive button
+                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //set what would happen when positive button is clicked
+                                    MySettings.removeWifiNetwork(item);
+                                    networks.remove(item);
+                                    wifiNetworksListener.onNetworkDeleted();
+                                }
+                            })
+                            //set negative button
+                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //set what should happen when negative button is clicked
+                                }
+                            })
+                            .show();
+                }else{
+                    android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                            .setTitle(activity.getResources().getString(R.string.remove_wifi_network_question))
+                            //set positive button
+                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //set what would happen when positive button is clicked
+                                    networks.remove(item);
+                                    wifiNetworksListener.onNetworkDeleted();
+                                }
+                            })
+                            //set negative button
+                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //set what should happen when negative button is clicked
+                                }
+                            })
+                            .show();
+                }
+
             }
         });
 

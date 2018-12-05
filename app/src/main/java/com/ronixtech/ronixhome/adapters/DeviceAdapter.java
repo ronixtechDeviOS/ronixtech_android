@@ -682,6 +682,8 @@ public class DeviceAdapter extends ArrayAdapter {
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                                     EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                    editDeviceFragment.setPlaceMode(placeMode);
+                                    editDeviceFragment.setMqttClient(mqttAndroidClient);
                                     fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
                                     fragmentTransaction.addToBackStack("editDeviceFragment");
                                     fragmentTransaction.commit();
@@ -787,6 +789,8 @@ public class DeviceAdapter extends ArrayAdapter {
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                                     EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                    editDeviceFragment.setPlaceMode(placeMode);
+                                    editDeviceFragment.setMqttClient(mqttAndroidClient);
                                     fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
                                     fragmentTransaction.addToBackStack("editDeviceFragment");
                                     fragmentTransaction.commit();
@@ -892,6 +896,8 @@ public class DeviceAdapter extends ArrayAdapter {
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                                     EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                    editDeviceFragment.setPlaceMode(placeMode);
+                                    editDeviceFragment.setMqttClient(mqttAndroidClient);
                                     fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
                                     fragmentTransaction.addToBackStack("editDeviceFragment");
                                     fragmentTransaction.commit();
@@ -1081,6 +1087,8 @@ public class DeviceAdapter extends ArrayAdapter {
                         if(!MySettings.isControlActive()){
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                             if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
+                                changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
+                            }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN_2){
                                 changeMode(item, SoundDeviceData.MODE_UPNP);
                                 Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
                             }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
@@ -1551,13 +1559,16 @@ public class DeviceAdapter extends ArrayAdapter {
         vHolder.soundDeviceTypeImageView.setImageResource(R.drawable.speaker_icon);
         if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
             vHolder.modeSwitch.setText(activity.getResources().getString(R.string.line_in));
-            vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
+            //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
+        }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN_2){
+            vHolder.modeSwitch.setText(activity.getResources().getString(R.string.line_in_2));
+            //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
             vHolder.modeSwitch.setText(activity.getResources().getString(R.string.upnp));
-            vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
+            //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
             vHolder.modeSwitch.setText(activity.getResources().getString(R.string.usb));
-            vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
+            //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }
 
         /*if(line.getPowerState() == Line.LINE_STATE_ON){
@@ -1645,6 +1656,11 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void removeDevice(Device device){
+        devices.remove(device);
+        MySettings.removeDevice(device);
+        DevicesInMemory.removeDevice(device);
+        notifyDataSetChanged();
+        MainActivity.getInstance().refreshDevicesListFromMemory();
         AlertDialog alertDialog = new AlertDialog.Builder(activity)
                 //set icon
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -1659,12 +1675,6 @@ public class DeviceAdapter extends ArrayAdapter {
                         //set what would happen when positive button is clicked
                         FactoryResetter factoryResetter = new FactoryResetter(device);
                         factoryResetter.execute();
-
-                        devices.remove(device);
-                        MySettings.removeDevice(device);
-                        DevicesInMemory.removeDevice(device);
-                        notifyDataSetChanged();
-                        MainActivity.getInstance().refreshDevicesListFromMemory();
                     }
                 })
                 //set negative button
@@ -2738,6 +2748,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     JSONObject jsonObject = new JSONObject();
                     if(mode == SoundDeviceData.MODE_LINE_IN){
                         jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN);
+                    }else if(mode == SoundDeviceData.MODE_LINE_IN_2){
+                        jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN_2);
                     }else if(mode == SoundDeviceData.MODE_UPNP){
                         jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, Constants.PARAMETER_SOUND_CONTROLLER_MODE_UPNP);
                     }else if(mode == SoundDeviceData.MODE_USB){

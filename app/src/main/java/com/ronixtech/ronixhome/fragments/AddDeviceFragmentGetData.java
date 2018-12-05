@@ -304,6 +304,20 @@ public class AddDeviceFragmentGetData extends Fragment {
         }
     }
 
+    public void goToSoundControllerConfigurationFragment(){
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceConfigurationSoundControllerFragment addDeviceConfigurationSoundControllerFragment = new AddDeviceConfigurationSoundControllerFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationSoundControllerFragment, "addDeviceConfigurationSoundControllerFragment");
+                //fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
+    }
+
     public void goToConfigurationFragment(){
         if(MainActivity.getInstance() != null && MainActivity.isResumed){
             if(getFragmentManager() != null){
@@ -530,8 +544,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                                                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                                                 device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
                                             fragment.goToConfigurationFragment();
-                                        }else {
-                                            fragment.goToLocationSelectionFragment();
+                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                                            fragment.goToSoundControllerConfigurationFragment();
+                                        }else{
+                                            Toast.makeText(activity, activity.getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_SHORT).show();
+                                            fragment.goToSearchFragment();
                                         }
                                     }
                                 })
@@ -570,8 +587,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
                         fragment.goToConfigurationFragment();
-                    }else {
-                        fragment.goToLocationSelectionFragment();
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                        fragment.goToSoundControllerConfigurationFragment();
+                    }else{
+                        Toast.makeText(activity, activity.getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_SHORT).show();
+                        fragment.goToSearchFragment();
                     }
                 }
             }else{

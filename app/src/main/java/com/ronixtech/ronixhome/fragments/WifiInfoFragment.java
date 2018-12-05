@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -78,8 +79,24 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            callback = (OnNetworkAddedListener) getTargetFragment();
+            if(getTargetFragment() != null){
+                Log.d("AAAA", "WifiInfoFragment onCreate - getTargetFragment(): " + getTargetFragment().getClass().getName());
+                callback = (OnNetworkAddedListener) getTargetFragment();
+                Log.d("AAAA", "WifiInfoFragment onCreate - callback is found!");
+            }else{
+                Log.d("AAAA", "WifiInfoFragment onCreate - getTargetFragment() IS NULL");
+                Log.d("AAAA", "WifiInfoFragment onCreate - Trying findFragmentByTag()");
+                AddDeviceSelectLocationFragment fragment = (AddDeviceSelectLocationFragment) getFragmentManager().findFragmentByTag("addDeviceSelectLocationFragment");
+                if(fragment != null){
+                    Log.d("AAAA", "WifiInfoFragment onCreate - findFragmentByTag() - " + fragment.getClass().getName());
+                    callback = fragment;
+                    Log.d("AAAA", "WifiInfoFragment onCreate - callback is found!");
+                }else{
+                    Log.d("AAAA", "WifiInfoFragment onCreate - findFragmentByTag() IS NULL");
+                }
+            }
         } catch (ClassCastException e) {
+            Log.d("AAAA", "WifiInfoFragment onCreate - Calling Fragment must implement OnNetworkAddedListener!");
             throw new ClassCastException("Calling Fragment must implement OnNetworkAddedListener");
         }
     }
@@ -266,6 +283,7 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
 
     @Override
     public void onNetworkSelected(WifiNetwork network){
+        Log.d("AAAA", "WifiInfoFragment onNetworkSelected - ID: " + network.getId() + " - SSID: " + network.getSsid());
         if(network != null) {
             ssid = network.getSsid();
             password = network.getPassword();
@@ -283,6 +301,7 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
             //MySettings.setHomeNetwork(wifiNetwork);
             MySettings.addWifiNetwork(wifiNetwork);
             wifiNetwork = MySettings.getWifiNetworkBySSID(wifiNetwork.getSsid());
+            Log.d("AAAA", "WifiInfoFragment onNetworkSelected after adding to DB - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
             if(source == Constants.SOURCE_NAV_DRAWER) {
                 if(callback != null) {
                     callback.onNetworkAdded(wifiNetwork);
@@ -298,7 +317,10 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                 fragmentTransaction.commit();
             }else if(source == Constants.SOURCE_NEW_PLACE){
                 if(callback != null) {
+                    Log.d("AAAA", "WifiInfoFragment onNetworkSelected CALLBACK IS NOT NULL");
                     callback.onNetworkAdded(wifiNetwork);
+                }else{
+                    Log.d("AAAA", "WifiInfoFragment onNetworkSelected CALLBACK IS NULL");
                 }
                 getFragmentManager().popBackStack();
             }

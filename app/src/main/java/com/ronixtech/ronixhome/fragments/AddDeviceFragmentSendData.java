@@ -29,7 +29,6 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.PIRData;
-import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1028,15 +1027,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                 if(MySettings.getHomeNetwork() != null) {
                     fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
                 }
-
-                //quickly initialize the souddevicedata configuration for the device
-                Device device = MySettings.getTempDevice();
-                MySettings.addDevice(device);
-                device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-                SoundDeviceData soundDeviceData = new SoundDeviceData();
-                soundDeviceData.setDeviceID(device.getId());
-                device.setSoundDeviceData(soundDeviceData);
-                MySettings.setTempDevice(device);
 
                 if(MainActivity.isResumed) {
                     FragmentManager fragmentManager = fragment.getFragmentManager();

@@ -25,6 +25,8 @@ import com.ronixtech.ronixhome.ViewPagerAdapter;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -46,8 +48,12 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
     EditText deviceNameEditText;
 
     private Device device;
+    private int placeMode;
 
     boolean unsavedChangesFirstLine = false, unsavedChangesSecondLine = false, unsavedChangesThirdLine = false;
+
+    //Stuff for remote/MQTT mode
+    MqttAndroidClient mqttAndroidClient;
 
     public EditDeviceFragment() {
         // Required empty public constructor
@@ -133,6 +139,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setDeviceNumberOfLines(1);
                 editDeviceLineFragment1.setFragmentManager(getFragmentManager());
                 editDeviceLineFragment1.setParentFragment(this);
+                editDeviceLineFragment1.setPlaceMode(placeMode);
+                editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
                 mTabLayout.setVisibility(View.GONE);
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
@@ -141,6 +149,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setDeviceNumberOfLines(2);
                 editDeviceLineFragment1.setFragmentManager(getFragmentManager());
                 editDeviceLineFragment1.setParentFragment(this);
+                editDeviceLineFragment1.setPlaceMode(placeMode);
+                editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
 
                 EditDeviceLineFragment editDeviceLineFragment2 = new EditDeviceLineFragment();
@@ -148,6 +158,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment2.setDeviceNumberOfLines(2);
                 editDeviceLineFragment2.setFragmentManager(getFragmentManager());
                 editDeviceLineFragment2.setParentFragment(this);
+                editDeviceLineFragment2.setPlaceMode(placeMode);
+                editDeviceLineFragment2.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment2, getActivity().getResources().getString(R.string.line_3_name_hint));
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
@@ -155,6 +167,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setDeviceNumberOfLines(3);
                 editDeviceLineFragment1.setFragmentManager(getFragmentManager());
                 editDeviceLineFragment1.setParentFragment(this);
+                editDeviceLineFragment1.setPlaceMode(placeMode);
+                editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
 
                 EditDeviceLineFragment editDeviceLineFragment2 = new EditDeviceLineFragment();
@@ -162,6 +176,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment2.setDeviceNumberOfLines(3);
                 editDeviceLineFragment2.setFragmentManager(getFragmentManager());
                 editDeviceLineFragment2.setParentFragment(this);
+                editDeviceLineFragment2.setPlaceMode(placeMode);
+                editDeviceLineFragment2.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment2, getActivity().getResources().getString(R.string.line_2_name_hint));
 
                 EditDeviceLineFragment editDeviceLineFragment3 = new EditDeviceLineFragment();
@@ -169,6 +185,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment3.setDeviceNumberOfLines(3);
                 editDeviceLineFragment3.setFragmentManager(getFragmentManager());
                 editDeviceLineFragment3.setParentFragment(this);
+                editDeviceLineFragment3.setPlaceMode(placeMode);
+                editDeviceLineFragment3.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment3, getActivity().getResources().getString(R.string.line_3_name_hint));
             }else{
                 Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_LONG).show();
@@ -196,6 +214,14 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
         mTabLayout.setupWithViewPager(viewPager);
 
         return view;
+    }
+
+    public void setPlaceMode(int placeMode){
+        this.placeMode = placeMode;
+    }
+
+    public void setMqttClient(MqttAndroidClient mqttClient){
+        this.mqttAndroidClient = mqttClient;
     }
 
     public void moveToNextFragment(){

@@ -15,6 +15,7 @@ import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.SoundDeviceData;
+import com.ronixtech.ronixhome.entities.Speaker;
 import com.ronixtech.ronixhome.entities.Type;
 import com.ronixtech.ronixhome.entities.User;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
@@ -388,6 +389,32 @@ public class MySettings {
     }
     public static List<Line> getSecondaryLines(Device device){
         return MySettings.initDB().lineDAO().getSecondaryLine(device.getChipID());
+    }
+
+    public static void insertSoundDeviceData(SoundDeviceData soundDeviceData){
+        MySettings.initDB().soundDeviceDataDAO().insertSoundDeviceDataWithSpeakers(soundDeviceData);
+    }
+    public static SoundDeviceData getSoundDeviceData(long deviceID){
+        return MySettings.initDB().soundDeviceDataDAO().getSoundDeviceDataWithSpeakers(deviceID);
+    }
+    public static void removeSoundDeviceData(long deviceID){
+        MySettings.initDB().soundDeviceDataDAO().removeSoundDeviceDataWithSpeakers(deviceID);
+    }
+
+    public static void insertSpeaker(Speaker speaker){
+        MySettings.initDB().speakerDAO().insertSpeaker(speaker);
+    }
+    public static void insertSpeakers(List<Speaker> speakers){
+        MySettings.initDB().speakerDAO().insertSpeakers(speakers);
+    }
+    public static Speaker getSpeaker(long soundDeviceID){
+        return MySettings.initDB().speakerDAO().getSpeaker(soundDeviceID);
+    }
+    public static List<Speaker> getSpeakers(long soundDeviceID){
+        return MySettings.initDB().speakerDAO().getSoundDeviceSpeakers(soundDeviceID);
+    }
+    public static void removeSpeaker(long soundDeviceID){
+        MySettings.initDB().speakerDAO().removeSpeaker(soundDeviceID);
     }
 
     public static void updateLineState(Line line, int powerState){
@@ -1148,8 +1175,21 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_21_22 = new Migration(21, 22) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("CREATE TABLE `Speaker` (`id` INTEGER NOT NULL DEFAULT 0, "
+                            + "`name` TEXT,"
+                            + "`volume` INTEGER NOT NULL DEFAULT 0, "
+                            + "`sound_device_id` INTEGER NOT NULL DEFAULT -1, PRIMARY KEY(`id`))");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22)
                             .allowMainThreadQueries().
                             build();
             return database;

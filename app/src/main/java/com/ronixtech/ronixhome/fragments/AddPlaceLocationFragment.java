@@ -1,12 +1,22 @@
 package com.ronixtech.ronixhome.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +44,14 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
     private static final String TAG = AddPlaceLocationFragment.class.getSimpleName();
 
-    int PLACE_PICKER_REQUEST = 1001;
+    private static final int PLACE_PICKER_REQUEST = 1000;
+
+    private static final int RC_PERMISSION_LOCATION = 1004;
+    private static final int RC_PERMISSION_ACCESS_WIFI_STATE = 1005;
+    private static final int RC_PERMISSION_CHANGE_WIFI_STATE= 1006;
+
+    private static final int RC_ACTIVITY_WIFI_TURN_ON = 1007;
+    private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,16 +94,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
         getMyLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //request placeData then go to AddPlaceLocationAddressFragment
-                try{
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    //Context context = getApplicationContext();
-                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
-                }catch (GooglePlayServicesNotAvailableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
-                }catch (GooglePlayServicesRepairableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
-                }
+                checkLocationPermissions();
             }
         });
 
@@ -117,6 +125,254 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
         });
 
         return view;
+    }
+
+    private void checkLocationPermissions(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted
+                //debugTextView.append("location permissions granted\n");
+                checkWifiAccessPermissions();
+            }else{
+                requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, RC_PERMISSION_LOCATION);
+            }
+        }else{
+            //no need to show runtime permission stuff
+            //debugTextView.append("location permissions granted from manifest file\n");
+            checkWifiAccessPermissions();
+        }
+    }
+
+    private void checkWifiAccessPermissions(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted
+                //debugTextView.append("wifi access permissions granted\n");
+                checkWifiChangePermissions();
+            }else{
+                requestPermissions(new String[]{"android.permission.ACCESS_WIFI_STATE"}, RC_PERMISSION_ACCESS_WIFI_STATE);
+            }
+        }else{
+            //no need to show runtime permission stuff
+            //debugTextView.append("wifi access permissions granted from manifest file\n");
+            checkWifiChangePermissions();
+        }
+    }
+
+    private void checkWifiChangePermissions(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted
+                if(checkLocationServices() && checkWifiService()){
+                    //request placeData then go to AddPlaceLocationAddressFragment
+                    try{
+                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                        //Context context = getApplicationContext();
+                        startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+                    }catch (GooglePlayServicesNotAvailableException e){
+                        Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                        Toast.makeText(getActivity(), "Google Play Services not available.", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "PlacePicker,");
+                    }catch (GooglePlayServicesRepairableException e){
+                        Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                        Toast.makeText(getActivity(), "Google Play Services not available.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }else{
+                requestPermissions(new String[]{"android.permission.CHANGE_WIFI_STATE"}, RC_PERMISSION_CHANGE_WIFI_STATE);
+            }
+        }else{
+            //no need to show runtime permission stuff
+            if(checkLocationServices() && checkWifiService()){
+                //request placeData then go to AddPlaceLocationAddressFragment
+                try{
+                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                    //Context context = getApplicationContext();
+                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+                }catch (GooglePlayServicesNotAvailableException e){
+                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                }catch (GooglePlayServicesRepairableException e){
+                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                }
+            }
+        }
+    }
+
+    private boolean checkLocationServices(){
+        boolean enabled = true;
+        if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            boolean isGpsProviderEnabled, isNetworkProviderEnabled;
+            isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
+                enabled = false;
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
+                builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
+                builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
+                    }
+                });
+                builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        fragmentTransaction.commitAllowingStateLoss();
+                    }
+                });
+                builder.show();
+            }
+        }
+        return enabled;
+    }
+
+    private boolean checkWifiService(){
+        boolean enabled = true;
+        WifiManager mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(mWifiManager != null){
+            if(!mWifiManager.isWifiEnabled()){
+                enabled = false;
+                android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        //set message
+                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        //set positive button
+                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), RC_ACTIVITY_WIFI_TURN_ON);
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                fragmentTransaction.commitAllowingStateLoss();
+                            }
+                        })
+                        .show();
+            }
+        }
+
+        return enabled;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        switch (requestCode){
+            case RC_PERMISSION_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //allowed
+                    //debugTextView.append("location permissions granted\n");
+                    checkWifiAccessPermissions();
+                }
+                else{
+                    //denied
+                    if(getActivity() != null){
+                        Toast.makeText(getActivity(), "You need to enable location permission", Toast.LENGTH_SHORT).show();
+                    }
+                    // Should we show an explanation?
+                    if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("Location permission")
+                                .setMessage("You need to enable location permissions for the app to detect nearby devices")
+                                .setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, RC_PERMISSION_LOCATION);
+                                    }
+                                })
+                                .show();
+                    }
+                }
+            }
+            case RC_PERMISSION_ACCESS_WIFI_STATE: {
+                // If request is cancelled, the result arrays are empty.
+                if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //allowed
+                    //debugTextView.append("wifi access permissions granted\n");
+                    checkWifiChangePermissions();
+                }
+                else{
+                    //denied
+                    if(getActivity() != null){
+                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
+                    }
+                    // Should we show an explanation?
+                    if (shouldShowRequestPermissionRationale("android.permission.ACCESS_WIFI_STATE")) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("Access WiFi permission")
+                                .setMessage("You need to enable WiFi permissions for the app to detect nearby WiFi networks")
+                                .setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        requestPermissions(new String[]{"android.permission.ACCESS_WIFI_STATE"}, RC_PERMISSION_ACCESS_WIFI_STATE);
+                                    }
+                                })
+                                .show();
+                    }
+                }
+            }
+            case RC_PERMISSION_CHANGE_WIFI_STATE: {
+                // If request is cancelled, the result arrays are empty.
+                if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //allowed
+                    if(checkLocationServices() && checkWifiService()){
+                        //request placeData then go to AddPlaceLocationAddressFragment
+                        try{
+                            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                            //Context context = getApplicationContext();
+                            startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+                        }catch (GooglePlayServicesNotAvailableException e){
+                            Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                        }catch (GooglePlayServicesRepairableException e){
+                            Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                        }
+                    }
+                }
+                else{
+                    //denied
+                    if(getActivity() != null){
+                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
+                    }
+                    // Should we show an explanation?
+                    if (shouldShowRequestPermissionRationale("android.permission.CHANGE_WIFI_STATE")) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("Modify WiFi permission")
+                                .setMessage("You need to enable WiFi permissions for the app to configure your RonixTech device")
+                                .setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        requestPermissions(new String[]{"android.permission.CHANGE_WIFI_STATE"}, RC_PERMISSION_CHANGE_WIFI_STATE);
+                                    }
+                                })
+                                .show();
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -176,6 +432,32 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                         fragmentTransaction.commit();
                     }
                 }).execute();
+            }
+        }else if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
+            if(checkLocationServices() && checkWifiService()){
+                //request placeData then go to AddPlaceLocationAddressFragment
+                try{
+                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                    //Context context = getApplicationContext();
+                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+                }catch (GooglePlayServicesNotAvailableException e){
+                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                }catch (GooglePlayServicesRepairableException e){
+                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                }
+            }
+        }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
+            if(checkLocationServices() && checkWifiService()){
+                //request placeData then go to AddPlaceLocationAddressFragment
+                try{
+                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                    //Context context = getApplicationContext();
+                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+                }catch (GooglePlayServicesNotAvailableException e){
+                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                }catch (GooglePlayServicesRepairableException e){
+                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                }
             }
         }
     }

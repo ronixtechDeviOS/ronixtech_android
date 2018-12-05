@@ -95,6 +95,7 @@ public class Constants {
     public static final String PARAMETER_THIRD_LINE_DIMMING_CONTROL_VALUE = "m";
 
     public static final String PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN = "line";
+    public static final String PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN_2 = "line2";
     public static final String PARAMETER_SOUND_CONTROLLER_MODE_UPNP = "stream";
     public static final String PARAMETER_SOUND_CONTROLLER_MODE_USB = "usb";
 
@@ -110,6 +111,10 @@ public class Constants {
     public static final int SOURCE_HOME_FRAGMENT = 1;
     public static final int SOURCE_NAV_DRAWER = 2;
     public static final int SOURCE_NEW_PLACE = 3;
+
+    //removing network constant
+    public static final int REMOVE_NETWORK_FROM_DB_NO = 0;
+    public static final int REMOVE_NETWORK_FROM_DB_YES = 1;
 
     //types constants
     public static final int TYPE_PLACE = 0;

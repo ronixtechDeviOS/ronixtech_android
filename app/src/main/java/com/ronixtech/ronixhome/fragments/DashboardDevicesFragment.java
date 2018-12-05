@@ -1979,6 +1979,8 @@ public class DashboardDevicesFragment extends Fragment {
                         if(modeString != null && modeString.length() >= 1){
                             if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN)){
                                 mode = SoundDeviceData.MODE_LINE_IN;
+                            }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN_2)){
+                                mode = SoundDeviceData.MODE_LINE_IN_2;
                             }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_UPNP)){
                                 mode = SoundDeviceData.MODE_UPNP;
                             }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_USB)){

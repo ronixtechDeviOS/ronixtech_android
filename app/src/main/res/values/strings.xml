@@ -70,7 +70,7 @@
     <string name="place_type_hint">Tap here to select the place type</string>
     <string name="place_selection_hint">Tap here to select a place</string>
     <string name="place_already_exists_error">A place already exists with this name</string>
-    <string name="place_floors_error">Can\'t delete floor, as a place must have at least 1 floor</string>
+    <string name="place_floors_error">Can\'t remove floor, as a place must have at least 1 floor</string>
     <string name="place_address_hint">Tap here to edit place address</string>
 
     <string name="edit_place_title">Edit your place</string>
@@ -81,6 +81,9 @@
     <string name="place_long_press_hint">Long press on any Place for more options</string>
     <string name="remove_place_question">Are you sure you want to remove the selected place?</string>
     <string name="remove_place_description">Removing the place will also remove all associated floors, rooms and devices</string>
+
+    <string name="select_default_place_title">Default Place</string>
+    <string name="select_default_place_message">You just removed your default place. Do you want to pick another default place now?</string>
 
 
     <string name="floor">Floor</string>
@@ -210,6 +213,9 @@
     <string name="device_selection_hint">Tap here to select a Smart Controller</string>
     <string name="selected_devices_colon">Selected Smart Controller(s):</string>
 
+    <string name="sound_controller_configuration_description">Please select the number of speakers that will be connected to this controller</string>
+    <string name="number_of_speakers">Number of speakers:</string>
+
     <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
@@ -234,6 +240,7 @@
 
     <string name="upnp">Stream</string>
     <string name="line_in">Line-In</string>
+    <string name="line_in_2">Line-In 2</string>
     <string name="usb">USB</string>
 
     <string name="device_info">Smart Controller Info</string>
@@ -383,6 +390,7 @@
     <string name="save">Save</string>
     <string name="on">On</string>
     <string name="off">Off</string>
+    <string name="later">Later</string>
 
     <string name="seconds">%d seconds</string>
 

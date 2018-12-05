@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.activities.MainActivity;
@@ -87,7 +88,7 @@ public class HomeNetworksFragment extends android.support.v4.app.Fragment {
                 //selectedWifiNetworks.addAll(MySettings.getPlaceWifiNetworks(place.getId()));
                 networksAdapter.notifyDataSetChanged();
             }
-        });
+        }, Constants.REMOVE_NETWORK_FROM_DB_YES);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
         networksListView.addFooterView(footerView);
         networksListView.setAdapter(networksAdapter);

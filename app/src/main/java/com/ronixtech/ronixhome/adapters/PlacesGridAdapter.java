@@ -38,6 +38,7 @@ public class PlacesGridAdapter extends BaseAdapter {
 
     public interface PlacesListener{
         public void onPlaceDeleted();
+        public void onDefaultPlaceRequested();
     }
 
     public PlacesGridAdapter(Activity activity, List<Place> places, FragmentManager fragmentManager, PlacesListener listener) {
@@ -152,6 +153,9 @@ public class PlacesGridAdapter extends BaseAdapter {
                                             MySettings.removePlace(item);
                                             places.remove(item);
                                             placesListener.onPlaceDeleted();
+                                            if(MySettings.getDefaultPlaceID() == item.getId()){
+                                                placesListener.onDefaultPlaceRequested();
+                                            }
                                         }
                                     })
                                     //set negative button
