@@ -333,13 +333,18 @@ public class MainActivity extends AppCompatActivity
                     int length = jsonArray.length();
                     for(int x = 0; x < length; x++){
                         JSONObject jsonObject = jsonArray.getJSONObject(x);
-                        String deviceTypeString = jsonObject.getString("unit_type_id");
-                        String latestVersionString = jsonObject.getString("latest_firmware_version");
-                        String latestHWVersionString = jsonObject.getString("latest_hw_firmware_version");
-
-                        int deviceType = Integer.valueOf(deviceTypeString);
-                        MySettings.setDeviceLatestWiFiFirmwareVersion(deviceType, latestVersionString);
-                        MySettings.setDeviceLatestHWFirmwareVersion(deviceType, latestHWVersionString);
+                        if(jsonObject.has("unit_type_id")){
+                            String deviceTypeString = jsonObject.getString("unit_type_id");
+                            int deviceType = Integer.valueOf(deviceTypeString);
+                            if(jsonObject.has("latest_firmware_version")){
+                                String latestVersionString = jsonObject.getString("latest_firmware_version");
+                                MySettings.setDeviceLatestWiFiFirmwareVersion(deviceType, latestVersionString);
+                            }
+                            if(jsonObject.has("latest_hw_firmware_version")){
+                                String latestHWVersionString = jsonObject.getString("latest_hw_firmware_version");
+                                MySettings.setDeviceLatestHWFirmwareVersion(deviceType, latestHWVersionString);
+                            }
+                        }
                     }
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());

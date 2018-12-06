@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SeekBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/device_volume_seekbar"
+    android:layout_marginTop="8dp"
+    android:layout_below="@id/active_mode_layout"
+    android:thumb="@drawable/seekbar_thumb"
+    android:padding="16dp"/>

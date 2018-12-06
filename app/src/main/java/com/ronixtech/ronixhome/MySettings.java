@@ -298,6 +298,9 @@ public class MySettings {
     public static void updateDeviceIP(Device device, String ipAddress){
         MySettings.initDB().deviceDAO().updateDeviceIP(device.getId(), ipAddress);
     }
+    public static void updateDeviceRoom(Device device, long roomID){
+        MySettings.initDB().deviceDAO().updateDeviceRoom(device.getId(), roomID);
+    }
     public static void updateDeviceErrorCount(Device device, int count){
         MySettings.initDB().deviceDAO().updateDeviceErrorCount(device.getId(), count);
         for (Device dev:DevicesInMemory.getDevices()) {
@@ -306,6 +309,9 @@ public class MySettings {
     }
     public static void updateDeviceType(Device device, int deviceType){
         MySettings.initDB().deviceDAO().updateDeviceTypeID(device.getId(), deviceType);
+    }
+    public static void updateDeviceSoundData(Device device, SoundDeviceData soundDeviceData){
+        MySettings.initDB().deviceDAO().updateDeviceSoundDeviceData(device.getId(), soundDeviceData);
     }
     public static Device getDeviceByID(long deviceID, int deviceType) {
         if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
@@ -393,6 +399,9 @@ public class MySettings {
 
     public static void insertSoundDeviceData(SoundDeviceData soundDeviceData){
         MySettings.initDB().soundDeviceDataDAO().insertSoundDeviceDataWithSpeakers(soundDeviceData);
+    }
+    public static void updateSoundDeviceDataSpeakers(SoundDeviceData soundDeviceData, List<Speaker> speakers){
+        MySettings.initDB().soundDeviceDataDAO().updateSoundDeviceDataSpeakers(soundDeviceData.getId(), speakers);
     }
     public static SoundDeviceData getSoundDeviceData(long deviceID){
         return MySettings.initDB().soundDeviceDataDAO().getSoundDeviceDataWithSpeakers(deviceID);

@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ public class PickPlaceDialogFragment extends DialogFragment {
     List<Place> places;
     PlaceAdapter adapter;
 
-    private AddDeviceSelectLocationFragment addDeviceSelectLocationFragment;
+    private Fragment parentFragment;
 
     public interface OnPlaceSelectedListener {
         public void onPlaceSelected(Place place);
@@ -77,7 +78,7 @@ public class PickPlaceDialogFragment extends DialogFragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
-                addPlaceFragment.setTargetFragment(addDeviceSelectLocationFragment, 0);
+                addPlaceFragment.setTargetFragment(parentFragment, 0);
                 fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
                 fragmentTransaction.addToBackStack("addPlaceFragment");
                 fragmentTransaction.commit();
@@ -97,7 +98,7 @@ public class PickPlaceDialogFragment extends DialogFragment {
         return listView;
     }
 
-    public void setParentFragment(AddDeviceSelectLocationFragment fragment){
-        this.addDeviceSelectLocationFragment = fragment;
+    public void setParentFragment(Fragment fragment){
+        this.parentFragment = fragment;
     }
 }

@@ -15,9 +15,36 @@
             android:layout_height="match_parent"
             android:background="@color/whiteColor">
             <TextView
+                android:id="@+id/device_name_title_textivew"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:textColor="@color/blackColor"
+                android:text="@string/unit_name_edit" />
+            <EditText
+                android:id="@+id/device_name_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/device_name_title_textivew"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:inputType="textCapWords"
+                android:imeOptions="actionNext"
+                android:textAlignment="center"
+                android:hint="@string/sound_controller_name_hint"/>
+
+            <TextView
                 android:id="@+id/title_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/device_name_edittext"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -59,8 +86,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:textColor="@color/whiteColor"
-                android:background="@drawable/button_background_round_gray"
-                android:enabled="false"
+                android:background="@drawable/button_background_round_blue"
                 android:text="@string/continue_button"/>
         </RelativeLayout>
 

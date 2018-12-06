@@ -121,7 +121,7 @@
                 android:id="@+id/device_type_imageview"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:layout_centerVertical="true"
+                android:layout_marginTop="8dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/device_colored_icon"/>
             <RelativeLayout
@@ -138,32 +138,66 @@
                     android:src="@drawable/overflow_3_dots_gray"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>
-                <Button
-                    android:id="@+id/device_mode_switch"
-                    android:layout_width="60dp"
-                    android:layout_height="45dp"
-                    android:layout_toLeftOf="@id/device_advanced_options_button"
-                    android:layout_toStartOf="@id/device_advanced_options_button"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:theme="@style/ToggleButton" />
                 <TextView
                     android:id="@+id/device_name_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_alignBaseline="@id/device_mode_switch"
                     android:textColor="@color/blackColor"
                     android:textSize="16sp"
                     android:textAlignment="center"
                     android:text="DeviceName"/>
+                <RelativeLayout
+                    android:id="@+id/active_mode_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/device_name_textview"
+                    android:layout_marginTop="4dp">
+                    <TextView
+                        android:id="@+id/device_active_mode_static_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:textColor="@color/blackColor"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:text="@string/active_mode"/>
+                    <TextView
+                        android:id="@+id/device_active_mode_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/device_active_mode_static_textview"
+                        android:layout_toRightOf="@id/device_active_mode_static_textview"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:textColor="@color/blackColor"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:text="UPNP"/>
+                    <ImageView
+                        android:id="@+id/mode_arrow_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/device_active_mode_textview"
+                        android:layout_toRightOf="@id/device_active_mode_textview"
+                        android:src="@drawable/ic_keyboard_arrow_down_black_24dp"/>
+                </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/speakers_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/active_mode_layout"
+                    android:orientation="vertical"/>
                 <SeekBar
                     android:id="@+id/device_volume_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_below="@id/device_name_textview"
+                    android:visibility="gone"
+                    android:layout_below="@id/active_mode_layout"
                     android:thumb="@drawable/seekbar_thumb"
                     android:padding="16dp"/>
             </RelativeLayout>

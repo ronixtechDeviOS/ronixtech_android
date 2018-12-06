@@ -94,7 +94,7 @@ public class Constants {
     public static final String PARAMETER_SECOND_LINE_DIMMING_CONTROL_VALUE = "l";
     public static final String PARAMETER_THIRD_LINE_DIMMING_CONTROL_VALUE = "m";
 
-    public static final String PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN = "line";
+    public static final String PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN = "line1";
     public static final String PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN_2 = "line2";
     public static final String PARAMETER_SOUND_CONTROLLER_MODE_UPNP = "stream";
     public static final String PARAMETER_SOUND_CONTROLLER_MODE_USB = "usb";

@@ -176,33 +176,10 @@
                 android:text="@string/change_room_location"/>
 
             <TextView
-                android:id="@+id/room_name_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/wifi_networks_hint_textview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:text="@string/room_name"/>
-            <EditText
-                android:id="@+id/room_name_edittedxt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/room_name_textview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:inputType="textCapWords"
-                android:textAlignment="center"
-                android:hint="@string/room_name"/>
-
-            <TextView
                 android:id="@+id/room_type_title_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/room_name_edittedxt"
+                android:layout_below="@id/wifi_networks_hint_textview"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
@@ -253,11 +230,35 @@
                     android:text="@string/room_type_hint"/>
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/room_name_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/room_type_selection_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:text="@string/room_name"/>
+            <EditText
+                android:id="@+id/room_name_edittedxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/room_name_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:imeOptions="actionDone"
+                android:inputType="textCapWords"
+                android:textAlignment="center"
+                android:hint="@string/room_name"/>
+
             <Button
                 android:id="@+id/save_room_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/room_type_selection_layout"
+                android:layout_below="@id/room_name_edittedxt"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"

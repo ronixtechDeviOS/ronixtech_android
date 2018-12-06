@@ -102,7 +102,7 @@
                     android:id="@+id/place_location_zip_code_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
+                    android:imeOptions="actionDone"
                     android:inputType="number"
                     android:hint="@string/place_zip_code"/>
             </RelativeLayout>

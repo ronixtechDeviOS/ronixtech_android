@@ -27,7 +27,7 @@ public class SoundDeviceData {
     List<Speaker> speakers;
 
     public SoundDeviceData(){
-        this.id = -1;
+        this.id = 0;
         this.deviceID = -1;
         this.mode = SoundDeviceData.MODE_LINE_IN;
         this.speakers = new ArrayList<>();
@@ -37,6 +37,7 @@ public class SoundDeviceData {
         this.id = soundDeviceData.getId();
         this.deviceID = soundDeviceData.getDeviceID();
         this.mode = soundDeviceData.getMode();
+        this.speakers = new ArrayList<>();
         for (Speaker speaker:soundDeviceData.getSpeakers()) {
             Speaker newSpeaker = new Speaker(speaker);
             this.speakers.add(newSpeaker);

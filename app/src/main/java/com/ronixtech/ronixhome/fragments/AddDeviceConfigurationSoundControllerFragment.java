@@ -10,7 +10,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -38,6 +41,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
 
     private OnFragmentInteractionListener mListener;
 
+    EditText deviceNameEditText;
 
     Spinner numberOfSpeakersSpinner;
     Button continueButton;
@@ -76,9 +80,31 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.configure_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
+        deviceNameEditText = view.findViewById(R.id.device_name_edittext);
+
         numberOfSpeakersSpinner = view.findViewById(R.id.number_of_speakers_spinner);
         continueButton = view.findViewById(R.id.continue_button);
 
+        List<Integer> numberOfSpeakers = new ArrayList<>();
+        for(int x = 1; x <= SoundDeviceData.MAX_NUMBER_OF_SPEAKERS; x++){
+            numberOfSpeakers.add(x);
+        }
+
+        ArrayAdapter<Integer> speakersAdapter = new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_item, numberOfSpeakers);
+        speakersAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        numberOfSpeakersSpinner.setAdapter(speakersAdapter);
+
+        numberOfSpeakersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedNumberOfSpeakers = position + 1;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         device = MySettings.getTempDevice();
         if(device == null){
@@ -100,11 +126,23 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
                 //initialize the souddevicedata configuration for the device
                 Device device = MySettings.getTempDevice();
 
-                device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                if(deviceNameEditText.getText().toString().length() > 1){
+                    device.setName(deviceNameEditText.getText().toString());
+                }else{
+                    device.setName(getActivity().getResources().getString(R.string.sound_controller_name_hint));
+                }
 
-                if(device == null){
+                Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+
+                if(dbDevice == null){
                     MySettings.addDevice(device);
                     device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                }
+
+                if(deviceNameEditText.getText().toString().length() > 1){
+                    device.setName(deviceNameEditText.getText().toString());
+                }else{
+                    device.setName(getActivity().getResources().getString(R.string.sound_controller_name_hint));
                 }
 
                 SoundDeviceData soundDeviceData = new SoundDeviceData();
@@ -112,7 +150,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
                 //soundDeviceData.setSpeakers(speakers);
                 device.setSoundDeviceData(soundDeviceData);
 
-                MySettings.addDevice(device);
+                MySettings.updateDeviceSoundData(device, soundDeviceData);
                 device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
                 soundDeviceData = device.getSoundDeviceData();
@@ -129,7 +167,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
 
                 soundDeviceData.setSpeakers(speakers);
                 device.setSoundDeviceData(soundDeviceData);
-                MySettings.addDevice(device);
+                MySettings.updateSoundDeviceDataSpeakers(soundDeviceData, speakers);
 
 
                 FragmentManager fragmentManager = getFragmentManager();

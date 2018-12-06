@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -30,7 +31,7 @@ public class PickRoomDialogFragment extends DialogFragment{
 
     long floorID;
 
-    private AddDeviceSelectLocationFragment addDeviceSelectLocationFragment;
+    private Fragment parentFragment;
 
     public interface OnRoomSelectedListener {
         public void onRoomSelected(Room room);
@@ -80,7 +81,7 @@ public class PickRoomDialogFragment extends DialogFragment{
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddRoomFragment addRoomFragment = new AddRoomFragment();
-                addRoomFragment.setTargetFragment(addDeviceSelectLocationFragment, 0);
+                addRoomFragment.setTargetFragment(parentFragment, 0);
                 fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
                 fragmentTransaction.addToBackStack("addRoomFragment");
                 fragmentTransaction.commit();
@@ -104,7 +105,7 @@ public class PickRoomDialogFragment extends DialogFragment{
         this.floorID = floorID;
     }
 
-    public void setParentFragment(AddDeviceSelectLocationFragment fragment){
-        this.addDeviceSelectLocationFragment = fragment;
+    public void setParentFragment(Fragment fragment){
+        this.parentFragment = fragment;
     }
 }

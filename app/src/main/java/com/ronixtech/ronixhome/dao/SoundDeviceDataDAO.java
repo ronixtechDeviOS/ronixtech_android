@@ -36,6 +36,14 @@ public abstract class SoundDeviceDataDAO {
         }
         insertSoundDeviceData(soundDeviceData);
     }
+    public void updateSoundDeviceDataSpeakers(long soundDeviceDataID, List<Speaker> speakers){
+        if(speakers != null) {
+            for (int i = 0; i < speakers.size(); i++) {
+                speakers.get(i).setSoundDeviceID(soundDeviceDataID);
+            }
+            MySettings.insertSpeakers(speakers);
+        }
+    }
 
     public SoundDeviceData getSoundDeviceDataWithSpeakers(long deviceID){
         SoundDeviceData soundDeviceData = getSoundDeviceData(deviceID);

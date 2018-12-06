@@ -37,6 +37,9 @@ public abstract class DeviceDAO {
     @Query("UPDATE device SET ip_address =:ipAddress WHERE id =:deviceID")
     public abstract void updateDeviceIP(long deviceID, String ipAddress);
 
+    @Query("UPDATE device SET room_id =:roomID WHERE id =:deviceID")
+    public abstract void updateDeviceRoom(long deviceID, long roomID);
+
     @Query("UPDATE device SET error_count =:count WHERE id =:deviceID")
     public abstract void updateDeviceErrorCount(long deviceID, int count);
 
@@ -120,6 +123,12 @@ public abstract class DeviceDAO {
             MySettings.insertSoundDeviceData(soundDeviceData);
         }
         insertDevice(device);
+    }
+    public void updateDeviceSoundDeviceData(long deviceID, SoundDeviceData soundDeviceData){
+        if(soundDeviceData != null) {
+            soundDeviceData.setDeviceID(deviceID);
+            MySettings.insertSoundDeviceData(soundDeviceData);
+        }
     }
     public Device getDeviceWithSoundSystemDataByID(long id) {
         Device device = findByID(id);

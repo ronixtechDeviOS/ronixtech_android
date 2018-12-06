@@ -395,6 +395,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         Log.d(TAG, "continueButton - move to next fragment");
                         parentFragment.moveToNextFragment();
                     }else{
+                        MySettings.addDevice(device);
                         Log.d(TAG, "continueButton - move to location fragment!");
                         FragmentTransaction fragmentTransaction = parentFragment.getFragmentManager().beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

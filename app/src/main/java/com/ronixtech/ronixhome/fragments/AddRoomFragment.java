@@ -327,6 +327,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
                 }
             }
+
+            if(roomNameEditText.getText().toString().length() < 1){
+                roomNameEditText.setText(selectedRoomType.getName());
+            }
+
             if(validateInputs()){
                 Utils.setButtonEnabled(addRoomButton, true);
             }else{

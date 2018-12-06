@@ -150,6 +150,10 @@
     <string name="no_devices">No Smart Controllers</string>
     <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
 
+    <string name="edit_device_location_title">Relocate your Smart Controller</string>
+    <string name="edit_device_description">Please select the new location of your Smart Controller then click Save</string>
+    <string name="edit_device_place_message">To change the Place of the controller, please re-configure the controller from the beginning</string>
+
     <string name="add_device_hint_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
     <string name="add_device_hint_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
     <string name="add_device_hint_3">3- Press Continue when you\'re ready</string>
@@ -213,6 +217,7 @@
     <string name="device_selection_hint">Tap here to select a Smart Controller</string>
     <string name="selected_devices_colon">Selected Smart Controller(s):</string>
 
+    <string name="sound_controller_name_hint">Sound System</string>
     <string name="sound_controller_configuration_description">Please select the number of speakers that will be connected to this controller</string>
     <string name="number_of_speakers">Number of speakers:</string>
 
@@ -223,6 +228,7 @@
 
     <string name="remove_device">Remove Smart Controller</string>
     <string name="edit_device">Edit Smart Controller</string>
+    <string name="edit_device_location">Change Location</string>
 
     <string name="edit_device_unsaved_changes_title">Unsaved Changes</string>
     <string name="edit_device_unsaved_changes_message">You have some unfinished changes. Are you sure you want to go back and discard these changes?</string>
@@ -238,8 +244,9 @@
     <string name="factory_reset_unit_successfull">Smart controller reset successfully.</string>
     <string name="factory_reset_unit_failed">Failed to factory reset controller.</string>
 
+    <string name="active_mode">Active Mode:</string>
     <string name="upnp">Stream</string>
-    <string name="line_in">Line-In</string>
+    <string name="line_in_1">Line-In 1</string>
     <string name="line_in_2">Line-In 2</string>
     <string name="usb">USB</string>
 
@@ -321,6 +328,7 @@
     <string name="device_unreachable">Device unreachable</string>
 
     <string name="device_update_disabled_only_local_mode">Firmware updates require local connectivity, try again when in the same network as the controller</string>
+    <string name="device_edit_location_ssid_disabled_only_local_mode">Changing the smart controller\'s network requires local connectivity, try again when in the same network as the controller</string>
 
     <string name="no_types_available">No types available</string>
 

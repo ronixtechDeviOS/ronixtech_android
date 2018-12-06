@@ -19,8 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -41,6 +41,7 @@ import com.ronixtech.ronixhome.entities.SoundDeviceData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DeviceInfoFragment;
 import com.ronixtech.ronixhome.fragments.EditDeviceFragment;
+import com.ronixtech.ronixhome.fragments.EditDeviceLocationFragment;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -687,6 +688,16 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
                                     fragmentTransaction.addToBackStack("editDeviceFragment");
                                     fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device_location){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                    editDeviceLocationFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -793,6 +804,16 @@ public class DeviceAdapter extends ArrayAdapter {
                                     editDeviceFragment.setMqttClient(mqttAndroidClient);
                                     fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
                                     fragmentTransaction.addToBackStack("editDeviceFragment");
+                                    fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device_location){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                    editDeviceLocationFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
                                     fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
@@ -901,6 +922,16 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
                                     fragmentTransaction.addToBackStack("editDeviceFragment");
                                     fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device_location){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                    editDeviceLocationFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
@@ -996,7 +1027,9 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.soundDeviceLayout = rowView.findViewById(R.id.device_layout);
                 vHolder.soundDeviceNameTextView = rowView.findViewById(R.id.device_name_textview);
                 vHolder.speakerVolumeSeekBar = rowView.findViewById(R.id.device_volume_seekbar);
-                vHolder.modeSwitch = rowView.findViewById(R.id.device_mode_switch);
+                vHolder.speakersLayout = rowView.findViewById(R.id.speakers_layout);
+                vHolder.deviceModeLayout = rowView.findViewById(R.id.active_mode_layout);
+                vHolder.deviceModeTextView = rowView.findViewById(R.id.device_active_mode_textview);
                 vHolder.soundDeviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.soundDeviceTypeImageView = rowView.findViewById(R.id.device_type_imageview);
                 vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
@@ -1081,22 +1114,33 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 final ViewHolder tempViewHolder = vHolder;
-                vHolder.modeSwitch.setOnClickListener(new View.OnClickListener() {
+                vHolder.deviceModeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!MySettings.isControlActive()){
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
-                                changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
-                            }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN_2){
-                                changeMode(item, SoundDeviceData.MODE_UPNP);
-                                Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
-                            }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
-                                changeMode(item, SoundDeviceData.MODE_USB);
-                            }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
-                                changeMode(item, SoundDeviceData.MODE_LINE_IN);
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+                        PopupMenu popup = new PopupMenu(activity, view);
+                        popup.getMenuInflater().inflate(R.menu.menu_mode_switcher, popup.getMenu());
+
+                        popup.show();
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item1) {
+                                int id = item1.getItemId();
+                                if(id == R.id.mode_line_1){
+                                    changeMode(item, SoundDeviceData.MODE_LINE_IN);
+                                }
+                                else if(id == R.id.mode_line_2){
+                                    changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
+                                }else if(id == R.id.mode_upnp){
+                                    changeMode(item, SoundDeviceData.MODE_UPNP);
+                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
+                                }else if(id == R.id.mode_usb){
+                                    changeMode(item, SoundDeviceData.MODE_USB);
+                                }
+                                return true;
                             }
-                        }
+                        });
                     }
                 });
                 vHolder.speakerVolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -1111,17 +1155,13 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
-                        if(!MySettings.isControlActive()) {
-                            MySettings.setControlState(true);
-                        }
+                        MySettings.setControlState(true);
                     }
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        if(!MySettings.isControlActive()) {
-                            int i = seekBar.getProgress();
-                            controlDimming(item, 0, i); //control Volume
-                        }
+                        int i = seekBar.getProgress();
+                        controlDimming(item, 0, i); //control Volume
                     }
                 });
                 vHolder.soundDeviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
@@ -1558,18 +1598,56 @@ public class DeviceAdapter extends ArrayAdapter {
         }*/
         vHolder.soundDeviceTypeImageView.setImageResource(R.drawable.speaker_icon);
         if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
-            vHolder.modeSwitch.setText(activity.getResources().getString(R.string.line_in));
+            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.line_in_1));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN_2){
-            vHolder.modeSwitch.setText(activity.getResources().getString(R.string.line_in_2));
+            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.line_in_2));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
-            vHolder.modeSwitch.setText(activity.getResources().getString(R.string.upnp));
+            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.upnp));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
-            vHolder.modeSwitch.setText(activity.getResources().getString(R.string.usb));
+            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.usb));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }
+
+        /*if(item.getSoundDeviceData().getSpeakers() != null){
+            vHolder.speakersLayout.removeAllViews();
+            for (Speaker speaker : item.getSoundDeviceData().getSpeakers()) {
+                TextView speakerNameTextView = new TextView(activity);
+                speakerNameTextView.setText(speaker.getName());
+                SeekBar seekBar = (SeekBar) activity.getLayoutInflater().inflate(R.layout.list_item_device_sound_system_controller_speaker, null);
+                seekBar.setMax(100);
+                seekBar.setProgress(speaker.getVolume());
+
+                vHolder.speakersLayout.addView(speakerNameTextView);
+                vHolder.speakersLayout.addView(seekBar);
+
+                //TODO add onclick listeners for each speaker here
+            }
+        }*/
+
+        vHolder.speakerVolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if(b) {
+                    if(!MySettings.isControlActive()){
+                        //controlDimming(item, 0, i);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                MySettings.setControlState(true);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int i = seekBar.getProgress();
+                controlDimming(item, 0, i); //control Volume
+            }
+        });
 
         /*if(line.getPowerState() == Line.LINE_STATE_ON){
             //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
@@ -2015,8 +2093,10 @@ public class DeviceAdapter extends ArrayAdapter {
         CardView soundDeviceLayout;
         ImageView soundDeviceTypeImageView;
         ImageView soundDeviceAdvancedOptionsButton;
-        Button modeSwitch;
+        RelativeLayout deviceModeLayout;
+        TextView deviceModeTextView;
         SeekBar speakerVolumeSeekBar;//will be multiple ones, depending on number of speakers
+        LinearLayout speakersLayout;
 
         TextView pirNameTextView;
         CardView pirLayout;

@@ -39,7 +39,7 @@
                     android:layout_below="@id/line_gif_imageview"
                     android:layout_marginTop="8dp"
                     android:inputType="textCapWords"
-                    android:imeOptions="actionNext"
+                    android:imeOptions="actionDone"
                     android:textAlignment="center"
                     android:hint="LineName"/>
                 <RadioGroup
