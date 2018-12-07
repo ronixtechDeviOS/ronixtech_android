@@ -122,6 +122,11 @@ public class Constants {
     public static final int TYPE_ROOM = 2;
     public static final int TYPE_LINE = 3;
 
+    //success fragment constants
+    public static final int SUCCESS_SOURCE_PLACE = 0;
+    public static final int SUCCESS_SOURCE_ROOM = 1;
+    public static final int SUCCESS_SOURCE_DEVICE = 2;
+
     //action constants
     public static final int ACTION_YES = 0;
     public static final int ACTION_NO = 1;

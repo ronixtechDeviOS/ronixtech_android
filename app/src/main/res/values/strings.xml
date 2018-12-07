@@ -150,6 +150,12 @@
     <string name="no_devices">No Smart Controllers</string>
     <string name="add_device_description">To begin, please select the location of your Smart Controller then click Add</string>
 
+
+    <string name="success_message_place">Your new Place setup is now complete.</string>
+    <string name="success_message_room">Your new Room setup is now complete.</string>
+    <string name="success_message_device">Your new Smart Controller setup is now complete.</string>
+
+
     <string name="edit_device_location_title">Relocate your Smart Controller</string>
     <string name="edit_device_description">Please select the new location of your Smart Controller then click Save</string>
     <string name="edit_device_place_message">To change the Place of the controller, please re-configure the controller from the beginning</string>

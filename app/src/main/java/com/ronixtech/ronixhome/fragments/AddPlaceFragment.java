@@ -66,7 +66,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
     WifiNetworkItemAdapterEditable selectedWifiNetworksAdapter;
     Button incrementFloorsButton, decrementFloorsButton;
     CheckBox defaultPlaceCheckBox;
-    Button addPlaceButton;
+    Button continueButton;
 
     Type selectedPlaceType;
     List<WifiNetwork> selectedWifiNetworks;
@@ -126,7 +126,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         incrementFloorsButton = view.findViewById(R.id.increment_button);
         decrementFloorsButton = view.findViewById(R.id.decrement_button);
         defaultPlaceCheckBox = view.findViewById(R.id.default_place_checkbox);
-        addPlaceButton= view.findViewById(R.id.add_place_button);
+        continueButton= view.findViewById(R.id.continue_button);
 
         placeNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -142,9 +142,9 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             @Override
             public void afterTextChanged(Editable editable) {
                 if(validateInputs()){
-                    Utils.setButtonEnabled(addPlaceButton, true);
+                    Utils.setButtonEnabled(continueButton, true);
                 }else{
-                    Utils.setButtonEnabled(addPlaceButton, false);
+                    Utils.setButtonEnabled(continueButton, false);
                 }
             }
         });
@@ -234,7 +234,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             defaultPlaceCheckBox.setChecked(false);
         }
 
-        addPlaceButton.setOnClickListener(new View.OnClickListener() {
+        continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
@@ -246,31 +246,33 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                                 .repeat(1)
                                 .playOn(placeNameEditText);
                     }else{
-                        Place place = new Place();
-                        place.setName(placeNameEditText.getText().toString());
-                        place.setTypeID(selectedPlaceType.getId());
-                        MySettings.addPlace(place);
-                        Place dbPlace = MySettings.getPlaceByName(place.getName());
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
+
+                        Place tempPlace = new Place();
+                        tempPlace.setName(placeNameEditText.getText().toString());
+                        tempPlace.setTypeID(selectedPlaceType.getId());
+
+                        List<Floor> floors = new ArrayList<>();
                         for(int x = 1; x <= numberOfFloors; x++){
                             Floor floor = new Floor();
                             floor.setName("Floor #" + x);
                             floor.setLevel(x);
-                            floor.setPlaceID(dbPlace.getId());
-                            MySettings.addFloor(floor);
+                            floors.add(floor);
                         }
-                        for (WifiNetwork network : selectedWifiNetworks) {
-                            network.setPlaceID(dbPlace.getId());
-                            MySettings.addWifiNetwork(network);
-                            MySettings.updateWifiNetworkPlace(network, dbPlace.getId());
-                        }
-                        MySettings.setCurrentPlace(dbPlace);
+                        tempPlace.setFloors(floors);
+
+                        List<WifiNetwork> wifiNetworks = new ArrayList<>();
+                        wifiNetworks.addAll(selectedWifiNetworks);
+                        tempPlace.setWifiNetworks(wifiNetworks);
 
                         if(defaultPlaceCheckBox.isChecked()){
-                            MySettings.setDefaultPlaceID(dbPlace.getId());
+                            tempPlace.setDefaultPlace(true);
+                        }else{
+                            tempPlace.setDefaultPlace(false);
                         }
 
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(placeNameEditText.getWindowToken(), 0);
+                        MySettings.setTempPlace(tempPlace);
 
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -323,9 +325,9 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 }
             }
             if(validateInputs()){
-                Utils.setButtonEnabled(addPlaceButton, true);
+                Utils.setButtonEnabled(continueButton, true);
             }else{
-                Utils.setButtonEnabled(addPlaceButton, false);
+                Utils.setButtonEnabled(continueButton, false);
             }
         }
     }
@@ -339,9 +341,9 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             }
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
             if(validateInputs()){
-                Utils.setButtonEnabled(addPlaceButton, true);
+                Utils.setButtonEnabled(continueButton, true);
             }else{
-                Utils.setButtonEnabled(addPlaceButton, false);
+                Utils.setButtonEnabled(continueButton, false);
             }
         }
     }
@@ -355,9 +357,9 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             }
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
             if(validateInputs()){
-                Utils.setButtonEnabled(addPlaceButton, true);
+                Utils.setButtonEnabled(continueButton, true);
             }else{
-                Utils.setButtonEnabled(addPlaceButton, false);
+                Utils.setButtonEnabled(continueButton, false);
             }
         }
     }

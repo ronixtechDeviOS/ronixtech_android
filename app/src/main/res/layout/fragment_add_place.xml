@@ -263,7 +263,7 @@
                 android:text="@string/default_place_hint"/>
 
             <Button
-                android:id="@+id/add_place_button"
+                android:id="@+id/continue_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/default_place_checkbox"
@@ -274,7 +274,7 @@
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/button_background_round_gray"
                 android:textColor="@color/whiteColor"
-                android:text="@string/add"/>
+                android:text="@string/continue_button"/>
 
         </RelativeLayout>
 

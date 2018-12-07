@@ -28,10 +28,13 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Floor;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -114,11 +117,37 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
         skipForNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //go to PlacesFragment
+                com.ronixtech.ronixhome.entities.Place tempPlace = MySettings.getTempPlace();
+
+                MySettings.addPlace(tempPlace);
+                com.ronixtech.ronixhome.entities.Place dbPlace = MySettings.getPlaceByName(tempPlace.getName());
+                for (Floor floor : tempPlace.getFloors()) {
+                    floor.setPlaceID(dbPlace.getId());
+                    MySettings.addFloor(floor);
+                }
+                for (WifiNetwork network : tempPlace.getWifiNetworks()) {
+                    network.setPlaceID(dbPlace.getId());
+                    MySettings.addWifiNetwork(network);
+                    MySettings.updateWifiNetworkPlace(network, dbPlace.getId());
+                }
+
+                MySettings.setCurrentPlace(dbPlace);
+
+                if(tempPlace.isDefaultPlace()){
+                    MySettings.setDefaultPlaceID(dbPlace.getId());
+                }
+
+                MySettings.setCurrentPlace(dbPlace);
+
+                MySettings.setTempPlace(null);
+
+                //go to successFragment
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                PlacesFragment placesFragment = new PlacesFragment();
-                fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                SuccessFragment successFragment = new SuccessFragment();
+                successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_PLACE);
+                fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
                 fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragmentTransaction.commit();
             }
@@ -380,34 +409,41 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, getActivity());
-                double latitude = place.getLatLng().latitude;
-                double longitude = place.getLatLng().longitude;
-                String address = place.getAddress().toString();
+                Utils.showLoading(getActivity());
+                Place gPlace = PlacePicker.getPlace(data, getActivity());
+                double latitude = gPlace.getLatLng().latitude;
+                double longitude = gPlace.getLatLng().longitude;
+                String address = gPlace.getAddress().toString();
 
-                com.ronixtech.ronixhome.entities.Place currentPlace = MySettings.getCurrentPlace();
-                currentPlace.setLatitude(latitude);
-                currentPlace.setLongitude(longitude);
-                currentPlace.setAddress(address);
+                com.ronixtech.ronixhome.entities.Place place;
 
-                MySettings.updatePlaceLatitude(currentPlace, currentPlace.getLatitude());
-                MySettings.updatePlaceLongitude(currentPlace, currentPlace.getLongitude());
-                MySettings.updatePlaceAddress(currentPlace, currentPlace.getAddress());
+                if(MySettings.getTempPlace() != null){
+                    //new place being added
+                    place = MySettings.getTempPlace();
+                }else{
+                    //old place being edited
+                    place = MySettings.getCurrentPlace();
+                }
+
+                place.setLatitude(latitude);
+                place.setLongitude(longitude);
+                place.setAddress(address);
 
                 new Utils.AddressGeocoder(getActivity(), latitude, longitude, new Utils.AddressGeocoder.OnGeocodingCallback() {
                     @Override
                     public void onGeocodingSuccess(String address, String city, String state, String country, String zipCode) {
-                        currentPlace.setCity(city);
-                        currentPlace.setState(state);
-                        currentPlace.setCountry(country);
-                        currentPlace.setZipCode(zipCode);
+                        place.setCity(city);
+                        place.setState(state);
+                        place.setCountry(country);
+                        place.setZipCode(zipCode);
 
-                        MySettings.updatePlaceCity(currentPlace, currentPlace.getCity());
-                        MySettings.updatePlaceState(currentPlace, currentPlace.getState());
-                        MySettings.updatePlaceCountry(currentPlace, currentPlace.getCountry());
-                        MySettings.updatePlaceZipCode(currentPlace, currentPlace.getZipCode());
+                        if(MySettings.getTempPlace() != null){
+                            MySettings.setTempPlace(place);
+                        }else {
+                            MySettings.setCurrentPlace(place);
+                        }
 
-                        MySettings.setCurrentPlace(currentPlace);
+                        Utils.dismissLoading();
 
                         //go to AddPlaceLocationAddressFragment
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -421,7 +457,13 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                     @Override
                     public void onGeocodingFail(String errorMsg) {
                         Toast.makeText(getActivity(), ""+errorMsg, Toast.LENGTH_SHORT).show();
-                        MySettings.setCurrentPlace(currentPlace);
+                        if(MySettings.getTempPlace() != null){
+                            MySettings.setTempPlace(place);
+                        }else {
+                            MySettings.setCurrentPlace(place);
+                        }
+
+                        Utils.dismissLoading();
 
                         //go to AddPlaceLocationAddressFragment
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

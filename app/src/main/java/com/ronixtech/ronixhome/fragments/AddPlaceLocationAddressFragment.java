@@ -15,11 +15,14 @@ import android.widget.EditText;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -181,7 +184,12 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
             }
         });
 
-        place = MySettings.getCurrentPlace();
+        if(MySettings.getTempPlace() != null){
+            place = MySettings.getTempPlace();
+        }else {
+            place = MySettings.getCurrentPlace();
+        }
+
 
         if(place != null){
             addressEditText.setText(""+place.getAddress());
@@ -202,20 +210,63 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
                         place.setCountry(""+countryEditText.getText().toString());
                         place.setZipCode(""+zipCodeEditText.getText().toString());
 
-                        MySettings.updatePlaceAddress(place, addressEditText.getText().toString());
-                        MySettings.updatePlaceCity(place, cityEditText.getText().toString());
-                        MySettings.updatePlaceState(place, stateEditText.getText().toString());
-                        MySettings.updatePlaceCountry(place, countryEditText.getText().toString());
-                        MySettings.updatePlaceZipCode(place, zipCodeEditText.getText().toString());
-                        MySettings.setCurrentPlace(place);
-                    }
+                        if(MySettings.getTempPlace() != null){
+                            MySettings.addPlace(place);
+                            com.ronixtech.ronixhome.entities.Place dbPlace = MySettings.getPlaceByName(place.getName());
+                            for (Floor floor : place.getFloors()) {
+                                floor.setPlaceID(dbPlace.getId());
+                                MySettings.addFloor(floor);
+                            }
+                            for (WifiNetwork network : place.getWifiNetworks()) {
+                                network.setPlaceID(dbPlace.getId());
+                                MySettings.addWifiNetwork(network);
+                                MySettings.updateWifiNetworkPlace(network, dbPlace.getId());
+                            }
 
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    PlacesFragment placesFragment = new PlacesFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
-                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    fragmentTransaction.commit();
+                            MySettings.setCurrentPlace(dbPlace);
+
+                            if(place.isDefaultPlace()){
+                                MySettings.setDefaultPlaceID(dbPlace.getId());
+                            }
+
+                            MySettings.updatePlaceLatitude(dbPlace, place.getLatitude());
+                            MySettings.updatePlaceLongitude(dbPlace, place.getLongitude());
+
+                            MySettings.updatePlaceAddress(dbPlace, place.getAddress());
+                            MySettings.updatePlaceCity(dbPlace, place.getCity());
+                            MySettings.updatePlaceState(dbPlace, place.getState());
+                            MySettings.updatePlaceCountry(dbPlace, place.getCountry());
+                            MySettings.updatePlaceZipCode(dbPlace, place.getZipCode());
+
+                            MySettings.setTempPlace(null);
+
+                            //go to successFragment
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            SuccessFragment successFragment = new SuccessFragment();
+                            successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_PLACE);
+                            fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
+                            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            fragmentTransaction.commit();
+                        }else{
+                            MySettings.updatePlaceLatitude(place, place.getLatitude());
+                            MySettings.updatePlaceLongitude(place, place.getLongitude());
+
+                            MySettings.updatePlaceAddress(place, place.getAddress());
+                            MySettings.updatePlaceCity(place, place.getCity());
+                            MySettings.updatePlaceState(place, place.getState());
+                            MySettings.updatePlaceCountry(place, place.getCountry());
+                            MySettings.updatePlaceZipCode(place, place.getZipCode());
+
+                            //go to PlacesFragment
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            PlacesFragment placesFragment = new PlacesFragment();
+                            fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
+                            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            fragmentTransaction.commit();
+                        }
+                    }
                 }
             }
         });

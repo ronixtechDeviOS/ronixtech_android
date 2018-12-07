@@ -38,9 +38,11 @@ public class MySettings {
     public static final String PREF_TEMP_DEVICE = "temp_device";
     public static final String PREF_SCANNING_ACTIVE = "scanning_active";
     public static final String PREF_CURRENT_PLACE = "pref_current_place";
+    public static final String PREF_TEMP_PLACE = "pref_temp_place";
     public static final String PREF_DEFAULT_PLACE_ID = "pref_default_place_id";
     public static final String PREF_CURRENT_FLOOR = "pref_current_floor";
     public static final String PREF_CURRENT_ROOM = "pref_current_room";
+    public static final String PREF_TEMP_ROOM = "pref_temp_room";
     public static final String PREF_CONTROL_ACTIVE = "control_active";
     public static final String PREF_GETSTATUS_ACTIVE = "get_status_active";
     public static final String PREF_APP_FIRST_START = "app_first_start";
@@ -63,9 +65,9 @@ public class MySettings {
     private static Device tempDevice;
     private static boolean appFirstStart;
 
-    private static Place currentPlace;
+    private static Place currentPlace, tempPlace;
     private static Floor currentFloor;
-    private static com.ronixtech.ronixhome.entities.Room currentRoom;
+    private static com.ronixtech.ronixhome.entities.Room currentRoom, tempRoom;
 
     private static long defaultPlaceID = -1;
 
@@ -278,6 +280,76 @@ public class MySettings {
                     tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
                 }*/
                 return tempDevice;
+            }
+        }
+    }
+
+    public static void setTempPlace(Place place) {
+        MySettings.tempPlace = place;
+
+        if(gson == null){
+            gson = new Gson();
+        }
+        String json = gson.toJson(MySettings.tempPlace);
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putString(PREF_TEMP_PLACE, json);
+        editor.apply();
+    }
+    public static Place getTempPlace() {
+        if (tempPlace != null) {
+            /*if(MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID()) != null) {
+                tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+            }*/
+            return tempPlace;
+        } else {
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_TEMP_PLACE, "");
+            if (json.isEmpty() || json.equals("null")) {
+                return null;
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                tempPlace = gson.fromJson(json, Place.class);
+                /*if(MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID()) != null) {
+                    tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+                }*/
+                return tempPlace;
+            }
+        }
+    }
+
+    public static void setTempRoom(com.ronixtech.ronixhome.entities.Room room) {
+        MySettings.tempRoom = room;
+
+        if(gson == null){
+            gson = new Gson();
+        }
+        String json = gson.toJson(MySettings.tempRoom);
+        SharedPreferences.Editor editor = getSettings().edit();
+        editor.putString(PREF_TEMP_ROOM, json);
+        editor.apply();
+    }
+    public static com.ronixtech.ronixhome.entities.Room getTempRoom() {
+        if (tempRoom != null) {
+            /*if(MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID()) != null) {
+                tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+            }*/
+            return tempRoom;
+        } else {
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_TEMP_ROOM, "");
+            if (json.isEmpty() || json.equals("null")) {
+                return null;
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                tempRoom = gson.fromJson(json, com.ronixtech.ronixhome.entities.Room.class);
+                /*if(MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID()) != null) {
+                    tempDevice = MySettings.getDeviceByMAC(tempDevice.getMacAddress(), tempDevice.getDeviceTypeID());
+                }*/
+                return tempRoom;
             }
         }
     }

@@ -171,6 +171,21 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
+    public void goToSuccessFragment(){
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                SuccessFragment successFragment = new SuccessFragment();
+                successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_DEVICE);
+                fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
+                //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
+    }
+
     public void connectToWifiNetwork(final String ssid, String password){
         if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
             WifiManager mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -935,25 +950,9 @@ public class AddDeviceFragmentSendData extends Fragment {
                     MySettings.addDevice(device);
                     MySettings.setTempDevice(null);
 
-                    if(MainActivity.isResumed) {
-                        FragmentManager fragmentManager = fragment.getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        fragmentTransaction.commit();
-                    }
+                    fragment.goToSuccessFragment();
                 }else{
-                    if(MainActivity.isResumed) {
-                        FragmentManager fragmentManager = fragment.getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        fragmentTransaction.commit();
-                    }
+                    fragment.goToSuccessFragment();
                 }
             }
         }

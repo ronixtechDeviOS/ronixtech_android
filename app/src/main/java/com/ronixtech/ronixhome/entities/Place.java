@@ -40,6 +40,10 @@ public class Place {
     String country;
     @ColumnInfo(name = "zip_code")
     String zipCode;
+    @Ignore
+    boolean defaultPlace;
+    @Ignore
+    List<WifiNetwork> wifiNetworks;
 
     public Place(){
         this.id = 0;
@@ -54,6 +58,8 @@ public class Place {
         this.state = "";
         this.country = "";
         this.zipCode = "";
+        this.defaultPlace = false;
+        this.wifiNetworks = new ArrayList<>();
     }
 
     public long getId() {
@@ -158,5 +164,21 @@ public class Place {
 
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
+    }
+
+    public boolean isDefaultPlace() {
+        return defaultPlace;
+    }
+
+    public void setDefaultPlace(boolean defaultPlace) {
+        this.defaultPlace = defaultPlace;
+    }
+
+    public List<WifiNetwork> getWifiNetworks() {
+        return wifiNetworks;
+    }
+
+    public void setWifiNetworks(List<WifiNetwork> wifiNetworks) {
+        this.wifiNetworks = wifiNetworks;
     }
 }

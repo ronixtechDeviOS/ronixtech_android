@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -58,7 +59,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
     RelativeLayout roomTypeSelectionLayout;
     TextView roomTypeNameTextView;
     ImageView roomTypeImageView;
-    Button addRoomButton;
+    Button continueButton;
 
     Place selectedPlace;
     Floor selectedFloor;
@@ -107,7 +108,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         roomTypeSelectionLayout = view.findViewById(R.id.room_type_selection_layout);
         roomTypeNameTextView = view.findViewById(R.id.room_type_textview);
         roomTypeImageView = view.findViewById(R.id.room_type_imageview);
-        addRoomButton = view.findViewById(R.id.add_room_button);
+        continueButton = view.findViewById(R.id.continue_button);
 
         if(selectedPlace == null) {
             selectedPlace = MySettings.getCurrentPlace();
@@ -192,9 +193,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             @Override
             public void afterTextChanged(Editable editable) {
                 if(validateInputs()){
-                    Utils.setButtonEnabled(addRoomButton, true);
+                    Utils.setButtonEnabled(continueButton, true);
                 }else{
-                    Utils.setButtonEnabled(addRoomButton, false);
+                    Utils.setButtonEnabled(continueButton, false);
                 }
             }
         });
@@ -244,7 +245,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         }
 
-        addRoomButton.setOnClickListener(new View.OnClickListener() {
+        continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
@@ -264,6 +265,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                                 .repeat(1)
                                 .playOn(roomNameEditText);
                     }else{
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);
+
                         Room room = new Room();
                         //room.setId(Long.valueOf(roomLocationEditText.getText().toString()));
                         room.setName(roomNameEditText.getText().toString());
@@ -273,10 +277,15 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
 
                         MySettings.setCurrentRoom(room);
 
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(roomNameEditText.getWindowToken(), 0);
-
-                        getFragmentManager().popBackStack();
+                        //go to successFragment
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        SuccessFragment successFragment = new SuccessFragment();
+                        successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_ROOM);
+                        fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
+                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        fragmentTransaction.commit();
                     }
                 }
             }
@@ -333,9 +342,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
 
             if(validateInputs()){
-                Utils.setButtonEnabled(addRoomButton, true);
+                Utils.setButtonEnabled(continueButton, true);
             }else{
-                Utils.setButtonEnabled(addRoomButton, false);
+                Utils.setButtonEnabled(continueButton, false);
             }
         }
     }
