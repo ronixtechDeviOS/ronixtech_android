@@ -153,7 +153,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/device_name_textview"
-                    android:layout_marginTop="4dp">
+                    android:layout_marginTop="4dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
                     <TextView
                         android:id="@+id/device_active_mode_static_textview"
                         android:layout_width="wrap_content"

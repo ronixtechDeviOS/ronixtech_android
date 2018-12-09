@@ -16,6 +16,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -39,8 +41,6 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 
 import java.util.List;
-
-import pl.droidsonroids.gif.GifImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,8 +66,10 @@ public class AddDeviceFragmentSearch extends Fragment {
     BroadcastReceiver mWifiScanReceiver;
     BroadcastReceiver mWifiConnectionReceiver;
 
-    GifImageView instructionImageView;
-    TextView step1TextView, step2TextView, debugTextView;
+    CountDownTimer searchingCountDownTimer, connectingCountDownTimer;
+
+    DonutProgress progressCircle;
+    TextView progressTextView;
 
     public AddDeviceFragmentSearch() {
         // Required empty public constructor
@@ -99,25 +101,8 @@ public class AddDeviceFragmentSearch extends Fragment {
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device_search), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
-        instructionImageView = view.findViewById(R.id.instructions_gif_imageview);
-        step1TextView = view.findViewById(R.id.instructions_1_textview);
-        step2TextView = view.findViewById(R.id.instructions_2_textview);
-        debugTextView = view.findViewById(R.id.debug_textview);
-
-        /*if(MySettings.getHomeNetwork() == null) {
-            //if home network is not defined, configure it first so when adding the device(s), they're automatically connected to it
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();
-            fragmentTransaction.replace(R.id.fragment_view, wifiInfoFragment, "wifiInfoFragment");
-            fragmentTransaction.addToBackStack("wifiInfoFragment");
-            fragmentTransaction.commit();
-        }else{
-            //scan for device in the background, when found, confirm it's the correct the device and continue to device configuration screen
-            //first check if there are permissions to handle WiFi operations
-            checkLocationPermissions();
-        }*/
+        progressCircle = view.findViewById(R.id.progress_circle);
+        progressTextView= view.findViewById(R.id.progress_textview);
 
         //scan for device in the background, when found, confirm it's the correct the device and continue to device configuration screen
         //first check if there are permissions to handle WiFi operations
@@ -175,7 +160,7 @@ public class AddDeviceFragmentSearch extends Fragment {
     }
 
     private boolean checkLocationServices(){
-        boolean actionNeeded = false;
+        boolean enabled = true;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
                 LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -184,7 +169,7 @@ public class AddDeviceFragmentSearch extends Fragment {
                 isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
                 if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
-                    actionNeeded = true;
+                    enabled = false;
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
                     builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
@@ -211,18 +196,15 @@ public class AddDeviceFragmentSearch extends Fragment {
                 }
             }
         }
-        return actionNeeded;
+        return enabled;
     }
 
-    private void refreshNetworks(){
-        if(checkLocationServices()){
-            return;
-        }
-        debugTextView.setText("Searching for your RonixTech unit, please wait...\n");
-        if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
-            mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
+    private boolean checkWifiService(){
+        boolean enabled = true;
+        mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(mWifiManager != null){
             if(!mWifiManager.isWifiEnabled()){
+                enabled = false;
                 android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -253,61 +235,142 @@ public class AddDeviceFragmentSearch extends Fragment {
                             }
                         })
                         .show();
-            }else{
-                mWifiScanReceiver = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context c, Intent intent) {
-                        if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-                            List<ScanResult> mScanResults = mWifiManager.getScanResults();
-                            if(mScanResults != null){
-                                for (ScanResult result : mScanResults) {
-                                    //debugTextView.append("found SSID: " + result.SSID + "\n");
-                                    if(result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())){
-                                        instructionImageView.setVisibility(View.GONE);
-                                        step1TextView.setVisibility(View.GONE);
-                                        step2TextView.setVisibility(View.GONE);
-                                        debugTextView.setText("RonixTech unit found!\n");
-                                        debugTextView.append(""+result.SSID+"\n");
-                                        debugTextView.append("Connecting to your RonixTech unit, please wait...\n");
-                                        Log.d(TAG, "Found ssid " + result.SSID);
-                                        //Toast.makeText(getActivity(), "RonixTech device detected, connecting...", Toast.LENGTH_SHORT).show();
-                                        Device device = new Device();
-                                        device.setMacAddress(result.BSSID);
-                                        device.setName(result.SSID);
-                                        MySettings.setTempDevice(device);
-                                        Log.d(TAG, "Connecting to " + result.SSID + " with default password");
-                                        connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
-                                        try {
-                                            if (mWifiScanReceiver != null) {
-                                                if (getActivity() != null) {
-                                                    getActivity().unregisterReceiver(mWifiScanReceiver);
-                                                }
+            }
+        }else{
+            enabled = false;
+            //wifi is not available
+            android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
+                    //set icon
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    //set title
+                    .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                    //set message
+                    .setMessage(getActivity().getResources().getString(R.string.add_device_wifi_not_available))
+                    //set positive button
+                    .setPositiveButton(getActivity().getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //set what would happen when positive button is clicked
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            fragmentTransaction.commitAllowingStateLoss();
+                        }
+                    })
+                    .show();
+        }
+
+        return enabled;
+    }
+
+    private void refreshNetworks(){
+        if(checkLocationServices() && checkWifiService()){
+            progressTextView.setText(getActivity().getResources().getString(R.string.add_device_searching));
+            /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
+            final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
+            searchingCountDownTimer = new CountDownTimer(totalMillis, 1) {
+                public void onTick(long millisUntilFinished) {
+
+                    //forward progress
+                    long finishedMillis = totalMillis - millisUntilFinished;
+                    int totalProgress = (int) (((float)finishedMillis / (float)totalMillis) * 100.0);
+
+                    long totalSeconds =  Math.round(((double)finishedMillis/(double)totalMillis) * 45.0);
+
+                    if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                        progressCircle.setDonut_progress("" + totalProgress);
+                        //progressCircle.setText(getActivity().getResources().getString(R.string.seconds, 45 - (int) totalSeconds));
+                        progressCircle.setText("" + totalProgress + "%");
+                    }
+                }
+
+                public void onFinish() {
+                    // DO something when 45 seconds are up
+                    if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                        getFragmentManager().popBackStack();
+                    }
+                }
+            }.start();
+            mWifiScanReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context c, Intent intent) {
+                    if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                        List<ScanResult> mScanResults = mWifiManager.getScanResults();
+                        if(mScanResults != null){
+                            for (ScanResult result : mScanResults) {
+                                //debugTextView.append("found SSID: " + result.SSID + "\n");
+                                if(result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())){
+                                    searchingCountDownTimer.cancel();
+
+                                    /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
+                                    final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
+                                    connectingCountDownTimer = new CountDownTimer(totalMillis, 1) {
+                                        public void onTick(long millisUntilFinished) {
+
+                                            //forward progress
+                                            long finishedMillis = totalMillis - millisUntilFinished;
+                                            int totalProgress = (int) (((float)finishedMillis / (float)totalMillis) * 100.0);
+
+                                            long totalSeconds =  Math.round(((double)finishedMillis/(double)totalMillis) * 45.0);
+
+                                            if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                                                progressCircle.setDonut_progress("" + totalProgress);
+                                                //progressCircle.setText(getActivity().getResources().getString(R.string.seconds, 45 - (int) totalSeconds));
+                                                progressCircle.setText("" + totalProgress + "%");
                                             }
-                                            break;
-                                        }catch (Exception e){
-                                            Log.d(TAG, "Error unregistering mWifiScanReceiver");
-                                            break;
                                         }
-                                    }else{
-                                        mWifiManager.startScan();
+
+                                        public void onFinish() {
+                                            // DO something when 45 seconds are up
+                                            if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                                                getFragmentManager().popBackStack();
+                                            }
+                                        }
+                                    }.start();
+
+                                    progressTextView.setText(getActivity().getResources().getString(R.string.add_device_found_device) + "\n");
+                                    progressTextView.append(getActivity().getResources().getString(R.string.add_device_connecting, result.SSID) + "\n");
+
+                                    Log.d(TAG, "Found ssid " + result.SSID);
+                                    Device device = new Device();
+                                    device.setMacAddress(result.BSSID);
+                                    device.setName(result.SSID);
+                                    MySettings.setTempDevice(device);
+                                    Log.d(TAG, "Connecting to " + result.SSID + " with default password");
+                                    connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
+                                    try {
+                                        if (mWifiScanReceiver != null) {
+                                            if (getActivity() != null) {
+                                                getActivity().unregisterReceiver(mWifiScanReceiver);
+                                            }
+                                        }
+                                        break;
+                                    }catch (Exception e){
+                                        Log.d(TAG, "Error unregistering mWifiScanReceiver");
+                                        break;
                                     }
+                                }else{
+                                    mWifiManager.startScan();
                                 }
                             }
                         }
                     }
-                };
-
-                try {
-                    if (getActivity() != null) {
-                        getActivity().registerReceiver(mWifiScanReceiver,
-                                new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                    }
-                }catch (Exception e){
-                    Log.d(TAG, "Error registering mWifiScanReceiver");
                 }
+            };
 
-                mWifiManager.startScan();
+            try {
+                if (getActivity() != null) {
+                    getActivity().registerReceiver(mWifiScanReceiver,
+                            new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                }
+            }catch (Exception e){
+                Log.d(TAG, "Error registering mWifiScanReceiver");
             }
+
+            mWifiManager.startScan();
         }
     }
 
@@ -346,7 +409,8 @@ public class AddDeviceFragmentSearch extends Fragment {
                                     if(getActivity() != null) {
                                         Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.connected_to)  + " " + connectedSSID, Toast.LENGTH_SHORT).show();
                                     }
-                                    debugTextView.setText("Connected to your RonixTech device...\n");
+                                    connectingCountDownTimer.cancel();
+                                    progressTextView.append(getActivity().getResources().getString(R.string.add_device_connected, connectedSSID) + "\n");
 
                                     try {
                                         if (getActivity() != null) {
@@ -504,203 +568,11 @@ public class AddDeviceFragmentSearch extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
-            /*if(mWifiManager != null && mWifiManager.isWifiEnabled()){
-                refreshNetworks();
-            }else{
-                android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
-                        //set icon
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        //set title
-                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
-                        //set message
-                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
-                        //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what would happen when positive button is clicked
-                                refreshNetworks();
-                            }
-                        })
-                        //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //set what should happen when negative button is clicked
-                                FragmentManager fragmentManager = getFragmentManager();
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
-                                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                fragmentTransaction.commitAllowingStateLoss();
-                            }
-                        })
-                        .show();
-            }*/
             refreshNetworks();
         }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
             refreshNetworks();
         }
     }
-
-    /*private void getDeviceType(){
-        *//*6. Get information about the device:
-        - Device chip id (unique)
-                => HTTP GET: "LOCAL_HOST/ronix/getchipid"
-                - Device type id, defines what is the device for and what is its features and version
-                => HTTP GET: "LOCAL_HOST/ronix/gettypeid"*//*
-        debugTextView.append("Getting device type...\n");
-        //volley request to device to send ssid/password and then get device info for next steps
-        String url = Constants.GET_DEVICE_TYPE_URL;
-
-        Log.d(TAG,  "getDeviceType URL: " + url);
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "getDeviceType response: " + response);
-                try{
-                    JSONObject jsonObject= new JSONObject(response);
-                    if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
-                        String typeIDString = jsonObject.getString(Constants.PARAMETER_DEVICE_TYPE_ID);
-                        int deviceTypeID = Integer.valueOf(typeIDString);
-                        Device tempDevice = MySettings.getTempDevice();
-                        tempDevice.setDeviceTypeID(deviceTypeID);
-                        MySettings.setTempDevice(tempDevice);
-                        debugTextView.append("Device type ID: " + deviceTypeID + "\n");
-                        getChipID();
-                    }
-                }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
-                    if(getActivity() != null) {
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
-                    }
-                    //trial failed, start over from the beginning
-                    debugTextView.setText("Attempt failed, trying again...\n");
-                    refreshNetworks();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley Error: " + error.getMessage());
-                if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
-                }
-                if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
-                }
-                //trial failed, start over from the beginning
-                debugTextView.setText("Attempt failed, trying again...\n");
-                refreshNetworks();
-            }
-        });
-        request.setShouldCache(false);
-        HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
-    }
-
-    private void getChipID(){
-        *//*6. Get information about the device:
-        - Device chip id (unique)
-                => HTTP GET: "LOCAL_HOST/ronix/getchipid"
-                - Device type id, defines what is the device for and what is its features and version
-                => HTTP GET: "LOCAL_HOST/ronix/gettypeid"*//*
-        debugTextView.append("Getting chip id...\n");
-        //volley request to device to send ssid/password and then get device info for next steps
-        String url = Constants.GET_CHIP_ID_URL;
-
-        Log.d(TAG,  "getChipID URL: " + url);
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "getChipID response: " + response);
-                try{
-                    JSONObject jsonObject= new JSONObject(response);
-                    if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_CHIP_ID)){
-                        String chipID = jsonObject.getString(Constants.PARAMETER_DEVICE_CHIP_ID);
-                        Device tempDevice = MySettings.getTempDevice();
-                        tempDevice.setChipID(chipID);
-                        MySettings.setTempDevice(tempDevice);
-                        debugTextView.append("Chip ID: " + chipID + "\n");
-                        sendConfigurationToDevice();
-                    }
-                }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
-                    }
-                    //trial failed, start over from the beginning
-                    debugTextView.setText("Attempt failed, trying again...\n");
-                    refreshNetworks();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley Error: " + error.getMessage());
-                if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
-                }
-                if(getActivity() != null){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
-                }
-                //trial failed, start over from the beginning
-                debugTextView.setText("Attempt failed, trying again...\n");
-                refreshNetworks();
-            }
-        });
-        request.setShouldCache(false);
-        HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
-    }*/
-
-    /*private void sendConfigurationToDevice(){
-        debugTextView.append("Sending home network info to your RonixTech device...\n");
-
-        //volley request to device to send ssid/password and then get device info for next steps
-        String url = Constants.SEND_SSID_PASSWORD_URL;
-        //?essid=%SSID%&passwd=%PASS%
-
-        url = url.concat("?").concat(Constants.PARAMETER_SSID).concat("=").concat(MySettings.getHomeNetwork().getSsid())
-                .concat("&").concat(Constants.PARAMETER_PASSWORD).concat("=").concat(MySettings.getHomeNetwork().getPassword());
-
-        Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "sendConfigurationToDevice response: " + response);
-                debugTextView.append("Connecting to your home network now...\n");
-                //debugTextView.append("delwa2ty el device is configured. @Mina Please tell me if you get to this step\n");
-                //debugTextView.append(" go to next step, AddDeviceConfigurationFragment\n");
-                Device tempDevice = MySettings.getTempDevice();
-                MySettings.addDevice(tempDevice);
-                if(mListener != null){
-                    mListener.onStartListening();
-                }
-                connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword(), false);
-
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
-                fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
-                fragmentTransaction.commit();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley Error: " + error.getMessage());
-                if(getActivity() != null){
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
-                }
-                //trial failed, start over from the beginning
-                debugTextView.setText("Attempt failed, trying again...\n");
-                refreshNetworks();
-            }
-        });
-        request.setShouldCache(false);
-        HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
-    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {

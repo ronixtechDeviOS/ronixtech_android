@@ -183,8 +183,9 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected void onProgressUpdate(Integer... progress){
-            progressCircle.setDonut_progress(""+progress[0]);
-            progressCircle.setText(context.getResources().getString(R.string.seconds, progress[1]));
+            progressCircle.setDonut_progress("" + progress[0]);
+            //progressCircle.setText(context.getResources().getString(R.string.seconds, progress[1]));
+            progressCircle.setText("" + progress[0] + "%");
         }
 
         @Override
@@ -192,7 +193,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
             if(MainActivity.getInstance() != null && MainActivity.isResumed){
                 if(statusCode == 200) {
                     /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
-                    final int totalMillis = 1 * 40 * 1000; // 45 seconds in milli seconds
+                    final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
 
                     new CountDownTimer(totalMillis, 1) {
                         public void onTick(long millisUntilFinished) {
@@ -208,7 +209,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
                         }
 
                         public void onFinish() {
-                            // DO something when 1 minute is up
+                            // DO something when 45 seconds are up
                             Toast.makeText(context, context.getResources().getString(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
                             fragment.goToHomeFragment();
                         }

@@ -66,6 +66,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class DeviceAdapter extends ArrayAdapter {
@@ -242,8 +243,22 @@ public class DeviceAdapter extends ArrayAdapter {
 
 
                 if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+
+                    //show full date if not same day (if it's a new day)
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    long currentTimestamp = cal2.getTimeInMillis();
+                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                    cal2.setTimeInMillis(currentTimestamp);
+                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                    if (!sameDay) {
+                        vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                    }else{
+                        vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                    }
+
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
                     vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, "--:--"));
@@ -1137,6 +1152,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                     Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
                                 }else if(id == R.id.mode_usb){
                                     changeMode(item, SoundDeviceData.MODE_USB);
+                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
                                 }
                                 return true;
                             }
@@ -2747,7 +2763,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode != 200){
+            if(statusCode != 200 && mode != SoundDeviceData.MODE_USB){
                 Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
             }
             /*lines.remove(line);
@@ -2922,7 +2938,17 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+                    Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                    DeviceRebooterPost deviceRebooterPost = new DeviceRebooterPost(device);
+                    deviceRebooterPost.execute();
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+                }
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_failed), Toast.LENGTH_SHORT).show();
             }
@@ -2978,6 +3004,128 @@ public class DeviceAdapter extends ArrayAdapter {
                         result.append(dataLine);
                     }
                     Log.d(TAG,  "factoryReset response: " + result.toString());
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                }catch (Exception e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfAttempts++;
+                    delay = true;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public class DeviceRebooterPost extends AsyncTask<Void, Void, Void> {
+        private final String TAG = DeviceAdapter.LineToggler.class.getSimpleName();
+
+        Device device;
+        int statusCode;
+
+        public DeviceRebooterPost(Device device) {
+            this.device = device;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            /*layoutEnabled = false;
+            notifyDataSetChanged();
+            //setLayoutEnabledDelayed(true);
+
+            lines = device.getLines();
+            line = lines.get(position);
+            oldState = line.getPowerState();
+
+            line.setPowerState(state);
+            lines.remove(line);
+            lines.add(position, line);
+            device.setLines(lines);
+            DevicesInMemory.updateDevice(device);*/
+            /*if(MainActivity.getInstance() != null){
+                MainActivity.getInstance().refreshDevicesListFromMemory();
+            }*/
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            boolean statusWasActive = false;
+            while(MySettings.isGetStatusActive()){
+                Log.d(TAG, "getStatusActive, doing nothing...");
+                statusWasActive = true;
+            }
+            if(statusWasActive) {
+                try {
+                    Thread.sleep(Constants.DELAY_TIME_MS);
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }
+            }
+
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfAttempts = 0;
+            boolean delay = false;
+            while(statusCode != 200 && numberOfAttempts <= Device.CONFIG_NUMBER_OF_RETRIES){
+                if(delay){
+                    try {
+                        Thread.sleep(Constants.DELAY_TIME_MS);
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Exception: " + e.getMessage());
+                    }
+                }
+                try{
+                    Log.d(TAG, "rebootDevice attempt #"+numberOfAttempts);
+                    String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_SOUND_SYSTEM_SHUTDOWN_URL;
+
+                    URL url = new URL(urlString);
+
+                    Log.d(TAG,  "rebootDevice URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_SHUTDOWN_MODE, Constants.PARAMETER_SOUND_CONTROLLER_OPTION_REBOOT);
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, ""+device.getAccessToken());
+
+                    Log.d(TAG,  "rebootDevice POST data: " + jsonObject.toString());
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jsonObject.toString());
+                    outputStreamWriter.flush();
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    Log.d(TAG,  "rebootDevice response: " + result.toString());
                 }catch (MalformedURLException e){
                     Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
                 }catch (IOException e){

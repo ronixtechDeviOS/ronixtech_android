@@ -131,6 +131,28 @@ public class Utils {
         return dateString;
     }
 
+    private static SimpleDateFormat simpleDateFormatDateHoursMinute;
+    public static String getTimeStringDateHoursMinutes(long timestamp){
+        String timeString = "";
+        /*Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        int hour = calendar.get(Calendar.HOUR);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        String amPM = "";
+        if(calendar.get(Calendar.AM_PM) == Calendar.PM){
+            amPM = "PM";
+        }else{
+            amPM = "AM";
+        }
+        timeString = hour + ":" + minute + ":" + second + " " + amPM;*/
+        if(simpleDateFormatDateHoursMinute == null) {
+            simpleDateFormatDateHoursMinute = new SimpleDateFormat("dd/MM/yy  h:mm:ss a");
+        }
+        timeString = simpleDateFormatDateHoursMinute.format(timestamp);
+        return timeString;
+    }
+
     public static String getTimeStringHoursMinutes(long timestamp){
         String timeString = "";
         Calendar calendar = Calendar.getInstance();

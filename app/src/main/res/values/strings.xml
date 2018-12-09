@@ -171,6 +171,12 @@
     <string name="locate_device">Smart Controller Location</string>
     <string name="select_floor_first">Select a floor</string>
 
+    <string name="add_device_wifi_not_available">WiFi is not available on this device, please use a device with supported hardware.</string>
+    <string name="add_device_searching">Searching For Smart Controller</string>
+    <string name="add_device_found_device">RonixTech controller found!</string>
+    <string name="add_device_connecting">Connecting to %s</string>
+    <string name="add_device_connected">Connected to %s</string>
+
     <string name="unable_to_get_device_type_id">Unable to get smart controller type ID</string>
     <string name="unable_to_get_device_chip_id">Unable to get smart controller chip type ID</string>
 
@@ -401,6 +407,7 @@
     <string name="add">Add</string>
     <string name="start">Start</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
     <string name="save">Save</string>
     <string name="on">On</string>
     <string name="off">Off</string>
