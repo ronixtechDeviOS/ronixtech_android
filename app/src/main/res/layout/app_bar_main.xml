@@ -31,6 +31,7 @@
                 android:id="@+id/toolbar_change_home_imageview"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:visibility="gone"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/quantum_ic_keyboard_arrow_down_white_36"/>

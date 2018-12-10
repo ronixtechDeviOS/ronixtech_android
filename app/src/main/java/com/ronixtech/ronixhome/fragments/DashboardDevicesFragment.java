@@ -297,37 +297,39 @@ public class DashboardDevicesFragment extends Fragment {
     }
 
     private void startTimer(){
-        timer = new Timer();
-        handler = new Handler();
-        doAsynchronousTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        //MySettings.scanDevices();
-                        if(DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1){
-                            boolean allDevicesReachable = true;
-                            for (Device dev : DevicesInMemory.getDevices()) {
-                                if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
-                                    if(!MySettings.isControlActive()) {
-                                        getDeviceInfo(dev);
+        if(timer == null){
+            timer = new Timer();
+            handler = new Handler();
+            doAsynchronousTask = new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            //MySettings.scanDevices();
+                            if(DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1){
+                                boolean allDevicesReachable = true;
+                                for (Device dev : DevicesInMemory.getDevices()) {
+                                    if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
+                                        if(!MySettings.isControlActive()) {
+                                            getDeviceInfo(dev);
+                                        }else{
+                                            Log.d(TAG, "Controls active, skipping get_status");
+                                        }
                                     }else{
-                                        Log.d(TAG, "Controls active, skipping get_status");
+                                        MySettings.scanNetwork();
+                                        allDevicesReachable = false;
                                     }
-                                }else{
-                                    MySettings.scanNetwork();
-                                    allDevicesReachable = false;
+                                }
+                                if(allDevicesReachable){
+                                    Utils.hideUpdatingNotification();
                                 }
                             }
-                            if(allDevicesReachable){
-                                Utils.hideUpdatingNotification();
-                            }
                         }
-                    }
-                });
-            }
-        };
-        timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every REFRESH_RATE_MS
+                    });
+                }
+            };
+            timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every REFRESH_RATE_MS
+        }
     }
 
     private void stopTimer(){

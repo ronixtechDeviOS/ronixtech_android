@@ -371,6 +371,8 @@
     <string name="add_new_network">Add network</string>
     <string name="unit_static_ip_description">Give this controller a Static IP address on this WiFi network</string>
 
+    <string name="wifi_no_place">No place associated yet</string>
+
     <string name="change_room_location">Moving a Room to another Place will also move all its devices to that place. The new place\'s WiFi network(s) will not take effect on any Smart Controller until you re-configure them again.</string>
     <string name="remove_wifi_network_hint">Modifying the WiFi networks of a place will not take effect on any Smart Controller until you re-configure it again.</string>
     <string name="remove_wifi_network_question">Are you sure you want to remove the selected WiFi network?</string>

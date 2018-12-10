@@ -8,7 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 import java.util.List;
@@ -52,6 +54,7 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
             rowView = inflater.inflate(R.layout.list_item_wifi_network, null);
             vHolder = new ViewHolder();
             vHolder.networkNameTextView = rowView.findViewById(R.id.wifi_network_item_name_textview);
+            vHolder.placeNameTextView = rowView.findViewById(R.id.wifi_network_item_place_name_textview);
             vHolder.networkSignalTextView = rowView.findViewById(R.id.wifi_network_item_signal_textview);
             vHolder.networkSignalImageView = rowView.findViewById(R.id.wifi_network_signal_status_imageview);
             rowView.setTag(vHolder);
@@ -64,6 +67,17 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
 
         vHolder.networkNameTextView.setText(""+item.getSsid());
         vHolder.networkSignalTextView.setText("Signal: "+item.getSignal());
+
+        if(item.getPlaceID() != -1){
+            Place place = MySettings.getPlace(item.getPlaceID());
+            if(place != null){
+                vHolder.placeNameTextView.setText("@" + place.getName());
+            }else{
+                vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+            }
+        }else{
+            vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+        }
 
         if(item.getSignal() != null && item.getSignal().length() >= 1){
             int signalStrenth = Integer.valueOf(item.getSignal());
@@ -98,7 +112,7 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
     }
 
     public static class ViewHolder{
-        TextView networkNameTextView, networkSignalTextView;
+        TextView networkNameTextView, networkSignalTextView, placeNameTextView;
         ImageView networkSignalImageView;
     }
 }

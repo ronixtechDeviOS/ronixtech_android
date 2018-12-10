@@ -1,75 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.AddDeviceFragmentIntro">
-
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteColor">
-        <pl.droidsonroids.gif.GifImageView
-            android:id="@+id/instructions_gif_imageview"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/access_point_activation_final"/>
+            android:layout_height="match_parent"
+            android:background="@color/whiteColor">
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/instructions_gif_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/access_point_activation_final"/>
 
-        <TextView
-            android:id="@+id/instructions_1_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/instructions_gif_imageview"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/blackColor"
-            android:textSize="16sp"
-            android:text="@string/add_device_hint_1"/>
+            <TextView
+                android:id="@+id/instructions_1_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/instructions_gif_imageview"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/add_device_hint_1"/>
 
-        <TextView
-            android:id="@+id/instructions_2_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/instructions_1_textview"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/blackColor"
-            android:textSize="16sp"
-            android:text="@string/add_device_hint_2"/>
+            <TextView
+                android:id="@+id/instructions_2_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/instructions_1_textview"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/add_device_hint_2"/>
 
-        <TextView
-            android:id="@+id/instructions_3_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/instructions_2_textview"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/blackColor"
-            android:textSize="16sp"
-            android:text="@string/add_device_hint_3"/>
+            <TextView
+                android:id="@+id/instructions_3_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/instructions_2_textview"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:text="@string/add_device_hint_3"/>
 
-        <Button
-            android:id="@+id/continue_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/whiteColor"
-            android:background="@drawable/button_background_round_blue"
-            android:text="@string/continue_button"/>
+            <Button
+                android:id="@+id/continue_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/whiteColor"
+                android:background="@drawable/button_background_round_blue"
+                android:text="@string/continue_button"/>
 
-    </RelativeLayout>
+        </RelativeLayout>
 
-</FrameLayout>
+    </FrameLayout>
+</ScrollView>

@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="8dp">
 
     <ImageView
@@ -21,7 +21,8 @@
         android:layout_toRightOf="@id/wifi_network_signal_status_imageview"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="center_vertical">
         <TextView
             android:id="@+id/wifi_network_item_name_textview"
             android:layout_width="wrap_content"
@@ -30,11 +31,20 @@
             android:textColor="@color/blackColor"
             android:text="SSID_NAME"/>
         <TextView
+            android:id="@+id/wifi_network_item_place_name_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wifi_network_item_name_textview"
+            android:layout_marginTop="4dp"
+            android:textSize="16sp"
+            android:textColor="@color/blackColor"
+            android:text="PLACE_NAME"/>
+        <TextView
             android:id="@+id/wifi_network_item_signal_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:layout_below="@id/wifi_network_item_name_textview"
+            android:layout_below="@id/wifi_network_item_place_name_textview"
             android:layout_marginTop="4dp"
             android:textSize="16sp"
             android:textColor="@color/darkGrayColor"

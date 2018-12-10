@@ -2,11 +2,10 @@ package com.ronixtech.ronixhome.entities;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 //This is an entity that represents a WiFi network, with an SSID, password, and signal strength, along with a placeID
-@Entity(indices = {@Index(value = "ssid", unique = true)})
+@Entity()
 public class WifiNetwork {
     @PrimaryKey(autoGenerate = true)
     long id;

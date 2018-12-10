@@ -23,6 +23,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 import java.util.List;
@@ -75,6 +76,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
             rowView = inflater.inflate(R.layout.list_item_wifi_network_editable, null);
             vHolder = new ViewHolder();
             vHolder.networkNameTextView = rowView.findViewById(R.id.wifi_network_item_name_textview);
+            vHolder.placeNameTextView = rowView.findViewById(R.id.wifi_network_item_place_name_textview);
             vHolder.networkSignalImageView = rowView.findViewById(R.id.wifi_network_signal_status_imageview);
             vHolder.networkRemoveImageView = rowView.findViewById(R.id.wifi_network_remove_imageview);
             vHolder.networkEditImageView = rowView.findViewById(R.id.wifi_network_edit_imageview);
@@ -87,6 +89,17 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
         WifiNetwork item = networks.get(position);
 
         vHolder.networkNameTextView.setText(""+item.getSsid());
+
+        if(item.getPlaceID() != -1){
+            Place place = MySettings.getPlace(item.getPlaceID());
+            if(place != null){
+                vHolder.placeNameTextView.setText("@" + place.getName());
+            }else{
+                vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+            }
+        }else{
+            vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+        }
 
         if(item.getSignal() != null && item.getSignal().length() >= 1){
             int signalStrenth = Integer.valueOf(item.getSignal());
@@ -233,7 +246,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
     }
 
     public static class ViewHolder{
-        TextView networkNameTextView;
+        TextView networkNameTextView, placeNameTextView;
         ImageView networkSignalImageView;
         ImageView networkRemoveImageView, networkEditImageView;
     }

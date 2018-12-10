@@ -10,254 +10,247 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/line_configuration_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
             android:background="@color/whiteColor">
-
-            <RelativeLayout
-                android:id="@+id/line_configuration_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/line_gif_imageview"
+                android:layout_width="200dp"
+                android:layout_height="100dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:padding="8dp"
-                android:orientation="horizontal">
-                <pl.droidsonroids.gif.GifImageView
-                    android:id="@+id/line_gif_imageview"
-                    android:layout_width="200dp"
-                    android:layout_height="100dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/line_center"/>
-                <EditText
-                    android:id="@+id/line_name_edittxt"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/line_center"/>
+            <EditText
+                android:id="@+id/line_name_edittxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_gif_imageview"
+                android:layout_marginTop="8dp"
+                android:inputType="textCapWords"
+                android:imeOptions="actionDone"
+                android:textAlignment="center"
+                android:hint="LineName"/>
+            <RadioGroup
+                android:id="@+id/line_mode_radiogroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_name_edittxt"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/line_mode_title_textivew"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/line_gif_imageview"
-                    android:layout_marginTop="8dp"
-                    android:inputType="textCapWords"
-                    android:imeOptions="actionDone"
-                    android:textAlignment="center"
-                    android:hint="LineName"/>
-                <RadioGroup
-                    android:id="@+id/line_mode_radiogroup"
+                    android:textSize="18sp"
+                    android:textColor="@color/darkGrayColor"
+                    android:text="@string/line_mode_title" />
+                <RadioButton
+                    android:id="@+id/line_mode_primary_mode_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/line_mode_primary"/>
+                <TextView
+                    android:id="@+id/line_mode_primary_description_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/line_name_edittxt"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:text="@string/line_mode_primary_description"/>
+                <RelativeLayout
+                    android:id="@+id/line_type_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:orientation="vertical">
+                    android:padding="4dp">
                     <TextView
-                        android:id="@+id/line_mode_title_textivew"
-                        android:layout_width="match_parent"
+                        android:id="@+id/line_type_title_textview"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
                         android:textColor="@color/darkGrayColor"
-                        android:text="@string/line_mode_title" />
-                    <RadioButton
-                        android:id="@+id/line_mode_primary_mode_radiobutton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:text="@string/line_mode_primary"/>
-                    <TextView
-                        android:id="@+id/line_mode_primary_description_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:text="@string/line_mode_primary_description"/>
+                        android:text="@string/line_type"/>
                     <RelativeLayout
-                        android:id="@+id/line_type_layout"
+                        android:id="@+id/line_type_selection_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:padding="4dp">
-                        <TextView
-                            android:id="@+id/line_type_title_textview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:textSize="16sp"
-                            android:textColor="@color/darkGrayColor"
-                            android:text="@string/line_type"/>
-                        <RelativeLayout
-                            android:id="@+id/line_type_selection_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/line_type_title_textview"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginTop="8dp"
-                            android:padding="4dp"
-                            android:background="@drawable/button_background_round_border_blue">
-                            <ImageView
-                                android:id="@+id/line_type_imageview"
-                                android:layout_width="46dp"
-                                android:layout_height="46dp"
-                                android:src="@drawable/line_type_led__lamp"
-                                android:layout_centerVertical="true"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginLeft="16dp"/>
-                            <ImageView
-                                android:id="@+id/line_type_arrow_image_view"
-                                android:layout_width="46dp"
-                                android:layout_height="46dp"
-                                android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
-                                android:layout_centerVertical="true"
-                                android:layout_alignParentEnd="true"
-                                android:layout_alignParentRight="true"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginRight="16dp"/>
-                            <TextView
-                                android:id="@+id/line_type_textview"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_toEndOf="@id/line_type_imageview"
-                                android:layout_toRightOf="@id/line_type_imageview"
-                                android:layout_toStartOf="@id/line_type_arrow_image_view"
-                                android:layout_toLeftOf="@id/line_type_arrow_image_view"
-                                android:layout_centerVertical="true"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginEnd="16dp"
-                                android:textSize="16sp"
-                                android:textColor="@color/blackColor"
-                                android:text="@string/line_type_hint"/>
-                        </RelativeLayout>
-                        <RelativeLayout
-                            android:id="@+id/line_dimming__layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/line_type_selection_layout"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginTop="8dp"
-                            android:padding="4dp">
-                            <CheckBox
-                                android:id="@+id/line_dimming_checkbox"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:checked="true"/>
-                            <TextView
-                                android:id="@+id/line_dimming_textview"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_toEndOf="@id/line_dimming_checkbox"
-                                android:layout_toRightOf="@id/line_dimming_checkbox"
-                                android:layout_centerVertical="true"
-                                android:textSize="16sp"
-                                android:textColor="@color/blackColor"
-                                android:text="@string/line_dimming_on"/>
-                        </RelativeLayout>
-                    </RelativeLayout>
-                    <RadioButton
-                        android:id="@+id/line_mode_secondary_mode_radiobutton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:text="@string/line_mode_secondary"/>
-                    <TextView
-                        android:id="@+id/line_mode_secondary_description_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/blackColor"
-                        android:textSize="16sp"
-                        android:text="@string/line_mode_secondary_description"/>
-                    <RelativeLayout
-                        android:id="@+id/line_selected_line_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_below="@id/line_type_title_textview"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
                         android:layout_marginTop="8dp"
                         android:padding="4dp"
-                        android:background="@color/lightestGrayColor">
+                        android:background="@drawable/button_background_round_border_blue">
+                        <ImageView
+                            android:id="@+id/line_type_imageview"
+                            android:layout_width="46dp"
+                            android:layout_height="46dp"
+                            android:src="@drawable/line_type_led__lamp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginLeft="16dp"/>
+                        <ImageView
+                            android:id="@+id/line_type_arrow_image_view"
+                            android:layout_width="46dp"
+                            android:layout_height="46dp"
+                            android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"/>
                         <TextView
-                            android:id="@+id/line_selected_line_title_textview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/darkGrayColor"
-                            android:textSize="16sp"
-                            android:text="@string/selected_line_colon"/>
-                        <RelativeLayout
+                            android:id="@+id/line_type_textview"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/line_type_imageview"
+                            android:layout_toRightOf="@id/line_type_imageview"
+                            android:layout_toStartOf="@id/line_type_arrow_image_view"
+                            android:layout_toLeftOf="@id/line_type_arrow_image_view"
+                            android:layout_centerVertical="true"
                             android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
-                            android:layout_marginTop="8dp"
-                            android:padding="4dp"
-                            android:layout_below="@id/line_selected_line_title_textview"
-                            android:background="@drawable/button_background_round_border_blue">
-                            <ImageView
-                                android:id="@+id/line_selected_line_type_imageview"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
-                                android:layout_centerVertical="true"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/device_colored_icon"/>
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_toEndOf="@id/line_selected_line_type_imageview"
-                                android:layout_toRightOf="@id/line_selected_line_type_imageview">
-                                <TextView
-                                    android:id="@+id/line_selected_line_textvie"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:textColor="@color/blackColor"
-                                    android:textSize="16sp"
-                                    android:text="@string/line_selection_hint"/>
-                                <TextView
-                                    android:id="@+id/line_selected_line_location_textview"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@id/line_selected_line_textvie"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginStart="16dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:textSize="16sp"
-                                    android:textColor="@color/darkestGrayColor"
-                                    android:text=""/>
-                            </RelativeLayout>
-                        </RelativeLayout>
+                            android:textSize="16sp"
+                            android:textColor="@color/blackColor"
+                            android:text="@string/line_type_hint"/>
                     </RelativeLayout>
-                    <TextView
-                        android:id="@+id/line_mode_difference_textview"
+                    <RelativeLayout
+                        android:id="@+id/line_dimming__layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:textColor="@color/blackColor"
+                        android:layout_below="@id/line_type_selection_layout"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
+                        android:padding="4dp">
+                        <CheckBox
+                            android:id="@+id/line_dimming_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:checked="true"/>
+                        <TextView
+                            android:id="@+id/line_dimming_textview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/line_dimming_checkbox"
+                            android:layout_toRightOf="@id/line_dimming_checkbox"
+                            android:layout_centerVertical="true"
+                            android:textSize="16sp"
+                            android:textColor="@color/blackColor"
+                            android:text="@string/line_dimming_on"/>
+                    </RelativeLayout>
+                </RelativeLayout>
+                <RadioButton
+                    android:id="@+id/line_mode_secondary_mode_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/line_mode_secondary"/>
+                <TextView
+                    android:id="@+id/line_mode_secondary_description_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:text="@string/line_mode_secondary_description"/>
+                <RelativeLayout
+                    android:id="@+id/line_selected_line_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:padding="4dp"
+                    android:background="@color/lightestGrayColor">
+                    <TextView
+                        android:id="@+id/line_selected_line_title_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/darkGrayColor"
                         android:textSize="16sp"
-                        android:text="@string/line_mode_difference"/>
-                </RadioGroup>
-            </RelativeLayout>
+                        android:text="@string/selected_line_colon"/>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
+                        android:padding="4dp"
+                        android:layout_below="@id/line_selected_line_title_textview"
+                        android:background="@drawable/button_background_round_border_blue">
+                        <ImageView
+                            android:id="@+id/line_selected_line_type_imageview"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_centerVertical="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/device_colored_icon"/>
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@id/line_selected_line_type_imageview"
+                            android:layout_toRightOf="@id/line_selected_line_type_imageview">
+                            <TextView
+                                android:id="@+id/line_selected_line_textvie"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:textColor="@color/blackColor"
+                                android:textSize="16sp"
+                                android:text="@string/line_selection_hint"/>
+                            <TextView
+                                android:id="@+id/line_selected_line_location_textview"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/line_selected_line_textvie"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:textSize="16sp"
+                                android:textColor="@color/darkestGrayColor"
+                                android:text=""/>
+                        </RelativeLayout>
+                    </RelativeLayout>
+                </RelativeLayout>
+                <TextView
+                    android:id="@+id/line_mode_difference_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:text="@string/line_mode_difference"/>
+            </RadioGroup>
 
             <Button
                 android:id="@+id/continue_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/line_configuration_layout"
+                android:layout_below="@id/line_mode_radiogroup"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:textColor="@color/whiteColor"
                 android:background="@drawable/button_background_round_gray"
                 android:enabled="false"
                 android:text="@string/save_continue_button"/>
+
         </RelativeLayout>
 
     </FrameLayout>
