@@ -14,6 +14,22 @@ import java.util.List;
 //This is the entity for the RonixTech device
 @Entity(indices = {@Index(value = {"mac_address"}, unique = true)})
 public class Device implements Comparable {
+    private static final String DEVICE_MODEL_SWITCH_WIFI_1_LINE = "SmartSwitch - 1 Line - WiFi";
+    private static final String DEVICE_MODEL_SWITCH_WIFI_2_LINE = "SmartSwitch - 2 Lines - WiFi";
+    private static final String DEVICE_MODEL_SWITCH_WIFI_3_LINE = "SmartSwitch - 3 Lines - WiFi";
+    private static final String DEVICE_MODEL_PLUG_1_LINE = "SmartPlug - 1 Line - WiFi";
+    private static final String DEVICE_MODEL_PLUG_2_LINE = "SmartPlug - 2 Lines - WiFi";
+    private static final String DEVICE_MODEL_PLUG_3_LINE = "SmartPlug - 3 Lines - WiFi";
+    private static final String DEVICE_MODEL_PIR_SENSOR = "SmartSensor - MotionSensor";
+    private static final String DEVICE_MODEL_SOUND_CONTROLLER = "SmartSound";
+
+    private static final String DEVICE_MODEL_SWITCH = "SmartSwitch";
+    private static final String DEVICE_MODEL_PLUG = "SmartPlug";
+    private static final String DEVICE_MODEL_SENSOR = "SmartSensor";
+    private static final String DEVICE_MODEL_SOUND = "SmartSound";
+
+    private static final String DEVICE_MODEL_UNKNOWN = "Unknown Device Type";
+
     public static final int DEVICE_TYPE_nowifi_1line = 100001;
     public static final int DEVICE_TYPE_nowifi_2lines = 100002;
     public static final int DEVICE_TYPE_nowifi_3lines = 100003;
@@ -29,6 +45,8 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_PLUG_1lines = 100031;
     public static final int DEVICE_TYPE_PLUG_2lines = 100032;
     public static final int DEVICE_TYPE_PLUG_3lines = 100033;
+
+
     public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10;
 
     public static final int CONTROL_TIMEOUT = 350;
@@ -363,25 +381,40 @@ public class Device implements Comparable {
         this.subnetMask = subnetMask;
     }
 
-    public String getDeviceTypeString(){
+    public static String getDeviceTypeString(int deviceTypeID){
         if(deviceTypeID == Device.DEVICE_TYPE_wifi_1line_old || deviceTypeID == Device.DEVICE_TYPE_wifi_1line){
-            return "SmartSwitch - 1 Line - WiFi";
+            return DEVICE_MODEL_SWITCH_WIFI_1_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_wifi_2lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_2lines){
-            return "SmartSwitch - 2 Lines - WiFi";
+            return DEVICE_MODEL_SWITCH_WIFI_2_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_wifi_3lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_3lines || deviceTypeID == DEVICE_TYPE_wifi_3lines_workaround){
-            return "SmartSwitch - 3 Lines - WiFi";
+            return DEVICE_MODEL_SWITCH_WIFI_3_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_1lines){
-            return "SmartPlug - 1 Line - WiFi";
+            return DEVICE_MODEL_PLUG_1_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_2lines){
-            return "SmartPlug - 2 Lines - WiFi";
+            return DEVICE_MODEL_PLUG_2_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_3lines){
-            return "SmartPlug - 3 Lines - WiFi";
+            return DEVICE_MODEL_PLUG_3_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-            return "SmartSensor - MotionSensor";
+            return DEVICE_MODEL_PIR_SENSOR;
         }else if(deviceTypeID == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-            return "SmartSound";
-        }else return "Unknown Device Type";
+            return DEVICE_MODEL_SOUND_CONTROLLER;
+        }else return DEVICE_MODEL_UNKNOWN;
     }
+
+    public static String getDeviceTypeCategoryString(int deviceTypeID){
+        if(deviceTypeID == Device.DEVICE_TYPE_wifi_1line_old || deviceTypeID == Device.DEVICE_TYPE_wifi_2lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_3lines_old ||
+                deviceTypeID == Device.DEVICE_TYPE_wifi_1line || deviceTypeID == Device.DEVICE_TYPE_wifi_2lines || deviceTypeID == Device.DEVICE_TYPE_wifi_3lines ||
+                deviceTypeID == Device.DEVICE_TYPE_wifi_3lines_workaround){
+            return DEVICE_MODEL_SWITCH;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_1lines || deviceTypeID == Device.DEVICE_TYPE_PLUG_2lines || deviceTypeID == Device.DEVICE_TYPE_PLUG_3lines){
+            return DEVICE_MODEL_PLUG;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            return DEVICE_MODEL_SENSOR;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            return DEVICE_MODEL_SOUND;
+        }else return DEVICE_MODEL_UNKNOWN;
+    }
+
 
     @Override
     public boolean equals(Object object){

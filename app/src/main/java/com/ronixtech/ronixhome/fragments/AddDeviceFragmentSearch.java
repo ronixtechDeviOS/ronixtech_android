@@ -17,6 +17,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -39,6 +40,7 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 import java.util.List;
 
@@ -50,7 +52,7 @@ import java.util.List;
  * Use the {@link AddDeviceFragmentSearch#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceFragmentSearch extends Fragment {
+public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogFragment.OnNetworkSelectedListener{
     private static final String TAG = AddDeviceFragmentSearch.class.getSimpleName();
 
     private HomeConnectedListenerInterface mListener;
@@ -269,6 +271,9 @@ public class AddDeviceFragmentSearch extends Fragment {
     private void refreshNetworks(){
         if(checkLocationServices() && checkWifiService()){
             progressTextView.setText(getActivity().getResources().getString(R.string.add_device_searching));
+            progressCircle.setDonut_progress("" + 0);
+            progressCircle.setText("" + 0 + "%");
+
             /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
             final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
             searchingCountDownTimer = new CountDownTimer(totalMillis, 1) {
@@ -290,7 +295,9 @@ public class AddDeviceFragmentSearch extends Fragment {
                 public void onFinish() {
                     // DO something when 45 seconds are up
                     if(MainActivity.getInstance() != null && MainActivity.isResumed) {
-                        getFragmentManager().popBackStack();
+                        if(getFragmentManager() != null) {
+                            getFragmentManager().popBackStack();
+                        }
                     }
                 }
             }.start();
@@ -305,53 +312,34 @@ public class AddDeviceFragmentSearch extends Fragment {
                                 if(result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())){
                                     searchingCountDownTimer.cancel();
 
-                                    /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
-                                    final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
-                                    connectingCountDownTimer = new CountDownTimer(totalMillis, 1) {
-                                        public void onTick(long millisUntilFinished) {
+                                    //show popup if not already shown, and add scanned network to its list
 
-                                            //forward progress
-                                            long finishedMillis = totalMillis - millisUntilFinished;
-                                            int totalProgress = (int) (((float)finishedMillis / (float)totalMillis) * 100.0);
+                                    Log.d(TAG, "Found ssid: " + result.SSID);
 
-                                            long totalSeconds =  Math.round(((double)finishedMillis/(double)totalMillis) * 45.0);
+                                    WifiNetwork scannedNetwork = new WifiNetwork();
+                                    scannedNetwork.setSsid(result.SSID);
+                                    scannedNetwork.setMacAddress(result.BSSID);
+                                    scannedNetwork.setPassword(Constants.DEVICE_DEFAULT_PASSWORD);
+                                    scannedNetwork.setSignal(""+result.level);
 
-                                            if(MainActivity.getInstance() != null && MainActivity.isResumed) {
-                                                progressCircle.setDonut_progress("" + totalProgress);
-                                                //progressCircle.setText(getActivity().getResources().getString(R.string.seconds, 45 - (int) totalSeconds));
-                                                progressCircle.setText("" + totalProgress + "%");
-                                            }
-                                        }
-
-                                        public void onFinish() {
-                                            // DO something when 45 seconds are up
-                                            if(MainActivity.getInstance() != null && MainActivity.isResumed) {
-                                                getFragmentManager().popBackStack();
-                                            }
-                                        }
-                                    }.start();
-
-                                    progressTextView.setText(getActivity().getResources().getString(R.string.add_device_found_device) + "\n");
-                                    progressTextView.append(getActivity().getResources().getString(R.string.add_device_connecting, result.SSID) + "\n");
-
-                                    Log.d(TAG, "Found ssid " + result.SSID);
-                                    Device device = new Device();
-                                    device.setMacAddress(result.BSSID);
-                                    device.setName(result.SSID);
-                                    MySettings.setTempDevice(device);
-                                    Log.d(TAG, "Connecting to " + result.SSID + " with default password");
-                                    connectToWifiNetwork(result.SSID, Constants.DEVICE_DEFAULT_PASSWORD, true);
-                                    try {
-                                        if (mWifiScanReceiver != null) {
-                                            if (getActivity() != null) {
-                                                getActivity().unregisterReceiver(mWifiScanReceiver);
-                                            }
-                                        }
-                                        break;
-                                    }catch (Exception e){
-                                        Log.d(TAG, "Error unregistering mWifiScanReceiver");
-                                        break;
+                                    // DialogFragment.show() will take care of adding the fragment
+                                    // in a transaction.  We also want to remove any currently showing
+                                    // dialog, so make our own transaction and take care of that here.
+                                    PickSSIDDialogFragment ssidFragment = (PickSSIDDialogFragment) getFragmentManager().findFragmentByTag("ssidPickerDialogFragment");
+                                    if (ssidFragment != null) {
+                                        Log.d(TAG, "Fragment is showing");
+                                        ssidFragment.addNetworkToList(scannedNetwork);
+                                    }else{
+                                        Log.d(TAG, "Fragment is not showing");
+                                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                        // Create and show the dialog.
+                                        PickSSIDDialogFragment fragment = PickSSIDDialogFragment.newInstance();
+                                        fragment.addNetworkToList(scannedNetwork);
+                                        fragment.setTargetFragment(AddDeviceFragmentSearch.this, 0);
+                                        fragment.show(fragmentTransaction, "ssidPickerDialogFragment");
+                                        getFragmentManager().executePendingTransactions();
                                     }
+
                                 }else{
                                     mWifiManager.startScan();
                                 }
@@ -566,6 +554,66 @@ public class AddDeviceFragmentSearch extends Fragment {
     }
 
     @Override
+    public void onWifiNetworkSelected(WifiNetwork network){
+        progressTextView.setText(getActivity().getResources().getString(R.string.add_device_found_device) + "\n");
+        progressTextView.append(getActivity().getResources().getString(R.string.add_device_connecting, network.getSsid()) + "\n");
+
+        progressCircle.setDonut_progress("" + 1);
+        progressCircle.setText("" + 1 + "%");
+
+        /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
+        final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
+        connectingCountDownTimer = new CountDownTimer(totalMillis, 1) {
+            public void onTick(long millisUntilFinished) {
+
+                //forward progress
+                long finishedMillis = totalMillis - millisUntilFinished;
+                int totalProgress = (int) (((float)finishedMillis / (float)totalMillis) * 100.0);
+
+                long totalSeconds =  Math.round(((double)finishedMillis/(double)totalMillis) * 45.0);
+
+                if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                    progressCircle.setDonut_progress("" + totalProgress);
+                    //progressCircle.setText(getActivity().getResources().getString(R.string.seconds, 45 - (int) totalSeconds));
+                    progressCircle.setText("" + totalProgress + "%");
+                }
+            }
+
+            public void onFinish() {
+                // DO something when 45 seconds are up
+                if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                    if(getFragmentManager() != null) {
+                        getFragmentManager().popBackStack();
+                    }
+                }
+            }
+        }.start();
+
+        Log.d(TAG, "User chose ssid " + network.getSsid());
+        Device device = new Device();
+        device.setMacAddress(network.getMacAddress());
+        device.setName(network.getSsid());
+        MySettings.setTempDevice(device);
+        Log.d(TAG, "Connecting to " + network.getSsid() + " with default password");
+        try {
+            if (mWifiScanReceiver != null) {
+                if (getActivity() != null) {
+                    getActivity().unregisterReceiver(mWifiScanReceiver);
+                }
+            }
+        }catch (Exception e){
+            Log.d(TAG, "Error unregistering mWifiScanReceiver");
+        }
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                connectToWifiNetwork(network.getSsid(), network.getPassword(), true);
+            }
+        });
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( requestCode == RC_ACTIVITY_WIFI_TURN_ON ) {
             refreshNetworks();
@@ -663,6 +711,7 @@ public class AddDeviceFragmentSearch extends Fragment {
 
     @Override
     public void onStop(){
+        Log.d(TAG, "onStop");
         if(getActivity() != null) {
             try{
                 getActivity().unregisterReceiver(mWifiScanReceiver);

@@ -1144,12 +1144,39 @@ public class DeviceAdapter extends ArrayAdapter {
                                 int id = item1.getItemId();
                                 if(id == R.id.mode_line_1){
                                     changeMode(item, SoundDeviceData.MODE_LINE_IN);
+                                }else if(id == R.id.mode_line_2){
+                                    changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
+                                }else if(id == R.id.mode_upnp){
+                                    changeMode(item, SoundDeviceData.MODE_UPNP);
+                                }else if(id == R.id.mode_usb){
+                                    changeMode(item, SoundDeviceData.MODE_USB);
+                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
+                                }
+                                return true;
+                            }
+                        });
+                    }
+                });
+                vHolder.soundDeviceLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+                        PopupMenu popup = new PopupMenu(activity, view);
+                        popup.getMenuInflater().inflate(R.menu.menu_mode_switcher, popup.getMenu());
+
+                        popup.show();
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item1) {
+                                int id = item1.getItemId();
+                                if(id == R.id.mode_line_1){
+                                    changeMode(item, SoundDeviceData.MODE_LINE_IN);
                                 }
                                 else if(id == R.id.mode_line_2){
                                     changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
                                 }else if(id == R.id.mode_upnp){
                                     changeMode(item, SoundDeviceData.MODE_UPNP);
-                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
                                 }else if(id == R.id.mode_usb){
                                     changeMode(item, SoundDeviceData.MODE_USB);
                                     Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
@@ -2765,6 +2792,8 @@ public class DeviceAdapter extends ArrayAdapter {
         protected void onPostExecute(Void params) {
             if(statusCode != 200 && mode != SoundDeviceData.MODE_USB){
                 Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+            }else if(statusCode == 200 && mode == SoundDeviceData.MODE_UPNP){
+                Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
             }
             /*lines.remove(line);
             lines.add(position, line);

@@ -104,7 +104,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             nameTextView.setText(""+device.getName());
             macAddressTextView.setText(""+device.getMacAddress());
             lastSeenTextView.setText(Utils.getTimeStringHoursMinutesSeconds(device.getLastSeenTimestamp()));
-            typeTextView.setText(device.getDeviceTypeString());
+            typeTextView.setText(Device.getDeviceTypeString(device.getDeviceTypeID()));
             if(device.isDeviceMQTTReachable()){
                 statusTextVuew.setText(getActivity().getResources().getString(R.string.device_mqtt_reachable));
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.greenColor));

@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.entities.Place;
@@ -19,11 +20,13 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
     Activity activity ;
     List<WifiNetwork> networks;
     ViewHolder vHolder = null;
+    private int wifiNetworksType;
 
-    public WifiNetworkItemAdapter(Activity activity, List networks){
+    public WifiNetworkItemAdapter(Activity activity, List networks, int wifiNetworksType){
         super(activity, R.layout.list_item_wifi_network, networks);
         this.activity = activity;
         this.networks = networks;
+        this.wifiNetworksType = wifiNetworksType;
     }
 
     @Override
@@ -68,16 +71,23 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
         vHolder.networkNameTextView.setText(""+item.getSsid());
         vHolder.networkSignalTextView.setText("Signal: "+item.getSignal());
 
-        if(item.getPlaceID() != -1){
-            Place place = MySettings.getPlace(item.getPlaceID());
-            if(place != null){
-                vHolder.placeNameTextView.setText("@" + place.getName());
+        if(wifiNetworksType == Constants.WIFI_NETWORK_SEARCH){
+            vHolder.placeNameTextView.setVisibility(View.GONE);
+        }else if(wifiNetworksType == Constants.WIFI_NETWORK_DEVICE){
+            vHolder.placeNameTextView.setVisibility(View.VISIBLE);
+            if(item.getPlaceID() != -1){
+                Place place = MySettings.getPlace(item.getPlaceID());
+                if(place != null){
+                    vHolder.placeNameTextView.setText("@" + place.getName());
+                }else{
+                    vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+                }
             }else{
                 vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
             }
-        }else{
-            vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
         }
+
+
 
         if(item.getSignal() != null && item.getSignal().length() >= 1){
             int signalStrenth = Integer.valueOf(item.getSignal());

@@ -116,6 +116,10 @@ public class Constants {
     public static final int REMOVE_NETWORK_FROM_DB_NO = 0;
     public static final int REMOVE_NETWORK_FROM_DB_YES = 1;
 
+    //showing networks constants
+    public static final int WIFI_NETWORK_SEARCH = 0;
+    public static final int WIFI_NETWORK_DEVICE = 1;
+
     //types constants
     public static final int TYPE_PLACE = 0;
     public static final int TYPE_FLOOR = 1;

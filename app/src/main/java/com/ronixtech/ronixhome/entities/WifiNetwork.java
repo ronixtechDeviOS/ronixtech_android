@@ -11,6 +11,8 @@ public class WifiNetwork {
     long id;
     @ColumnInfo(name = "ssid")
     String ssid;
+    @ColumnInfo(name = "mac_address")
+    String macAddress;
     @ColumnInfo(name = "signal_strength")
     String signal;
     @ColumnInfo(name = "password")
@@ -21,6 +23,7 @@ public class WifiNetwork {
     public WifiNetwork(){
         this.id = 0;
         this.ssid = "";
+        this.macAddress = "";
         this.signal = "";
         this.password = "";
         this.placeID = -1;
@@ -40,6 +43,14 @@ public class WifiNetwork {
 
     public void setSsid(String ssid) {
         this.ssid = ssid;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 
     public String getSignal() {

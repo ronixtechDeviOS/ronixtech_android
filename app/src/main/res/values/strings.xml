@@ -160,9 +160,15 @@
     <string name="edit_device_description">Please select the new location of your Smart Controller then click Save</string>
     <string name="edit_device_place_message">To change the Place of the controller, please re-configure the controller from the beginning</string>
 
-    <string name="add_device_hint_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
-    <string name="add_device_hint_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
-    <string name="add_device_hint_3">3- Press Continue when you\'re ready</string>
+    <string name="add_device_hint_switch_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
+    <string name="add_device_hint_switch_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
+    <string name="add_device_hint_switch_3">3- Press Continue when you\'re ready</string>
+    <string name="add_device_hint_plug_1">1- Select your Smart Plug\'s SSID from the list that will show up after pressing Continue</string>
+    <string name="add_device_hint_plug_2">2- Press Continue when you\'re ready</string>
+    <string name="add_device_hint_pir_1">1- Configuration Mode Instructions for SmartSensor Controllers Go Here</string>
+    <string name="add_device_hint_pir_2">2- Press Continue when you\'re ready</string>
+    <string name="add_device_hint_sound_controller_1">1- Configuration Mode Instructions for SmartSound Controller Go Here</string>
+    <string name="add_device_hint_sound_controller_2">2- Press Continue when you\'re ready</string>
     <string name="add_device_search">Searching For Smart Controller</string>
     <string name="add_device_get_data">Getting Smart Controller Info</string>
     <string name="add_device_send_data">Configuring Smart Controller</string>

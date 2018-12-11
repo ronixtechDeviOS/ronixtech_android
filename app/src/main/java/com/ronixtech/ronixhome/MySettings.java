@@ -1282,6 +1282,17 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_23_24 = new Migration(23, 24) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE wifinetwork "
+                            + " ADD COLUMN mac_address TEXT DEFAULT ''");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
                             .addMigrations(MIGRATION_1_2,
                                     MIGRATION_2_3,
@@ -1304,7 +1315,8 @@ public class MySettings {
                                     MIGRATION_19_20,
                                     MIGRATION_20_21,
                                     MIGRATION_21_22,
-                                    MIGRATION_22_23)
+                                    MIGRATION_22_23,
+                                    MIGRATION_23_24)
                             .allowMainThreadQueries().
                             build();
             return database;

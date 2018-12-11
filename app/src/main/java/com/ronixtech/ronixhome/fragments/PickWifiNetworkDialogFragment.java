@@ -71,7 +71,7 @@ public class PickWifiNetworkDialogFragment extends DialogFragment {
             networks = MySettings.getAllWifiNetworks();
         }
 
-        adapter = new WifiNetworkItemAdapter(getActivity(), networks);
+        adapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_DEVICE);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
         listView.addFooterView(footerView, null, false);
         listView.setAdapter(adapter);

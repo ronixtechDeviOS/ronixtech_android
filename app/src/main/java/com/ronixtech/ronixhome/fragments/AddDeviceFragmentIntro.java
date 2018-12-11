@@ -2,9 +2,11 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +16,9 @@ import android.widget.Button;
 
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.ViewPagerAdapter;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 /**
@@ -29,6 +33,10 @@ public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment
     private static final String TAG = AddDeviceFragmentIntro.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
+
+    ViewPager viewPager;
+    ViewPagerAdapter pagerAdapter;
+    TabLayout mTabLayout;
 
     Button continueButton;
 
@@ -74,6 +82,34 @@ public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment
             //fragmentTransaction.addToBackStack("wifiInfoFragment");
             fragmentTransaction.commit();
         }*/
+
+        // Locate the viewpager
+        viewPager = (ViewPager) view.findViewById(R.id.devices_hints_pager);
+        mTabLayout = (TabLayout) view.findViewById(R.id.devices_hints_tabs);
+
+        // Set the ViewPagerAdapter into ViewPager
+        pagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+
+        DeviceConfigurationHintFragment deviceConfigurationHintFragment = new DeviceConfigurationHintFragment();
+        deviceConfigurationHintFragment.setDeviceType(Device.DEVICE_TYPE_wifi_3lines);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_wifi_3lines));
+
+        DeviceConfigurationHintFragment deviceConfigurationHintFragment2 = new DeviceConfigurationHintFragment();
+        deviceConfigurationHintFragment2.setDeviceType(Device.DEVICE_TYPE_PLUG_3lines);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment2, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_PLUG_3lines));
+
+        DeviceConfigurationHintFragment deviceConfigurationHintFragment3 = new DeviceConfigurationHintFragment();
+        deviceConfigurationHintFragment3.setDeviceType(Device.DEVICE_TYPE_PIR_MOTION_SENSOR);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment3, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_PIR_MOTION_SENSOR));
+
+        DeviceConfigurationHintFragment deviceConfigurationHintFragment4 = new DeviceConfigurationHintFragment();
+        deviceConfigurationHintFragment4.setDeviceType(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment4, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER));
+
+        pagerAdapter.notifyDataSetChanged();
+
+        mTabLayout.setupWithViewPager(viewPager);
 
         continueButton = view.findViewById(R.id.continue_button);
         continueButton.setOnClickListener(new View.OnClickListener() {

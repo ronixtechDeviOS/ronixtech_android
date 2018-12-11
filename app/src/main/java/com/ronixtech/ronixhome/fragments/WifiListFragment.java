@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.adapters.WifiNetworkItemAdapter;
@@ -131,7 +132,7 @@ public class WifiListFragment extends Fragment {
         searchStatusTextView = view.findViewById(R.id.search_status_textview);
         networksListView = view.findViewById(R.id.networks_listview);
         networks = new ArrayList<>();
-        networksAdapter = new WifiNetworkItemAdapter(getActivity(), networks);
+        networksAdapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_SEARCH);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
         networksListView.addFooterView(footerView);
         networksListView.setAdapter(networksAdapter);
