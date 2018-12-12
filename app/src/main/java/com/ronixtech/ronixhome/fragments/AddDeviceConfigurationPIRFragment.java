@@ -11,14 +11,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -26,6 +25,7 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.LinePIRConfigurationAdapter;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
+import com.ronixtech.ronixhome.entities.PIRData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,8 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
     private static final String TAG = AddDeviceConfigurationPIRFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
+
+    EditText deviceNameEditText;
 
     RelativeLayout lineSelectionLayout;
     TextView lineNameTextView;
@@ -83,6 +85,8 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
         View view = inflater.inflate(R.layout.fragment_add_device_configuration_pir, container, false);
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.configure_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
+
+        deviceNameEditText = view.findViewById(R.id.device_name_edittext);
 
         lineSelectionLayout = view.findViewById(R.id.line_selection_layout);
         lineNameTextView = view.findViewById(R.id.selected_line_name_textview);
@@ -138,27 +142,57 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //create the lines and device.setLines then MySettings.setDevice()
-                List<Line> lines = new ArrayList<>();
+                if(validateInputs()){
+                    //initialize the pirdata configuration for the device
+                    //create the lines and pirData.setLines then MySettings.addDevice()
+                    Device device = MySettings.getTempDevice();
 
-                /*MySettings.addDevice(device);
-                device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    if(deviceNameEditText.getText().toString().length() > 1){
+                        device.setName(deviceNameEditText.getText().toString());
+                    }else{
+                        device.setName(getActivity().getResources().getString(R.string.pir_controller_name_hint));
+                    }
 
-                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                    lines.addAll(device.getLines());
-                }*/
-                lines.addAll(selectedLines);
+                    Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
-                device.setLines(lines);
-                MySettings.setTempDevice(device);
+                    if(dbDevice == null){
+                        MySettings.addDevice(device);
+                        device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    }
 
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
-                //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                fragmentTransaction.commit();
+                    if(deviceNameEditText.getText().toString().length() > 1){
+                        device.setName(deviceNameEditText.getText().toString());
+                    }else{
+                        device.setName(getActivity().getResources().getString(R.string.pir_controller_name_hint));
+                    }
+
+                    PIRData pirData = new PIRData();
+                    pirData.setDeviceID(device.getId());
+                    device.setPIRData(pirData);
+
+                    List<Line> lines = new ArrayList<>();
+                    for (Line line:selectedLines) {
+                        Line newLine = new Line(line);
+                        newLine.setDeviceID(device.getId());
+                        lines.add(newLine);
+                    }
+                    device.setLines(lines);
+
+                    MySettings.addDevice(device);
+
+                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+
+                    MySettings.setTempDevice(device);
+
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                    //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                    fragmentTransaction.commit();
+                }
             }
         });
 
@@ -203,13 +237,13 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
     private boolean validateInputs(){
         boolean inputsValid = true;
 
-        if(selectedLines == null || selectedLines.size() <= 0){
+        /*if(selectedLines == null || selectedLines.size() <= 0){
             inputsValid = false;
             YoYo.with(Techniques.Shake)
                     .duration(700)
                     .repeat(1)
                     .playOn(lineSelectionLayout);
-        }
+        }*/
 
         return inputsValid;
     }

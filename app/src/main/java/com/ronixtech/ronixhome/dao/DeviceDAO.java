@@ -83,9 +83,7 @@ public abstract class DeviceDAO {
         Device device = findByID(id);
         if(device != null) {
             List<Line> lines = getLinesList(id);
-            if (device != null) {
-                device.setLines(lines);
-            }
+            device.setLines(lines);
         }
         return device;
     }
@@ -93,9 +91,7 @@ public abstract class DeviceDAO {
         Device device = findByMAC(macAddress);
         if(device != null) {
             List<Line> lines = getLinesList(device.getId());
-            if (device != null) {
-                device.setLines(lines);
-            }
+            device.setLines(lines);
         }
         return device;
     }
@@ -103,9 +99,7 @@ public abstract class DeviceDAO {
         Device device = findByChipID(chipID);
         if(device != null){
             List<Line> lines = getLinesList(device.getId());
-            if(device != null){
-                device.setLines(lines);
-            }
+            device.setLines(lines);
         }
         return device;
     }
@@ -134,9 +128,7 @@ public abstract class DeviceDAO {
         Device device = findByID(id);
         if(device != null) {
             SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(id);
-            if (device != null) {
-                device.setSoundDeviceData(soundDeviceData);
-            }
+            device.setSoundDeviceData(soundDeviceData);
         }
         return device;
     }
@@ -144,9 +136,7 @@ public abstract class DeviceDAO {
         Device device = findByMAC(macAddress);
         if(device != null) {
             SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(device.getId());
-            if (device != null) {
-                device.setSoundDeviceData(soundDeviceData);
-            }
+            device.setSoundDeviceData(soundDeviceData);
         }
         return device;
     }
@@ -154,9 +144,7 @@ public abstract class DeviceDAO {
         Device device = findByChipID(chipID);
         if(device != null) {
             SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(device.getId());
-            if (device != null) {
-                device.setSoundDeviceData(soundDeviceData);
-            }
+            device.setSoundDeviceData(soundDeviceData);
         }
         return device;
     }
@@ -173,15 +161,22 @@ public abstract class DeviceDAO {
             pirData.setDeviceID(device.getId());
             insertPIRData(pirData);
         }
+        List<Line> lines = device.getLines();
+        if(lines != null) {
+            for (int i = 0; i < lines.size(); i++) {
+                lines.get(i).setDeviceID(device.getId());
+            }
+            insertLines(lines);
+        }
         insertDevice(device);
     }
     public Device getDeviceWithPIRDataByID(long id) {
         Device device = findByID(id);
         if(device != null) {
             PIRData pirData = getPIRData(id);
-            if (device != null) {
-                device.setPIRData(pirData);
-            }
+            device.setPIRData(pirData);
+            List<Line> lines = getLinesList(id);
+            device.setLines(lines);
         }
         return device;
     }
@@ -189,9 +184,9 @@ public abstract class DeviceDAO {
         Device device = findByMAC(macAddress);
         if(device != null) {
             PIRData pirData = getPIRData(device.getId());
-            if (device != null) {
-                device.setPIRData(pirData);
-            }
+            device.setPIRData(pirData);
+            List<Line> lines = getLinesList(device.getId());
+            device.setLines(lines);
         }
         return device;
     }
@@ -199,14 +194,15 @@ public abstract class DeviceDAO {
         Device device = findByChipID(chipID);
         if(device != null) {
             PIRData pirData = getPIRData(device.getId());
-            if (device != null) {
-                device.setPIRData(pirData);
-            }
+            device.setPIRData(pirData);
+            List<Line> lines = getLinesList(device.getId());
+            device.setLines(lines);
         }
         return device;
     }
     public void removeDeviceWithPIRData(Device device){
         removeDevicePIRData(device.getId());
+        removeDeviceLines(device.getId());
         removeDevice(device.getId());
     }
 }

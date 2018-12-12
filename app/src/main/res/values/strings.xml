@@ -21,6 +21,7 @@
     <string name="help">Help</string>
     <string name="account">Account</string>
     <string name="profile">Profile</string>
+    <string name="upload_data">Upload Data</string>
     <string name="logout">Logout</string>
 
     <string name="about_description">This is the Smart Home App from RonixTech.\nYou can use it to monitor/control all your RonixTech Controllers in your home from your smart phone. Control can be done locally from your home or remotely from anywhere in the world through the internet.</string>
@@ -222,6 +223,7 @@
     <string name="plug_2_name_hint">Plug #2</string>
     <string name="plug_3_name_hint">Plug #3</string>
 
+    <string name="pir_controller_name_hint">Motion Sensor</string>
     <string name="pir_pairing_description">Please select which device(s) this PIR controller will be paired to</string>
     <string name="line_addition_hint">Tap here to add a device</string>
     <string name="line_selection_hint">Tap here to select device</string>
@@ -345,6 +347,7 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="device_unreachable">Device unreachable</string>
 
+    <string name="device_edit_disabled_only_local_mode">Editing PIR controllers require local connectivity, try again when in the same network as the controller</string>
     <string name="device_update_disabled_only_local_mode">Firmware updates require local connectivity, try again when in the same network as the controller</string>
     <string name="device_edit_location_ssid_disabled_only_local_mode">Changing the smart controller\'s network requires local connectivity, try again when in the same network as the controller</string>
 

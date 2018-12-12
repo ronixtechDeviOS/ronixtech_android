@@ -14,7 +14,7 @@ public class PIRData {
     int state;
 
     public PIRData(){
-        this.id = -1;
+        this.id = 0;
         this.deviceID = -1;
         this.state = Line.LINE_STATE_OFF;
     }

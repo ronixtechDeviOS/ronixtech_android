@@ -42,6 +42,7 @@ import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DeviceInfoFragment;
 import com.ronixtech.ronixhome.fragments.EditDeviceFragment;
 import com.ronixtech.ronixhome.fragments.EditDeviceLocationFragment;
+import com.ronixtech.ronixhome.fragments.EditDevicePIRFragment;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -1045,6 +1046,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.speakersLayout = rowView.findViewById(R.id.speakers_layout);
                 vHolder.deviceModeLayout = rowView.findViewById(R.id.active_mode_layout);
                 vHolder.deviceModeTextView = rowView.findViewById(R.id.device_active_mode_textview);
+                vHolder.deviceModeArrowImageView = rowView.findViewById(R.id.mode_arrow_imageview);
                 vHolder.soundDeviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.soundDeviceTypeImageView = rowView.findViewById(R.id.device_type_imageview);
                 vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
@@ -1129,7 +1131,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 final ViewHolder tempViewHolder = vHolder;
-                vHolder.deviceModeLayout.setOnClickListener(new View.OnClickListener() {
+                vHolder.deviceModeArrowImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -1150,40 +1152,22 @@ public class DeviceAdapter extends ArrayAdapter {
                                     changeMode(item, SoundDeviceData.MODE_UPNP);
                                 }else if(id == R.id.mode_usb){
                                     changeMode(item, SoundDeviceData.MODE_USB);
-                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
                                 }
                                 return true;
                             }
                         });
                     }
                 });
+                vHolder.deviceModeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tempViewHolder.deviceModeArrowImageView.performClick();
+                    }
+                });
                 vHolder.soundDeviceLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_mode_switcher, popup.getMenu());
-
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.mode_line_1){
-                                    changeMode(item, SoundDeviceData.MODE_LINE_IN);
-                                }
-                                else if(id == R.id.mode_line_2){
-                                    changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
-                                }else if(id == R.id.mode_upnp){
-                                    changeMode(item, SoundDeviceData.MODE_UPNP);
-                                }else if(id == R.id.mode_usb){
-                                    changeMode(item, SoundDeviceData.MODE_USB);
-                                    Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
-                                }
-                                return true;
-                            }
-                        });
+                        tempViewHolder.deviceModeArrowImageView.performClick();
                     }
                 });
                 vHolder.speakerVolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -1396,8 +1380,20 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
-                                }
-                                else if(id == R.id.action_update_device){
+                                }else if(id == R.id.action_edit_device){
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
+
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        EditDevicePIRFragment editDevicePIRFragment = new EditDevicePIRFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, editDevicePIRFragment, "editDevicePIRFragment");
+                                        fragmentTransaction.addToBackStack("editDevicePIRFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_edit_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                    }
+                                }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -2120,8 +2116,8 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void changeMode(Device device, final int mode){
-        ModeChanger modeChanger = new ModeChanger(device, mode);
-        modeChanger.execute();
+        DevicePinger devicePinger = new DevicePinger(device, mode);
+        devicePinger.execute();
     }
 
     public static class ViewHolder{
@@ -2137,6 +2133,7 @@ public class DeviceAdapter extends ArrayAdapter {
         ImageView soundDeviceTypeImageView;
         ImageView soundDeviceAdvancedOptionsButton;
         RelativeLayout deviceModeLayout;
+        ImageView deviceModeArrowImageView;
         TextView deviceModeTextView;
         SeekBar speakerVolumeSeekBar;//will be multiple ones, depending on number of speakers
         LinearLayout speakersLayout;
@@ -2748,12 +2745,100 @@ public class DeviceAdapter extends ArrayAdapter {
         }
     }
 
+    public class DevicePinger extends AsyncTask<Void, Void, Void> {
+        private final String TAG = DeviceAdapter.DevicePinger.class.getSimpleName();
+
+        Device device;
+        int mode;
+
+        int statusCode;
+
+        public DevicePinger(Device device, int mode) {
+            this.device = device;
+            this.mode = mode;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            Log.d(TAG, "Enabling getStatus flag...");
+            MySettings.setGetStatusState(true);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                ModeChanger modeChanger = new ModeChanger(device, mode);
+                modeChanger.execute();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            try{
+                URL url = new URL("http://" + device.getIpAddress() + Constants.CONTROL_SOUND_DEVICE_CHANGE_MODE_URL);
+                Log.d(TAG,  "devicePinger URL: " + url);
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
+                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
+                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
+                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.setRequestMethod("POST");
+
+                JSONObject jObject = new JSONObject();
+                jObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, "");
+                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                Log.d(TAG,  "devicePinger POST data: " + jObject.toString());
+
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                outputStreamWriter.write(jObject.toString());
+                outputStreamWriter.flush();
+
+                statusCode = urlConnection.getResponseCode();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String dataLine;
+                while((dataLine = bufferedReader.readLine()) != null) {
+                    result.append(dataLine);
+                }
+                urlConnection.disconnect();
+                Log.d(TAG,  "devicePinger response: " + result.toString());
+            }catch (MalformedURLException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (IOException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }catch (JSONException e){
+                Log.d(TAG, "Exception: " + e.getMessage());
+            }finally {
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                Log.d(TAG, "Disabling getStatus flag...");
+                MySettings.setGetStatusState(false);
+            }
+
+            return null;
+        }
+    }
+
     public class ModeChanger extends AsyncTask<Void, Void, Void> {
         private final String TAG = DeviceAdapter.ModeChanger.class.getSimpleName();
 
         Device device;
         int mode;
-
         int oldMode;
 
         int statusCode;
@@ -2761,6 +2846,12 @@ public class DeviceAdapter extends ArrayAdapter {
         public ModeChanger(Device device, int mode) {
             this.device = device;
             this.mode = mode;
+            this.oldMode = device.getSoundDeviceData().getMode();
+            device.getSoundDeviceData().setMode(mode);
+            DevicesInMemory.updateDevice(device);
+            if(mode == SoundDeviceData.MODE_USB){
+                Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
+            }
         }
 
         @Override
@@ -2813,11 +2904,6 @@ public class DeviceAdapter extends ArrayAdapter {
             MySettings.setControlState(true);
 
             layoutEnabled = false;
-
-            oldMode = device.getSoundDeviceData().getMode();
-
-            device.getSoundDeviceData().setMode(mode);
-            DevicesInMemory.updateDevice(device);
 
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){

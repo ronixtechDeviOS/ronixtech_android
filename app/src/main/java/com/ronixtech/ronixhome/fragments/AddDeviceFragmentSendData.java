@@ -28,7 +28,6 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
-import com.ronixtech.ronixhome.entities.PIRData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -289,8 +288,13 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200) {
-                PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment);
-                pirAddPairings.execute();
+                if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null && MySettings.getTempDevice().getLines().size() >= 1){
+                    PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment);
+                    pirAddPairings.execute();
+                }else{
+                    WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                    wiFiDataSenderGet.execute();
+                }
             }else{
                 Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
                 fragment.goToSearchFragment();
@@ -394,74 +398,76 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
-            for (Line line:MySettings.getTempDevice().getLines()) {
-                statusCode = 0;
-                int numberOfRetries = 0;
-                while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
-                    try{
-                        String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
+            if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null){
+                for (Line line:MySettings.getTempDevice().getLines()) {
+                    statusCode = 0;
+                    int numberOfRetries = 0;
+                    while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                        try{
+                            String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
-                        URL url = new URL(urlString);
-                        Log.d(TAG,  "addPairing URL: " + url);
+                            URL url = new URL(urlString);
+                            Log.d(TAG,  "addPairing URL: " + url);
 
-                        urlConnection = (HttpURLConnection) url.openConnection();
-                        urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
-                        urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
-                        urlConnection.setDoOutput(true);
-                        urlConnection.setDoInput(true);
-                        urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                        urlConnection.setRequestProperty("Accept", "application/json");
-                        urlConnection.setRequestMethod("POST");
+                            urlConnection = (HttpURLConnection) url.openConnection();
+                            urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                            urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                            urlConnection.setDoOutput(true);
+                            urlConnection.setDoInput(true);
+                            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                            urlConnection.setRequestProperty("Accept", "application/json");
+                            urlConnection.setRequestMethod("POST");
 
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("U_P_STT", "1");
-                        jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
-                        jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());
-                        jsonObject.put("U_P_LNO", ""+line.getPosition());
-                        if(line.getPirPowerState() == Line.LINE_STATE_ON){
-                            if(line.getPirDimmingValue() == 10){
-                                jsonObject.put("U_P_LVN", ":");
-                            }else{
-                                jsonObject.put("U_P_LVN", ""+line.getPirDimmingValue());
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("U_P_STT", "1");
+                            jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
+                            jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());
+                            jsonObject.put("U_P_LNO", ""+line.getPosition());
+                            if(line.getPirPowerState() == Line.LINE_STATE_ON){
+                                if(line.getPirDimmingValue() == 10){
+                                    jsonObject.put("U_P_LVN", ":");
+                                }else{
+                                    jsonObject.put("U_P_LVN", ""+line.getPirDimmingValue());
+                                }
+                                jsonObject.put("U_P_LVF", "0");
+                            }else if(line.getPirPowerState() == Line.LINE_STATE_OFF){
+                                jsonObject.put("U_P_LVN", "0");
+                                jsonObject.put("U_P_LVF", ":");
                             }
-                            jsonObject.put("U_P_LVF", "0");
-                        }else if(line.getPirPowerState() == Line.LINE_STATE_OFF){
-                            jsonObject.put("U_P_LVN", "0");
-                            jsonObject.put("U_P_LVF", ":");
-                        }
-                        jsonObject.put("U_P_DUR", "" +  Utils.getTimeUnitMilliseconds(line.getPirTriggerActionDurationTimeUnit(), line.getPirTriggerActionDuration()));
+                            jsonObject.put("U_P_DUR", "" +  Utils.getTimeUnitMilliseconds(line.getPirTriggerActionDurationTimeUnit(), line.getPirTriggerActionDuration()));
 
 
-                        jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+                            jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                        Log.d(TAG,  "addPairing POST data: " + jsonObject.toString());
+                            Log.d(TAG,  "addPairing POST data: " + jsonObject.toString());
 
-                        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
-                        outputStreamWriter.write(jsonObject.toString());
-                        outputStreamWriter.flush();
-                        outputStreamWriter.close();
+                            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                            outputStreamWriter.write(jsonObject.toString());
+                            outputStreamWriter.flush();
+                            outputStreamWriter.close();
 
-                        statusCode = urlConnection.getResponseCode();
-                        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                        StringBuilder result = new StringBuilder();
-                        String dataLine;
-                        while((dataLine = bufferedReader.readLine()) != null) {
-                            result.append(dataLine);
-                        }
-                        urlConnection.disconnect();
-                        Log.d(TAG,  "addPairing response: " + result.toString());
-                    }catch (MalformedURLException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
-                    }catch (IOException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
-                    }catch (JSONException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
-                    }finally {
-                        if(urlConnection != null) {
+                            statusCode = urlConnection.getResponseCode();
+                            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                            StringBuilder result = new StringBuilder();
+                            String dataLine;
+                            while((dataLine = bufferedReader.readLine()) != null) {
+                                result.append(dataLine);
+                            }
                             urlConnection.disconnect();
+                            Log.d(TAG,  "addPairing response: " + result.toString());
+                        }catch (MalformedURLException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }catch (IOException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }catch (JSONException e){
+                            Log.d(TAG, "Exception: " + e.getMessage());
+                        }finally {
+                            if(urlConnection != null) {
+                                urlConnection.disconnect();
+                            }
+                            numberOfRetries++;
                         }
-                        numberOfRetries++;
                     }
                 }
             }
@@ -939,21 +945,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
                 }
 
-                Device device = MySettings.getTempDevice();
-                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                    //quickly initialize the pirdata configuration for the device
-                    MySettings.addDevice(device);
-                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-                    PIRData pirData = new PIRData();
-                    pirData.setDeviceID(device.getId());
-                    device.setPIRData(pirData);
-                    MySettings.addDevice(device);
-                    MySettings.setTempDevice(null);
-
-                    fragment.goToSuccessFragment();
-                }else{
-                    fragment.goToSuccessFragment();
-                }
+                fragment.goToSuccessFragment();
             }
         }
 
@@ -1027,15 +1019,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
                 }
 
-                if(MainActivity.isResumed) {
-                    FragmentManager fragmentManager = fragment.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    fragmentTransaction.commit();
-                }
+                fragment.goToSuccessFragment();
             }
         }
 

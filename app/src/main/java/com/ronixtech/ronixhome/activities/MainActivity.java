@@ -50,6 +50,7 @@ import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
+import com.ronixtech.ronixhome.fragments.UploadDataFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 
 import org.json.JSONArray;
@@ -511,6 +512,14 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
             fragmentTransaction.addToBackStack("userProfileFragment");
+            fragmentTransaction.commit();
+        } else if (id == R.id.nav_upload_data) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            UploadDataFragment uploadDataFragment = new UploadDataFragment();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.replace(R.id.fragment_view, uploadDataFragment, "uploadDataFragment");
+            fragmentTransaction.addToBackStack("uploadDataFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
             if(MySettings.getActiveUser() != null) {

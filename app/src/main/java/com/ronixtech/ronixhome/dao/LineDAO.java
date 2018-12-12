@@ -49,6 +49,9 @@ public abstract class LineDAO{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertLine(Line line);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertLines(List<Line> lines);
+
 
     @Query("SELECT * FROM line WHERE primary_device_chip_id =:mainDeviceChipID")
     public abstract List<Line> getSecondaryLine(String mainDeviceChipID);

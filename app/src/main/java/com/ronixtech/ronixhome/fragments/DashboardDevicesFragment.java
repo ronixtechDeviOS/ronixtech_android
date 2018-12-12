@@ -340,6 +340,7 @@ public class DashboardDevicesFragment extends Fragment {
             timer.cancel();
             timer.purge();
         }
+        timer = null;
     }
 
     public void setRoom(Room room){
@@ -1079,6 +1080,7 @@ public class DashboardDevicesFragment extends Fragment {
         Device device;
 
         int statusCode;
+        boolean ronixUnit = true;
 
         public StatusGetter(Device device) {
             try{
@@ -1141,6 +1143,11 @@ public class DashboardDevicesFragment extends Fragment {
                 }
                 urlConnection.disconnect();
                 Log.d(TAG,  "statusGetter response: " + result.toString());
+                if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
+                    ronixUnit = true;
+                }else{
+                    ronixUnit = false;
+                }
                 if(result.length() >= 10){
                     JSONObject jsonObject = new JSONObject(result.toString());
                     if(jsonObject != null){
@@ -1296,12 +1303,47 @@ public class DashboardDevicesFragment extends Fragment {
                 }
             }catch (MalformedURLException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }catch (IOException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }catch (JSONException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
-                device.setFirmwareUpdateAvailable(true);
-                DevicesInMemory.updateDevice(device);
+                if(!ronixUnit){
+                    device.setErrorCount(device.getErrorCount() + 1);
+                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                    if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                        device.setErrorCount(0);
+                        device.setIpAddress("");
+                        DevicesInMemory.updateDevice(device);
+                        MySettings.updateDeviceIP(device, "");
+                        //MySettings.updateDeviceErrorCount(device, 0);
+                        //MySettings.scanNetwork();
+                    }
+                }else{
+                    device.setFirmwareUpdateAvailable(true);
+                    DevicesInMemory.updateDevice(device);
+                }
             }finally {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
@@ -1320,6 +1362,7 @@ public class DashboardDevicesFragment extends Fragment {
         Device device;
 
         int statusCode;
+        boolean ronixUnit = true;
 
         public DeviceSyncer(Device device) {
             this.device = device;
@@ -1522,6 +1565,11 @@ public class DashboardDevicesFragment extends Fragment {
                 }
                 urlConnection.disconnect();
                 Log.d(TAG,  "statusGetter response: " + result.toString());
+                if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
+                    ronixUnit = true;
+                }else{
+                    ronixUnit = false;
+                }
                 if(result.length() >= 10){
                     JSONObject jsonObject = new JSONObject(result.toString());
                     if(jsonObject != null){
@@ -1868,12 +1916,47 @@ public class DashboardDevicesFragment extends Fragment {
                 }
             }catch (MalformedURLException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }catch (IOException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }catch (JSONException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
-                device.setFirmwareUpdateAvailable(true);
-                DevicesInMemory.updateDevice(device);
+                if(!ronixUnit){
+                    device.setErrorCount(device.getErrorCount() + 1);
+                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                    if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                        device.setErrorCount(0);
+                        device.setIpAddress("");
+                        DevicesInMemory.updateDevice(device);
+                        MySettings.updateDeviceIP(device, "");
+                        //MySettings.updateDeviceErrorCount(device, 0);
+                        //MySettings.scanNetwork();
+                    }
+                }else {
+                    device.setFirmwareUpdateAvailable(true);
+                    DevicesInMemory.updateDevice(device);
+                }
             }finally {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
@@ -1894,11 +1977,7 @@ public class DashboardDevicesFragment extends Fragment {
         int statusCode;
 
         public ModeGetter(Device device) {
-            try{
-                this.device = device;
-            }catch (Exception e){
-                Log.d(TAG, "Json exception " + e.getMessage());
-            }
+            this.device = device;
         }
 
         @Override
@@ -2002,10 +2081,43 @@ public class DashboardDevicesFragment extends Fragment {
                 }
             }catch (MalformedURLException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }catch (IOException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }catch (JSONException e){
                 Log.d(TAG, "Exception: " + e.getMessage());
+                device.setErrorCount(device.getErrorCount() + 1);
+                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                DevicesInMemory.updateDevice(device);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    device.setErrorCount(0);
+                    device.setIpAddress("");
+                    DevicesInMemory.updateDevice(device);
+                    MySettings.updateDeviceIP(device, "");
+                    //MySettings.updateDeviceErrorCount(device, 0);
+                    //MySettings.scanNetwork();
+                }
             }finally {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
