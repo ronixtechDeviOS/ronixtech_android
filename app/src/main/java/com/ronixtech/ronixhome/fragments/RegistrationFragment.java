@@ -270,7 +270,7 @@ public class RegistrationFragment extends Fragment {
                                                 user.setPassword(password);
                                                 user.setFirstName(firstName);
                                                 user.setLastName(lastName);
-                                                MySettings.setCurrentUser(user);
+                                                MySettings.setActiveUser(user);
                                                 Utils.dismissLoading();
                                                 Intent mainIntent = new Intent(getActivity(), MainActivity.class);
                                                 startActivity(mainIntent);
@@ -336,7 +336,7 @@ public class RegistrationFragment extends Fragment {
                     Type type = new TypeToken<User>(){}.getType();
                     User user;
                     user = gson.fromJson(response.toString(), type);
-                    MySettings.setCurrentUser(user);
+                    MySettings.setActiveUser(user);
                 }
 
                 if (customProgressDialog != null) customProgressDialog.dismiss();

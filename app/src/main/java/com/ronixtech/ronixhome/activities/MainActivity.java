@@ -48,9 +48,11 @@ import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
+import com.ronixtech.ronixhome.fragments.ExportDataFragment;
 import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
+import com.ronixtech.ronixhome.fragments.ImportDataFragment;
+import com.ronixtech.ronixhome.fragments.LinkedAccountsFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
-import com.ronixtech.ronixhome.fragments.UploadDataFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 
 import org.json.JSONArray;
@@ -516,14 +518,30 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_upload_data) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            UploadDataFragment uploadDataFragment = new UploadDataFragment();
+            ExportDataFragment exportDataFragment = new ExportDataFragment();
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.replace(R.id.fragment_view, uploadDataFragment, "uploadDataFragment");
-            fragmentTransaction.addToBackStack("uploadDataFragment");
+            fragmentTransaction.replace(R.id.fragment_view, exportDataFragment, "exportDataFragment");
+            fragmentTransaction.addToBackStack("exportDataFragment");
+            fragmentTransaction.commit();
+        } else if (id == R.id.nav_download_data) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            ImportDataFragment importDataFragment = new ImportDataFragment();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.replace(R.id.fragment_view, importDataFragment, "importDataFragment");
+            fragmentTransaction.addToBackStack("importDataFragment");
+            fragmentTransaction.commit();
+        } else if (id == R.id.nav_linked_accounts) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            LinkedAccountsFragment linkedAccountsFragment = new LinkedAccountsFragment();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.replace(R.id.fragment_view, linkedAccountsFragment, "linkedAccountsFragment");
+            fragmentTransaction.addToBackStack("linkedAccountsFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
             if(MySettings.getActiveUser() != null) {
-                MySettings.deleteCurrentUser(MySettings.getActiveUser());
+                MySettings.deleteActiveUser(MySettings.getActiveUser());
                 if(FirebaseAuth.getInstance() != null && FirebaseAuth.getInstance().getCurrentUser() != null){
                     FirebaseAuth.getInstance().signOut();
                 }

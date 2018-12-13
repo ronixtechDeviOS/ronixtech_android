@@ -101,6 +101,10 @@ public class Constants {
 
     public static final String DB_NAME = "main-db";
 
+    public static final String DB_FILE_1 = DB_NAME;
+    public static final String DB_FILE_2 = DB_NAME + "-shm";
+    public static final String DB_FILE_3 = DB_NAME + "-wal";
+
     //device type constants
     public static final String DEVICE_NAME_IDENTIFIER = "RONIXTECHUNIT_";
     public static final String DEVICE_DEFAULT_PASSWORD = "ronixtechunit";
@@ -130,6 +134,8 @@ public class Constants {
     public static final int SUCCESS_SOURCE_PLACE = 0;
     public static final int SUCCESS_SOURCE_ROOM = 1;
     public static final int SUCCESS_SOURCE_DEVICE = 2;
+    public static final int SUCCESS_SOURCE_EXPORT = 3;
+    public static final int SUCCESS_SOURCE_IMPORT= 4;
 
     //action constants
     public static final int ACTION_YES = 0;

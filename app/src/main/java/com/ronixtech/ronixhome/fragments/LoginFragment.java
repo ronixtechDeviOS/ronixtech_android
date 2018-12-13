@@ -248,7 +248,7 @@ public class LoginFragment extends Fragment {
                         user.setEmail(fbUser.getEmail());
                         user.setPassword(password);
                         user.setFirstName(fbUser.getDisplayName());
-                        MySettings.setCurrentUser(user);
+                        MySettings.setActiveUser(user);
                         Utils.dismissLoading();
                         Intent mainIntent = new Intent(getActivity(), MainActivity.class);
                         startActivity(mainIntent);
@@ -301,7 +301,7 @@ public class LoginFragment extends Fragment {
                     Type type = new TypeToken<User>(){}.getType();
                     User user;
                     user = gson.fromJson(response.toString(), type);
-                    MySettings.setCurrentUser(user);
+                    MySettings.setActiveUser(user);
                 }
 
                 if (customProgressDialog != null) customProgressDialog.dismiss();

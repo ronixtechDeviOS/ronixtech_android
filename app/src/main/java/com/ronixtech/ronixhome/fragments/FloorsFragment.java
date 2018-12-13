@@ -85,7 +85,7 @@ public class FloorsFragment extends Fragment{
         }
         setHasOptionsMenu(true);
 
-        addMenu = view.findViewById(R.id.add_layout);
+        addMenu = view.findViewById(R.id.add_fab_menu);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);

@@ -179,7 +179,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
 
 
             //TODO add this later when HW upgrading works as expected
-            /*boolean hwUpdateAvailable = false;
+            boolean hwUpdateAvailable = false;
             if(currentHWVersion == onlineHWVersion && currentHWVersion != 0){
                 hwUpdateAvailable = false;
                 firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
@@ -210,9 +210,9 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                         firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
                     }
                 }
-            }*/
+            }
 
-            if(currentWiFiVersion == onlineWiFiVersion && currentWiFiVersion != 0){
+            /*if(currentWiFiVersion == onlineWiFiVersion && currentWiFiVersion != 0){
                 firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
 
                 firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
@@ -226,7 +226,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 }else{
                     firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
                 }
-            }
+            }*/
 
 
             if(device.getTemperature() != 0){

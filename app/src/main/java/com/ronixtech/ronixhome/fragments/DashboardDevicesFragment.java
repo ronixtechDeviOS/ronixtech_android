@@ -2033,6 +2033,35 @@ public class DashboardDevicesFragment extends Fragment {
                 jObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, "");
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
+                if(device.isStaticIPAddress() && !device.isStaticIPSyncedState()){
+                    WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+                    jObject.put("R_W_DHC", "off");
+                    jObject.put("R_W_IP_", device.getIpAddress());
+                    jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
+                    if(Utils.intToIp(dhcpInfo.netmask) == null || Utils.intToIp(dhcpInfo.netmask).length() < 1 || Utils.intToIp(dhcpInfo.netmask).equalsIgnoreCase("0.0.0.0")){
+                        try {
+                            InetAddress inetAddress = Utils.intToInet(dhcpInfo.ipAddress);
+                            NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
+                            if(networkInterface != null){
+                                for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
+                                    String submask = Utils.prefixToSubmask(address.getNetworkPrefixLength());
+                                    Log.d("AAAA", address.toString());
+                                    jObject.put("R_W_NMK", submask);
+                                }
+                            }else{
+                                jObject.put("R_W_NMK", "255.255.255.0");
+                            }
+
+                        } catch (IOException e) {
+                            Log.e(TAG, "Exception: " + e.getMessage());
+                            jObject.put("R_W_NMK", "255.255.255.0");
+                        }
+                    }else{
+                        jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
+                    }
+                }
+
                 Log.d(TAG,  "modeGetter POST data: " + jObject.toString());
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
@@ -2054,7 +2083,6 @@ public class DashboardDevicesFragment extends Fragment {
                     if(jsonObject != null){
                         String modeString = jsonObject.getString("mode");
 
-
                         int mode = SoundDeviceData.MODE_LINE_IN;
 
                         if(modeString != null && modeString.length() >= 1){
@@ -2070,6 +2098,40 @@ public class DashboardDevicesFragment extends Fragment {
                         }
 
                         device.getSoundDeviceData().setMode(mode);
+
+                        if(jsonObject.has("R_W_DHC")){
+                            String dhcpStatus = jsonObject.getString("R_W_DHC");
+                            if(dhcpStatus.equalsIgnoreCase("on") && !device.isStaticIPAddress()){
+                                device.setStaticIPSyncedState(true);
+                            }else if(dhcpStatus.equalsIgnoreCase("off") && device.isStaticIPAddress()){
+                                device.setStaticIPSyncedState(true);
+                            }else{
+                                device.setStaticIPSyncedState(false);
+                            }
+                        }else{
+                            device.setStaticIPSyncedState(false);
+                        }
+
+                        if(jsonObject.has("R_W_IP_")){
+                            String ipAddress = jsonObject.getString("R_W_IP_");
+                            if(ipAddress != null && ipAddress.length() >= 1){
+                                device.setIpAddress(ipAddress);
+                            }
+                        }
+
+                        if(jsonObject.has("R_W_GWY")){
+                            String getway = jsonObject.getString("R_W_GWY");
+                            if(getway != null && getway.length() >= 1){
+                                device.setGateway(getway);
+                            }
+                        }
+
+                        if(jsonObject.has("R_W_NMK")){
+                            String subnetmask = jsonObject.getString("R_W_NMK");
+                            if(subnetmask != null && subnetmask.length() >= 1){
+                                device.setSubnetMask(subnetmask);
+                            }
+                        }
 
                         if(statusCode == 200) {
                             device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());

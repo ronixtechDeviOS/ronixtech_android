@@ -18,6 +18,8 @@ public class User {
     private String phoneNumber;
     @ColumnInfo(name = "password")
     private String password;
+    @ColumnInfo(name = "linked_account")
+    private boolean linked;
 
     public User(){
         this.id = 0;
@@ -26,6 +28,7 @@ public class User {
         this.email = "";
         this.phoneNumber = "";
         this.password = "";
+        this.linked = false;
     }
 
     public long getId() {
@@ -52,6 +55,19 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getFullName(){
+        return this.firstName + " " + this.lastName;
+    }
+
+    public void setFullName(String fullName){
+        if(fullName.contains(" ")){
+            this.firstName = fullName.split("")[0];
+            this.lastName = fullName.split("")[1];
+        }else{
+            this.firstName = fullName;
+        }
+    }
+
     public String getEmail() {
         return email;
     }
@@ -74,5 +90,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isLinked() {
+        return linked;
+    }
+
+    public void setLinked(boolean linked) {
+        this.linked = linked;
     }
 }

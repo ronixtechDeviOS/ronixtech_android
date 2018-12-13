@@ -24,6 +24,12 @@ public abstract class UserDAO {
     @Query("SELECT * FROM user WHERE email LIKE :email LIMIT 1")
     public abstract User findByMEmail(String email);
 
+    @Query("SELECT * FROM user WHERE linked_account = 1")
+    public abstract List<User> getAllLinkedAccounts();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insert(User user);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertAll(User... users);
 

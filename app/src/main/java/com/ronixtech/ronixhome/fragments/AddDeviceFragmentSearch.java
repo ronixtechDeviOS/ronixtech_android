@@ -186,12 +186,14 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             FragmentManager fragmentManager = getFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
-                            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-                            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-                            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            fragmentTransaction.commitAllowingStateLoss();
+                            if(fragmentManager != null) {
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                fragmentTransaction.commitAllowingStateLoss();
+                            }
                         }
                     });
                     builder.show();

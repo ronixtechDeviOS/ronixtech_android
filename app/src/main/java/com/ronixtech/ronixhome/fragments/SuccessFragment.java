@@ -1,6 +1,9 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.app.Fragment;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -74,6 +77,10 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
             successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_room));
         }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE){
             successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_device));
+        }else if(successSource == Constants.SUCCESS_SOURCE_EXPORT){
+            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_export));
+        }else if(successSource == Constants.SUCCESS_SOURCE_IMPORT){
+            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_import));
         }
 
 
@@ -107,6 +114,25 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                     fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     fragmentTransaction.commit();
+                }else if(successSource == Constants.SUCCESS_SOURCE_EXPORT){
+                    //go to PlacesFragment
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    fragmentTransaction.commit();
+                }else if(successSource == Constants.SUCCESS_SOURCE_IMPORT){
+                    //restart app
+                    if(getActivity() != null){
+                        PackageManager packageManager = getActivity().getPackageManager();
+                        Intent intent = packageManager.getLaunchIntentForPackage(getActivity().getPackageName());
+                        ComponentName componentName = intent.getComponent();
+                        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+                        getActivity().startActivity(mainIntent);
+                        Runtime.getRuntime().exit(0);
+                    }
                 }
             }
         });

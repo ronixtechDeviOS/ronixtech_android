@@ -2781,6 +2781,19 @@ public class DeviceAdapter extends ArrayAdapter {
 
         @Override
         protected Void doInBackground(Void... params) {
+            boolean statusWasActive = false;
+            while(MySettings.isGetStatusActive()){
+                Log.d(TAG, "getStatusActive, doing nothing...");
+                statusWasActive = true;
+            }
+            if(statusWasActive) {
+                try {
+                    Thread.sleep(Constants.DELAY_TIME_MS);
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }
+            }
+
             HttpURLConnection urlConnection = null;
             statusCode = 0;
             try{

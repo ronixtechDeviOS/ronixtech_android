@@ -98,7 +98,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             }
         }
 
-        progressTextView.setText(getActivity().getResources().getString(R.string.downloading_file, currentFile, totalNumberOfFiles));
+        progressTextView.setText(getActivity().getResources().getString(R.string.downloading_firmware_file, currentFile, totalNumberOfFiles));
 
         if(device != null){
             new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
@@ -117,7 +117,9 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
                 @Override
                 public void onConnectionFail(String errorMsg) {
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
+                    if(getActivity() != null){
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
+                    }
                     goToHomeFragment();
                 }
             }).execute();
@@ -227,25 +229,25 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             if(MainActivity.getInstance() != null && MainActivity.isResumed){
                 if(statusCode == 200) {
                     if(device.isHwFirmwareUpdateAvailable()){
-                        progressTextView.setText(context.getResources().getString(R.string.download_complete));
+                        progressTextView.setText(context.getResources().getString(R.string.download_firmware_files_complete));
                         fragment.goToUploadFragment();
                     }else if(device.isFirmwareUpdateAvailable()){
                         currentFile++;
 
-                        progressTextView.setText(context.getResources().getString(R.string.downloading_file, 2, 2));
+                        progressTextView.setText(context.getResources().getString(R.string.downloading_firmware_file, 2, 2));
 
                         if (currentFile <= 2) {
                             String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_2);
                             DownloadTask downloadTask = new DownloadTask(context, fragment, device);
                             downloadTask.execute(url);
                         } else {
-                            progressTextView.setText(context.getResources().getString(R.string.download_complete));
+                            progressTextView.setText(context.getResources().getString(R.string.download_firmware_files_complete));
                             fragment.goToUploadFragment();
                         }
                     }
 
                 }else{
-                    Toast.makeText(context, context.getResources().getString(R.string.download_firmware_failed), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, context.getResources().getString(R.string.download_firmware_file_failed), Toast.LENGTH_SHORT).show();
                     fragment.goToHomeFragment();
                 }
             }

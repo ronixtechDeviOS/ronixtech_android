@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/account_item_image_imageview"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_weight="0"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:src="@drawable/linked_account_gray"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="center_vertical">
+        <TextView
+            android:id="@+id/account_item_name_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/blackColor"
+            android:text="NAME"/>
+        <TextView
+            android:id="@+id/account_item_name_email_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/account_item_name_textview"
+            android:layout_marginTop="4dp"
+            android:textSize="16sp"
+            android:textColor="@color/blackColor"
+            android:text="EMAIL"/>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/account_item_remove_imageview"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_weight="0"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_delete_gray_24dp"/>
+
+</LinearLayout>

@@ -32,6 +32,7 @@ public class MySettings {
     private static final String TAG = MySettings.class.getSimpleName();
 
     public static final String PREF_ACTIVE_USER_EMAIL = "pref_current_user_email";
+    public static final String PREF_ACTIVE_USER = "pref_current_user";
     public static final String PREF_HOME_NETOWORK = "pref_home_network";
     public static final String PREF_TEMP_DEVICE_MAC_ADDRESS = "temp_device_mac_address";
     public static final String PREF_TEMP_DEVICE_TYPE_ID = "temp_device_type_id";
@@ -937,24 +938,60 @@ public class MySettings {
         }
     }
 
-    public static void setCurrentUser(User user){
-        if(user != null) {
+    public static void setActiveUser(User user){
+        if(user != null){
+            MySettings.loggedInUser = user;
+
+            if(gson == null){
+                gson = new Gson();
+            }
+            String json = gson.toJson(MySettings.loggedInUser);
+            SharedPreferences.Editor editor = getSettings().edit();
+            editor.putString(PREF_ACTIVE_USER, json);
+            editor.apply();
+        }
+        /*if(user != null) {
             //save user into DB
             loggedInUser = user;
             MySettings.initDB().userDao().insertAll(user);
             MySettings.setCurrentUserEmail(user.getEmail());
-        }
+        }*/
     }
-    public static void deleteCurrentUser(User user){
+    public static void deleteActiveUser(User user){
         if(user != null) {
+            MySettings.loggedInUser = null;
+
+            if(gson == null){
+                gson = new Gson();
+            }
+            SharedPreferences.Editor editor = getSettings().edit();
+            editor.putString(PREF_ACTIVE_USER, "");
+            editor.apply();
+        }
+        /*if(user != null) {
             //delete user from DB
             loggedInUser = null;
             MySettings.initDB().userDao().delete(user);
             MySettings.setCurrentUserEmail(null);
-        }
+        }*/
     }
     public static User getActiveUser() {
         if (loggedInUser != null) {
+            return loggedInUser;
+        } else {
+            SharedPreferences prefs = getSettings();
+            String json = prefs.getString(PREF_ACTIVE_USER, "");
+            if (json.isEmpty() || json.equals("null")) {
+                return null;
+            } else {
+                if(gson == null){
+                    gson = new Gson();
+                }
+                loggedInUser = gson.fromJson(json, User.class);
+                return loggedInUser;
+            }
+        }
+         /*if (loggedInUser != null) {
             return loggedInUser;
         } else {
             //get user from DB
@@ -963,7 +1000,7 @@ public class MySettings {
             }
             loggedInUser = MySettings.initDB().userDao().findByMEmail(loggedInUserEmail);
             return loggedInUser;
-        }
+        }*/
     }
     public static boolean checkUser(User user){
         if(user.getPhoneNumber() != null && user.getPhoneNumber().length() >= 1){
@@ -978,6 +1015,19 @@ public class MySettings {
             }
         }else{
             return false;
+        }
+    }
+    public static List<User> getAllLinkedAccounts(){
+        return MySettings.initDB().userDao().getAllLinkedAccounts();
+    }
+    public static void addUser(User user){
+        if(user != null){
+            MySettings.initDB().userDao().insert(user);
+        }
+    }
+    public static void removeUser(User user){
+        if(user != null){
+            MySettings.initDB().userDao().delete(user);
         }
     }
 
@@ -1293,6 +1343,17 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_24_25 = new Migration(24, 25) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE user "
+                            + " ADD COLUMN linked_account INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
                             .addMigrations(MIGRATION_1_2,
                                     MIGRATION_2_3,
@@ -1316,7 +1377,8 @@ public class MySettings {
                                     MIGRATION_20_21,
                                     MIGRATION_21_22,
                                     MIGRATION_22_23,
-                                    MIGRATION_23_24)
+                                    MIGRATION_23_24,
+                                    MIGRATION_24_25)
                             .allowMainThreadQueries().
                             build();
             return database;
