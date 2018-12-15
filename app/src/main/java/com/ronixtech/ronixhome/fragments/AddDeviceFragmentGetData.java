@@ -35,6 +35,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -428,11 +429,11 @@ public class AddDeviceFragmentGetData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200){
-                fragment.getChipID();
+            if(statusCode != 200 || MySettings.getTempDevice() == null || MySettings.getTempDevice().getDeviceTypeID() == 0){
+                DeviceTypeGetter2 deviceTypeGetter2 = new DeviceTypeGetter2(activity, fragment);
+                deviceTypeGetter2.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
-                fragment.goToSearchFragment();
+                fragment.getChipID();
             }
         }
 
@@ -473,6 +474,111 @@ public class AddDeviceFragmentGetData extends Fragment {
                             Device tempDevice = MySettings.getTempDevice();
                             tempDevice.setDeviceTypeID(deviceTypeID);
                             MySettings.setTempDevice(tempDevice);
+                        }
+                    }
+                }catch (MalformedURLException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (IOException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }catch (JSONException e){
+                    Log.d(TAG, "Exception: " + e.getMessage());
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class DeviceTypeGetter2 extends AsyncTask<Void, Void, Void> {
+        private final String TAG = AddDeviceFragmentGetData.DeviceTypeGetter.class.getSimpleName();
+
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentGetData fragment;
+
+        public DeviceTypeGetter2(Activity activity, AddDeviceFragmentGetData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200){
+                fragment.getChipID();
+            }else{
+                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
+                fragment.goToSearchFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL);
+                    Log.d(TAG,  "getDeviceType2 URL: " + url);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jObject = new JSONObject();
+                    jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                    Log.d(TAG,  "getDeviceType2 POST data: " + jObject.toString());
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jObject.toString());
+                    outputStreamWriter.flush();
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Log.d(TAG,  "getDeviceType2 response: " + result.toString());
+                    if(result.length() >= 3){
+                        JSONObject jsonObject = new JSONObject(result.toString());
+                        if(jsonObject.has("UNIT_STATUS")){
+                            JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
+                            if(unitStatus != null && unitStatus.has("U_W_STT")){
+                                JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+                                if(wifiStatus != null && wifiStatus.has("U_W_TYP")){
+                                    String typeIDString = wifiStatus.getString("U_W_TYP");
+                                    int deviceTypeID = Integer.valueOf(typeIDString);
+                                    Device tempDevice = MySettings.getTempDevice();
+                                    tempDevice.setDeviceTypeID(deviceTypeID);
+                                    MySettings.setTempDevice(tempDevice);
+                                }
+                            }
                         }
                     }
                 }catch (MalformedURLException e){
@@ -580,13 +686,13 @@ public class AddDeviceFragmentGetData extends Fragment {
                 }else {
                     //debugTextView.append("Chip ID: " + chipID + "\n");
                     Device device = MySettings.getTempDevice();
-                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                        fragment.goToPIRConfigurationFragment();
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                             device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
                         fragment.goToConfigurationFragment();
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                        fragment.goToPIRConfigurationFragment();
                     }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
                         fragment.goToSoundControllerConfigurationFragment();
                     }else{

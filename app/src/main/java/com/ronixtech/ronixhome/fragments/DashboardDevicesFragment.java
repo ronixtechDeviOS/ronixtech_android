@@ -1220,45 +1220,64 @@ public class DashboardDevicesFragment extends Fragment {
 
                             String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                             int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                            line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                            line0PowerState = Integer.valueOf(line0PowerStateString);
-                            line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                            line1PowerState = Integer.valueOf(line1PowerStateString);
-                            line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                            line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                            if(hardwareStatus.has("L_0_STT")){
+                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                line0PowerState = Integer.valueOf(line0PowerStateString);
+                            }
+                            if(hardwareStatus.has("L_1_STT")){
+                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                line1PowerState = Integer.valueOf(line1PowerStateString);
+                            }
+                            if(hardwareStatus.has("L_2_STT")){
+                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                line2PowerState = Integer.valueOf(line2PowerStateString);
+                            }
+
 
                             String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
                             int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                            line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                            if(line0DimmingValueString.equals(":")){
-                                line0DimmingValue = 10;
-                            }else{
-                                line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                            if(hardwareStatus.has("L_0_DIM")){
+                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
+                                if(line0DimmingValueString.equals(":")){
+                                    line0DimmingValue = 10;
+                                }else{
+                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                                }
                             }
-
-                            line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                            if(line1DimmingValueString.equals(":")){
-                                line1DimmingValue = 10;
-                            }else{
-                                line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                            if(hardwareStatus.has("L_1_DIM")){
+                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
+                                if(line1DimmingValueString.equals(":")){
+                                    line1DimmingValue = 10;
+                                }else{
+                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                                }
                             }
-
-                            line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                            if(line2DimmingValueString.equals(":")){
-                                line2DimmingValue = 10;
-                            }else{
-                                line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                            if(hardwareStatus.has("L_2_DIM")){
+                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
+                                if(line2DimmingValueString.equals(":")){
+                                    line2DimmingValue = 10;
+                                }else{
+                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                }
                             }
 
 
                             String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
                             int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                            line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                            line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                            line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                            line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                            line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                            line2DimmingState = Integer.valueOf(line2DimmingStateString);
+                            if(hardwareStatus.has("L_0_D_S")){
+                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
+                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
+                            }
+                            if(hardwareStatus.has("L_1_D_S")){
+                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
+                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
+                            }
+                            if(hardwareStatus.has("L_2_D_S")){
+                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
+                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
+                            }
+
 
                             List<Line> lines = device.getLines();
                             for (Line line:lines) {
@@ -1280,17 +1299,35 @@ public class DashboardDevicesFragment extends Fragment {
                             String temperatureString, beepString, hwLockString;
                             int temperatureValue;
                             boolean beep, hwLock;
-                            temperatureString = hardwareStatus.getString("U_H_TMP");
-                            beepString = hardwareStatus.getString("U_BEEP_");
-                            hwLockString = hardwareStatus.getString("U_H_LCK");
-
-                            temperatureValue = Integer.parseInt(temperatureString);
-                            beep = Boolean.parseBoolean(beepString);
-                            hwLock = Boolean.parseBoolean(hwLockString);
-
-                            device.setTemperature(temperatureValue);
-                            device.setBeep(beep);
-                            device.setHwLock(hwLock);
+                            if(hardwareStatus.has("U_H_TMP")){
+                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                temperatureValue = Integer.parseInt(temperatureString);
+                                device.setTemperature(temperatureValue);
+                            }
+                            if(hardwareStatus.has("U_BEEP_")){
+                                beepString = hardwareStatus.getString("U_BEEP_");
+                                if(beepString != null && beepString.length() >= 1){
+                                    if(Integer.parseInt(beepString) == 1){
+                                        beep = true;
+                                        device.setBeep(beep);
+                                    }else{
+                                        beep = false;
+                                        device.setBeep(beep);
+                                    }
+                                }
+                            }
+                            if(hardwareStatus.has("U_H_LCK")){
+                                hwLockString = hardwareStatus.getString("U_H_LCK");
+                                if(hwLockString != null && hwLockString.length() >= 1){
+                                    if(Integer.parseInt(hwLockString) == 1){
+                                        hwLock = true;
+                                        device.setHwLock(hwLock);
+                                    }else{
+                                        hwLock = false;
+                                        device.setHwLock(hwLock);
+                                    }
+                                }
+                            }
 
                             if(statusCode == 200) {
                                 device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
@@ -1405,7 +1442,7 @@ public class DashboardDevicesFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             statusCode = 0;
             try{
-                String urlString = "http://" + device.getIpAddress() + "/ronix/json/post";
+                String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                 //urlString = urlString.concat("?json_0").concat("=").concat(jObject.toString());
 
@@ -1678,45 +1715,63 @@ public class DashboardDevicesFragment extends Fragment {
 
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                line0PowerState = Integer.valueOf(line0PowerStateString);
-                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                line1PowerState = Integer.valueOf(line1PowerStateString);
-                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                                if(hardwareStatus.has("L_0_STT")){
+                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                    line0PowerState = Integer.valueOf(line0PowerStateString);
+                                }
+                                if(hardwareStatus.has("L_1_STT")){
+                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                    line1PowerState = Integer.valueOf(line1PowerStateString);
+                                }
+                                if(hardwareStatus.has("L_2_STT")){
+                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                    line2PowerState = Integer.valueOf(line2PowerStateString);
+                                }
+
 
                                 String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
                                 int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                                if(line0DimmingValueString.equals(":")){
-                                    line0DimmingValue = 10;
-                                }else{
-                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                                if(hardwareStatus.has("L_0_DIM")){
+                                    line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
+                                    if(line0DimmingValueString.equals(":")){
+                                        line0DimmingValue = 10;
+                                    }else{
+                                        line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                                    }
                                 }
-
-                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                                if(line1DimmingValueString.equals(":")){
-                                    line1DimmingValue = 10;
-                                }else{
-                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                                if(hardwareStatus.has("L_1_DIM")){
+                                    line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
+                                    if(line1DimmingValueString.equals(":")){
+                                        line1DimmingValue = 10;
+                                    }else{
+                                        line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                                    }
                                 }
-
-                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                                if(line2DimmingValueString.equals(":")){
-                                    line2DimmingValue = 10;
-                                }else{
-                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                if(hardwareStatus.has("L_2_DIM")){
+                                    line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
+                                    if(line2DimmingValueString.equals(":")){
+                                        line2DimmingValue = 10;
+                                    }else{
+                                        line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                    }
                                 }
 
 
                                 String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
                                 int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
+                                if(hardwareStatus.has("L_0_D_S")){
+                                    line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
+                                    line0DimmingState = Integer.valueOf(line0DimmingStateString);
+                                }
+                                if(hardwareStatus.has("L_1_D_S")){
+                                    line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
+                                    line1DimmingState = Integer.valueOf(line1DimmingStateString);
+                                }
+                                if(hardwareStatus.has("L_2_D_S")){
+                                    line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
+                                    line2DimmingState = Integer.valueOf(line2DimmingStateString);
+                                }
 
                                 List<Line> lines = device.getLines();
                                 List<Line> localLines = localDevice.getLines();
@@ -1753,30 +1808,36 @@ public class DashboardDevicesFragment extends Fragment {
 
                                 String temperatureString, beepString, hwLockString;
                                 int temperatureValue;
-                                boolean beep = true, hwLock = false;
-                                temperatureString = hardwareStatus.getString("U_H_TMP");
-                                beepString = hardwareStatus.getString("U_BEEP_");
-                                hwLockString = hardwareStatus.getString("U_H_LCK");
-
-                                temperatureValue = Integer.parseInt(temperatureString);
-                                if(beepString != null && beepString.length() >= 1){
-                                    if(Integer.parseInt(beepString) == 1){
-                                        beep = true;
-                                    }else{
-                                        beep = false;
+                                boolean beep, hwLock;
+                                if(hardwareStatus.has("U_H_TMP")){
+                                    temperatureString = hardwareStatus.getString("U_H_TMP");
+                                    temperatureValue = Integer.parseInt(temperatureString);
+                                    device.setTemperature(temperatureValue);
+                                }
+                                if(hardwareStatus.has("U_BEEP_")){
+                                    beepString = hardwareStatus.getString("U_BEEP_");
+                                    if(beepString != null && beepString.length() >= 1){
+                                        if(Integer.parseInt(beepString) == 1){
+                                            beep = true;
+                                            device.setBeep(beep);
+                                        }else{
+                                            beep = false;
+                                            device.setBeep(beep);
+                                        }
                                     }
                                 }
-                                if(hwLockString != null && hwLockString.length() >= 1){
-                                    if(Integer.parseInt(hwLockString) == 1){
-                                        hwLock = true;
-                                    }else{
-                                        hwLock = false;
+                                if(hardwareStatus.has("U_H_LCK")){
+                                    hwLockString = hardwareStatus.getString("U_H_LCK");
+                                    if(hwLockString != null && hwLockString.length() >= 1){
+                                        if(Integer.parseInt(hwLockString) == 1){
+                                            hwLock = true;
+                                            device.setHwLock(hwLock);
+                                        }else{
+                                            hwLock = false;
+                                            device.setHwLock(hwLock);
+                                        }
                                     }
                                 }
-
-                                device.setTemperature(temperatureValue);
-                                device.setBeep(beep);
-                                device.setHwLock(hwLock);
 
                                 if(statusCode == 200) {
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
@@ -1814,12 +1875,19 @@ public class DashboardDevicesFragment extends Fragment {
 
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                line0PowerState = Integer.valueOf(line0PowerStateString);
-                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                line1PowerState = Integer.valueOf(line1PowerStateString);
-                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                                if(hardwareStatus.has("L_0_STT")){
+                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                    line0PowerState = Integer.valueOf(line0PowerStateString);
+                                }
+                                if(hardwareStatus.has("L_1_STT")){
+                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                    line1PowerState = Integer.valueOf(line1PowerStateString);
+                                }
+                                if(hardwareStatus.has("L_2_STT")){
+                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                    line2PowerState = Integer.valueOf(line2PowerStateString);
+                                }
 
                                 List<Line> lines = device.getLines();
                                 List<Line> localLines = localDevice.getLines();
@@ -1845,17 +1913,35 @@ public class DashboardDevicesFragment extends Fragment {
                                 String temperatureString, beepString, hwLockString;
                                 int temperatureValue;
                                 boolean beep, hwLock;
-                                temperatureString = hardwareStatus.getString("U_H_TMP");
-                                beepString = hardwareStatus.getString("U_BEEP_");
-                                hwLockString = hardwareStatus.getString("U_H_LCK");
-
-                                temperatureValue = Integer.parseInt(temperatureString);
-                                beep = Boolean.parseBoolean(beepString);
-                                hwLock = Boolean.parseBoolean(hwLockString);
-
-                                device.setTemperature(temperatureValue);
-                                device.setBeep(beep);
-                                device.setHwLock(hwLock);
+                                if(hardwareStatus.has("U_H_TMP")){
+                                    temperatureString = hardwareStatus.getString("U_H_TMP");
+                                    temperatureValue = Integer.parseInt(temperatureString);
+                                    device.setTemperature(temperatureValue);
+                                }
+                                if(hardwareStatus.has("U_BEEP_")){
+                                    beepString = hardwareStatus.getString("U_BEEP_");
+                                    if(beepString != null && beepString.length() >= 1){
+                                        if(Integer.parseInt(beepString) == 1){
+                                            beep = true;
+                                            device.setBeep(beep);
+                                        }else{
+                                            beep = false;
+                                            device.setBeep(beep);
+                                        }
+                                    }
+                                }
+                                if(hardwareStatus.has("U_H_LCK")){
+                                    hwLockString = hardwareStatus.getString("U_H_LCK");
+                                    if(hwLockString != null && hwLockString.length() >= 1){
+                                        if(Integer.parseInt(hwLockString) == 1){
+                                            hwLock = true;
+                                            device.setHwLock(hwLock);
+                                        }else{
+                                            hwLock = false;
+                                            device.setHwLock(hwLock);
+                                        }
+                                    }
+                                }
 
                                 if(statusCode == 200) {
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
@@ -1894,8 +1980,10 @@ public class DashboardDevicesFragment extends Fragment {
 
                                 String pirStateString;
                                 int pirState = 0;
-                                pirStateString = hardwareStatus.getString("L_0_STT");
-                                pirState = Integer.valueOf(pirStateString);
+                                if(hardwareStatus.has("L_0_STT")){
+                                    pirStateString = hardwareStatus.getString("L_0_STT");
+                                    pirState = Integer.valueOf(pirStateString);
+                                }
 
                                 PIRData pirData = device.getPIRData();
                                 pirData.setState(pirState);

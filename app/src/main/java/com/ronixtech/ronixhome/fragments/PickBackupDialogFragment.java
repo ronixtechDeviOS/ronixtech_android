@@ -8,11 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.adapters.BackupsAdapter;
+import com.ronixtech.ronixhome.entities.Backup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +24,14 @@ public class PickBackupDialogFragment extends DialogFragment {
 
 
 
-    private List<String> backupNames;
+    private List<Backup> backupNames;
     ListView listView;
-    ArrayAdapter<String> adapter;
+    BackupsAdapter adapter;
 
     Fragment placeFragment;
 
     public interface OnBackupSelectedListener {
-        public void onBackupSelected(String backupName);
+        public void onBackupSelected(Backup backup);
     }
     /**
      * Create a new instance of MyDialogFragment, providing "num"
@@ -63,7 +64,7 @@ public class PickBackupDialogFragment extends DialogFragment {
         if(backupNames == null) {
             backupNames = new ArrayList<>();
         }
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, backupNames);
+        adapter = new BackupsAdapter(getActivity(), backupNames);
         listView.setAdapter(adapter);
         listView.setDivider(null);
 
@@ -74,8 +75,8 @@ public class PickBackupDialogFragment extends DialogFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedBackupName = (String) adapter.getItem(position);
-                callback.onBackupSelected(selectedBackupName);
+                Backup selectedBackup = (Backup) adapter.getItem(position);
+                callback.onBackupSelected(selectedBackup);
                 dismiss();
             }
         });
@@ -87,7 +88,7 @@ public class PickBackupDialogFragment extends DialogFragment {
         this.placeFragment = fragment;
     }
 
-    public void setBackups(List<String> backups){
+    public void setBackups(List<Backup> backups){
         if(backupNames == null){
             backupNames = new ArrayList<>();
         }

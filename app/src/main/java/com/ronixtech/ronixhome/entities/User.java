@@ -20,6 +20,8 @@ public class User {
     private String password;
     @ColumnInfo(name = "linked_account")
     private boolean linked;
+    @ColumnInfo(name = "linked_timestamp")
+    private long linkTimestamp;
 
     public User(){
         this.id = 0;
@@ -29,6 +31,7 @@ public class User {
         this.phoneNumber = "";
         this.password = "";
         this.linked = false;
+        this.linkTimestamp = 0;
     }
 
     public long getId() {
@@ -98,5 +101,13 @@ public class User {
 
     public void setLinked(boolean linked) {
         this.linked = linked;
+    }
+
+    public long getLinkTimestamp() {
+        return linkTimestamp;
+    }
+
+    public void setLinkTimestamp(long linkTimestamp) {
+        this.linkTimestamp = linkTimestamp;
     }
 }

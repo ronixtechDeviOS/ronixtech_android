@@ -79,7 +79,6 @@
                 android:id="@+id/import_name_title_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_below="@id/import_data_imageview"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -91,7 +90,6 @@
                 android:id="@+id/import_name_selection_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
@@ -127,8 +125,9 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_below="@id/begin_exporting_data_description_textview"
-                android:background="@drawable/button_background_round_blue"
+                android:background="@drawable/button_background_round_gray"
                 android:textColor="@color/whiteColor"
+                android:enabled="false"
                 android:padding="4dp"
                 android:text="@string/import_data"/>
         </RelativeLayout>

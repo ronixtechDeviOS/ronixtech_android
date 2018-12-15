@@ -1354,6 +1354,17 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_25_26 = new Migration(25, 26) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE user "
+                            + " ADD COLUMN linked_timestamp INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
                             .addMigrations(MIGRATION_1_2,
                                     MIGRATION_2_3,
@@ -1378,7 +1389,8 @@ public class MySettings {
                                     MIGRATION_21_22,
                                     MIGRATION_22_23,
                                     MIGRATION_23_24,
-                                    MIGRATION_24_25)
+                                    MIGRATION_24_25,
+                                    MIGRATION_25_26)
                             .allowMainThreadQueries().
                             build();
             return database;

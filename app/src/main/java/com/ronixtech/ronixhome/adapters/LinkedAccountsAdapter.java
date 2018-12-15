@@ -2,6 +2,7 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.User;
 
 import java.util.List;
@@ -62,7 +70,8 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
             rowView = inflater.inflate(R.layout.list_item_linked_account, null);
             vHolder = new ViewHolder();
             vHolder.nameTextView = rowView.findViewById(R.id.account_item_name_textview);
-            vHolder.emailTextView = rowView.findViewById(R.id.account_item_name_email_textview);
+            vHolder.emailTextView = rowView.findViewById(R.id.account_item_email_textview);
+            vHolder.additionDateTextView = rowView.findViewById(R.id.account_item_addition_timestamp_textview);
             vHolder.removeImageView = rowView.findViewById(R.id.account_item_remove_imageview);
             rowView.setTag(vHolder);
         }
@@ -74,6 +83,7 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
 
         vHolder.nameTextView.setText(""+item.getFullName());
         vHolder.emailTextView.setText(""+item.getEmail());
+        vHolder.additionDateTextView.setText(activity.getResources().getString(R.string.date_linked_account_variable, Utils.getDateString(item.getLinkTimestamp())));
 
         vHolder.removeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,11 +96,8 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
-                                //TODO remove user from firebase DB for this place
-
-                                MySettings.removeUser(item);
-                                users.remove(item);
-                                accountActionListener.onUserDeleted();
+                                //remove user from firebase DB
+                                removeLinkedAccount(item);
                             }
                         })
                         //set negative button
@@ -107,8 +114,49 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
         return rowView;
     }
 
+    private void removeLinkedAccount(User user){
+        Utils.showLoading(activity);
+
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("linked_accounts").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                    if(snapshot.getData().get("email") != null && snapshot.getData().get("email").equals(user.getEmail())){
+                        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("linked_accounts").document(snapshot.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Utils.dismissLoading();
+                                MySettings.removeUser(user);
+                                users.remove(user);
+                                accountActionListener.onUserDeleted();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Utils.dismissLoading();
+                                if(activity != null){
+                                    Toast.makeText(activity, activity.getResources().getString(R.string.remove_linked_account_failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utils.dismissLoading();
+                if(activity != null){
+                    Toast.makeText(activity, activity.getResources().getString(R.string.remove_linked_account_failed), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     public static class ViewHolder{
-        TextView nameTextView, emailTextView;
+        TextView nameTextView, emailTextView, additionDateTextView;
         ImageView removeImageView;
     }
 }

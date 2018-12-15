@@ -147,7 +147,7 @@ public class Utils {
         }
         timeString = hour + ":" + minute + ":" + second + " " + amPM;*/
         if(simpleDateFormatDateHoursMinute == null) {
-            simpleDateFormatDateHoursMinute = new SimpleDateFormat("dd/MM/yy  h:mm:ss a");
+            simpleDateFormatDateHoursMinute = new SimpleDateFormat("dd/MM/yy  h:mm a");
         }
         timeString = simpleDateFormatDateHoursMinute.format(timestamp);
         return timeString;

@@ -42,10 +42,12 @@
     <string name="account_name_hint">Name of the person you\'re inviting</string>
     <string name="account_email">Email</string>
     <string name="account_email_hint">Email Address</string>
-    <string name="add_account_note">After adding this account, it will get a copy of all your current Places and Devices.</string>
+    <string name="add_account_note">After adding this account, it will get a copy of all your current Places, WiFi networks and Devices.</string>
 
     <string name="remove_linked_account_question">Are you sure you want to remove the selected linked account?</string>
     <string name="remove_linked_account_description">Removing the account will remove all shared data with that account from their device.\nThis cannot be undone.</string>
+
+    <string name="remove_linked_account_failed">Failed to remove linked account, please try again later.</string>
 
     <string name="begin_exporting_title">To begin exporting your data, click on the Export Data button</string>
     <string name="begin_exporting_description">This will export all your Places, WiFi networks, Rooms, Devices and all app settings to the cloud.</string>
@@ -56,6 +58,8 @@
     <string name="uploading_database_file">Uploading file %d/%d</string>
     <string name="uploading_database_files_complete">Upload Complete</string>
     <string name="uploading_database_file_failed">Uploading files failed, please try again</string>
+    <string name="uploading_updating_online_database">Updating cloud data</string>
+    <string name="uploading_updating_online_database_failed">Updating cloud data failed</string>
 
     <string name="begin_importing_title">To begin importing your data, click on the Import Data button</string>
     <string name="begin_importing_description">This will overwrite all your Places, WiFi networks, Rooms, Devices and all app settings.\nThis cannot be undone</string>
@@ -452,6 +456,10 @@
     <string name="registration_failed">Registration failed</string>
     <string name="login_failed">Login failed</string>
     <string name="reset_password_failed">Failed to send password reset email</string>
+
+
+    <string name="date_backup_variable">Date: %s</string>
+    <string name="date_linked_account_variable">Addition Date: %s</string>
 
 
     <string name="yes">Yes</string>

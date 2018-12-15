@@ -30,7 +30,7 @@
             android:textColor="@color/blackColor"
             android:text="NAME"/>
         <TextView
-            android:id="@+id/account_item_name_email_textview"
+            android:id="@+id/account_item_email_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/account_item_name_textview"
@@ -38,6 +38,15 @@
             android:textSize="16sp"
             android:textColor="@color/blackColor"
             android:text="EMAIL"/>
+        <TextView
+            android:id="@+id/account_item_addition_timestamp_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/account_item_email_textview"
+            android:layout_marginTop="4dp"
+            android:textSize="16sp"
+            android:textColor="@color/blackColor"
+            android:text="TIMESTAMP"/>
     </RelativeLayout>
 
     <ImageView

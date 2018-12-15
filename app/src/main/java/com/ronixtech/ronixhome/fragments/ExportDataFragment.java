@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -40,6 +42,8 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -116,15 +120,16 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
                         uploadingProgressLayout.setVisibility(View.VISIBLE);
                         exportingDataLayout.setVisibility(View.GONE);
 
+                        long timestamp = new Date().getTime();
                         String exportName = "";
                         if(exportNameEditText.getText().toString().length() >= 1){
                             exportName = exportNameEditText.getText().toString();
                         }else{
-                            exportName = String.valueOf(new Date().getTime());
+                            exportName = Utils.getTimeStringDateHoursMinutes(timestamp).replaceAll("/", "-");
                         }
 
                         if(ExportImportDB.exportDB(Constants.DB_FILE_1) && ExportImportDB.exportDB(Constants.DB_FILE_2) && ExportImportDB.exportDB(Constants.DB_FILE_3)){
-                            uploadData(Constants.DB_FILE_1, exportName);
+                            uploadData(Constants.DB_FILE_1, exportName, timestamp);
                         }else{
                             if(getActivity() != null){
                                 Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.export_failed), Toast.LENGTH_SHORT).show();
@@ -148,7 +153,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-    private void uploadData(String fileName, String exportName){
+    private void uploadData(String fileName, String exportName, long timestamp){
         progressTextView.setText(getActivity().getResources().getString(R.string.uploading_database_file, currentFile, totalNumberOfFiles));
         //upload 3 files to firebase-db/email/exports/timestamp
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -158,13 +163,10 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
         StorageReference personalDirRef = storageRef.child(MySettings.getActiveUser().getEmail());
         //create new reference for exports dir for current user
         StorageReference exportsRef = personalDirRef.child("exports");
-        /*//create new reference for current backup with current timestamp
+        //create new reference for current backup with current timestamp or user-chosen exportName
         StorageReference backupReference = exportsRef.child(exportName);
         //create new reference for current backup file
-        StorageReference dbFile1Reference = backupReference.child(fileName);*/
-
-        //create new reference for current backup file
-        StorageReference dbFile1Reference = exportsRef.child(fileName);
+        StorageReference dbFile1Reference = backupReference.child(fileName);
 
         UploadTask uploadTask = dbFile1Reference.putFile(Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/" + fileName)));
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -172,23 +174,15 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 currentFile++;
                 if(currentFile == 2){
-                    uploadData(Constants.DB_FILE_2, exportName);
+                    uploadData(Constants.DB_FILE_2, exportName, timestamp);
                 }else if(currentFile == 3){
-                    uploadData(Constants.DB_FILE_3, exportName);
+                    uploadData(Constants.DB_FILE_3, exportName, timestamp);
                 }else{
                     //done uploading all files
                     /*if(getActivity() != null){
                         Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.export_successful), Toast.LENGTH_SHORT).show();
                     }*/
-                    //go to successFragment
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    SuccessFragment successFragment = new SuccessFragment();
-                    successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_EXPORT);
-                    fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
-                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    fragmentTransaction.commit();
+                    addExportToFirebaseDB(exportName, timestamp);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -207,6 +201,39 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                 Double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                 progressCircle.setProgress(progress.intValue());
+            }
+        });
+    }
+
+    private void addExportToFirebaseDB(String exportName, long timestamp){
+        progressTextView.setText(getActivity().getResources().getString(R.string.uploading_updating_online_database));
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", exportName);
+        map.put("timestamp", timestamp);
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("exports").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                //go to successFragment
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                SuccessFragment successFragment = new SuccessFragment();
+                successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_EXPORT);
+                fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if(getActivity() != null){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.uploading_updating_online_database_failed), Toast.LENGTH_SHORT).show();
+                }
+                if(getFragmentManager() != null){
+                    getFragmentManager().popBackStack();
+                }
             }
         });
     }

@@ -25,8 +25,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -37,6 +42,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Backup;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,9 +71,10 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
     int currentFile = 1;
 
     RelativeLayout backupSelectionLayout;
+    TextView selectedBackupNameTextView;
     Button importButton;
 
-    String selectedBackupName;
+    Backup selectedBackup;
 
     public ImportDataFragment() {
         // Required empty public constructor
@@ -108,13 +115,26 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
         progressTextView = view.findViewById(R.id.progress_textview);
 
         backupSelectionLayout = view.findViewById(R.id.import_name_selection_layout);
+        selectedBackupNameTextView = view.findViewById(R.id.import_name_textview);
         importButton = view.findViewById(R.id.import_button);
 
         backupSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(MySettings.getActiveUser() != null && MySettings.getActiveUser().getEmail().length() >= 1){
-                    getBackups();
+                    new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
+                        @Override
+                        public void onConnectionSuccess() {
+                            getBackups();
+                        }
+
+                        @Override
+                        public void onConnectionFail(String errorMsg) {
+                            if(getActivity() != null){
+                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }).execute();
                 }
             }
         });
@@ -122,48 +142,50 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
-                    @Override
-                    public void onConnectionSuccess() {
-                        downloadingProgressLayout.setVisibility(View.VISIBLE);
-                        importingDataLayout.setVisibility(View.GONE);
+                if(validateInputs()){
+                    new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
+                        @Override
+                        public void onConnectionSuccess() {
+                            downloadingProgressLayout.setVisibility(View.VISIBLE);
+                            importingDataLayout.setVisibility(View.GONE);
 
-                        try{
-                            //creating a new folder for the database to be backuped from
-                            File ronixDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/");
-                            if(!ronixDirectory.exists()) {
-                                if(ronixDirectory.mkdir()) {
-                                    //directory is created;
+                            try{
+                                //creating a new folder for the database to be backuped from
+                                File ronixDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/");
+                                if(!ronixDirectory.exists()) {
+                                    if(ronixDirectory.mkdir()) {
+                                        //directory is created;
+                                    }
+                                }
+                                Log.d(TAG, "Created directory: " + ronixDirectory.getAbsolutePath());
+                                File databaseDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/");
+                                if(!databaseDirectory.exists()) {
+                                    if(databaseDirectory.mkdir()) {
+                                        //directory is created;
+                                    }
+                                }
+                                Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
+
+                                downloadFile(selectedBackup.getName(), Constants.DB_FILE_1);
+                            }catch (Exception e){
+                                Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+                                if(getFragmentManager() != null){
+                                    getFragmentManager().popBackStack();
                                 }
                             }
-                            Log.d(TAG, "Created directory: " + ronixDirectory.getAbsolutePath());
-                            File databaseDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/");
-                            if(!databaseDirectory.exists()) {
-                                if(databaseDirectory.mkdir()) {
-                                    //directory is created;
-                                }
-                            }
-                            Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
+                        }
 
-                            downloadFile(Constants.DB_FILE_1);
-                        }catch (Exception e){
-                            Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+                        @Override
+                        public void onConnectionFail(String errorMsg) {
+                            if(getActivity() != null){
+                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
+                            }
                             if(getFragmentManager() != null){
                                 getFragmentManager().popBackStack();
                             }
                         }
-                    }
-
-                    @Override
-                    public void onConnectionFail(String errorMsg) {
-                        if(getActivity() != null){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
-                        }
-                        if(getFragmentManager() != null){
-                            getFragmentManager().popBackStack();
-                        }
-                    }
-                }).execute();
+                    }).execute();
+                }
             }
         });
 
@@ -171,48 +193,61 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
     }
 
     @Override
-    public void onBackupSelected(String backupName){
-        this.selectedBackupName = backupName;
-    }
-
-    private void getBackups(){
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        //create new reference for current user's personal dir
-        StorageReference personalDirRef = storageRef.child(MySettings.getActiveUser().getEmail());
-        //create new reference for exports dir for current user
-        StorageReference exportsRef = personalDirRef.child("exports");
-
-        //TODO firebase storage client-api doesn't have a -ls dir option, research this
-
-        List<String> backups = new ArrayList<>();
-
-        if(backups.size() >= 1){
-            // DialogFragment.show() will take care of adding the fragment
-            // in a transaction.  We also want to remove any currently showing
-            // dialog, so make our own transaction and take care of that here.
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickBackupDialogFragment");
-            if (prev != null) {
-                ft.remove(prev);
-            }
-            ft.addToBackStack(null);
-
-            // Create and show the dialog.
-            PickBackupDialogFragment fragment = PickBackupDialogFragment.newInstance();
-            fragment.setBackups(backups);
-            fragment.setTargetFragment(ImportDataFragment.this, 0);
-            fragment.setParentFragment(ImportDataFragment.this);
-            fragment.show(ft, "pickBackupDialogFragment");
-        }else{
-            if(getActivity() != null) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.downloading_database_file_not_found), Toast.LENGTH_SHORT).show();
-            }
+    public void onBackupSelected(Backup backup){
+        if(backup != null){
+            this.selectedBackup = backup;
+            selectedBackupNameTextView.setText(""+selectedBackup.getName());
+            Utils.setButtonEnabled(importButton, true);
         }
     }
 
-    private void downloadFile(String fileName){
+    private void getBackups(){
+        Utils.showLoading(getActivity());
+
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("exports").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<Backup> backups = new ArrayList<>();
+
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    Log.d(TAG, document.getId() + " => " + document.getData());
+                    Backup backup = new Backup();
+                    backup.setName((String)document.getData().get("name"));
+                    backup.setTimestamp((long)document.getData().get("timestamp"));
+                    backups.add(backup);
+                }
+
+                Utils.dismissLoading();
+
+                if(backups.size() >= 1){
+                    // DialogFragment.show() will take care of adding the fragment
+                    // in a transaction.  We also want to remove any currently showing
+                    // dialog, so make our own transaction and take care of that here.
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickBackupDialogFragment");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    PickBackupDialogFragment fragment = PickBackupDialogFragment.newInstance();
+                    fragment.setBackups(backups);
+                    fragment.setTargetFragment(ImportDataFragment.this, 0);
+                    fragment.setParentFragment(ImportDataFragment.this);
+                    fragment.show(ft, "pickBackupDialogFragment");
+                }else{
+                    if(getActivity() != null) {
+                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.downloading_database_file_not_found), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+
+    private void downloadFile(String exportName, String fileName){
         //download 3 files to firebase-db/email/exports/timestamp (show picker for timestamp if more than 1 entry)
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -221,8 +256,10 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
         StorageReference personalDirRef = storageRef.child(MySettings.getActiveUser().getEmail());
         //create new reference for exports dir for current user
         StorageReference exportsRef = personalDirRef.child("exports");
+        //create new reference for exports dir for current user
+        StorageReference exportRef = exportsRef.child(exportName);
         //create new reference for exports dir for current file
-        StorageReference fileRef = exportsRef.child(fileName);
+        StorageReference fileRef = exportRef.child(fileName);
 
 
         File file = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/" + fileName);
@@ -233,9 +270,9 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                 // Local temp file has been created
                 currentFile++;
                 if(currentFile == 2){
-                    downloadFile(Constants.DB_FILE_2);
+                    downloadFile(exportName, Constants.DB_FILE_2);
                 }else if(currentFile == 3){
-                    downloadFile(Constants.DB_FILE_3);
+                    downloadFile(exportName, Constants.DB_FILE_3);
                 }else{
                     //done downloading all files
                     //if success
@@ -281,6 +318,20 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                 progressCircle.setProgress(progress.intValue());
             }
         });
+    }
+
+    private boolean validateInputs(){
+        boolean inputsValid = true;
+
+        if(selectedBackup == null ){
+            inputsValid = false;
+            YoYo.with(Techniques.Shake)
+                    .duration(700)
+                    .repeat(1)
+                    .playOn(backupSelectionLayout);
+        }
+
+        return inputsValid;
     }
 
     private void checkExternalStoragePermissions(){

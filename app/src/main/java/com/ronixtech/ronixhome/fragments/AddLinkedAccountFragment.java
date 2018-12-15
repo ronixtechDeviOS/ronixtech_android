@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,12 +13,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.User;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -94,21 +104,58 @@ public class AddLinkedAccountFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 if(validateInputs()){
+                    Utils.showLoading(getActivity());
+
+                    long timestamp = new Date().getTime();
+
                     User user = new User();
                     user.setFullName(accountNameEditText.getText().toString());
                     user.setEmail(accountEmailEditText.getText().toString());
                     user.setLinked(true);
+                    user.setLinkTimestamp(timestamp);
 
-                    MySettings.addUser(user);
-
-                    //TODO add user to firebase DB auth users for this place and send them an email address
-
-                    getFragmentManager().popBackStack();
+                    //TODO add user to firebase DB auth users for this user and send them an email address/notification
+                    //TODO the recepient must accept and update his users/email/linked_to_accounts collection
+                    addLinkedAccount(user, timestamp);
                 }
             }
         });
 
         return view;
+    }
+
+    private void addLinkedAccount(User user, long linkDate){
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", user.getFullName());
+        map.put("email", user.getEmail());
+        map.put("link_timestamp", linkDate);
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("linked_accounts").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                //go to successFragment
+                MySettings.addUser(user);
+
+                Utils.dismissLoading();
+
+                if(getFragmentManager() != null){
+                    getFragmentManager().popBackStack();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utils.dismissLoading();
+
+                if(getActivity() != null){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.uploading_database_file_failed), Toast.LENGTH_SHORT).show();
+                }
+                if(getFragmentManager() != null){
+                    getFragmentManager().popBackStack();
+                }
+            }
+        });
     }
 
     private boolean validateInputs(){
