@@ -244,6 +244,27 @@
                 android:text="-"/>
 
             <TextView
+                android:id="@+id/device_wifi_version_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_wifi_version"/>
+
+            <TextView
+                android:id="@+id/device_wifi_version_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="-"/>
+
+            <TextView
                 android:id="@+id/device_firmware_version_static_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -284,6 +305,27 @@
                 android:textSize="18sp"
                 android:textColor="@color/blackColor"
                 android:text="101416"/>
+
+            <TextView
+                android:id="@+id/device_hw_version_static_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/darkGrayColor"
+                android:text="@string/device_hw_version"/>
+
+            <TextView
+                android:id="@+id/device_hw_version_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="-"/>
 
             <TextView
                 android:id="@+id/device_hw_firmware_version_static_textview"

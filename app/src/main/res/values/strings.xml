@@ -330,9 +330,11 @@
     <string name="device_ip_address">IP Address</string>
     <string name="device_dhcp_gateway">Gateway</string>
     <string name="device_dhcp_subnet_mask">Subnet Mask</string>
+    <string name="device_wifi_version">WiFi Version</string>
     <string name="device_firmware_version">WiFi Firmware Version</string>
     <string name="device_firmware_online_version">Online WiFi Firmware Version</string>
     <string name="device_hw_firmware_version">Hardware Firmware Version</string>
+    <string name="device_hw_version">Hardware Version</string>
     <string name="device_hw_firmware_online_version">Online Hardware Firmware Version</string>
     <string name="device_temperature">Temperature</string>
     <string name="device_beep_status">Beep Status</string>

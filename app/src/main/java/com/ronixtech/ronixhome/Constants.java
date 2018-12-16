@@ -29,7 +29,7 @@ public class Constants {
     public static final String MQTT_TOPIC_STATUS = "ronix/status/%s"; //%s is the chip_id
     public static final String MQTT_TOPIC_CONTROL = "ronix/control/%s"; //%s is the chip_id
 
-    public static final String DEVICE_FIRMWARE_URL = "http://ronixtech.com/ronix_services/wifi_updates/%s/%s/%s";
+    public static final String DEVICE_FIRMWARE_URL = "http://ronixtech.com/ronix_services/wifi_updates/%s/%s/%s/%s";
     //http://ronixtech.com/ronix_services/wifi_updates/%FIRMWARE_VERSION%/%DEVICE_TYPE%/%user1/2.bin%
 
     public static final String DEVICE_FIRMWARE_URL_1 = "http://ronixtech.com/ronix_services/wifi_updates/user1.bin";

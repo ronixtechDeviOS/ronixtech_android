@@ -105,11 +105,11 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                 @Override
                 public void onConnectionSuccess() {
                     if(device.isHwFirmwareUpdateAvailable()){
-                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME);
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getHwVersion(), MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME);
                         DownloadTask downloadTask = new DownloadTask(getActivity(), fragment, device);
                         downloadTask.execute(url);
                     }else if(device.isFirmwareUpdateAvailable()){
-                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_1);
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getWifiVersion(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_1);
                         DownloadTask downloadTask = new DownloadTask(getActivity(), fragment, device);
                         downloadTask.execute(url);
                     }
@@ -237,7 +237,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                         progressTextView.setText(context.getResources().getString(R.string.downloading_firmware_file, 2, 2));
 
                         if (currentFile <= 2) {
-                            String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_2);
+                            String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getWifiVersion(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_2);
                             DownloadTask downloadTask = new DownloadTask(context, fragment, device);
                             downloadTask.execute(url);
                         } else {

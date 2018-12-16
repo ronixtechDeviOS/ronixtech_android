@@ -91,7 +91,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
             new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
                 @Override
                 public void onConnectionSuccess() {
-                    String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), "user1.bin");
+                    String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getWifiVersion(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), "user1.bin");
                     UpdateFirmwareTask downloadTask = new UpdateFirmwareTask(getActivity(), UpdateDeviceAutoFragment.this);
                     downloadTask.execute(url);
                 }

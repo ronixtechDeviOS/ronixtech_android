@@ -1189,6 +1189,14 @@ public class DashboardDevicesFragment extends Fragment {
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
+
+                                if(wifiStatus.has("U_W_HWV")){
+                                    String wifiVersionString = wifiStatus.getString("U_W_HWV");
+                                    if(wifiVersionString != null && wifiVersionString.length() >= 1){
+                                        int wifiVersion = Integer.parseInt(wifiVersionString);
+                                        device.setWifiVersion(""+wifiVersion);
+                                    }
+                                }
                             }
                         }else{
                             device.setFirmwareUpdateAvailable(true);
@@ -1215,6 +1223,14 @@ public class DashboardDevicesFragment extends Fragment {
                                 }
                             }else{
                                 device.setHwFirmwareUpdateAvailable(true);
+                            }
+
+                            if(hardwareStatus.has("U_H_HWV")){
+                                String hwVersionString = hardwareStatus.getString("U_H_HWV");
+                                if(hwVersionString != null && hwVersionString.length() >= 1){
+                                    int hwVersion = Integer.parseInt(hwVersionString);
+                                    device.setHwVersion(""+hwVersion);
+                                }
                             }
 
 
@@ -1649,6 +1665,14 @@ public class DashboardDevicesFragment extends Fragment {
                                     device.setFirmwareUpdateAvailable(true);
                                 }
 
+                                if(wifiStatus.has("U_W_HWV")){
+                                    String wifiVersionString = wifiStatus.getString("U_W_HWV");
+                                    if(wifiVersionString != null && wifiVersionString.length() >= 1){
+                                        int wifiVersion = Integer.parseInt(wifiVersionString);
+                                        device.setWifiVersion(""+wifiVersion);
+                                    }
+                                }
+
                                 if(wifiStatus.has("R_W_DHC")){
                                     String dhcpStatus = wifiStatus.getString("R_W_DHC");
                                     if(dhcpStatus.equalsIgnoreCase("on") && !device.isStaticIPAddress()){
@@ -1711,6 +1735,14 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
                                 }else{
                                     device.setHwFirmwareUpdateAvailable(true);
+                                }
+
+                                if(hardwareStatus.has("U_H_HWV")){
+                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
+                                    if(hwVersionString != null && hwVersionString.length() >= 1){
+                                        int hwVersion = Integer.parseInt(hwVersionString);
+                                        device.setHwVersion(""+hwVersion);
+                                    }
                                 }
 
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
@@ -1872,6 +1904,14 @@ public class DashboardDevicesFragment extends Fragment {
                                     device.setHwFirmwareUpdateAvailable(true);
                                 }
 
+                                if(hardwareStatus.has("U_H_HWV")){
+                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
+                                    if(hwVersionString != null && hwVersionString.length() >= 1){
+                                        int hwVersion = Integer.parseInt(hwVersionString);
+                                        device.setHwVersion(""+hwVersion);
+                                    }
+                                }
+
 
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
@@ -1975,6 +2015,14 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
                                 }else{
                                     device.setHwFirmwareUpdateAvailable(true);
+                                }
+
+                                if(hardwareStatus.has("U_H_HWV")){
+                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
+                                    if(hwVersionString != null && hwVersionString.length() >= 1){
+                                        int hwVersion = Integer.parseInt(hwVersionString);
+                                        device.setHwVersion(""+hwVersion);
+                                    }
                                 }
 
 

@@ -106,6 +106,10 @@ public class Device implements Comparable {
     boolean hwLock;
     @ColumnInfo(name = "temperature")
     int temperature;
+    @ColumnInfo(name = "hw_version")
+    String hwVersion;
+    @ColumnInfo(name = "wifi_version")
+    String wifiVersion;
     @ColumnInfo(name = "hw_firmware_version")
     String hwFirmwareVersion;
     @ColumnInfo(name = "hw_firmware_update_available")
@@ -139,6 +143,8 @@ public class Device implements Comparable {
         this.beep = true;
         this.hwLock = false;
         this.temperature = 0;
+        this.hwVersion = "";
+        this.wifiVersion = "";
         this.hwFirmwareVersion = "";
         this.hwFirmwareUpdateAvailable = false;
         this.staticIPAddress = true;
@@ -165,6 +171,8 @@ public class Device implements Comparable {
         this.accessToken = device.getAccessToken();
         this.lastSeenTimestamp = device.getLastSeenTimestamp();
         this.pirData = new PIRData(device.getPIRData());
+        this.hwVersion = device.getHwVersion();
+        this.wifiVersion = device.getWifiVersion();
         this.firmwareUpdateAvailable = device.isFirmwareUpdateAvailable();
         this.firmwareVersion = device.getFirmwareVersion();
         this.isDeviceMQTTReachable = device.isDeviceMQTTReachable();
@@ -331,6 +339,22 @@ public class Device implements Comparable {
         this.temperature = temperature;
     }
 
+    public String getHwVersion() {
+        return hwVersion;
+    }
+
+    public void setHwVersion(String hwVersion) {
+        this.hwVersion = hwVersion;
+    }
+
+    public String getWifiVersion() {
+        return wifiVersion;
+    }
+
+    public void setWifiVersion(String wifiVersion) {
+        this.wifiVersion = wifiVersion;
+    }
+
     public String getHwFirmwareVersion() {
         return hwFirmwareVersion;
     }
@@ -414,7 +438,6 @@ public class Device implements Comparable {
             return DEVICE_MODEL_SOUND;
         }else return DEVICE_MODEL_UNKNOWN;
     }
-
 
     @Override
     public boolean equals(Object object){

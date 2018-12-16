@@ -35,7 +35,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, dhcpTextView, dhcpStaticTextView, ipAddressStaticTextView, ipAddressTextView, gatewayTextView, gatewayStaticTextView, subnetmaskTextView, subnetmaskStaticTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, hwFirmwareVersionTextView, onlineHWFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
+    TextView nameTextView, macAddressTextView, typeTextView, lastSeenTextView, statusTextVuew, dhcpTextView, dhcpStaticTextView, ipAddressStaticTextView, ipAddressTextView, gatewayTextView, gatewayStaticTextView, subnetmaskTextView, subnetmaskStaticTextView, wifiVersionTextView, firmwareVersionTextView, onlineFirmwareVersionTextView, hwVersionTextView, hwFirmwareVersionTextView, onlineHWFirmwareVersionTextView, firmwareMessageTextView, temperatureTextView, beepStatusTextView, hwLockStatusTextView, accessTokenTextView, locaionTextView, linesTextView;
 
     private Device device;
     private int placeMode;
@@ -88,8 +88,10 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         gatewayTextView = view.findViewById(R.id.device_dhcp_gateway_textview);
         subnetmaskStaticTextView = view.findViewById(R.id.device_dhcp_subnet_mask_static_textview);
         subnetmaskTextView = view.findViewById(R.id.device_dhcp_subnet_mask_textview);
+        wifiVersionTextView = view.findViewById(R.id.device_wifi_version_textview);
         firmwareVersionTextView = view.findViewById(R.id.device_firmware_version_textview);
         onlineFirmwareVersionTextView = view.findViewById(R.id.device_firmware_online_version_textview);
+        hwVersionTextView = view.findViewById(R.id.device_hw_version_textview);
         hwFirmwareVersionTextView = view.findViewById(R.id.device_hw_firmware_version_textview);
         onlineHWFirmwareVersionTextView = view.findViewById(R.id.device_hw_firmware_online_version_textview);
         firmwareMessageTextView = view.findViewById(R.id.device_firmware_message_textview);
@@ -149,6 +151,12 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 }
             }
 
+            int wifiVersion = 0;
+            if(device.getWifiVersion() != null && device.getWifiVersion().length() >= 1){
+                wifiVersion = Integer.parseInt(device.getWifiVersion());
+                wifiVersionTextView.setText(""+wifiVersion);
+            }
+
             int currentWiFiVersion = 0, onlineWiFiVersion = 0;
             if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
                 currentWiFiVersion = Integer.parseInt(device.getFirmwareVersion());
@@ -161,6 +169,12 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             }else{
                 onlineFirmwareVersionTextView.setText(getActivity().getResources().getString(R.string.unable_to_obtain_online_firmware_version));
                 onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
+            }
+
+            int hwVersion = 0;
+            if(device.getHwVersion() != null && device.getHwVersion().length() >= 1){
+                hwVersion = Integer.parseInt(device.getHwVersion());
+                hwVersionTextView.setText(""+hwVersion);
             }
 
             int currentHWVersion = 0, onlineHWVersion = 0;

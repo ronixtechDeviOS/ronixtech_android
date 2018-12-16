@@ -1365,6 +1365,28 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_26_27 = new Migration(26, 27) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE device "
+                            + " ADD COLUMN hw_version TEXT DEFAULT ''");
+                }
+            };
+
+            Migration MIGRATION_27_28 = new Migration(27, 28) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE device "
+                            + " ADD COLUMN wifi_version TEXT DEFAULT ''");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
                             .addMigrations(MIGRATION_1_2,
                                     MIGRATION_2_3,
@@ -1390,7 +1412,9 @@ public class MySettings {
                                     MIGRATION_22_23,
                                     MIGRATION_23_24,
                                     MIGRATION_24_25,
-                                    MIGRATION_25_26)
+                                    MIGRATION_25_26,
+                                    MIGRATION_26_27,
+                                    MIGRATION_27_28)
                             .allowMainThreadQueries().
                             build();
             return database;

@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -379,6 +380,8 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                     device.setRoomID(selectedRoom.getId());
                     device.setStaticIPAddress(ipAddressStatic);
                     MySettings.updateDeviceRoom(device, selectedRoom.getId());
+
+                    DevicesInMemory.updateDevice(device);
 
                     if(placeMode == Place.PLACE_MODE_LOCAL && selectedWifiNetwork != null) {
                         Utils.showLoading(getActivity());
