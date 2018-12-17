@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -256,19 +255,17 @@ public class LoginFragment extends Fragment {
                     }else {
                         // If sign in fails, display a message to the user.
                         Log.d(TAG, "signInWithEmailAndPassword failure: " + task.getException());
-                        if(getActivity() != null && task.getException() != null){
-                            Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        if(task.getException() != null){
+                            Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                         }
-                        //Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.login_failed), Toast.LENGTH_SHORT).show();
                         Utils.dismissLoading();
                     }
                 }
             });
         }else{
-            if(getActivity() != null){
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
-            }
             Utils.dismissLoading();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.login_failed), true);
         }
 
         /*final CustomProgressDialog customProgressDialog = CustomProgressDialog.show(getActivity(), "", "");
@@ -312,7 +309,7 @@ public class LoginFragment extends Fragment {
                 loginButton.setEnabled(true);
                 if (customProgressDialog != null) customProgressDialog.dismiss();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
-                Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getStringExtraInt(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
             }
         }){
             *//*@Override
@@ -348,18 +345,16 @@ public class LoginFragment extends Fragment {
                         Utils.dismissLoading();
                     }else{
                         Log.d(TAG, "sendPasswordResetEmail failure: " + task.getException());
-                        if(getActivity() != null && task.getException() != null){
-                            Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        if(task.getException() != null){
+                            Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                         }
                         Utils.dismissLoading();
                     }
                 }
             });
         }else{
-            if(getActivity() != null) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.reset_password_failed), Toast.LENGTH_SHORT).show();
-            }
             Utils.dismissLoading();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.reset_password_failed), true);
         }
     }
 
@@ -391,7 +386,7 @@ public class LoginFragment extends Fragment {
                 loginButton.setEnabled(true);
                 if (customProgressDialog != null) customProgressDialog.dismiss();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
-                Toast.makeText(getActivity(), getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.server_connection_error), true);
             }
         }){
             /*@Override

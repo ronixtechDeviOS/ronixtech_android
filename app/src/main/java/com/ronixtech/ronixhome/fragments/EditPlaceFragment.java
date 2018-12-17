@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -104,7 +103,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
         if(place != null){
             MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.edit_place), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.edit_place), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 
@@ -251,7 +250,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                     fragment.setTargetFragment(EditPlaceFragment.this, 0);
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
                     Utils.generatePlaceTypes();
                 }
 
@@ -298,7 +297,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 if(validateInputs()){
                     Place oldPlace = MySettings.getPlaceByName(placeNameEditText.getText().toString());
                     if(oldPlace != null && oldPlace.getId() != place.getId()){
-                        placeNameEditText.setError(getActivity().getResources().getString(R.string.place_already_exists_error));
+                        placeNameEditText.setError(Utils.getString(getActivity(), R.string.place_already_exists_error));
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)
@@ -349,7 +348,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 if(validateInputs()){
                     Place oldPlace = MySettings.getPlaceByName(placeNameEditText.getText().toString());
                     if(oldPlace != null && oldPlace.getId() != place.getId()){
-                        placeNameEditText.setError(getActivity().getResources().getString(R.string.place_already_exists_error));
+                        placeNameEditText.setError(Utils.getString(getActivity(), R.string.place_already_exists_error));
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)

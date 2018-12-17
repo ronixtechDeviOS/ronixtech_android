@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 
 /**
@@ -55,7 +56,7 @@ public class AboutFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_about, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.help), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.help), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         TextView currentVersionTextView = view.findViewById(R.id.current_version_textview);

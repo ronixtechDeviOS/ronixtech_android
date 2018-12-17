@@ -23,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -142,7 +141,7 @@ public class DashboardDevicesFragment extends Fragment {
                 MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
             }
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 
@@ -186,7 +185,7 @@ public class DashboardDevicesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -202,7 +201,7 @@ public class DashboardDevicesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -219,7 +218,7 @@ public class DashboardDevicesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -252,7 +251,7 @@ public class DashboardDevicesFragment extends Fragment {
                     MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
                 }
             } else {
-                MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
+                MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
             }
 
             deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());

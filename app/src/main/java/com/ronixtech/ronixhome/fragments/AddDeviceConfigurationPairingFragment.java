@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 
 /**
@@ -50,7 +51,7 @@ public class AddDeviceConfigurationPairingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_configuration_pairing, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.select_paired_devices), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.select_paired_devices), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         return view;

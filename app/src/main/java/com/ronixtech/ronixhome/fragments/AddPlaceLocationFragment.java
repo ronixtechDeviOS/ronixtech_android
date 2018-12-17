@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -87,7 +86,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_place_location, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_place_location), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_place_location), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         getMyLocationButton = view.findViewById(R.id.add_place_get_location_button);
@@ -200,11 +199,11 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                         startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                     }catch (GooglePlayServicesNotAvailableException e){
                         Log.d(TAG, "PlacePicker, Google Play Services not available.");
-                        Toast.makeText(getActivity(), "Google Play Services not available.", Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), "Google Play Services not available.", true);
                         Log.d(TAG, "PlacePicker,");
                     }catch (GooglePlayServicesRepairableException e){
                         Log.d(TAG, "PlacePicker, Google Play Services not available.");
-                        Toast.makeText(getActivity(), "Google Play Services not available.", Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), "Google Play Services not available.", true);
                     }
                 }
             }else{
@@ -238,16 +237,16 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
             if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
                 enabled = false;
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
-                builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
-                builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                builder.setTitle(Utils.getString(getActivity(), R.string.location_required_title));
+                builder.setMessage(Utils.getString(getActivity(), R.string.location_required_message));
+                builder.setPositiveButton(Utils.getString(getActivity(), R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
                     }
                 });
-                builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         FragmentManager fragmentManager = getFragmentManager();
@@ -275,11 +274,11 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         //set title
-                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        .setTitle(Utils.getString(getActivity(), R.string.wifi_required_title))
                         //set message
-                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        .setMessage(Utils.getString(getActivity(), R.string.wifi_required_message))
                         //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(Utils.getString(getActivity(), R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
@@ -287,7 +286,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                             }
                         })
                         //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
@@ -319,9 +318,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                 }
                 else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable location permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable location permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
                         new AlertDialog.Builder(getActivity())
@@ -346,9 +343,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                 }
                 else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_WIFI_STATE")) {
                         new AlertDialog.Builder(getActivity())
@@ -383,9 +378,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                 }
                 else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.CHANGE_WIFI_STATE")) {
                         new AlertDialog.Builder(getActivity())
@@ -456,7 +449,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
 
                     @Override
                     public void onGeocodingFail(String errorMsg) {
-                        Toast.makeText(getActivity(), ""+errorMsg, Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), errorMsg, true);
                         if(MySettings.getTempPlace() != null){
                             MySettings.setTempPlace(place);
                         }else {

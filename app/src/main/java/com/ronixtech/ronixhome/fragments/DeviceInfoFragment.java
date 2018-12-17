@@ -10,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -68,10 +67,10 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_device_info, container, false);
         if(device != null){
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.device_info), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.device_info), getResources().getColor(R.color.whiteColor));
             //MainActivity.setActionBarTitle(device.getName(), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.device_info), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.device_info), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 
@@ -108,7 +107,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             lastSeenTextView.setText(Utils.getTimeStringHoursMinutesSeconds(device.getLastSeenTimestamp()));
             typeTextView.setText(Device.getDeviceTypeString(device.getDeviceTypeID()));
             if(device.isDeviceMQTTReachable()){
-                statusTextVuew.setText(getActivity().getResources().getString(R.string.device_mqtt_reachable));
+                statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_reachable));
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
                 dhcpTextView.setVisibility(View.GONE);
                 dhcpStaticTextView.setVisibility(View.GONE);
@@ -119,7 +118,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 subnetmaskStaticTextView.setVisibility(View.GONE);
                 subnetmaskTextView.setVisibility(View.GONE);
             }else{
-                statusTextVuew.setText(getActivity().getResources().getString(R.string.device_mqtt_unreachable));
+                statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_unreachable));
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 dhcpTextView.setVisibility(View.VISIBLE);
                 dhcpStaticTextView.setVisibility(View.VISIBLE);
@@ -130,9 +129,9 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 subnetmaskStaticTextView.setVisibility(View.VISIBLE);
                 subnetmaskTextView.setVisibility(View.VISIBLE);
                 if(device.isStaticIPAddress()){
-                    dhcpTextView.setText(getActivity().getResources().getString(R.string.off));
+                    dhcpTextView.setText(Utils.getString(getActivity(), R.string.off));
                 }else{
-                    dhcpTextView.setText(getActivity().getResources().getString(R.string.on));
+                    dhcpTextView.setText(Utils.getString(getActivity(), R.string.on));
                 }
                 if(device.getIpAddress().length() >= 1) {
                     ipAddressTextView.setText("" + device.getIpAddress());
@@ -167,7 +166,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 onlineWiFiVersion = Integer.parseInt(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
                 onlineFirmwareVersionTextView.setText("" + onlineWiFiVersion);
             }else{
-                onlineFirmwareVersionTextView.setText(getActivity().getResources().getString(R.string.unable_to_obtain_online_firmware_version));
+                onlineFirmwareVersionTextView.setText(Utils.getString(getActivity(), R.string.unable_to_obtain_online_firmware_version));
                 onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
             }
 
@@ -187,7 +186,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 onlineHWVersion = Integer.parseInt(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
                 onlineHWFirmwareVersionTextView.setText("" + onlineHWVersion);
             }else{
-                onlineHWFirmwareVersionTextView.setText(getActivity().getResources().getString(R.string.unable_to_obtain_online_firmware_version));
+                onlineHWFirmwareVersionTextView.setText(Utils.getString(getActivity(), R.string.unable_to_obtain_online_firmware_version));
                 onlineHWFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
             }
 
@@ -196,21 +195,21 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             boolean hwUpdateAvailable = false;
             if(currentHWVersion == onlineHWVersion && currentHWVersion != 0){
                 hwUpdateAvailable = false;
-                firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
+                firmwareMessageTextView.setText(Utils.getString(getActivity(), R.string.firmware_up_to_date));
 
                 hwFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 onlineHWFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
             }else{
                 hwUpdateAvailable = true;
-                firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
+                firmwareMessageTextView.setText(Utils.getString(getActivity(), R.string.firmware_available));
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
             }
 
 
             if(!hwUpdateAvailable){
                 if(currentWiFiVersion == onlineWiFiVersion && currentWiFiVersion != 0){
-                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
+                    firmwareMessageTextView.setText(Utils.getString(getActivity(), R.string.firmware_up_to_date));
 
                     firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                     onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
@@ -219,15 +218,15 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                     firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
                     if(currentWiFiVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
                         firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
-                        firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_update_required));
+                        firmwareMessageTextView.setText(Utils.getString(getActivity(), R.string.firmware_update_required));
                     }else{
-                        firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
+                        firmwareMessageTextView.setText(Utils.getString(getActivity(), R.string.firmware_available));
                     }
                 }
             }
 
             /*if(currentWiFiVersion == onlineWiFiVersion && currentWiFiVersion != 0){
-                firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_up_to_date));
+                firmwareMessageTextView.setText(getActivity().getResources().getStringExtraInt(R.string.firmware_up_to_date));
 
                 firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
                 onlineFirmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
@@ -236,9 +235,9 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 firmwareMessageTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
                 if(currentWiFiVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
                     firmwareVersionTextView.setTextColor(getActivity().getResources().getColor(R.color.redColor));
-                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_update_required));
+                    firmwareMessageTextView.setText(getActivity().getResources().getStringExtraInt(R.string.firmware_update_required));
                 }else{
-                    firmwareMessageTextView.setText(getActivity().getResources().getString(R.string.firmware_available));
+                    firmwareMessageTextView.setText(getActivity().getResources().getStringExtraInt(R.string.firmware_available));
                 }
             }*/
 
@@ -250,15 +249,15 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             }
 
             if(device.isBeep()){
-                beepStatusTextView.setText(getActivity().getResources().getString(R.string.on));
+                beepStatusTextView.setText(Utils.getString(getActivity(), R.string.on));
             }else{
-                beepStatusTextView.setText(getActivity().getResources().getString(R.string.off));
+                beepStatusTextView.setText(Utils.getString(getActivity(), R.string.off));
             }
 
             if(device.isHwLock()){
-                hwLockStatusTextView.setText(getActivity().getResources().getString(R.string.on));
+                hwLockStatusTextView.setText(Utils.getString(getActivity(), R.string.on));
             }else{
-                hwLockStatusTextView.setText(getActivity().getResources().getString(R.string.off));
+                hwLockStatusTextView.setText(Utils.getString(getActivity(), R.string.off));
             }
 
             accessTokenTextView.setText(""+device.getAccessToken());
@@ -286,7 +285,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                         fragmentTransaction.commit();
                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.device_update_disabled_only_local_mode), true);
                     }
                 }
             });

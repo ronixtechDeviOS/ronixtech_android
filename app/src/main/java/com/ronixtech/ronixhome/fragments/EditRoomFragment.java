@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -98,7 +97,7 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
         if(room != null){
             MainActivity.setActionBarTitle(room.getName(), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.edit_room), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.edit_room), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 
@@ -225,7 +224,7 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
                     fragment.setTargetFragment(EditRoomFragment.this, 0);
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
                     Utils.generateRoomTypes();
                 }
             }
@@ -266,7 +265,7 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
                         }
                     }
                     if(roomNameDuplicate){
-                        roomNameEditText.setError(getActivity().getResources().getString(R.string.room_already_exists_error));
+                        roomNameEditText.setError(Utils.getString(getActivity(), R.string.room_already_exists_error));
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)

@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.ronixtech.ronixhome.Constants;
@@ -255,14 +254,14 @@ public class DeviceAdapter extends ArrayAdapter {
                     boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
                     if (!sameDay) {
-                        vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
                     }else{
-                        vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     }
 
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, "--:--"));
+                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -297,7 +296,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                 fragmentTransaction.commit();
                             }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                             }
                         }
                     });
@@ -335,7 +334,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -368,7 +367,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 toggleLine(item, 0, Line.LINE_STATE_OFF);
                             }
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -401,7 +400,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
 
@@ -435,7 +434,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 toggleLine(item, 1, Line.LINE_STATE_OFF);
                             }
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
 
@@ -469,7 +468,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -502,7 +501,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 toggleLine(item, 2, Line.LINE_STATE_OFF);
                             }
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -546,7 +545,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             int progress = (int) (progressValue);
                             controlDimming(item, 0, progress);
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -589,7 +588,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             int progress = (int) (progressValue);
                             controlDimming(item, 1, progress);
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -632,7 +631,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             int progress = (int) (progressValue);
                             controlDimming(item, 2, progress);
                         }else{
-                            Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
                     }
                 });
@@ -651,9 +650,9 @@ public class DeviceAdapter extends ArrayAdapter {
 
                             int dimmingState = item.getLines().get(0).getDimmingState();
                             if(dimmingState == Line.DIMMING_STATE_ON){
-                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getStringExtraInt(R.string.disable_dimming));
                             }else if(dimmingState == Line.DIMMING_STATE_OFF){
-                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getStringExtraInt(R.string.enable_dimming));
                             }
                         }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
@@ -678,11 +677,11 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 toggleDimming(item, 0, Line.DIMMING_STATE_OFF);
                                             }
                                         }else{
-                                            Toast.makeText(activity, "controls active", Toast.LENGTH_SHORT).show();
+                                            Utils.showToast(activity, "Controls active", true);
                                         }
 
                                     }else{
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                                     }
                                 }else if(id == R.id.action_device_info){
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -725,18 +724,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
                                 }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             //set title
-                                            .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
                                             //set message
-                                            .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
                                             //set positive button
-                                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what would happen when positive button is clicked
@@ -744,7 +743,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -771,9 +770,9 @@ public class DeviceAdapter extends ArrayAdapter {
 
                             int dimmingState = item.getLines().get(1).getDimmingState();
                             if(dimmingState == Line.DIMMING_STATE_ON){
-                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getStringExtraInt(R.string.disable_dimming));
                             }else if(dimmingState == Line.DIMMING_STATE_OFF){
-                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getStringExtraInt(R.string.enable_dimming));
                             }
                         }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
@@ -799,7 +798,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                             }
                                         }
                                     }else{
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                                     }
                                 }else if(id == R.id.action_device_info){
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -842,18 +841,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
                                 }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             //set title
-                                            .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
                                             //set message
-                                            .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
                                             //set positive button
-                                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what would happen when positive button is clicked
@@ -861,7 +860,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -888,9 +887,9 @@ public class DeviceAdapter extends ArrayAdapter {
 
                             int dimmingState = item.getLines().get(2).getDimmingState();
                             if(dimmingState == Line.DIMMING_STATE_ON){
-                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.disable_dimming));
+                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getStringExtraInt(R.string.disable_dimming));
                             }else if(dimmingState == Line.DIMMING_STATE_OFF){
-                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getString(R.string.enable_dimming));
+                                popup.getMenu().findItem(R.id.action_toggle_dimming).setTitle(activity.getResources().getStringExtraInt(R.string.enable_dimming));
                             }
                         }else if(deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
                             popup.getMenu().findItem(R.id.action_toggle_dimming).setVisible(false);
@@ -916,7 +915,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                             }
                                         }
                                     }else{
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_required), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                                     }
                                 }else if(id == R.id.action_device_info){
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -959,18 +958,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
                                 }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             //set title
-                                            .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
                                             //set message
-                                            .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
                                             //set positive button
-                                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what would happen when positive button is clicked
@@ -978,7 +977,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -1099,11 +1098,25 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+
+                    //show full date if not same day (if it's a new day)
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    long currentTimestamp = cal2.getTimeInMillis();
+                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                    cal2.setTimeInMillis(currentTimestamp);
+                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                    if (!sameDay) {
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                    }else{
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                    }
+
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, "--:--"));
+                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -1122,7 +1135,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                 fragmentTransaction.commit();
                             }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                             }
                         }
                     });
@@ -1226,18 +1239,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
                                 }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             //set title
-                                            .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
                                             //set message
-                                            .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
                                             //set positive button
-                                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what would happen when positive button is clicked
@@ -1245,7 +1258,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -1325,11 +1338,25 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+
+                    //show full date if not same day (if it's a new day)
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    long currentTimestamp = cal2.getTimeInMillis();
+                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                    cal2.setTimeInMillis(currentTimestamp);
+                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                    if (!sameDay) {
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                    }else{
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                    }
+
                 }else{
                     //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(activity.getResources().getString(R.string.last_seen, "--:--"));
+                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -1348,7 +1375,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                 fragmentTransaction.commit();
                             }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                             }
                         }
                     });
@@ -1391,7 +1418,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("editDevicePIRFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_edit_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
@@ -1404,18 +1431,18 @@ public class DeviceAdapter extends ArrayAdapter {
                                         fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                         fragmentTransaction.commit();
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Toast.makeText(activity, activity.getResources().getString(R.string.device_update_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
                                 }else if(id == R.id.action_remove_device){
                                     AlertDialog alertDialog = new AlertDialog.Builder(activity)
                                             //set icon
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             //set title
-                                            .setTitle(activity.getResources().getString(R.string.remove_unit_question))
+                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
                                             //set message
-                                            .setMessage(activity.getResources().getString(R.string.remove_unit_message))
+                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
                                             //set positive button
-                                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what would happen when positive button is clicked
@@ -1423,7 +1450,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                                 }
                                             })
                                             //set negative button
-                                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     //set what should happen when negative button is clicked
@@ -1637,16 +1664,16 @@ public class DeviceAdapter extends ArrayAdapter {
         }*/
         vHolder.soundDeviceTypeImageView.setImageResource(R.drawable.speaker_icon);
         if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN){
-            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.line_in_1));
+            vHolder.deviceModeTextView.setText(Utils.getString(activity, R.string.line_in_1));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_LINE_IN_2){
-            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.line_in_2));
+            vHolder.deviceModeTextView.setText(Utils.getString(activity, R.string.line_in_2));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_UPNP){
-            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.upnp));
+            vHolder.deviceModeTextView.setText(Utils.getString(activity, R.string.upnp));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }else if(item.getSoundDeviceData().getMode() == SoundDeviceData.MODE_USB){
-            vHolder.deviceModeTextView.setText(activity.getResources().getString(R.string.usb));
+            vHolder.deviceModeTextView.setText(Utils.getString(activity, R.string.usb));
             //vHolder.speakerVolumeSeekBar.setVisibility(View.VISIBLE);
         }
 
@@ -1782,11 +1809,11 @@ public class DeviceAdapter extends ArrayAdapter {
                 //set icon
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 //set title
-                .setTitle(activity.getResources().getString(R.string.factory_reset_unit_question))
+                .setTitle(Utils.getString(activity, R.string.factory_reset_unit_question))
                 //set message
-                .setMessage(activity.getResources().getString(R.string.factory_reset_unit_message))
+                .setMessage(Utils.getString(activity, R.string.factory_reset_unit_message))
                 //set positive button
-                .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //set what would happen when positive button is clicked
@@ -1795,7 +1822,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 })
                 //set negative button
-                .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //set what should happen when negative button is clicked
@@ -2202,7 +2229,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
             }
             /*lines.remove(line);
             lines.add(position, line);
@@ -2443,7 +2470,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
             }
             /*lines.remove(line);
             lines.add(position, line);
@@ -2616,7 +2643,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200){
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
             }
             /*lines.remove(line);
             lines.add(position, line);
@@ -2775,7 +2802,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 ModeChanger modeChanger = new ModeChanger(device, mode);
                 modeChanger.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
             }
         }
 
@@ -2895,7 +2922,7 @@ public class DeviceAdapter extends ArrayAdapter {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200 && mode != SoundDeviceData.MODE_USB){
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
             }else if(statusCode == 200 && mode == SoundDeviceData.MODE_UPNP){
                 Utils.openApp(activity, "Hi-Fi Cast - Music Player", "com.findhdmusic.app.upnpcast");
             }
@@ -3070,15 +3097,15 @@ public class DeviceAdapter extends ArrayAdapter {
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                    Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_successfull), false);
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
                     DeviceRebooterPost deviceRebooterPost = new DeviceRebooterPost(device);
                     deviceRebooterPost.execute();
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                    Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_successfull), false);
                 }
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_failed), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_failed), false);
             }
         }
 
@@ -3188,7 +3215,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
         @Override
         protected void onPostExecute(Void params) {
-            Toast.makeText(activity, activity.getResources().getString(R.string.factory_reset_unit_successfull), Toast.LENGTH_SHORT).show();
+            Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_successfull), false);
         }
 
         @Override

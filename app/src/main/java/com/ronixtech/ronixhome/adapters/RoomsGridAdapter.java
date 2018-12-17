@@ -133,10 +133,10 @@ public class RoomsGridAdapter extends BaseAdapter{
                             fragmentTransaction.commit();
                         }else if(id == R.id.action_remove_room){
                             android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
-                                    .setTitle(activity.getResources().getString(R.string.remove_room_question))
-                                    .setMessage(activity.getResources().getString(R.string.remove_room_description))
+                                    .setTitle(Utils.getString(activity, R.string.remove_room_question))
+                                    .setMessage(Utils.getString(activity, R.string.remove_room_description))
                                     //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
@@ -146,7 +146,7 @@ public class RoomsGridAdapter extends BaseAdapter{
                                         }
                                     })
                                     //set negative button
-                                    .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what should happen when negative button is clicked
@@ -182,10 +182,10 @@ public class RoomsGridAdapter extends BaseAdapter{
                             fragmentTransaction.commit();
                         }else if(id == R.id.action_remove_room){
                             android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
-                                    .setTitle(activity.getResources().getString(R.string.remove_room_question))
-                                    .setMessage(activity.getResources().getString(R.string.remove_room_description))
+                                    .setTitle(Utils.getString(activity, R.string.remove_room_question))
+                                    .setMessage(Utils.getString(activity, R.string.remove_room_description))
                                     //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
@@ -195,7 +195,7 @@ public class RoomsGridAdapter extends BaseAdapter{
                                         }
                                     })
                                     //set negative button
-                                    .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what should happen when negative button is clicked

@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -77,7 +76,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_places, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.places), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.places), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
 
@@ -109,11 +108,11 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         //set title
-                        .setTitle(getActivity().getResources().getString(R.string.select_default_place_title))
+                        .setTitle(Utils.getString(getActivity(), R.string.select_default_place_title))
                         //set message
-                        .setMessage(getActivity().getResources().getString(R.string.select_default_place_message))
+                        .setMessage(Utils.getString(getActivity(), R.string.select_default_place_message))
                         //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(Utils.getString(getActivity(), R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
@@ -136,7 +135,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                             }
                         })
                         //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.later), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(Utils.getString(getActivity(), R.string.later), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
@@ -178,7 +177,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -194,7 +193,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -26,7 +26,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -468,7 +467,7 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.addToBackStack("homeNetworksFragment");
             fragmentTransaction.commit();
         } else if(id == R.id.nav_refresh_devices){
-            Toast.makeText(mInstance, "Refreshing devices", Toast.LENGTH_SHORT).show();
+            Utils.showToast(mInstance, "Refreshing devices", true);
             for (Device device: MySettings.getAllDevices()) {
                 device.setIpAddress("");
                 MySettings.updateDeviceIP(device, "");

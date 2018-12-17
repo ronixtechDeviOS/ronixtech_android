@@ -63,7 +63,7 @@ public class AddDeviceConfigurationModeSelectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_configuration_mode_selection, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.unit_mode_title), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.unit_mode_title), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         modeRadioGroup = view.findViewById(R.id.device_mode_radiogroup);

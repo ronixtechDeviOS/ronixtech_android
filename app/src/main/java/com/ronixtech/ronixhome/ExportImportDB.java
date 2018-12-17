@@ -2,7 +2,6 @@ package com.ronixtech.ronixhome;
 
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.activities.MainActivity;
 
@@ -34,7 +33,7 @@ public class ExportImportDB {
             }
             Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
         }catch (Exception e){
-            Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+            Utils.showToast(MainActivity.getInstance(), e.toString(), true);
             importSuccess = false;
         }
 
@@ -61,11 +60,11 @@ public class ExportImportDB {
                 src.close();
                 dst.close();
             }else{
-                Toast.makeText(MainActivity.getInstance(), "Can't write to SD", Toast.LENGTH_LONG).show();
+                Utils.showToast(MainActivity.getInstance(), "Can't write to SD", true);
                 importSuccess = false;
             }
         } catch (Exception e) {
-            Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+            Utils.showToast(MainActivity.getInstance(), e.toString(), true);
             importSuccess = false;
         }
         return importSuccess;
@@ -91,7 +90,7 @@ public class ExportImportDB {
             }
             Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
         }catch (Exception e){
-            Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+            Utils.showToast(MainActivity.getInstance(), e.toString(), true);
             exportSuccess = false;
         }
 
@@ -117,11 +116,11 @@ public class ExportImportDB {
                 src.close();
                 dst.close();
             }else{
-                Toast.makeText(MainActivity.getInstance(), "Can't write " + fileName + " to SD", Toast.LENGTH_LONG).show();
+                Utils.showToast(MainActivity.getInstance(), "Can't write " + fileName + " to SD", true);
                 exportSuccess = false;
             }
         } catch (Exception e) {
-            Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+            Utils.showToast(MainActivity.getInstance(), e.toString(), true);
             exportSuccess = false;
         }
         return exportSuccess;

@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -77,7 +76,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_configuration_sound_controller, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.configure_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.configure_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         deviceNameEditText = view.findViewById(R.id.device_name_edittext);
@@ -108,7 +107,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
 
         device = MySettings.getTempDevice();
         if(device == null){
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_LONG).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
@@ -129,7 +128,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
                 if(deviceNameEditText.getText().toString().length() > 1){
                     device.setName(deviceNameEditText.getText().toString());
                 }else{
-                    device.setName(getActivity().getResources().getString(R.string.sound_controller_name_hint));
+                    device.setName(Utils.getString(getActivity(), R.string.sound_controller_name_hint));
                 }
 
                 Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
@@ -142,7 +141,7 @@ public class AddDeviceConfigurationSoundControllerFragment extends android.suppo
                 if(deviceNameEditText.getText().toString().length() > 1){
                     device.setName(deviceNameEditText.getText().toString());
                 }else{
-                    device.setName(getActivity().getResources().getString(R.string.sound_controller_name_hint));
+                    device.setName(Utils.getString(getActivity(), R.string.sound_controller_name_hint));
                 }
 
                 SoundDeviceData soundDeviceData = new SoundDeviceData();

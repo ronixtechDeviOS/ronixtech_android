@@ -65,22 +65,22 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_success, container, false);
-        //MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_new_place), getResources().getColor(R.color.whiteColor));
+        //MainActivity.setActionBarTitle(getActivity().getResources().getStringExtraInt(R.string.add_new_place), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         successMessageTextView = view.findViewById(R.id.succes_message_textview);
         continueButton = view.findViewById(R.id.continue_button);
 
         if(successSource == Constants.SUCCESS_SOURCE_PLACE){
-            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_place));
+            successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_place));
         }else if(successSource == Constants.SUCCESS_SOURCE_ROOM){
-            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_room));
+            successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_room));
         }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE){
-            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_device));
+            successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_device));
         }else if(successSource == Constants.SUCCESS_SOURCE_EXPORT){
-            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_export));
+            successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_export));
         }else if(successSource == Constants.SUCCESS_SOURCE_IMPORT){
-            successMessageTextView.setText(getActivity().getResources().getString(R.string.success_message_import));
+            successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_import));
         }
 
 

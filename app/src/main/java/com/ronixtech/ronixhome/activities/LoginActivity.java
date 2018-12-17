@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.fragments.LoginFragment;
 
 public class LoginActivity extends AppCompatActivity {
@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.commit();
         }else{
-            Toast.makeText(this, "Google Play Services not available, app won't start", Toast.LENGTH_SHORT).show();
+            Utils.showToast(this, "Google Play Services not available, app won't start", true);
         }
     }
 

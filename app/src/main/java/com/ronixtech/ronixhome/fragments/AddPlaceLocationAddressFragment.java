@@ -69,7 +69,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_place_location_address, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_place_location), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_place_location), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         addressEditText = view.findViewById(R.id.place_location_address_edittext);

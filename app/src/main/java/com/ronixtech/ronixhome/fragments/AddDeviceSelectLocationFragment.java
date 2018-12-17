@@ -17,7 +17,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -93,7 +92,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_select_location, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.locate_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.locate_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         placeSelectionLayout = view.findViewById(R.id.place_selection_layout);
@@ -149,7 +148,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 if(selectedRoom != null){
                     if(selectedRoom.getFloorID() != selectedFloor.getId()){
                         selectedRoom = null;
-                        roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                        roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                         roomImageView.setImageResource(R.drawable.room_icon);
                     }
                 }
@@ -186,7 +185,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                 }else{
                     // DialogFragment.show() will take care of adding the fragment
                     // in a transaction.  We also want to remove any currently showing
@@ -218,7 +217,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         if(selectedRoom != null){
                             if(selectedRoom.getFloorID() != selectedFloor.getId()){
                                 selectedRoom = null;
-                                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                                roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                                 roomImageView.setImageResource(R.drawable.room_icon);
                             }
                         }
@@ -243,7 +242,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         if(selectedRoom != null){
                             if(selectedRoom.getFloorID() != selectedFloor.getId()){
                                 selectedRoom = null;
-                                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                                roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                                 roomImageView.setImageResource(R.drawable.room_icon);
                             }
                         }
@@ -263,7 +262,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 if(selectedPlace != null){
                     if(selectedFloor != null){
                         if(MySettings.getFloorRooms(selectedFloor.getId()) == null || MySettings.getFloorRooms(selectedFloor.getId()).size() < 1){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_SHORT).show();
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                         }else{
                             // DialogFragment.show() will take care of adding the fragment
                             // in a transaction.  We also want to remove any currently showing
@@ -331,7 +330,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         fragmentTransaction.commit();
                     }
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.select_place_first), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.select_place_first), true);
                     YoYo.with(Techniques.Shake)
                             .duration(700)
                             .repeat(1)
@@ -412,17 +411,17 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                         }
                     }else{
                         selectedRoom = null;
-                        roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                        roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                         roomImageView.setImageResource(R.drawable.room_icon);
                     }
                 }else{
                     selectedRoom = null;
-                    roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                    roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                     roomImageView.setImageResource(R.drawable.room_icon);
                 }
             }else{
                 selectedRoom = null;
-                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                 roomImageView.setImageResource(R.drawable.room_icon);
             }
         }

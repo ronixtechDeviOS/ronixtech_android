@@ -554,7 +554,7 @@ public class Utils {
             if (isAppEnabled(context, packageName)) {
                 context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packageName));
             } else {
-                Toast.makeText(context, appName + " app is not enabled.", Toast.LENGTH_SHORT).show();
+                Utils.showToast(context, appName + " is not enabled.", true);
             }
         } else {
             android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(context)
@@ -563,9 +563,9 @@ public class Utils {
                     //set title
                     .setTitle(appName)
                     //set message
-                    .setMessage(context.getResources().getString(R.string.upnp_app_not_available_message))
+                    .setMessage(Utils.getStringExtraInt(context, R.string.upnp_app_not_available_message))
                     //set positive button
-                    .setPositiveButton(context.getResources().getString(R.string.go_to_play_store), new DialogInterface.OnClickListener() {
+                    .setPositiveButton(Utils.getStringExtraInt(context, R.string.go_to_play_store), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //set what would happen when positive button is clicked
@@ -578,7 +578,7 @@ public class Utils {
                         }
                     })
                     //set negative button
-                    .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    .setNegativeButton(Utils.getStringExtraInt(context, R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //set what should happen when negative button is clicked
@@ -791,12 +791,12 @@ public class Utils {
                 addresses = geocoder.getFromLocation(latitude, longitude, 1);
             } catch (IOException ioException) {
                 // Catch network or other I/O problems.
-                errorMessage = context.getResources().getString(R.string.geocoding_error_service_not_available);
+                errorMessage = Utils.getStringExtraInt(context, R.string.geocoding_error_service_not_available);
                 Log.d(TAG, errorMessage, ioException);
                 return false;
             } catch (IllegalArgumentException illegalArgumentException) {
                 // Catch invalid latitude or longitude values.
-                errorMessage = context.getResources().getString(R.string.geocoding_error_invalid_lat_long);
+                errorMessage = Utils.getStringExtraInt(context, R.string.geocoding_error_invalid_lat_long);
                 Log.d(TAG, errorMessage + ". " + "Latitude = " + latitude + ", Longitude = " + longitude, illegalArgumentException);
                 return false;
             }catch (Exception e) {
@@ -808,12 +808,12 @@ public class Utils {
             // Handle case where no address was found.
             if (addresses == null || addresses.size()  == 0) {
                 if (errorMessage.isEmpty()) {
-                    errorMessage = context.getResources().getString(R.string.geocoding_error_no_address_found);
+                    errorMessage = Utils.getStringExtraInt(context, R.string.geocoding_error_no_address_found);
                     Log.d(TAG, errorMessage);
                 }
                 return false;
             } else {
-                Log.d(TAG, context.getResources().getString(R.string.geocoding_error_address_found));
+                Log.d(TAG, Utils.getStringExtraInt(context, R.string.geocoding_error_address_found));
                 Address address = addresses.get(0);
                 ArrayList<String> addressFragments = new ArrayList<>();
 
@@ -887,5 +887,71 @@ public class Utils {
         int oct4 = ((byte) (shft&0x000000ff)) & 0xff;
         submask = oct1+"."+oct2+"."+oct3+"."+oct4;
         return submask;
+    }
+
+    public static void showToast(Context context, String text, boolean longDuration){
+        if(context != null){
+            if(longDuration){
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static String getString(Context context, int resID){
+        if(context != null){
+            return context.getResources().getString(resID);
+        }else {
+            return "";
+        }
+    }
+
+    public static String getStringExtraInt(Context context, int resID, Integer... params){
+        if(context != null){
+            if(params != null){
+                int length = params.length;
+                switch (length){
+                    case 1:
+                        return context.getResources().getString(resID, params[0]);
+                    case 2:
+                        return context.getResources().getString(resID, params[0], params[1]);
+                    case 3:
+                        return context.getResources().getString(resID, params[0], params[1], params[2]);
+                    case 4:
+                        return context.getResources().getString(resID, params[0], params[1], params[2], params[3]);
+                    default:
+                        return context.getResources().getString(resID);
+                }
+            }else{
+                return context.getResources().getString(resID);
+            }
+        }else {
+            return "";
+        }
+    }
+
+    public static String getStringExtraText(Context context, int resID, String... params){
+        if(context != null){
+            if(params != null){
+                int length = params.length;
+                switch (length){
+                    case 1:
+                        return context.getResources().getString(resID, params[0]);
+                    case 2:
+                        return context.getResources().getString(resID, params[0], params[1]);
+                    case 3:
+                        return context.getResources().getString(resID, params[0], params[1], params[2]);
+                    case 4:
+                        return context.getResources().getString(resID, params[0], params[1], params[2], params[3]);
+                    default:
+                        return context.getResources().getString(resID);
+                }
+            }else{
+                return context.getResources().getString(resID);
+            }
+        }else {
+            return "";
+        }
     }
 }

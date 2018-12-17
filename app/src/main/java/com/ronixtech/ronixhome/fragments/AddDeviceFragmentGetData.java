@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
@@ -81,7 +80,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_get_data, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device_get_data), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_device_get_data), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         getDeviceType();
@@ -110,7 +109,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 try{
                     JSONObject jsonObject= new JSONObject(response);
                     if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
-                        String typeIDString = jsonObject.getString(Constants.PARAMETER_DEVICE_TYPE_ID);
+                        String typeIDString = jsonObject.getStringExtraInt(Constants.PARAMETER_DEVICE_TYPE_ID);
                         int deviceTypeID = Integer.valueOf(typeIDString);
                         Device tempDevice = MySettings.getTempDevice();
                         tempDevice.setDeviceTypeID(deviceTypeID);
@@ -121,7 +120,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());
                     if(getActivity() != null) {
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
                     }
                     //trial failed, start over from the beginning
                     //debugTextView.setText("Attempt failed, trying again...\n");
@@ -143,10 +142,10 @@ public class AddDeviceFragmentGetData extends Fragment {
                 }
                 //Log.d(TAG, "Volley Error: statusCode: " + error.networkResponse.statusCode);
                 if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getStringExtraInt(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
                 }
                 //trial failed, start over from the beginning
                 //debugTextView.setText("Attempt failed, trying again...\n");
@@ -179,7 +178,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 try{
                     JSONObject jsonObject= new JSONObject(response);
                     if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_CHIP_ID)){
-                        String chipID = jsonObject.getString(Constants.PARAMETER_DEVICE_CHIP_ID);
+                        String chipID = jsonObject.getStringExtraInt(Constants.PARAMETER_DEVICE_CHIP_ID);
                         Device tempDevice = MySettings.getTempDevice();
                         tempDevice.setChipID(chipID);
                         MySettings.setTempDevice(tempDevice);
@@ -189,11 +188,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     //set icon
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     //set title
-                                    .setTitle(getActivity().getResources().getString(R.string.duplicate_unit_title))
+                                    .setTitle(getActivity().getResources().getStringExtraInt(R.string.duplicate_unit_title))
                                     //set message
-                                    .setMessage(getActivity().getResources().getString(R.string.duplicate_unit_message))
+                                    .setMessage(getActivity().getResources().getStringExtraInt(R.string.duplicate_unit_message))
                                     //set positive button
-                                    .setPositiveButton(getActivity().getResources().getString(R.string.remove_duplicate_smart_controller), new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(getActivity().getResources().getStringExtraInt(R.string.remove_duplicate_smart_controller), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
@@ -202,7 +201,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         }
                                     })
                                     //set negative button
-                                    .setNegativeButton(getActivity().getResources().getString(R.string.keep_smart_controller), new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(getActivity().getResources().getStringExtraInt(R.string.keep_smart_controller), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what should happen when negative button is clicked
@@ -228,7 +227,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());
                     if(getActivity() != null){
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
                     }
                     //trial failed, start over from the beginning
                     //debugTextView.setText("Attempt failed, trying again...\n");
@@ -240,10 +239,10 @@ public class AddDeviceFragmentGetData extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "Volley Error: " + error.getMessage());
                 if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getStringExtraInt(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 if(getActivity() != null){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
                 }
                 //trial failed, start over from the beginning
                 //debugTextView.setText("Attempt failed, trying again...\n");
@@ -522,7 +521,7 @@ public class AddDeviceFragmentGetData extends Fragment {
             if(statusCode == 200){
                 fragment.getChipID();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_get_device_type_id), true);
                 fragment.goToSearchFragment();
             }
         }
@@ -633,11 +632,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                                 //set icon
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 //set title
-                                .setTitle(activity.getResources().getString(R.string.duplicate_unit_title))
+                                .setTitle(Utils.getString(activity, R.string.duplicate_unit_title))
                                 //set message
-                                .setMessage(activity.getResources().getString(R.string.duplicate_unit_message))
+                                .setMessage(Utils.getString(activity, R.string.duplicate_unit_message))
                                 //set positive button
-                                .setPositiveButton(activity.getResources().getString(R.string.remove_duplicate_smart_controller), new DialogInterface.OnClickListener() {
+                                .setPositiveButton(Utils.getString(activity, R.string.remove_duplicate_smart_controller), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         //set what would happen when positive button is clicked
@@ -653,13 +652,13 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
                                             fragment.goToSoundControllerConfigurationFragment();
                                         }else{
-                                            Toast.makeText(activity, activity.getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_SHORT).show();
+                                            Utils.showToast(activity, Utils.getString(activity, R.string.unknown_smart_controller_type), true);
                                             fragment.goToSearchFragment();
                                         }
                                     }
                                 })
                                 //set negative button
-                                .setNegativeButton(activity.getResources().getString(R.string.keep_smart_controller), new DialogInterface.OnClickListener() {
+                                .setNegativeButton(Utils.getString(activity, R.string.keep_smart_controller), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         //set what should happen when negative button is clicked
@@ -696,12 +695,12 @@ public class AddDeviceFragmentGetData extends Fragment {
                     }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
                         fragment.goToSoundControllerConfigurationFragment();
                     }else{
-                        Toast.makeText(activity, activity.getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_SHORT).show();
+                        Utils.showToast(activity, Utils.getStringExtraInt(activity, R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
                         fragment.goToSearchFragment();
                     }
                 }
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_chip_id), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_get_device_chip_id), true);
                 fragment.goToSearchFragment();
             }
         }

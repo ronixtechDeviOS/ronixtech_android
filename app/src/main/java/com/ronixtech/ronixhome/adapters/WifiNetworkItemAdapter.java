@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
@@ -80,10 +81,10 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
                 if(place != null){
                     vHolder.placeNameTextView.setText("@" + place.getName());
                 }else{
-                    vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+                    vHolder.placeNameTextView.setText(Utils.getString(activity, R.string.wifi_no_place));
                 }
             }else{
-                vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+                vHolder.placeNameTextView.setText(Utils.getString(activity, R.string.wifi_no_place));
             }
         }
 

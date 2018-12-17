@@ -67,7 +67,7 @@ public class UpdateDeviceIntroFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_update_device_intro, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.update_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.update_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         updateTypeInstructionsTextView = view.findViewById(R.id.instructions_5_textview);

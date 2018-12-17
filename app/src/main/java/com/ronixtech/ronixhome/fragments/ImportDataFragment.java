@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -103,7 +102,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_import_data, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.import_data), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.import_data), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         checkExternalStoragePermissions();
@@ -130,9 +129,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
 
                         @Override
                         public void onConnectionFail(String errorMsg) {
-                            if(getActivity() != null){
-                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
-                            }
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_internet_connection_try_later), true);
                         }
                     }).execute();
                 }
@@ -168,7 +165,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
 
                                 downloadFile(selectedBackup.getName(), Constants.DB_FILE_1);
                             }catch (Exception e){
-                                Toast.makeText(MainActivity.getInstance(), e.toString(), Toast.LENGTH_LONG).show();
+                                Utils.showToast(getActivity(), e.toString(), true);
                                 if(getFragmentManager() != null){
                                     getFragmentManager().popBackStack();
                                 }
@@ -177,9 +174,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
 
                         @Override
                         public void onConnectionFail(String errorMsg) {
-                            if(getActivity() != null){
-                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
-                            }
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_internet_connection_try_later), true);
                             if(getFragmentManager() != null){
                                 getFragmentManager().popBackStack();
                             }
@@ -239,9 +234,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                     fragment.setParentFragment(ImportDataFragment.this);
                     fragment.show(ft, "pickBackupDialogFragment");
                 }else{
-                    if(getActivity() != null) {
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.downloading_database_file_not_found), Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.downloading_database_file_not_found), true);
                 }
             }
         });
@@ -288,12 +281,10 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                         fragmentTransaction.commit();
 
                         /*if(getActivity() != null){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.import_successful), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.import_successful), Toast.LENGTH_SHORT).show();
                         }*/
                     }else{
-                        if(getActivity() != null){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.import_failed), Toast.LENGTH_SHORT).show();
-                        }
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.import_failed), true);
                     }
 
                 }
@@ -304,9 +295,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                 Log.d("AAAA", "Exception: " + exception.getMessage());
                 Log.d("AAAA", "Exception: " + exception.getStackTrace());
                 // Handle any errors
-                if(getActivity() != null){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.downloading_database_file_failed), Toast.LENGTH_SHORT).show();
-                }
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.downloading_database_file_failed), true);
                 if(getFragmentManager() != null){
                     getFragmentManager().popBackStack();
                 }
@@ -355,9 +344,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                     //allowed
                 } else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable external storage permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable external storage permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.WRITE_EXTERNAL_STORAGE")) {
                         new AlertDialog.Builder(getActivity())

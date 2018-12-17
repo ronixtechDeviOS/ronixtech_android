@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -156,7 +155,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
         device = MySettings.getTempDevice();
 
         if(device == null){
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_LONG).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
@@ -170,43 +169,43 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
             if(DEVICE_NUMBER_OF_LINES == 1){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                 lineGifImageView.setImageResource(R.drawable.line_left);
             }else if(DEVICE_NUMBER_OF_LINES == 2){
                 if(LINE_POSITION == 0){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_left);
                 }else if(LINE_POSITION == 1){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_3_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_right);
                 }
             }else if(DEVICE_NUMBER_OF_LINES == 3){
                 if(LINE_POSITION == 0){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_left);
                 }else if(LINE_POSITION == 1){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_2_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_2_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_center);
                 }else if(LINE_POSITION == 2){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_3_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_right);
                 }
             }
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
             if(LINE_POSITION == 0){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_1_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_1_name_hint));
             }else if(LINE_POSITION == 1){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_2_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_2_name_hint));
             }else if(LINE_POSITION == 2){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_3_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_3_name_hint));
             }
         }
 
         int last = DEVICE_NUMBER_OF_LINES - 1;
         if(LINE_POSITION < last){
-            continueButton.setText(getActivity().getResources().getString(R.string.save_continue_button));
+            continueButton.setText(Utils.getString(getActivity(), R.string.save_continue_button));
         }else{
-            continueButton.setText(getActivity().getResources().getString(R.string.done));
+            continueButton.setText(Utils.getString(getActivity(), R.string.done));
         }
 
         currentLine = new Line();
@@ -247,10 +246,10 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 }
 
                 if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
-                    lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_on));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                     lineDimmingCheckBox.setChecked(true);
                 }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
-                    lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
                     lineDimmingCheckBox.setChecked(false);
                 }
 
@@ -398,7 +397,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         fragment.setTargetFragment(EditDeviceLineFragment.this, 0);
                         fragment.show(ft, "typePickerDialogFragment");
                     }else{
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
                         Utils.generateLineTypes();
                     }
                 }
@@ -454,11 +453,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         }catch (JSONException e){
                             Log.d(TAG, "Exception: " + e.getMessage());
                             Utils.dismissLoading();
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.smart_controller_connection_error), true);
                         }catch (MqttException e){
                             Log.d(TAG, "Exception: " + e.getMessage());
                             Utils.dismissLoading();
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.smart_controller_connection_error), true);
                         }finally {
                             Utils.dismissLoading();
                         }
@@ -472,9 +471,9 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_on));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 }else{
-                    lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
                 }
                 /*if(isChecked && currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
                     unsavedChanges = false;
@@ -512,7 +511,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         fragment.setTargetFragment(EditDeviceLineFragment.this, 0);
                         fragment.show(ft, "pickLineDialogFragment");
                     }else{
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_devices_first), true);
                     }
                 }
             }
@@ -572,11 +571,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                                     //set icon
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     //set title
-                                    .setTitle(getActivity().getResources().getString(R.string.edit_device_unsaved_changes_title))
+                                    .setTitle(Utils.getString(getActivity(), R.string.edit_device_unsaved_changes_title))
                                     //set message
-                                    .setMessage(getActivity().getResources().getString(R.string.edit_device_unsaved_changes_message))
+                                    .setMessage(Utils.getString(getActivity(), R.string.edit_device_unsaved_changes_message))
                                     //set positive button
-                                    .setPositiveButton(getActivity().getResources().getString(R.string.edit_device_unsaved_changes_discard), new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(Utils.getString(getActivity(), R.string.edit_device_unsaved_changes_discard), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
@@ -587,7 +586,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                                         }
                                     })
                                     //set negative button
-                                    .setNegativeButton(getActivity().getResources().getString(R.string.edit_device_unsaved_changes_finish_changes_first), new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(Utils.getString(getActivity(), R.string.edit_device_unsaved_changes_finish_changes_first), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what should happen when negative button is clicked
@@ -857,7 +856,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 MySettings.updateLineDimmingState(currentLine, currentLine.getDimmingState());
             }else{
                 Utils.dismissLoading();
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
             }
         }
 

@@ -18,7 +18,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -108,7 +107,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_device_location, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.locate_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.locate_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         device = MySettings.getTempDevice();
@@ -170,7 +169,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                 if(selectedRoom != null){
                     if(selectedRoom.getFloorID() != selectedFloor.getId()){
                         selectedRoom = null;
-                        roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                        roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                         roomImageView.setImageResource(R.drawable.room_icon);
                     }
                 }
@@ -207,7 +206,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
             @Override
             public void onClick(View view) {
                 /*if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.add_place_first), Toast.LENGTH_SHORT).show();
                 }else{
                     // DialogFragment.show() will take care of adding the fragment
                     // in a transaction.  We also want to remove any currently showing
@@ -225,7 +224,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                     fragment.setParentFragment(EditDeviceLocationFragment.this);
                     fragment.show(ft, "pickPlaceDialogFragment");
                 }*/
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.edit_device_place_message), Toast.LENGTH_SHORT).show();
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.edit_device_place_message), true);
             }
         });
 
@@ -240,7 +239,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                         if(selectedRoom != null){
                             if(selectedRoom.getFloorID() != selectedFloor.getId()){
                                 selectedRoom = null;
-                                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                                roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                                 roomImageView.setImageResource(R.drawable.room_icon);
                             }
                         }
@@ -265,7 +264,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                         if(selectedRoom != null){
                             if(selectedRoom.getFloorID() != selectedFloor.getId()){
                                 selectedRoom = null;
-                                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                                roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                                 roomImageView.setImageResource(R.drawable.room_icon);
                             }
                         }
@@ -285,7 +284,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                 if(selectedPlace != null){
                     if(selectedFloor != null){
                         if(MySettings.getFloorRooms(selectedFloor.getId()) == null || MySettings.getFloorRooms(selectedFloor.getId()).size() < 1){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_SHORT).show();
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                         }else{
                             // DialogFragment.show() will take care of adding the fragment
                             // in a transaction.  We also want to remove any currently showing
@@ -354,14 +353,14 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                             fragmentTransaction.commit();
                         }
                     }else{
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.select_place_first), Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.select_place_first), true);
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)
                                 .playOn(placeSelectionLayout);
                     }
                 }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.device_edit_location_ssid_disabled_only_local_mode), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.device_edit_location_ssid_disabled_only_local_mode), true);
                 }
             }
         });
@@ -448,17 +447,17 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                         }
                     }else{
                         selectedRoom = null;
-                        roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                        roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                         roomImageView.setImageResource(R.drawable.room_icon);
                     }
                 }else{
                     selectedRoom = null;
-                    roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                    roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                     roomImageView.setImageResource(R.drawable.room_icon);
                 }
             }else{
                 selectedRoom = null;
-                roomNameTextView.setText(getActivity().getResources().getString(R.string.room_selection_hint));
+                roomNameTextView.setText(Utils.getString(getActivity(), R.string.room_selection_hint));
                 roomImageView.setImageResource(R.drawable.room_icon);
             }
         }
@@ -653,7 +652,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                     }, 1000);
                 }
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
             }
         }
 

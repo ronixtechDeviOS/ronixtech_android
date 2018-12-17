@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -72,7 +71,7 @@ public class AddLinkedAccountFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_linked_account, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_linked_account), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_linked_account), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         accountNameEditText = view.findViewById(R.id.account_name_edittedxt);
@@ -147,10 +146,7 @@ public class AddLinkedAccountFragment extends android.support.v4.app.Fragment {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Utils.dismissLoading();
-
-                if(getActivity() != null){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.uploading_database_file_failed), Toast.LENGTH_SHORT).show();
-                }
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.uploading_database_file_failed), true);
                 if(getFragmentManager() != null){
                     getFragmentManager().popBackStack();
                 }

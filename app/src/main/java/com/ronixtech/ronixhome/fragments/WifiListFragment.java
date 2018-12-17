@@ -38,7 +38,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -126,7 +125,7 @@ public class WifiListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wifi_list, container, false);
-        //MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device), getResources().getColor(R.color.whiteColor));
+        //MainActivity.setActionBarTitle(getActivity().getResources().getStringExtraInt(R.string.add_device), getResources().getColor(R.color.whiteColor));
         //setHasOptionsMenu(true);
 
         searchStatusTextView = view.findViewById(R.id.search_status_textview);
@@ -188,13 +187,13 @@ public class WifiListFragment extends Fragment {
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
 
         TextView ssidTextView = new TextView(getActivity());
-        ssidTextView.setText(getActivity().getResources().getString(R.string.ssid_colon));
+        ssidTextView.setText(Utils.getString(getActivity(), R.string.ssid_colon));
         ssidTextView.setTextSize(20);
         ssidTextView.setGravity(Gravity.CENTER);
         ssidTextView.setLayoutParams(layoutParams);
 
         TextView passwordTextView = new TextView(getActivity());
-        passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setText(Utils.getString(getActivity(), R.string.password_colon));
         passwordTextView.setTextSize(20);
         passwordTextView.setGravity(Gravity.CENTER);
         passwordTextView.setLayoutParams(layoutParams);
@@ -211,18 +210,18 @@ public class WifiListFragment extends Fragment {
 
         final EditText ssidEditText = new EditText(getActivity());
         ssidEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        ssidEditText.setHint(getActivity().getResources().getString(R.string.ssid_hint));
+        ssidEditText.setHint(Utils.getString(getActivity(), R.string.ssid_hint));
         ssidEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         ssidEditText.setLayoutParams(layoutParams2);
 
         final EditText passwordEditText = new EditText(getActivity());
         passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        passwordEditText.setHint(getActivity().getResources().getString(R.string.password_hint));
+        passwordEditText.setHint(Utils.getString(getActivity(), R.string.password_hint));
         passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         passwordEditText.setLayoutParams(layoutParams2);
 
         Button submitButton = new Button(getActivity());
-        submitButton.setText(getActivity().getResources().getString(R.string.done));
+        submitButton.setText(Utils.getString(getActivity(), R.string.done));
         submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
         submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.blueColor));
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -279,7 +278,7 @@ public class WifiListFragment extends Fragment {
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
 
         TextView passwordTextView = new TextView(getActivity());
-        passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setText(Utils.getString(getActivity(), R.string.password_colon));
         passwordTextView.setTextSize(20);
         passwordTextView.setGravity(Gravity.CENTER);
         passwordTextView.setLayoutParams(layoutParams);
@@ -296,12 +295,12 @@ public class WifiListFragment extends Fragment {
 
         final EditText passwordEditText = new EditText(getActivity());
         passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        passwordEditText.setHint(getActivity().getResources().getString(R.string.password_hint));
+        passwordEditText.setHint(Utils.getString(getActivity(), R.string.password_hint));
         passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         passwordEditText.setLayoutParams(layoutParams2);
 
         Button submitButton = new Button(getActivity());
-        submitButton.setText(getActivity().getResources().getString(R.string.done));
+        submitButton.setText(Utils.getString(getActivity(), R.string.done));
         submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
         submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.blueColor));
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -400,16 +399,16 @@ public class WifiListFragment extends Fragment {
                 if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
                     actionNeeded = true;
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
-                    builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
-                    builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                    builder.setTitle(Utils.getString(getActivity(), R.string.location_required_title));
+                    builder.setMessage(Utils.getString(getActivity(), R.string.location_required_message));
+                    builder.setPositiveButton(Utils.getString(getActivity(), R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
                         }
                     });
-                    builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             callback.onNetworkSelected(null);
@@ -437,11 +436,11 @@ public class WifiListFragment extends Fragment {
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         //set title
-                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        .setTitle(Utils.getString(getActivity(), R.string.wifi_required_title))
                         //set message
-                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        .setMessage(Utils.getString(getActivity(), R.string.wifi_required_message))
                         //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(Utils.getString(getActivity(), R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
@@ -449,7 +448,7 @@ public class WifiListFragment extends Fragment {
                             }
                         })
                         //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
@@ -484,7 +483,7 @@ public class WifiListFragment extends Fragment {
                             }else{
                                 searchStatusTextView.setVisibility(View.VISIBLE);
                                 if(getActivity() != null) {
-                                    searchStatusTextView.setText(getActivity().getResources().getString(R.string.no_networks_in_range));
+                                    searchStatusTextView.setText(Utils.getString(getActivity(), R.string.no_networks_in_range));
                                 }
                             }
                             mWifiManager.startScan();
@@ -516,7 +515,7 @@ public class WifiListFragment extends Fragment {
             Log.d(TAG, "Error unregistering mWifiScanReceiver");
         }
 
-        continueButton.setText(getActivity().getResources().getString(R.string.connecting));
+        continueButton.setText(Utils.getString(getActivity(), R.string.connecting));
 
         /*Tested (I didn't test with the WPS "Wi-Fi Protected Setup" standard):
         In API15 (ICE_CREAM_SANDWICH) this method is called when the new Wi-Fi network state is:
@@ -546,7 +545,7 @@ public class WifiListFragment extends Fragment {
                         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                         String connectedSSID = wifiInfo.getSSID();
 
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.connected_to) + connectedSSID, Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.connected_to) + " " + connectedSSID, true);
                         Utils.setButtonEnabled(continueButton, true);
 
                     }
@@ -605,9 +604,7 @@ public class WifiListFragment extends Fragment {
                 else{
                     //denied
                     Log.d(TAG, "location - onRequestPermissionsResult denied");
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable location permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable location permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
                         Log.d(TAG, "location - onRequestPermissionsResult shouldShowRequestPermissionRationale ");
@@ -635,9 +632,7 @@ public class WifiListFragment extends Fragment {
                 else{
                     //denied
                     Log.d(TAG, "wifiaccess - onRequestPermissionsResult denied");
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_WIFI_STATE")) {
                         Log.d(TAG, "wifiaccess - onRequestPermissionsResult shouldShowRequestPermissionRationale ");
@@ -665,9 +660,7 @@ public class WifiListFragment extends Fragment {
                 else{
                     //denied
                     Log.d(TAG, "wifichange - onRequestPermissionsResult denied");
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.CHANGE_WIFI_STATE")) {
                         Log.d(TAG, "wifichange - onRequestPermissionsResult shouldShowRequestPermissionRationale ");
@@ -697,11 +690,11 @@ public class WifiListFragment extends Fragment {
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         //set title
-                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        .setTitle(getActivity().getResources().getStringExtraInt(R.string.wifi_required_title))
                         //set message
-                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        .setMessage(getActivity().getResources().getStringExtraInt(R.string.wifi_required_message))
                         //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getActivity().getResources().getStringExtraInt(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
@@ -709,7 +702,7 @@ public class WifiListFragment extends Fragment {
                             }
                         })
                         //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getActivity().getResources().getStringExtraInt(R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
@@ -724,15 +717,15 @@ public class WifiListFragment extends Fragment {
 
             }else{
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
-                builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
-                builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                builder.setTitle(getActivity().getResources().getStringExtraInt(R.string.location_required_title));
+                builder.setMessage(getActivity().getResources().getStringExtraInt(R.string.location_required_message));
+                builder.setPositiveButton(getActivity().getResources().getStringExtraInt(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         refreshNetworks();
                     }
                 });
-                builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getActivity().getResources().getStringExtraInt(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         callback.onNetworkSelected(null);

@@ -31,7 +31,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
@@ -100,7 +99,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_search, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device_search), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_device_search), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         progressCircle = view.findViewById(R.id.progress_circle);
@@ -173,16 +172,16 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
                     enabled = false;
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle(getActivity().getResources().getString(R.string.location_required_title));
-                    builder.setMessage(getActivity().getResources().getString(R.string.location_required_message));
-                    builder.setPositiveButton(getActivity().getResources().getString(R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
+                    builder.setTitle(Utils.getString(getActivity(), R.string.location_required_title));
+                    builder.setMessage(Utils.getString(getActivity(), R.string.location_required_message));
+                    builder.setPositiveButton(Utils.getString(getActivity(), R.string.go_to_location_settings), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivityForResult(intent, RC_ACTIVITY_LOCATION_TURN_ON);
                         }
                     });
-                    builder.setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             FragmentManager fragmentManager = getFragmentManager();
@@ -213,11 +212,11 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         //set title
-                        .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                        .setTitle(Utils.getString(getActivity(), R.string.wifi_required_title))
                         //set message
-                        .setMessage(getActivity().getResources().getString(R.string.wifi_required_message))
+                        .setMessage(Utils.getString(getActivity(), R.string.wifi_required_message))
                         //set positive button
-                        .setPositiveButton(getActivity().getResources().getString(R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(Utils.getString(getActivity(), R.string.go_to_wifi_settings), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
@@ -225,7 +224,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                             }
                         })
                         //set negative button
-                        .setNegativeButton(getActivity().getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
@@ -247,11 +246,11 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                     //set icon
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     //set title
-                    .setTitle(getActivity().getResources().getString(R.string.wifi_required_title))
+                    .setTitle(Utils.getString(getActivity(), R.string.wifi_required_title))
                     //set message
-                    .setMessage(getActivity().getResources().getString(R.string.add_device_wifi_not_available))
+                    .setMessage(Utils.getString(getActivity(), R.string.add_device_wifi_not_available))
                     //set positive button
-                    .setPositiveButton(getActivity().getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    .setPositiveButton(Utils.getString(getActivity(), R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //set what would happen when positive button is clicked
@@ -272,7 +271,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
     private void refreshNetworks(){
         if(checkLocationServices() && checkWifiService()){
-            progressTextView.setText(getActivity().getResources().getString(R.string.add_device_searching));
+            progressTextView.setText(Utils.getString(getActivity(), R.string.add_device_searching));
             progressCircle.setDonut_progress("" + 0);
             progressCircle.setText("" + 0 + "%");
 
@@ -289,7 +288,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
                     if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                         progressCircle.setDonut_progress("" + totalProgress);
-                        //progressCircle.setText(getActivity().getResources().getString(R.string.seconds, 45 - (int) totalSeconds));
+                        //progressCircle.setText(getActivity().getResources().getStringExtraInt(R.string.seconds, 45 - (int) totalSeconds));
                         progressCircle.setText("" + totalProgress + "%");
                     }
                 }
@@ -396,11 +395,9 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                 Log.d(TAG, "Currently connected to: " + connectedSSID);
 
                                 if(connectedSSID.toLowerCase().contains(ssid.toLowerCase())){
-                                    if(getActivity() != null) {
-                                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.connected_to)  + " " + connectedSSID, Toast.LENGTH_SHORT).show();
-                                    }
+                                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.connected_to) + " " + connectedSSID, true);
                                     connectingCountDownTimer.cancel();
-                                    progressTextView.append(getActivity().getResources().getString(R.string.add_device_connected, connectedSSID) + "\n");
+                                    progressTextView.append(Utils.getStringExtraText(getActivity(), R.string.add_device_connected, connectedSSID) + "\n");
 
                                     try {
                                         if (getActivity() != null) {
@@ -557,8 +554,8 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
     @Override
     public void onWifiNetworkSelected(WifiNetwork network){
-        progressTextView.setText(getActivity().getResources().getString(R.string.add_device_found_device) + "\n");
-        progressTextView.append(getActivity().getResources().getString(R.string.add_device_connecting, network.getSsid()) + "\n");
+        progressTextView.setText(Utils.getString(getActivity(), R.string.add_device_found_device) + "\n");
+        progressTextView.append(Utils.getStringExtraText(getActivity(), R.string.add_device_connecting, network.getSsid()) + "\n");
 
         progressCircle.setDonut_progress("" + 1);
         progressCircle.setText("" + 1 + "%");
@@ -576,7 +573,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     progressCircle.setDonut_progress("" + totalProgress);
-                    //progressCircle.setText(getActivity().getResources().getString(R.string.seconds, 45 - (int) totalSeconds));
+                    //progressCircle.setText(getActivity().getResources().getStringExtraInt(R.string.seconds, 45 - (int) totalSeconds));
                     progressCircle.setText("" + totalProgress + "%");
                 }
             }
@@ -636,9 +633,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 }
                 else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable location permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable location permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
                         new AlertDialog.Builder(getActivity())
@@ -663,9 +658,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 }
                 else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_WIFI_STATE")) {
                         new AlertDialog.Builder(getActivity())
@@ -690,9 +683,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 }
                 else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable WiFi permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.CHANGE_WIFI_STATE")) {
                         new AlertDialog.Builder(getActivity())

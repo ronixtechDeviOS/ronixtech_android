@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -94,7 +93,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_room, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_new_room), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_new_room), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         placeSelectionLayout = view.findViewById(R.id.place_selection_layout);
@@ -220,7 +219,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     fragment.setTargetFragment(AddRoomFragment.this, 0);
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
                     Utils.generateRoomTypes();
                 }
             }
@@ -243,6 +242,10 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     roomTypeImageView.setImageResource(selectedRoomType.getImageResourceID());
                 }
             }
+
+            if(roomNameEditText.getText().toString().length() < 1){
+                roomNameEditText.setText(selectedRoomType.getName());
+            }
         }
 
         continueButton.setOnClickListener(new View.OnClickListener() {
@@ -259,7 +262,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                         }
                     }
                     if(roomNameDuplicate){
-                        roomNameEditText.setError(getActivity().getResources().getString(R.string.room_already_exists_error));
+                        roomNameEditText.setError(Utils.getString(getActivity(), R.string.room_already_exists_error));
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)

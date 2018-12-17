@@ -25,6 +25,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.WifiNetworkItemAdapterEditable;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
@@ -76,7 +77,7 @@ public class HomeNetworksFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home_networks, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.home_networks), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.home_network), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         networksListView = view.findViewById(R.id.networks_listview);
@@ -122,13 +123,13 @@ public class HomeNetworksFragment extends android.support.v4.app.Fragment {
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
 
         TextView ssidTextView = new TextView(getActivity());
-        ssidTextView.setText(getActivity().getResources().getString(R.string.ssid_colon));
+        ssidTextView.setText(Utils.getString(getActivity(), R.string.ssid_colon));
         ssidTextView.setTextSize(20);
         ssidTextView.setGravity(Gravity.CENTER);
         ssidTextView.setLayoutParams(layoutParams);
 
         TextView passwordTextView = new TextView(getActivity());
-        passwordTextView.setText(getActivity().getResources().getString(R.string.password_colon));
+        passwordTextView.setText(Utils.getString(getActivity(), R.string.password_colon));
         passwordTextView.setTextSize(20);
         passwordTextView.setGravity(Gravity.CENTER);
         passwordTextView.setLayoutParams(layoutParams);
@@ -145,18 +146,18 @@ public class HomeNetworksFragment extends android.support.v4.app.Fragment {
 
         final EditText ssidEditText = new EditText(getActivity());
         ssidEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        ssidEditText.setHint(getActivity().getResources().getString(R.string.ssid_hint));
+        ssidEditText.setHint(Utils.getString(getActivity(), R.string.ssid_hint));
         ssidEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         ssidEditText.setLayoutParams(layoutParams2);
 
         final EditText passwordEditText = new EditText(getActivity());
         passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        passwordEditText.setHint(getActivity().getResources().getString(R.string.password_hint));
+        passwordEditText.setHint(Utils.getString(getActivity(), R.string.password_hint));
         passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         passwordEditText.setLayoutParams(layoutParams2);
 
         Button submitButton = new Button(getActivity());
-        submitButton.setText(getActivity().getResources().getString(R.string.done));
+        submitButton.setText(Utils.getString(getActivity(), R.string.done));
         submitButton.setTextColor(getActivity().getResources().getColor(R.color.whiteColor));
         submitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.blueColor));
         submitButton.setOnClickListener(new View.OnClickListener() {

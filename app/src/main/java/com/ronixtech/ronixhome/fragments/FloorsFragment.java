@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -81,7 +80,7 @@ public class FloorsFragment extends Fragment{
         if(MySettings.getCurrentPlace() != null){
             MainActivity.setActionBarTitle(MySettings.getCurrentPlace().getName(), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.floors), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.floors), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
 
@@ -151,7 +150,7 @@ public class FloorsFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -167,7 +166,7 @@ public class FloorsFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

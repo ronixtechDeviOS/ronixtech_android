@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -98,7 +97,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_place, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_new_place), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_new_place), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         addPlaceTitleTextView = view.findViewById(R.id.add_place_title_textview);
@@ -169,7 +168,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     fragment.setTargetFragment(AddPlaceFragment.this, 0);
                     fragment.show(ft, "typePickerDialogFragment");
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
                     Utils.generatePlaceTypes();
                 }
 
@@ -240,7 +239,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 if(validateInputs()){
                     Place oldPlace = MySettings.getPlaceByName(placeNameEditText.getText().toString());
                     if(oldPlace != null){
-                        placeNameEditText.setError(getActivity().getResources().getString(R.string.place_already_exists_error));
+                        placeNameEditText.setError(Utils.getString(getActivity(), R.string.place_already_exists_error));
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)

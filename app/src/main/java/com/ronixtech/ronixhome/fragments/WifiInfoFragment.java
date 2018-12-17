@@ -106,7 +106,7 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wifi_info, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.home_network), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.home_network), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         ssidTextView = view.findViewById(R.id.ssid_textview);

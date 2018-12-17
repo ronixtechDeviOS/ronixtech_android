@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
@@ -83,7 +82,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_send_data, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device_send_data), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_device_send_data), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         sendConfigurationToDevice();
@@ -150,7 +149,7 @@ public class AddDeviceFragmentSendData extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "Volley Error: " + error.getMessage());
                 if(getActivity() != null){
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getStringExtraInt(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 //trial failed, start over from the beginning
                 //debugTextView.setText("Attempt failed, trying again...\n");
@@ -296,7 +295,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     wiFiDataSenderGet.execute();
                 }
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
             }
         }
@@ -390,7 +389,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                 WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
                 wiFiDataSenderGet.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
             }
         }
@@ -503,7 +502,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                 DimmingControlsSenderPost dimmingControlsSenderPost = new DimmingControlsSenderPost(activity, fragment);
                 dimmingControlsSenderPost.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
             }
         }
@@ -585,7 +584,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                 WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
                 wiFiDataSenderGet.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
             }
         }
@@ -846,7 +845,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                 }
 
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
             }
         }

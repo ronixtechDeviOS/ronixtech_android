@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -76,7 +75,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_configuration, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.configure_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.configure_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         deviceNameTextView = view.findViewById(R.id.device_name_title_textivew);
@@ -128,7 +127,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(1);
                 addDeviceConfigurationLineFragment1.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment1.setParentFragment(this);
-                pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
+                pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
                 mTabLayout.setVisibility(View.GONE);
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment1 = new AddDeviceConfigurationLineFragment();
@@ -136,37 +135,37 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(2);
                 addDeviceConfigurationLineFragment1.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment1.setParentFragment(this);
-                pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
+                pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
 
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment2 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment2.setCurrentLinePosition(1);
                 addDeviceConfigurationLineFragment2.setDeviceNumberOfLines(2);
                 addDeviceConfigurationLineFragment2.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment2.setParentFragment(this);
-                pagerAdapter.addFrag(addDeviceConfigurationLineFragment2, getActivity().getResources().getString(R.string.line_3_name_hint));
+                pagerAdapter.addFrag(addDeviceConfigurationLineFragment2, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment1 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment1.setCurrentLinePosition(0);
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(3);
                 addDeviceConfigurationLineFragment1.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment1.setParentFragment(this);
-                pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
+                pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
 
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment2 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment2.setCurrentLinePosition(1);
                 addDeviceConfigurationLineFragment2.setDeviceNumberOfLines(3);
                 addDeviceConfigurationLineFragment2.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment2.setParentFragment(this);
-                pagerAdapter.addFrag(addDeviceConfigurationLineFragment2, getActivity().getResources().getString(R.string.line_2_name_hint));
+                pagerAdapter.addFrag(addDeviceConfigurationLineFragment2, Utils.getString(getActivity(), R.string.line_2_name_hint));
 
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment3 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment3.setCurrentLinePosition(2);
                 addDeviceConfigurationLineFragment3.setDeviceNumberOfLines(3);
                 addDeviceConfigurationLineFragment3.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment3.setParentFragment(this);
-                pagerAdapter.addFrag(addDeviceConfigurationLineFragment3, getActivity().getResources().getString(R.string.line_3_name_hint));
+                pagerAdapter.addFrag(addDeviceConfigurationLineFragment3, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else{
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_LONG).show();
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.unknown_smart_controller_type), true);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
@@ -176,7 +175,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         }else{
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_LONG).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);

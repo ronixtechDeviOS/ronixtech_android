@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -86,7 +85,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
         if(device != null){
             MainActivity.setActionBarTitle(device.getName(), getResources().getColor(R.color.whiteColor));
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.edit_device), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.edit_device), getResources().getColor(R.color.whiteColor));
         }
 
         setHasOptionsMenu(true);
@@ -141,7 +140,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setParentFragment(this);
                 editDeviceLineFragment1.setPlaceMode(placeMode);
                 editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
-                pagerAdapter.addFrag(editDeviceLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
+                pagerAdapter.addFrag(editDeviceLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
                 mTabLayout.setVisibility(View.GONE);
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
@@ -151,7 +150,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setParentFragment(this);
                 editDeviceLineFragment1.setPlaceMode(placeMode);
                 editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
-                pagerAdapter.addFrag(editDeviceLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
+                pagerAdapter.addFrag(editDeviceLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
 
                 EditDeviceLineFragment editDeviceLineFragment2 = new EditDeviceLineFragment();
                 editDeviceLineFragment2.setCurrentLinePosition(1);
@@ -160,7 +159,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment2.setParentFragment(this);
                 editDeviceLineFragment2.setPlaceMode(placeMode);
                 editDeviceLineFragment2.setMqttClient(mqttAndroidClient);
-                pagerAdapter.addFrag(editDeviceLineFragment2, getActivity().getResources().getString(R.string.line_3_name_hint));
+                pagerAdapter.addFrag(editDeviceLineFragment2, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
                 editDeviceLineFragment1.setCurrentLinePosition(0);
@@ -169,7 +168,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setParentFragment(this);
                 editDeviceLineFragment1.setPlaceMode(placeMode);
                 editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
-                pagerAdapter.addFrag(editDeviceLineFragment1, getActivity().getResources().getString(R.string.line_1_name_hint));
+                pagerAdapter.addFrag(editDeviceLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
 
                 EditDeviceLineFragment editDeviceLineFragment2 = new EditDeviceLineFragment();
                 editDeviceLineFragment2.setCurrentLinePosition(1);
@@ -178,7 +177,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment2.setParentFragment(this);
                 editDeviceLineFragment2.setPlaceMode(placeMode);
                 editDeviceLineFragment2.setMqttClient(mqttAndroidClient);
-                pagerAdapter.addFrag(editDeviceLineFragment2, getActivity().getResources().getString(R.string.line_2_name_hint));
+                pagerAdapter.addFrag(editDeviceLineFragment2, Utils.getString(getActivity(), R.string.line_2_name_hint));
 
                 EditDeviceLineFragment editDeviceLineFragment3 = new EditDeviceLineFragment();
                 editDeviceLineFragment3.setCurrentLinePosition(2);
@@ -187,9 +186,9 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment3.setParentFragment(this);
                 editDeviceLineFragment3.setPlaceMode(placeMode);
                 editDeviceLineFragment3.setMqttClient(mqttAndroidClient);
-                pagerAdapter.addFrag(editDeviceLineFragment3, getActivity().getResources().getString(R.string.line_3_name_hint));
+                pagerAdapter.addFrag(editDeviceLineFragment3, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else{
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_LONG).show();
+                Utils.showToast(getActivity(), Utils.getStringExtraInt(getActivity(), R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
@@ -199,7 +198,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 fragmentTransaction.commit();
             }
         }else{
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unknown_smart_controller_type, device.getDeviceTypeID()), Toast.LENGTH_LONG).show();
+            Utils.showToast(getActivity(), Utils.getStringExtraInt(getActivity(), R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);

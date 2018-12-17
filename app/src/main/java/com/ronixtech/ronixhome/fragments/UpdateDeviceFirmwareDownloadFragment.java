@@ -15,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
@@ -80,7 +79,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_update_device_firmware_download, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.updating_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.updating_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         fragment = this;
@@ -98,7 +97,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             }
         }
 
-        progressTextView.setText(getActivity().getResources().getString(R.string.downloading_firmware_file, currentFile, totalNumberOfFiles));
+        progressTextView.setText(Utils.getStringExtraInt(getActivity(), R.string.downloading_firmware_file, currentFile, totalNumberOfFiles));
 
         if(device != null){
             new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
@@ -117,14 +116,12 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
 
                 @Override
                 public void onConnectionFail(String errorMsg) {
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_internet_connection_try_later), true);
                     goToHomeFragment();
                 }
             }).execute();
         }else{
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_download_firmware), Toast.LENGTH_SHORT).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.unable_to_download_firmware), true);
             goToHomeFragment();
         }
 
@@ -229,25 +226,25 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             if(MainActivity.getInstance() != null && MainActivity.isResumed){
                 if(statusCode == 200) {
                     if(device.isHwFirmwareUpdateAvailable()){
-                        progressTextView.setText(context.getResources().getString(R.string.download_firmware_files_complete));
+                        progressTextView.setText(Utils.getString(context, R.string.download_firmware_files_complete));
                         fragment.goToUploadFragment();
                     }else if(device.isFirmwareUpdateAvailable()){
                         currentFile++;
 
-                        progressTextView.setText(context.getResources().getString(R.string.downloading_firmware_file, 2, 2));
+                        progressTextView.setText(Utils.getStringExtraInt(context, R.string.downloading_firmware_file, 2, 2));
 
                         if (currentFile <= 2) {
                             String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getWifiVersion(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_2);
                             DownloadTask downloadTask = new DownloadTask(context, fragment, device);
                             downloadTask.execute(url);
                         } else {
-                            progressTextView.setText(context.getResources().getString(R.string.download_firmware_files_complete));
+                            progressTextView.setText(Utils.getString(context, R.string.download_firmware_files_complete));
                             fragment.goToUploadFragment();
                         }
                     }
 
                 }else{
-                    Toast.makeText(context, context.getResources().getString(R.string.download_firmware_file_failed), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(context, Utils.getString(context, R.string.download_firmware_file_failed), true);
                     fragment.goToHomeFragment();
                 }
             }

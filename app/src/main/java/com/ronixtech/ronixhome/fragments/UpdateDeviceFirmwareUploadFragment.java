@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ronixtech.ronixhome.Constants;
@@ -79,7 +78,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_update_device_firmware_upload, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.updating_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.updating_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         device = MySettings.getTempDevice();
@@ -147,7 +146,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 try{
                     JSONObject jsonObject= new JSONObject(response);
                     if(jsonObject != null && jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
-                        String typeIDString = jsonObject.getString(Constants.PARAMETER_DEVICE_TYPE_ID);
+                        String typeIDString = jsonObject.getStringExtraInt(Constants.PARAMETER_DEVICE_TYPE_ID);
                         int deviceTypeID = Integer.valueOf(typeIDString);
                         Device tempDevice = MySettings.getTempDevice();
                         tempDevice.setDeviceTypeID(deviceTypeID);
@@ -158,7 +157,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 }catch (JSONException e){
                     Log.d(TAG, "Json exception: " + e.getMessage());
                     if(getActivity() != null) {
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
                     }
                     //trial failed, start over from the beginning
                     //debugTextView.setText("Attempt failed, trying again...\n");
@@ -180,10 +179,10 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 }
                 //Log.d(TAG, "Volley Error: statusCode: " + error.networkResponse.statusCode);
                 if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getStringExtraInt(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
                 }
                 if(getActivity() != null) {
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.unable_to_get_device_type_id), Toast.LENGTH_SHORT).show();
                 }
                 //trial failed, start over from the beginning
                 //debugTextView.setText("Attempt failed, trying again...\n");
@@ -282,7 +281,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 FirmwareUploader firmwareUploader = new FirmwareUploader(activity, fragment, device);
                 firmwareUploader.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_get_device_firmware_file_name), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_get_device_firmware_file_name), true);
                 fragment.goToHomeFragment();
             }
         }
@@ -357,7 +356,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 HardwareDeviceSyncChecker hardwareDeviceSyncChecker = new HardwareDeviceSyncChecker(activity, fragment, device);
                 hardwareDeviceSyncChecker.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_put_device_in_sync_mode), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_put_device_in_sync_mode), true);
                 fragment.goToHomeFragment();
             }
         }
@@ -438,7 +437,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 FirmwareUploader firmwareUploader = new FirmwareUploader(activity, fragment, device);
                 firmwareUploader.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_put_device_in_sync_mode), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_put_device_in_sync_mode), true);
                 fragment.goToHomeFragment();
             }
         }
@@ -514,7 +513,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
                 /*if(device.isHwFirmwareUpdateAvailable()){
-                    Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, activity.getResources().getStringExtraInt(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
                     device.setHwFirmwareUpdateAvailable(false);
                     MySettings.setTempDevice(device);
                     if(device.isFirmwareUpdateAvailable()){
@@ -523,19 +522,19 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 }else if(device.isFirmwareUpdateAvailable()){
                     DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
                     deviceRebooter.execute();
-                    Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, activity.getResources().getStringExtraInt(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
                 }*/
 
                 DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
                 deviceRebooter.execute();
-                Toast.makeText(activity, activity.getResources().getString(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull_rebooting), true);
 
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     fragment.notifyCrashlyticsOfAffectedDeviceUpdate();
                     MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
                 }
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_upload_firmware), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_upload_firmware), true);
                 fragment.goToHomeFragment();
             }
         }
@@ -696,7 +695,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 MySettings.setTempDevice(null);
                 fragment.goToHomeFragment();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.unable_to_reboot_device), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_reboot_device), true);
                 fragment.goToHomeFragment();
             }
         }

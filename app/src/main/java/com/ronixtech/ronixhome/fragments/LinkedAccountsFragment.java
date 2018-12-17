@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.ronixtech.ronixhome.MySettings;
@@ -72,7 +71,7 @@ public class LinkedAccountsFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_linked_accounts, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.linked_accounts), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.linked_account), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         addAccountFab = view.findViewById(R.id.add_linked_account_fab);
@@ -117,7 +116,7 @@ public class LinkedAccountsFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

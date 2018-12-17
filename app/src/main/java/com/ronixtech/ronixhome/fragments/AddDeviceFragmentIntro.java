@@ -67,7 +67,7 @@ public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_device_intro, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.add_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         /*if(MySettings.getHomeNetwork() == null) {

@@ -19,7 +19,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -100,12 +99,12 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 if(floor != null){
                     MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName(), getResources().getColor(R.color.whiteColor));
                 }else{
-                    MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms), getResources().getColor(R.color.whiteColor));
                 }
             }
             showPlaceArrow = true;
         }else{
-            MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.dashboard), getResources().getColor(R.color.whiteColor));
+            MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
             showPlaceArrow = false;
         }
         setHasOptionsMenu(true);
@@ -199,7 +198,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else {
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -228,7 +227,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -244,7 +243,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             @Override
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_room_first), Toast.LENGTH_LONG).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -406,7 +405,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
                 MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
             }else{
-                MainActivity.setActionBarTitle(place.getName() + " - " + getActivity().getResources().getString(R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+                MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms), getResources().getColor(R.color.whiteColor));
             }
 
             rooms.clear();
@@ -466,7 +465,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         @Override
                         public void onClick(View v) {
                             if (MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1) {
-                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_place_first), Toast.LENGTH_SHORT).show();
+                                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                             } else {
                                 // DialogFragment.show() will take care of adding the fragment
                                 // in a transaction.  We also want to remove any currently showing

@@ -202,7 +202,7 @@ public class DeviceScanner extends Worker{
                     }
 
 
-                    /*String deviceStatus = jsonObject.getString(Constants.PARAMETER_DEVICE_STATUS_KEY);
+                    /*String deviceStatus = jsonObject.getStringExtraInt(Constants.PARAMETER_DEVICE_STATUS_KEY);
                     String[] status = deviceStatus.split("%");
                     String line1PowerStateString = status[0];
                     String line2PowerStateString = status[1];

@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -134,7 +133,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
         device = MySettings.getTempDevice();
 
         if(device == null){
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_LONG).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
@@ -148,44 +147,44 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
             if(DEVICE_NUMBER_OF_LINES == 1){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                 lineGifImageView.setImageResource(R.drawable.line_left);
             }else if(DEVICE_NUMBER_OF_LINES == 2){
                 if(LINE_POSITION == 0){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_left);
                 }else if(LINE_POSITION == 1){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_3_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_right);
                 }
             }else if(DEVICE_NUMBER_OF_LINES == 3){
                 if(LINE_POSITION == 0){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_1_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_left);
                 }else if(LINE_POSITION == 1){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_2_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_2_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_center);
                 }else if(LINE_POSITION == 2){
-                    lineNameEditText.setHint(getActivity().getResources().getString(R.string.line_3_name_hint));
+                    lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_3_name_hint));
                     lineGifImageView.setImageResource(R.drawable.line_right);
                 }
             }
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
             if(LINE_POSITION == 0){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_1_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_1_name_hint));
             }else if(LINE_POSITION == 1){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_2_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_2_name_hint));
             }else if(LINE_POSITION == 2){
-                lineNameEditText.setHint(getActivity().getResources().getString(R.string.plug_3_name_hint));
+                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_3_name_hint));
             }
             lineModeRadioGroup.setVisibility(View.GONE);
         }
 
         int last = DEVICE_NUMBER_OF_LINES - 1;
         if(LINE_POSITION < last){
-            continueButton.setText(getActivity().getResources().getString(R.string.save_continue_button));
+            continueButton.setText(Utils.getString(getActivity(), R.string.save_continue_button));
         }else{
-            continueButton.setText(getActivity().getResources().getString(R.string.done));
+            continueButton.setText(Utils.getString(getActivity(), R.string.done));
         }
 
         if(lineType == null) {
@@ -274,7 +273,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         fragment.setTargetFragment(AddDeviceConfigurationLineFragment.this, 0);
                         fragment.show(ft, "typePickerDialogFragment");
                     }else{
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_types_available), Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), false);
                         Utils.generateLineTypes();
                     }
                 }
@@ -291,9 +290,9 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_on));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 }else{
-                    lineDimmingTextView.setText(getActivity().getResources().getString(R.string.line_dimming_off));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
                 }
             }
         });
@@ -318,7 +317,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         fragment.setTargetFragment(AddDeviceConfigurationLineFragment.this, 0);
                         fragment.show(ft, "pickLineDialogFragment");
                     }else{
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_devices_first), true);
                     }
                 }
             }

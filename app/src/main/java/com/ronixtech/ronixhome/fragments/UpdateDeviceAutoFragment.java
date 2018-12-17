@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
@@ -80,7 +79,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_update_device_auto, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.updating_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.updating_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         progressCircle = view.findViewById(R.id.progress_circle);
@@ -98,12 +97,12 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
 
                 @Override
                 public void onConnectionFail(String errorMsg) {
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_internet_connection_try_later), true);
                     goToHomeFragment();
                 }
             }).execute();
         }else{
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.firmware_update_failed), Toast.LENGTH_SHORT).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.firmware_update_failed), true);
             goToHomeFragment();
         }
 
@@ -184,7 +183,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
         @Override
         protected void onProgressUpdate(Integer... progress){
             progressCircle.setDonut_progress("" + progress[0]);
-            //progressCircle.setText(context.getResources().getString(R.string.seconds, progress[1]));
+            //progressCircle.setText(context.getResources().getStringExtraInt(R.string.seconds, progress[1]));
             progressCircle.setText("" + progress[0] + "%");
         }
 
@@ -210,12 +209,12 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
 
                         public void onFinish() {
                             // DO something when 45 seconds are up
-                            Toast.makeText(context, context.getResources().getString(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
+                            Utils.showToast(context, Utils.getString(context, R.string.firmware_update_successfull_rebooting), true);
                             fragment.goToHomeFragment();
                         }
                     }.start();
                 }else{
-                    Toast.makeText(context, context.getResources().getString(R.string.firmware_update_failed), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(context, Utils.getString(context, R.string.firmware_update_failed), true);
                     goToHomeFragment();
                 }
             }

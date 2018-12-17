@@ -23,6 +23,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
@@ -95,10 +96,10 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
             if(place != null){
                 vHolder.placeNameTextView.setText("@" + place.getName());
             }else{
-                vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+                vHolder.placeNameTextView.setText(Utils.getString(activity, R.string.wifi_no_place));
             }
         }else{
-            vHolder.placeNameTextView.setText(activity.getResources().getString(R.string.wifi_no_place));
+            vHolder.placeNameTextView.setText(Utils.getString(activity, R.string.wifi_no_place));
         }
 
         if(item.getSignal() != null && item.getSignal().length() >= 1){
@@ -142,7 +143,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
 
                 TextView passwordTextView = new TextView(activity);
-                passwordTextView.setText(activity.getResources().getString(R.string.password_colon));
+                passwordTextView.setText(Utils.getString(activity, R.string.password_colon));
                 passwordTextView.setTextSize(20);
                 passwordTextView.setGravity(Gravity.CENTER);
                 passwordTextView.setLayoutParams(layoutParams);
@@ -159,12 +160,12 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
 
                 final EditText passwordEditText = new EditText(activity);
                 passwordEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                passwordEditText.setHint(activity.getResources().getString(R.string.password_hint));
+                passwordEditText.setHint(Utils.getString(activity, R.string.password_hint));
                 passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 passwordEditText.setLayoutParams(layoutParams2);
 
                 Button submitButton = new Button(activity);
-                submitButton.setText(activity.getResources().getString(R.string.done));
+                submitButton.setText(Utils.getString(activity, R.string.done));
                 submitButton.setTextColor(activity.getResources().getColor(R.color.whiteColor));
                 submitButton.setBackgroundColor(activity.getResources().getColor(R.color.blueColor));
                 submitButton.setOnClickListener(new View.OnClickListener() {
@@ -197,10 +198,10 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
             public void onClick(View v) {
                 if(removeNetworkFromDB == Constants.REMOVE_NETWORK_FROM_DB_YES) {
                     android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                            .setTitle(activity.getResources().getString(R.string.remove_wifi_network_question))
-                            .setMessage(activity.getResources().getString(R.string.remove_wifi_network_description))
+                            .setTitle(Utils.getString(activity, R.string.remove_wifi_network_question))
+                            .setMessage(Utils.getString(activity, R.string.remove_wifi_network_description))
                             //set positive button
-                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //set what would happen when positive button is clicked
@@ -210,7 +211,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
                                 }
                             })
                             //set negative button
-                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //set what should happen when negative button is clicked
@@ -219,9 +220,9 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
                             .show();
                 }else{
                     android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                            .setTitle(activity.getResources().getString(R.string.remove_wifi_network_question))
+                            .setTitle(Utils.getString(activity, R.string.remove_wifi_network_question))
                             //set positive button
-                            .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //set what would happen when positive button is clicked
@@ -230,7 +231,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
                                 }
                             })
                             //set negative button
-                            .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //set what should happen when negative button is clicked

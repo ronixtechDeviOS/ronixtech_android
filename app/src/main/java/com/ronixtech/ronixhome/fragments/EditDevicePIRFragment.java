@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
@@ -99,7 +98,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_device_pir, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.edit_device), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.edit_device), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         deviceNameEditText = view.findViewById(R.id.device_name_edittext);
@@ -121,7 +120,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
         device = MySettings.getTempDevice();
         if(device == null){
-            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_adding_smart_controller), Toast.LENGTH_LONG).show();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
@@ -153,7 +152,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     fragment.setTargetFragment(EditDevicePIRFragment.this, 0);
                     fragment.show(ft, "pickLineDialogFragment");
                 }else{
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.add_devices_first), Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_devices_first), true);
                 }
             }
         });
@@ -172,7 +171,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     if(deviceNameEditText.getText().toString().length() > 1){
                         device.setName(deviceNameEditText.getText().toString());
                     }else{
-                        device.setName(getActivity().getResources().getString(R.string.pir_controller_name_hint));
+                        device.setName(Utils.getString(getActivity(), R.string.pir_controller_name_hint));
                     }
 
                     Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
@@ -185,7 +184,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     if(deviceNameEditText.getText().toString().length() > 1){
                         device.setName(deviceNameEditText.getText().toString());
                     }else{
-                        device.setName(getActivity().getResources().getString(R.string.pir_controller_name_hint));
+                        device.setName(Utils.getString(getActivity(), R.string.pir_controller_name_hint));
                     }
 
                     PIRData pirData = new PIRData();
@@ -221,7 +220,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
     public void onLineSelected(Line line){
         if(line != null && !selectedLines.contains(line)){
             if(selectedLines.size() >= 9){
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.pir_max_devices_reached), Toast.LENGTH_SHORT).show();
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.pir_max_devices_reached), true);
                 return;
             }
             this.selectedLines.add(line);
@@ -331,7 +330,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                 PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment, device);
                 pirAddPairings.execute();
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     if(fragment.getFragmentManager() != null) {
                         fragment.getFragmentManager().popBackStack();
@@ -434,7 +433,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     }
                 }
             }else{
-                Toast.makeText(activity, activity.getResources().getString(R.string.smart_controller_connection_error), Toast.LENGTH_SHORT).show();
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     if(fragment.getFragmentManager() != null) {
                         fragment.getFragmentManager().popBackStack();

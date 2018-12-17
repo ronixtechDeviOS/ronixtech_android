@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -140,7 +139,7 @@ public class FloorsGridAdapter extends BaseAdapter {
                             layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
 
                             TextView floorNameTextView = new TextView(activity);
-                            floorNameTextView.setText(activity.getResources().getString(R.string.floor_name));
+                            floorNameTextView.setText(Utils.getString(activity, R.string.floor_name));
                             floorNameTextView.setTextSize(20);
                             floorNameTextView.setGravity(Gravity.CENTER);
                             floorNameTextView.setLayoutParams(layoutParams);
@@ -157,13 +156,13 @@ public class FloorsGridAdapter extends BaseAdapter {
 
                             final EditText floorNameEditText = new EditText(activity);
                             floorNameEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                            floorNameEditText.setHint(activity.getResources().getString(R.string.floor_name));
+                            floorNameEditText.setHint(Utils.getString(activity, R.string.floor_name));
                             floorNameEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                             floorNameEditText.setText(item.getName());
                             floorNameEditText.setLayoutParams(layoutParams2);
 
                             Button saveButton = new Button(activity);
-                            saveButton.setText(activity.getResources().getString(R.string.done));
+                            saveButton.setText(Utils.getString(activity, R.string.done));
                             saveButton.setTextColor(activity.getResources().getColor(R.color.whiteColor));
                             saveButton.setBackgroundColor(activity.getResources().getColor(R.color.blueColor));
                             saveButton.setOnClickListener(new View.OnClickListener() {
@@ -193,10 +192,10 @@ public class FloorsGridAdapter extends BaseAdapter {
                             dialog.show();
                         }else if(id == R.id.action_remove_floor){
                             android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
-                                    .setTitle(activity.getResources().getString(R.string.remove_floor_question))
-                                    .setMessage(activity.getResources().getString(R.string.remove_floor_description))
+                                    .setTitle(Utils.getString(activity, R.string.remove_floor_question))
+                                    .setMessage(Utils.getString(activity, R.string.remove_floor_description))
                                     //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
@@ -205,12 +204,12 @@ public class FloorsGridAdapter extends BaseAdapter {
                                                 floors.remove(item);
                                                 floorsListener.onFloorDeleted();
                                             }else{
-                                                Toast.makeText(activity, activity.getResources().getString(R.string.place_floors_error), Toast.LENGTH_LONG).show();
+                                                Utils.showToast(activity, Utils.getString(activity, R.string.place_floors_error), true);
                                             }
                                         }
                                     })
                                     //set negative button
-                                    .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what should happen when negative button is clicked
@@ -252,7 +251,7 @@ public class FloorsGridAdapter extends BaseAdapter {
                             layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
 
                             TextView floorNameTextView = new TextView(activity);
-                            floorNameTextView.setText(activity.getResources().getString(R.string.floor_name));
+                            floorNameTextView.setText(Utils.getString(activity, R.string.floor_name));
                             floorNameTextView.setTextSize(20);
                             floorNameTextView.setGravity(Gravity.CENTER);
                             floorNameTextView.setLayoutParams(layoutParams);
@@ -269,13 +268,13 @@ public class FloorsGridAdapter extends BaseAdapter {
 
                             final EditText floorNameEditText = new EditText(activity);
                             floorNameEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                            floorNameEditText.setHint(activity.getResources().getString(R.string.floor_name));
+                            floorNameEditText.setHint(Utils.getString(activity, R.string.floor_name));
                             floorNameEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                             floorNameEditText.setText(item.getName());
                             floorNameEditText.setLayoutParams(layoutParams2);
 
                             Button saveButton = new Button(activity);
-                            saveButton.setText(activity.getResources().getString(R.string.done));
+                            saveButton.setText(Utils.getString(activity, R.string.done));
                             saveButton.setTextColor(activity.getResources().getColor(R.color.whiteColor));
                             saveButton.setBackgroundColor(activity.getResources().getColor(R.color.blueColor));
                             saveButton.setOnClickListener(new View.OnClickListener() {
@@ -305,10 +304,10 @@ public class FloorsGridAdapter extends BaseAdapter {
                             dialog.show();
                         }else if(id == R.id.action_remove_floor){
                             android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
-                                    .setTitle(activity.getResources().getString(R.string.remove_floor_question))
-                                    .setMessage(activity.getResources().getString(R.string.remove_floor_description))
+                                    .setTitle(Utils.getString(activity, R.string.remove_floor_question))
+                                    .setMessage(Utils.getString(activity, R.string.remove_floor_description))
                                     //set positive button
-                                    .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(Utils.getString(activity, R.string.floor_name), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
@@ -317,12 +316,12 @@ public class FloorsGridAdapter extends BaseAdapter {
                                                 floors.remove(item);
                                                 floorsListener.onFloorDeleted();
                                             }else{
-                                                Toast.makeText(activity, activity.getResources().getString(R.string.place_floors_error), Toast.LENGTH_LONG).show();
+                                                Utils.showToast(activity, Utils.getString(activity, R.string.place_floors_error), true);
                                             }
                                         }
                                     })
                                     //set negative button
-                                    .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(Utils.getString(activity, R.string.floor_name), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what should happen when negative button is clicked

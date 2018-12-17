@@ -62,7 +62,7 @@ public class BackupsAdapter extends ArrayAdapter{
         Backup item = backups.get(position);
 
         vHolder.nameTextView.setText(""+item.getName());
-        vHolder.timestampTextView.setText(activity.getResources().getString(R.string.date_backup_variable, Utils.getTimeStringDateHoursMinutes(item.getTimestamp())));
+        vHolder.timestampTextView.setText(Utils.getStringExtraText(activity, R.string.date_backup_variable, Utils.getTimeStringDateHoursMinutes(item.getTimestamp())));
 
         return rowView;
     }

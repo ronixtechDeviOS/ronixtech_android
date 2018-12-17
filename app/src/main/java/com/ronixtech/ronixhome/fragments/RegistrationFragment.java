@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -277,10 +276,10 @@ public class RegistrationFragment extends Fragment {
                                                 getActivity().finish();
                                             }else{
                                                 Log.d(TAG, "userProfileChangeRequest failure: " + task.getException());
-                                                if(getActivity() != null && task.getException() != null){
-                                                    Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                if(task.getException() != null){
+                                                    Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                                                 }
-                                                //Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.registration_failed), Toast.LENGTH_SHORT).show();
+                                                //Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.registration_failed), Toast.LENGTH_SHORT).show();
                                                 Utils.dismissLoading();
                                             }
                                         }
@@ -289,19 +288,17 @@ public class RegistrationFragment extends Fragment {
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.d(TAG, "createUserWithEmail failure: " + task.getException());
-                                if(getActivity() != null && task.getException() != null){
-                                    Toast.makeText(getActivity(), "" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                if(task.getException() != null){
+                                    Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                                 }
-                                //Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.registration_failed), Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.registration_failed), Toast.LENGTH_SHORT).show();
                                 Utils.dismissLoading();
                             }
                         }
                     });
         }else{
-            if(getActivity() != null) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.registration_failed), Toast.LENGTH_SHORT).show();
-            }
             Utils.dismissLoading();
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.registration_failed), true);
         }
 
         /*final CustomProgressDialog customProgressDialog = CustomProgressDialog.show(getActivity(), "", "");
@@ -347,7 +344,7 @@ public class RegistrationFragment extends Fragment {
                 registerButton.setEnabled(true);
                 if (customProgressDialog != null) customProgressDialog.dismiss();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
-                Toast.makeText(getActivity(), getString(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getStringExtraInt(R.string.server_connection_error), Toast.LENGTH_SHORT).show();
             }
         }){
             *//*@Override

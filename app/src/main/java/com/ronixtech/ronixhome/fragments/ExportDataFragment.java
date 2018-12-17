@@ -23,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -97,7 +96,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_export_data, container, false);
-        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.export_data), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.export_data), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         checkExternalStoragePermissions();
@@ -131,17 +130,13 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
                         if(ExportImportDB.exportDB(Constants.DB_FILE_1) && ExportImportDB.exportDB(Constants.DB_FILE_2) && ExportImportDB.exportDB(Constants.DB_FILE_3)){
                             uploadData(Constants.DB_FILE_1, exportName, timestamp);
                         }else{
-                            if(getActivity() != null){
-                                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.export_failed), Toast.LENGTH_SHORT).show();
-                            }
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.export_failed), true);
                         }
                     }
 
                     @Override
                     public void onConnectionFail(String errorMsg) {
-                        if(getActivity() != null){
-                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.no_internet_connection_try_later), Toast.LENGTH_SHORT).show();
-                        }
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_internet_connection_try_later), true);
                         if(getFragmentManager() != null){
                             getFragmentManager().popBackStack();
                         }
@@ -154,7 +149,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
     }
 
     private void uploadData(String fileName, String exportName, long timestamp){
-        progressTextView.setText(getActivity().getResources().getString(R.string.uploading_database_file, currentFile, totalNumberOfFiles));
+        progressTextView.setText(Utils.getStringExtraInt(getActivity(), R.string.uploading_database_file, currentFile, totalNumberOfFiles));
         //upload 3 files to firebase-db/email/exports/timestamp
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -180,7 +175,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
                 }else{
                     //done uploading all files
                     /*if(getActivity() != null){
-                        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.export_successful), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.export_successful), Toast.LENGTH_SHORT).show();
                     }*/
                     addExportToFirebaseDB(exportName, timestamp);
                 }
@@ -189,9 +184,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                if(getActivity() != null){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.uploading_database_file_failed), Toast.LENGTH_SHORT).show();
-                }
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.uploading_database_file_failed), true);
                 if(getFragmentManager() != null){
                     getFragmentManager().popBackStack();
                 }
@@ -206,7 +199,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
     }
 
     private void addExportToFirebaseDB(String exportName, long timestamp){
-        progressTextView.setText(getActivity().getResources().getString(R.string.uploading_updating_online_database));
+        progressTextView.setText(Utils.getString(getActivity(), R.string.uploading_updating_online_database));
         // Access a Cloud Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> map = new HashMap<>();
@@ -228,9 +221,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                if(getActivity() != null){
-                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.uploading_updating_online_database_failed), Toast.LENGTH_SHORT).show();
-                }
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.uploading_updating_online_database_failed), true);
                 if(getFragmentManager() != null){
                     getFragmentManager().popBackStack();
                 }
@@ -259,9 +250,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
                     //allowed
                 } else{
                     //denied
-                    if(getActivity() != null){
-                        Toast.makeText(getActivity(), "You need to enable external storage permission", Toast.LENGTH_SHORT).show();
-                    }
+                    Utils.showToast(getActivity(), "You need to enable external storage permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.WRITE_EXTERNAL_STORAGE")) {
                         new AlertDialog.Builder(getActivity())

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -83,16 +82,16 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
 
         vHolder.nameTextView.setText(""+item.getFullName());
         vHolder.emailTextView.setText(""+item.getEmail());
-        vHolder.additionDateTextView.setText(activity.getResources().getString(R.string.date_linked_account_variable, Utils.getDateString(item.getLinkTimestamp())));
+        vHolder.additionDateTextView.setText(Utils.getStringExtraText(activity, R.string.date_linked_account_variable, Utils.getDateString(item.getLinkTimestamp())));
 
         vHolder.removeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                        .setTitle(activity.getResources().getString(R.string.remove_linked_account_question))
-                        .setMessage(activity.getResources().getString(R.string.remove_linked_account_description))
+                        .setTitle(Utils.getString(activity, R.string.remove_linked_account_question))
+                        .setMessage(Utils.getString(activity, R.string.remove_linked_account_description))
                         //set positive button
-                        .setPositiveButton(activity.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what would happen when positive button is clicked
@@ -101,7 +100,7 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
                             }
                         })
                         //set negative button
-                        .setNegativeButton(activity.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
@@ -136,9 +135,7 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Utils.dismissLoading();
-                                if(activity != null){
-                                    Toast.makeText(activity, activity.getResources().getString(R.string.remove_linked_account_failed), Toast.LENGTH_SHORT).show();
-                                }
+                                Utils.showToast(activity, Utils.getString(activity, R.string.remove_linked_account_failed), false);
                             }
                         });
                     }
@@ -148,9 +145,7 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Utils.dismissLoading();
-                if(activity != null){
-                    Toast.makeText(activity, activity.getResources().getString(R.string.remove_linked_account_failed), Toast.LENGTH_SHORT).show();
-                }
+                Utils.showToast(activity, Utils.getString(activity, R.string.remove_linked_account_failed), false);
             }
         });
     }
