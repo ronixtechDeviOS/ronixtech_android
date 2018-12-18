@@ -434,7 +434,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                                 jsonObject.put("U_P_LVF", ":");
                             }
                             jsonObject.put("U_P_DUR", "" +  Utils.getTimeUnitMilliseconds(line.getPirTriggerActionDurationTimeUnit(), line.getPirTriggerActionDuration()));
-
+                            //TODO send U_P_DUR in SECONDS not MILLISECONDS
 
                             jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 

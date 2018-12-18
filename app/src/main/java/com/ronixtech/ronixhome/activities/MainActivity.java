@@ -11,6 +11,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,7 +33,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.HttpConnector;
@@ -113,6 +117,25 @@ public class MainActivity extends AppCompatActivity
             startActivity(loginIntent);
             finish();
             return;
+        }
+
+        //check if MySettings.getAciveUser() is verified or not
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth != null && mAuth.getCurrentUser() != null){
+            mAuth.getCurrentUser().reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    FirebaseUser fbUser = mAuth.getCurrentUser();
+                    if(fbUser != null) {
+                        if (!fbUser.isEmailVerified()) {
+                            Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                            loginIntent.putExtra("action", "verify");
+                            startActivity(loginIntent);
+                            finish();
+                        }
+                    }
+                }
+            });
         }
 
         if(MySettings.getDefaultPlaceID() != -1){

@@ -40,6 +40,8 @@ public class Constants {
 
     public static final String DEVICE_LATEST_FIRMWARE_VERSIONS_URL = "http://ronixtech.com/ronix_services/wifi_updates/switches_controller/latest_version.php";
 
+    public static final String FIREBASE_DYNAMIC_LINK_VERIFICATION_URL = "https://ronixtech.page.link/verify";
+
     public static final int SERVER_TIMEOUT = 5000;
     public static final int SERVER_NUMBER_OF_RETRIES = 2;
 
@@ -62,6 +64,8 @@ public class Constants {
     public static final String DEVICE_FIRMWARE_FILE_NAME_2 = "user2.bin";
     public static final String DEVICE_HW_FIRMWARE_FILE_NAME = "hw.hex";
     public static final String DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME = "hw.bin";
+
+    public static final String FIREBASE_DYNAMIC_LINKS_MIN_VERSION = "62";
 
     //post parameters
     public static final String PARAMETER_ERROR = "error";

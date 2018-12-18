@@ -7,6 +7,15 @@
     <string name="forgot_password">Forgot Password?</string>
     <string name="register">Create New Account</string>
 
+    <string name="password_reset_mail_sent_successfully">An email has been sent to you. Please check your inbox.</string>
+
+    <string name="verification_mail_sent_successfully">An email has been sent to you. Please check your inbox.</string>
+    <string name="verification_title">Thanks for registering</string>
+    <string name="verification">Verification</string>
+    <string name="verification_message_hint">A verification email has been sent to %s. Please check your inbox and follow the instructions in the email to verify your account</string>
+    <string name="verification_message_resend">If you haven\'nt received a verification email, please click on \'Resend Email\' and re-check your inbox.</string>
+    <string name="verification_resend">Resend Email</string>
+
     <string name="name">Name</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
@@ -458,6 +467,7 @@
     <string name="registration_failed">Registration failed</string>
     <string name="login_failed">Login failed</string>
     <string name="reset_password_failed">Failed to send password reset email</string>
+    <string name="verification_email_failed">Failed to send verification email</string>
 
 
     <string name="date_backup_variable">Date: %s</string>

@@ -243,15 +243,20 @@ public class LoginFragment extends Fragment {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
                         FirebaseUser fbUser = mAuth.getCurrentUser();
-                        User user = new User();
-                        user.setEmail(fbUser.getEmail());
-                        user.setPassword(password);
-                        user.setFirstName(fbUser.getDisplayName());
-                        MySettings.setActiveUser(user);
-                        Utils.dismissLoading();
-                        Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-                        startActivity(mainIntent);
-                        getActivity().finish();
+                        if(fbUser != null){
+                            User user = new User();
+                            user.setEmail(fbUser.getEmail());
+                            user.setPassword(password);
+                            user.setFirstName(fbUser.getDisplayName());
+                            MySettings.setActiveUser(user);
+                            Utils.dismissLoading();
+                            Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                            startActivity(mainIntent);
+                            getActivity().finish();
+                        }else{
+                            Utils.dismissLoading();
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.login_failed), true);
+                        }
                     }else {
                         // If sign in fails, display a message to the user.
                         Log.d(TAG, "signInWithEmailAndPassword failure: " + task.getException());
@@ -343,6 +348,7 @@ public class LoginFragment extends Fragment {
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
                         Utils.dismissLoading();
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.password_reset_mail_sent_successfully), true);
                     }else{
                         Log.d(TAG, "sendPasswordResetEmail failure: " + task.getException());
                         if(task.getException() != null){

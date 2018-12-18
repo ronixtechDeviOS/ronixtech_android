@@ -23,10 +23,12 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -270,10 +272,46 @@ public class RegistrationFragment extends Fragment {
                                                 user.setFirstName(firstName);
                                                 user.setLastName(lastName);
                                                 MySettings.setActiveUser(user);
-                                                Utils.dismissLoading();
-                                                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-                                                startActivity(mainIntent);
-                                                getActivity().finish();
+                                                ActionCodeSettings actionCodeSettings =
+                                                        ActionCodeSettings.newBuilder()
+                                                                // URL you want to redirect back to. The domain (www.example.com) for this
+                                                                // URL must be whitelisted in the Firebase Console.
+                                                                .setUrl(Constants.FIREBASE_DYNAMIC_LINK_VERIFICATION_URL)
+                                                                // This must be true
+                                                                .setHandleCodeInApp(true)
+                                                                .setAndroidPackageName(
+                                                                        Constants.PACKAGE_NAME,
+                                                                        true, /* installIfNotAvailable */
+                                                                        Constants.FIREBASE_DYNAMIC_LINKS_MIN_VERSION    /* minimumVersion */)
+                                                                .build();
+
+                                                FirebaseUser fbUser = mAuth.getCurrentUser();
+                                                if(fbUser != null){
+                                                    fbUser.sendEmailVerification(actionCodeSettings).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                Utils.dismissLoading();
+                                                                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.verification_mail_sent_successfully), true);
+                                                                Log.d(TAG, "sendEmailVerification Email sent.");
+                                                                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                                                                startActivity(mainIntent);
+                                                                getActivity().finish();
+                                                            } else {
+                                                                // If sending mail fails, display a message to the user.
+                                                                Log.d(TAG, "sendEmailVerification failure: " + task.getException());
+                                                                if (task.getException() != null) {
+                                                                    Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
+                                                                }
+                                                                //Toast.makeText(getActivity(), getActivity().getResources().getStringExtraInt(R.string.login_failed), Toast.LENGTH_SHORT).show();
+                                                                Utils.dismissLoading();
+                                                            }
+                                                        }
+                                                    });
+                                                }else{
+                                                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.registration_failed), true);
+                                                    Utils.dismissLoading();
+                                                }
                                             }else{
                                                 Log.d(TAG, "userProfileChangeRequest failure: " + task.getException());
                                                 if(task.getException() != null){
@@ -284,6 +322,9 @@ public class RegistrationFragment extends Fragment {
                                             }
                                         }
                                     });
+                                }else{
+                                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.registration_failed), true);
+                                    Utils.dismissLoading();
                                 }
                             } else {
                                 // If sign in fails, display a message to the user.

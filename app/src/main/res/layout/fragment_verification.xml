@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.VerificationFragment">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_2">
+            <ImageView
+                android:id="@+id/logo_imageview"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="64dp"
+                android:src="@drawable/logo_text_big"/>
+
+            <RelativeLayout
+                android:id="@+id/login_edittexts_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/logo_imageview"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp">
+
+                <TextView
+                    android:id="@+id/thanks_for_registring_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="24sp"
+                    android:textColor="@color/blueColor"
+                    android:text="@string/verification_title"/>
+
+                <TextView
+                    android:id="@+id/verification_message_hint_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/thanks_for_registring_textview"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/verification_message_hint"/>
+
+                <TextView
+                    android:id="@+id/verification_message_resend_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/verification_message_hint_textview"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/verification_message_resend"/>
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/resend_email_button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/login_edittexts_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/button_background_round_blue"
+                android:textAllCaps="false"
+                android:textColor="@color/whiteColor"
+                android:text="@string/verification_resend"/>
+
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/resend_email_button"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/button_background_round_border_blue"
+                android:textAllCaps="false"
+                android:textColor="@color/blueColor"
+                android:text="@string/cancel"/>
+        </RelativeLayout>
+
+    </FrameLayout>
+</ScrollView>
