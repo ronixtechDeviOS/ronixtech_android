@@ -20,13 +20,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.fragments.LoginFragment;
 import com.ronixtech.ronixhome.fragments.VerificationFragment;
 
 public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = LoginActivity.class.getSimpleName() + "aaaa";
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +95,16 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(TAG, "mAuth is null");
                                 Utils.dismissLoading();
                             }
+                        }else if(deepLink != null && deepLink.toString().contains(Constants.PARAMETER_EMAIL)){
+                            String email = deepLink.getQueryParameter(Constants.PARAMETER_EMAIL);
+                            Utils.dismissLoading();
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            LoginFragment loginFragment = new LoginFragment();
+                            loginFragment.setResetPassEmail(email);
+                            fragmentTransaction.replace(R.id.fragment_view, loginFragment, "loginFragment");
+                            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            fragmentTransaction.commit();
                         }else{
                             Utils.dismissLoading();
                         }

@@ -1,137 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.ImportDataFragment">
-
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteColor">
-
+        android:layout_height="match_parent">
         <RelativeLayout
-            android:id="@+id/downloading_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
-            <TextView
-                android:id="@+id/downloading_database_files_title_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_centerHorizontal="true"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:textColor="@color/blackColor"
-                android:text="@string/downloading_database_files"/>
+            android:background="@color/whiteColor">
 
-            <ProgressBar
-                android:id="@+id/progress_circle"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_centerInParent="true" />
-
-            <TextView
-                android:id="@+id/progress_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/progress_circle"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/blackColor"
-                android:textSize="18sp"
-                android:text="@string/downloading_database_files_preparing"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/import_data_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/begin_importing_data_title_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_centerHorizontal="true"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:textColor="@color/blackColor"
-                android:text="@string/begin_importing_title"/>
-
-            <ImageView
-                android:id="@+id/import_data_imageview"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_below="@id/begin_importing_data_title_textview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/baseline_cloud_download_gray_48"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:id="@+id/import_name_title_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/import_data_imageview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:text="@string/importing_name_title"/>
             <RelativeLayout
-                android:id="@+id/import_name_selection_layout"
+                android:id="@+id/downloading_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_below="@id/import_name_title_textview"
-                android:padding="8dp">
+                android:layout_height="match_parent"
+                android:visibility="gone">
                 <TextView
-                    android:id="@+id/import_name_textview"
-                    android:layout_width="match_parent"
+                    android:id="@+id/downloading_database_files_title_textview"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_centerHorizontal="true"
                     android:textAlignment="center"
-                    android:textSize="20sp"
-                    android:hint="@string/importing_name_hint"/>
+                    android:textSize="24sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/downloading_database_files"/>
+
+                <ProgressBar
+                    android:id="@+id/progress_circle"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true" />
+
+                <TextView
+                    android:id="@+id/progress_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/progress_circle"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/blackColor"
+                    android:textSize="18sp"
+                    android:text="@string/downloading_database_files_preparing"/>
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/begin_exporting_data_description_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_below="@id/import_name_selection_layout"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textColor="@color/blueColor"
-                android:text="@string/begin_importing_description"/>
-
-            <Button
-                android:id="@+id/import_button"
+            <RelativeLayout
+                android:id="@+id/import_data_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_below="@id/begin_exporting_data_description_textview"
-                android:background="@drawable/button_background_round_gray"
-                android:textColor="@color/whiteColor"
-                android:enabled="false"
-                android:padding="4dp"
-                android:text="@string/import_data"/>
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/begin_importing_data_title_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:textColor="@color/blackColor"
+                    android:text="@string/begin_importing_title"/>
+
+                <ImageView
+                    android:id="@+id/import_data_imageview"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_below="@id/begin_importing_data_title_textview"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/baseline_cloud_download_gray_48"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:id="@+id/import_name_title_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/import_data_imageview"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:text="@string/importing_name_title"/>
+                <RelativeLayout
+                    android:id="@+id/import_name_selection_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/import_name_title_textview"
+                    android:padding="8dp">
+                    <TextView
+                        android:id="@+id/import_name_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textSize="20sp"
+                        android:hint="@string/importing_name_hint"/>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/begin_exporting_data_description_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_below="@id/import_name_selection_layout"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:textColor="@color/blueColor"
+                    android:text="@string/begin_importing_description"/>
+
+                <Button
+                    android:id="@+id/import_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_below="@id/begin_exporting_data_description_textview"
+                    android:background="@drawable/button_background_round_gray"
+                    android:textColor="@color/whiteColor"
+                    android:enabled="false"
+                    android:padding="4dp"
+                    android:text="@string/import_data"/>
+            </RelativeLayout>
+
         </RelativeLayout>
 
-    </RelativeLayout>
-
-</FrameLayout>
+    </FrameLayout>
+</ScrollView>

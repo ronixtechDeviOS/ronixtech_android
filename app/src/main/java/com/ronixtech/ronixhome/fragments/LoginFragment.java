@@ -34,6 +34,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -77,6 +78,8 @@ public class LoginFragment extends Fragment {
     boolean passwordVisible = false;
 
     private FirebaseAuth mAuth;
+
+    private String resetPassEmail;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -231,8 +234,18 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        if(resetPassEmail != null && resetPassEmail.length() >= 1){
+            emailEditText.setText(resetPassEmail);
+        }
 
         return view;
+    }
+
+    public void setResetPassEmail(String email){
+        this.resetPassEmail = email;
+        if(emailEditText != null){
+            emailEditText.setText(resetPassEmail);
+        }
     }
 
     private void login(final String email, final String password){
@@ -343,7 +356,19 @@ public class LoginFragment extends Fragment {
     private void resetPassword(String email){
         Utils.showLoading(getActivity());
         if(mAuth != null){
-            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            ActionCodeSettings actionCodeSettings =
+                    ActionCodeSettings.newBuilder()
+                            // URL you want to redirect back to. The domain (www.example.com) for this
+                            // URL must be whitelisted in the Firebase Console.
+                            .setUrl(Constants.FIREBASE_DYNAMIC_LINK_RESET_PASSWORD_URL + "?" + Constants.PARAMETER_EMAIL + "=" + email)
+                            // This must be true
+                            .setHandleCodeInApp(false)
+                            .setAndroidPackageName(
+                                    Constants.PACKAGE_NAME,
+                                    true, /* installIfNotAvailable */
+                                    Constants.FIREBASE_DYNAMIC_LINKS_MIN_VERSION    /* minimumVersion */)
+                            .build();
+            mAuth.sendPasswordResetEmail(email, actionCodeSettings).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
