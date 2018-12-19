@@ -21,6 +21,8 @@ import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 
+import java.util.Calendar;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -104,7 +106,21 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         if(device != null){
             nameTextView.setText(""+device.getName());
             macAddressTextView.setText(""+device.getMacAddress());
-            lastSeenTextView.setText(Utils.getTimeStringHoursMinutesSeconds(device.getLastSeenTimestamp()));
+
+            //show full date if not same day (if it's a new day)
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            long currentTimestamp = cal2.getTimeInMillis();
+            cal1.setTimeInMillis(device.getLastSeenTimestamp());
+            cal2.setTimeInMillis(currentTimestamp);
+            boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+            if (!sameDay) {
+                lastSeenTextView.setText(Utils.getTimeStringDateHoursMinutes(device.getLastSeenTimestamp()));
+            }else{
+                lastSeenTextView.setText(Utils.getTimeStringHoursMinutesSeconds(device.getLastSeenTimestamp()));
+            }
+
             typeTextView.setText(Device.getDeviceTypeString(device.getDeviceTypeID()));
             if(device.isDeviceMQTTReachable()){
                 statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_reachable));

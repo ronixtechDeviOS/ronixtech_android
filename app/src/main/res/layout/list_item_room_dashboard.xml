@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/whiteColor"
+    android:padding="4dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/room_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--<ImageView
+                android:id="@+id/room_type_imageview"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:background="@drawable/circle_indicator_gray"
+                android:padding="8dp"
+                android:src="@drawable/room_icon"/>-->
+            <ImageView
+                android:id="@+id/room_type_imageview"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:padding="8dp"
+                android:src="@drawable/room_icon"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/room_type_imageview"
+                android:layout_toRightOf="@id/room_type_imageview"
+                android:padding="8dp">
+                <ImageView
+                    android:id="@+id/room_advanced_options_button"
+                    android:layout_width="40dp"
+                    android:layout_height="32dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/overflow_3_dots_gray"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+                <TextView
+                    android:id="@+id/room_name_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/blackColor"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:text="RoomName"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>

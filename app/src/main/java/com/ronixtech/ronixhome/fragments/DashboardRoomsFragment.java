@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.adapters.RoomsDashboardListAdapter;
 import com.ronixtech.ronixhome.adapters.RoomsGridAdapter;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
@@ -52,10 +54,20 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
     RelativeLayout addPlaceLayout, addRoomLayout, addDeviceLayout;
 
+    private static final int LIST_VIEW = 0;
+    private static final int GRID_VIEW = 2;
+    private static int lastSelectedView = GRID_VIEW;
+
     GridView roomsGridView;
-    RoomsGridAdapter adapter;
+    RoomsGridAdapter roomsGridAdapter;
     List<Room> rooms;
     TextView roomsGridViewLongPressHint;
+
+    ListView roomsListView;
+    RoomsDashboardListAdapter roomsDashboardListAdapter;
+
+    RelativeLayout roomsHeaderLayout;
+    ImageView showAsGrid, showAsList, sortImageView;
 
     private Place place;
     private Floor floor;
@@ -131,6 +143,11 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
         }
 
+        roomsHeaderLayout = view.findViewById(R.id.rooms_header_layout);
+        showAsGrid = view.findViewById(R.id.gridview_imageview);
+        showAsList = view.findViewById(R.id.listview_imageview);
+        sortImageView = view.findViewById(R.id.sort_imageview);
+
         rooms = new ArrayList<>();
         if(place != null){
             if(floor != null){
@@ -144,7 +161,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
         }
         roomsGridView = view.findViewById(R.id.rooms_gridview);
-        adapter = new RoomsGridAdapter(getActivity(), rooms, getFragmentManager(), new RoomsGridAdapter.RoomsListener() {
+        roomsGridAdapter = new RoomsGridAdapter(getActivity(), rooms, getFragmentManager(), new RoomsGridAdapter.RoomsListener() {
             @Override
             public void onRoomDeleted() {
                 MySettings.setCurrentRoom(null);
@@ -158,7 +175,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
+                roomsGridAdapter.notifyDataSetChanged();
                 setLayoutVisibility();
             }
             @Override
@@ -166,7 +183,32 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
             }
         });
-        roomsGridView.setAdapter(adapter);
+        roomsGridView.setAdapter(roomsGridAdapter);
+
+        roomsListView = view.findViewById(R.id.rooms_listview);
+        roomsDashboardListAdapter = new RoomsDashboardListAdapter(getActivity(), rooms, getFragmentManager(), new RoomsDashboardListAdapter.RoomsListener() {
+            @Override
+            public void onRoomDeleted() {
+                MySettings.setCurrentRoom(null);
+                rooms.clear();
+                if(place != null){
+                    if(floor != null && MySettings.getFloorRooms(floor.getId()) != null && MySettings.getFloorRooms(floor.getId()).size() >= 1){
+                        rooms.addAll(MySettings.getFloorRooms(floor.getId()));
+                    }else{
+                        if(MySettings.getPlaceRooms(place) != null && MySettings.getPlaceRooms(place).size() >= 1){
+                            rooms.addAll(MySettings.getPlaceRooms(place));
+                        }
+                    }
+                }
+                roomsDashboardListAdapter.notifyDataSetChanged();
+                setLayoutVisibility();
+            }
+            @Override
+            public void onRoomNameChanged() {
+
+            }
+        });
+        roomsListView.setAdapter(roomsDashboardListAdapter);
 
         setLayoutVisibility();
 
@@ -253,6 +295,23 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
                     fragmentTransaction.commit();
                 }
+            }
+        });
+
+        showAsGrid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                roomsGridView.setVisibility(View.VISIBLE);
+                roomsListView.setVisibility(View.INVISIBLE);
+                lastSelectedView = GRID_VIEW;
+            }
+        });
+        showAsList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                roomsGridView.setVisibility(View.INVISIBLE);
+                roomsListView.setVisibility(View.VISIBLE);
+                lastSelectedView = LIST_VIEW;
             }
         });
 
@@ -385,13 +444,25 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
         if(showAddPlaceLayout || showAddRoomLayout){
             addFabMenu.setVisibility(View.GONE);
-            roomsGridView.setVisibility(View.GONE);
             roomsGridViewLongPressHint.setVisibility(View.GONE);
+
+            roomsGridView.setVisibility(View.GONE);
+            roomsListView.setVisibility(View.GONE);
+            roomsHeaderLayout.setVisibility(View.GONE);
         }else{
             addFabMenu.setVisibility(View.VISIBLE);
-            roomsGridView.setVisibility(View.VISIBLE);
             //roomsGridViewLongPressHint.setVisibility(View.VISIBLE);
             roomsGridViewLongPressHint.setVisibility(View.GONE);
+
+            roomsHeaderLayout.setVisibility(View.VISIBLE);
+            if(lastSelectedView == GRID_VIEW){
+                roomsGridView.setVisibility(View.VISIBLE);
+                roomsListView.setVisibility(View.INVISIBLE);
+            }else if(lastSelectedView == LIST_VIEW){
+                roomsGridView.setVisibility(View.INVISIBLE);
+                roomsListView.setVisibility(View.VISIBLE);
+            }
+
         }
     }
 
@@ -412,7 +483,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             if(MySettings.getPlaceRooms(place) != null && MySettings.getPlaceRooms(place).size() >= 1){
                 rooms.addAll(MySettings.getPlaceRooms(place));
             }
-            adapter.notifyDataSetChanged();
+            roomsGridAdapter.notifyDataSetChanged();
 
             setLayoutVisibility();
 

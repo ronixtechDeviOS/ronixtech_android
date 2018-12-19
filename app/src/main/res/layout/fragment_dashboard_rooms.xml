@@ -10,12 +10,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_1">
+
+        <RelativeLayout
+            android:id="@+id/rooms_header_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/lightestGrayColor"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+            <ImageView
+                android:id="@+id/gridview_imageview"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/grid_blue"/>
+
+            <ImageView
+                android:id="@+id/listview_imageview"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/gridview_imageview"
+                android:layout_toRightOf="@id/gridview_imageview"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/list_blue"/>
+
+            <ImageView
+                android:id="@+id/sort_imageview"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="invisible"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/sort_blue"/>
+
+        </RelativeLayout>
+
         <GridView
             android:id="@+id/rooms_gridview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="4dp"
+            android:layout_below="@id/rooms_header_layout"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:paddingBottom="72dp"
@@ -26,6 +68,17 @@
             android:stretchMode="columnWidth"
             android:scrollbars="none"
             android:gravity="center"/>
+
+        <ListView
+            android:id="@+id/rooms_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rooms_header_layout"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="72dp"
+            android:scrollbars="none"
+            tools:listitem="@layout/list_item_room_dashboard"/>
 
         <TextView
             android:id="@+id/rooms_gridview_long_press_hint_textview"
