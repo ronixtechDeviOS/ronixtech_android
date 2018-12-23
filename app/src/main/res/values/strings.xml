@@ -495,6 +495,13 @@
     <string name="current_version_colon">Current Version:</string>
     <string name="latest_version">Online Version</string>
 
+    <string name="log_viewer">Log Viewer</string>
+    <string name="log_viewier_message">Tap %d times to view device logs</string>
+    <string name="share_log">Share Log</string>
+    <string name="share_log_message">RonixHome Log</string>
+    <string name="no_log_text">No logs found to share!</string>
+    <string name="share_using">Share using</string>
+
 
     <string name="facebook_app_id">1276072825863636</string>
     <string name="fb_login_protocol_scheme">fb1276072825863636</string>

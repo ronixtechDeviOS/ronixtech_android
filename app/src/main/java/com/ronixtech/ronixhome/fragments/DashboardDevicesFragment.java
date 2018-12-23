@@ -430,8 +430,7 @@ public class DashboardDevicesFragment extends Fragment {
         Log.d(TAG, "Getting device info...");
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
             if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
                 Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
                 if(currentFirmwareVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
@@ -448,6 +447,9 @@ public class DashboardDevicesFragment extends Fragment {
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             ModeGetter modeGetter = new ModeGetter(device);
             modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            DeviceSyncer deviceSyncer = new DeviceSyncer(device);
+            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
             DeviceSyncer deviceSyncer = new DeviceSyncer(device);
             deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1883,7 +1885,7 @@ public class DashboardDevicesFragment extends Fragment {
                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
-                                if(hardwareStatus.has("U_H_FWV")) {
+                                /*if(hardwareStatus.has("U_H_FWV")) {
                                     String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
                                     if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
                                         device.setHwFirmwareVersion(currentHWFirmwareVersion);
@@ -1909,7 +1911,7 @@ public class DashboardDevicesFragment extends Fragment {
                                         int hwVersion = Integer.parseInt(hwVersionString);
                                         device.setHwVersion(""+hwVersion);
                                     }
-                                }
+                                }*/
 
 
                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
@@ -1996,7 +1998,7 @@ public class DashboardDevicesFragment extends Fragment {
                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
-                                if(hardwareStatus.has("U_H_FWV")) {
+                                /*if(hardwareStatus.has("U_H_FWV")) {
                                     String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
                                     if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
                                         device.setHwFirmwareVersion(currentHWFirmwareVersion);
@@ -2022,7 +2024,7 @@ public class DashboardDevicesFragment extends Fragment {
                                         int hwVersion = Integer.parseInt(hwVersionString);
                                         device.setHwVersion(""+hwVersion);
                                     }
-                                }
+                                }*/
 
 
                                 String pirStateString;

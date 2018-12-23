@@ -21,9 +21,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -55,6 +57,7 @@ import com.ronixtech.ronixhome.fragments.ExportDataFragment;
 import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
 import com.ronixtech.ronixhome.fragments.ImportDataFragment;
 import com.ronixtech.ronixhome.fragments.LinkedAccountsFragment;
+import com.ronixtech.ronixhome.fragments.LogViewerFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 
@@ -82,9 +85,14 @@ public class MainActivity extends AppCompatActivity
     private static TextView mTitle;
 
     TextView userNameTextView, userEmailTextView;
+    ImageView userImageView;
 
     BroadcastReceiver myWifiReceiver;
     IntentFilter intentFilter;
+
+    int logCounterMAX = 8;
+    int logCounterToast = 3;
+    int logCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,13 +209,37 @@ public class MainActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
                 fragmentTransaction.addToBackStack("userProfileFragment");
                 fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
             }
         });
         userNameTextView = headerLayout.findViewById(R.id.user_name_textview);
         userEmailTextView = headerLayout.findViewById(R.id.user_email_textview);
+        userImageView = headerLayout.findViewById(R.id.imageView);
 
         userNameTextView.setText(MySettings.getActiveUser().getFirstName() + " " + MySettings.getActiveUser().getLastName());
         userEmailTextView.setText(MySettings.getActiveUser().getEmail());
+
+        logCounter = 0;
+        userImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logCounter++;
+                if(logCounter >= logCounterMAX){
+                    logCounter = 0;
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    LogViewerFragment logViewerFragment = new LogViewerFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, logViewerFragment, "logViewerFragment");
+                    fragmentTransaction.addToBackStack("logViewerFragment");
+                    fragmentTransaction.commit();
+                    drawer.closeDrawer(Gravity.START);
+                }else{
+                    if(logCounter >= logCounterToast){
+                        Utils.showToast(mInstance, Utils.getStringExtraInt(mInstance, R.string.log_viewier_message, (logCounterMAX - logCounter)), false);
+                    }
+                }
+            }
+        });
 
         RelativeLayout currentVersionLayout = (RelativeLayout) navigationView.getMenu().findItem(R.id.nav_current_version).getActionView();
         TextView currentVersionTextView = currentVersionLayout.findViewById(R.id.current_version_textview);

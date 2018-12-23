@@ -172,6 +172,7 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
                     List<Line> lines = new ArrayList<>();
                     for (Line line:selectedLines) {
                         Line newLine = new Line(line);
+                        newLine.setId(0);
                         newLine.setDeviceID(device.getId());
                         lines.add(newLine);
                     }

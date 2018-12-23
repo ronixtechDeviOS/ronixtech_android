@@ -304,6 +304,10 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
+                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
+                }
+
                 final ViewHolder tempViewHolder = vHolder;
                 vHolder.firstLineTypeImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1120,7 +1124,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
+                if(item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1360,7 +1364,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
+                if(item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                         @Override

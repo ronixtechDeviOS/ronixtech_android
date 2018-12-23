@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +42,9 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
     private Device device;
     private int placeMode;
 
+    private int logCounterMAX = 5;
+    private int logCounter;
+
     public DeviceInfoFragment() {
         // Required empty public constructor
     }
@@ -75,6 +79,8 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.device_info), getResources().getColor(R.color.whiteColor));
         }
         setHasOptionsMenu(true);
+
+        logCounter = 0;
 
         nameTextView = view.findViewById(R.id.device_name_textview);
         macAddressTextView = view.findViewById(R.id.device_mac_address_textview);
@@ -306,6 +312,25 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 }
             });
         }
+
+        accessTokenTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logCounter++;
+                if(logCounter >= logCounterMAX){
+                    logCounter = 0;
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    LogViewerFragment logViewerFragment = new LogViewerFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, logViewerFragment, "logViewerFragment");
+                    fragmentTransaction.addToBackStack("logViewerFragment");
+                    fragmentTransaction.commit();
+                }else{
+                    Utils.showToast(getActivity(), Utils.getStringExtraInt(getActivity(), R.string.log_viewier_message, (logCounterMAX - logCounter)), false);
+                }
+            }
+        });
 
         return view;
     }

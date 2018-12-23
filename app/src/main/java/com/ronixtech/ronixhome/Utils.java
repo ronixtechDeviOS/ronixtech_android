@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -311,6 +312,34 @@ public class Utils {
     public static void hideUpdatingNotification(){
         NotificationManager mNotificationManager = (NotificationManager) MyApp.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel((int) Constants.UPDATING_DEVICES_NOTIFICATION);
+    }
+
+    public static String getDeviceInfo(Context context){
+        String deviceInfo = "";
+        if(context != null){
+            String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
+            String[] versionNames = new String[]{
+                    "ANDROID BASE", "ANDROID BASE 1.1", "CUPCAKE", "DONUT",
+                    "ECLAIR", "ECLAIR_0_1", "ECLAIR_MR1", "FROYO", "GINGERBREAD",
+                    "GINGERBREAD_MR1", "HONEYCOMB", "HONEYCOMB_MR1", "HONEYCOMB_MR2",
+                    "ICE_CREAM_SANDWICH", "ICE_CREAM_SANDWICH_MR1",
+                    "JELLY_BEAN", "JELLY_BEAN_MR1", "JELLY_BEAN_MR2", "KITKAT", "KITKAT_WATCH",
+                    "LOLLIPOP", "LOLLIPOP_MR1", "MARSHMALLOW", "NOUGAT", "OREO", "OREO_MR1"
+            };
+            int nameIndex = Build.VERSION.SDK_INT - 1;
+            if (nameIndex < versionNames.length) {
+                versionName = versionNames[nameIndex];
+            }
+
+            deviceInfo = "Log Date: " + getTimeStringDateHoursMinutes(new java.util.Date().getTime())  + "\n";
+            deviceInfo = deviceInfo.concat("Android version: " + versionName  + " (" + Build.VERSION.RELEASE + ")" + "\n");
+            deviceInfo = deviceInfo.concat("SDK v" + Build.VERSION.SDK_INT + "\n");
+            deviceInfo = deviceInfo.concat("Device Manufacturer: " + Build.MANUFACTURER + "\n");
+            deviceInfo = deviceInfo.concat("Device Brand: " + Build.BRAND + "\n");
+            deviceInfo = deviceInfo.concat("Device Model: " + android.os.Build.MODEL + "\n");
+        }
+
+        return deviceInfo;
     }
 
     /**
