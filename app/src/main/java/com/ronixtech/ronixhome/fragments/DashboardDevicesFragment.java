@@ -492,12 +492,6 @@ public class DashboardDevicesFragment extends Fragment {
         HttpConnectorDeviceStatus.getInstance(MainActivity.getInstance()).addToRequestQueue(request);*/
     }
 
-    private void removeDevice(Device device){
-        devices.remove(device);
-        MySettings.removeDevice(device);
-        loadDevicesFromDatabase();
-    }
-
     @Override
     public void onResume(){
         Log.d(TAG, "onResume");

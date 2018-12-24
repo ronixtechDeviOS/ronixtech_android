@@ -1231,8 +1231,17 @@ public class DeviceAdapter extends ArrayAdapter {
                                     fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
                                     fragmentTransaction.addToBackStack("deviceInfoFragment");
                                     fragmentTransaction.commit();
-                                }
-                                else if(id == R.id.action_update_device){
+                                }else if(id == R.id.action_edit_device_location){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                    editDeviceLocationFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    fragmentTransaction.commit();
+                                }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);
 
@@ -1395,8 +1404,6 @@ public class DeviceAdapter extends ArrayAdapter {
                         PopupMenu popup = new PopupMenu(activity, view);
                         popup.getMenuInflater().inflate(R.menu.menu_pir, popup.getMenu());
 
-                        popup.getMenu().findItem(R.id.action_update_device).setVisible(true);
-
                         popup.show();
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
@@ -1424,6 +1431,16 @@ public class DeviceAdapter extends ArrayAdapter {
                                     }else if(placeMode == Place.PLACE_MODE_REMOTE){
                                         Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                     }
+                                }else if(id == R.id.action_edit_device_location){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                    editDeviceLocationFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    fragmentTransaction.commit();
                                 }else if(id == R.id.action_update_device){
                                     if(placeMode == Place.PLACE_MODE_LOCAL) {
                                         MySettings.setTempDevice(item);

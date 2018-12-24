@@ -20,6 +20,7 @@ import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.EditRoomFragment;
@@ -37,6 +38,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
     public interface RoomsListener{
         public void onRoomDeleted();
         public void onRoomNameChanged();
+        public void onRoomDevicesToggled(Room room, int newState);
     }
 
     public RoomsDashboardListAdapter(Activity activity, List rooms, FragmentManager fragmentManager, RoomsListener roomsListener){
@@ -126,7 +128,11 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                     @Override
                     public boolean onMenuItemClick(MenuItem item1) {
                         int id = item1.getItemId();
-                        if(id == R.id.action_edit_room){
+                        if(id == R.id.action_room_device_on){
+                            roomsListener.onRoomDevicesToggled(item, Line.LINE_STATE_ON);
+                        }else if(id == R.id.action_room_device_off){
+                            roomsListener.onRoomDevicesToggled(item, Line.LINE_STATE_OFF);
+                        }else if(id == R.id.action_edit_room){
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                             EditRoomFragment editRoomFragment = new EditRoomFragment();
