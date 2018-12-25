@@ -87,10 +87,10 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
         if(device != null){
-            if(device.isHwFirmwareUpdateAvailable()){
-                putHardwareInSync();
-            }else if(device.isFirmwareUpdateAvailable()){
+            if(device.isFirmwareUpdateAvailable()){
                 getFirmwareFileName();
+            }else if(device.isHwFirmwareUpdateAvailable()){
+                putHardwareInSync();
             }
         }
 
@@ -119,6 +119,20 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
                 UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
                 fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.commit();
+            }
+        }
+    }
+
+    private void goToLoadingFragment(){
+        if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+            if(getFragmentManager() != null) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                UpdateDeviceFirmwareLoadingFragment updateDeviceFirmwareLoadingFragment = new UpdateDeviceFirmwareLoadingFragment();
+                fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareLoadingFragment, "updateDeviceFirmwareLoadingFragment");
                 fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragmentTransaction.commit();
             }
@@ -512,27 +526,14 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                /*if(device.isHwFirmwareUpdateAvailable()){
-                    Toast.makeText(activity, activity.getResources().getStringExtraInt(R.string.firmware_update_successfull), Toast.LENGTH_SHORT).show();
-                    device.setHwFirmwareUpdateAvailable(false);
-                    MySettings.setTempDevice(device);
-                    if(device.isFirmwareUpdateAvailable()){
-                        fragment.goToDownloadFragment();
-                    }
-                }else if(device.isFirmwareUpdateAvailable()){
-                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
-                    deviceRebooter.execute();
-                    Toast.makeText(activity, activity.getResources().getStringExtraInt(R.string.firmware_update_successfull_rebooting), Toast.LENGTH_SHORT).show();
-                }*/
-
-                DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
-                deviceRebooter.execute();
-                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull_rebooting), true);
-
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     fragment.notifyCrashlyticsOfAffectedDeviceUpdate();
                     MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
                 }
+
+                DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
+                deviceRebooter.execute();
+                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull_rebooting), true);
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_upload_firmware), true);
                 fragment.goToHomeFragment();
@@ -558,12 +559,11 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
 
                 try {
                     String upLoadServerUri = "";
-                    if(device.isHwFirmwareUpdateAvailable()){
-                        upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_HARDWARE_UPLOAD_FIRMWARE_URL;
-                    }else if(device.isFirmwareUpdateAvailable()){
+                    if(device.isFirmwareUpdateAvailable()){
                         upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_UPLOAD_FIRMWARE_URL;
+                    }else if(device.isHwFirmwareUpdateAvailable()){
+                        upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_HARDWARE_UPLOAD_FIRMWARE_URL;
                     }
-
                     Log.d(TAG, "uploadFirmware URL: " + upLoadServerUri);
 
                     // open a URL connection to the Servlet
@@ -587,12 +587,12 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
 
                     //dos.writeBytes(lineEnd);
 
-                    if(device.isHwFirmwareUpdateAvailable()){
-                        fileInputStream = activity.openFileInput(Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
-                        Log.d(TAG, "uploadFirmware file: " + Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
-                    }else if(device.isFirmwareUpdateAvailable()){
+                    if(device.isFirmwareUpdateAvailable()){
                         fileInputStream = activity.openFileInput(filename);
                         Log.d(TAG, "uploadFirmware file: " + filename);
+                    }else if(device.isHwFirmwareUpdateAvailable()){
+                        fileInputStream = activity.openFileInput(Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
+                        Log.d(TAG, "uploadFirmware file: " + Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
                     }
 
                     // create a buffer of maximum size
@@ -692,8 +692,21 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                MySettings.setTempDevice(null);
-                fragment.goToHomeFragment();
+                if(device.isFirmwareUpdateAvailable()){
+                    device.setFirmwareUpdateAvailable(false);
+                    MySettings.setTempDevice(device);
+                }else if(device.isHwFirmwareUpdateAvailable()){
+                    MySettings.setTempDevice(null);
+                    fragment.goToHomeFragment();
+                    return;
+                }
+
+                if(device.isHwFirmwareUpdateAvailable()){
+                    fragment.goToLoadingFragment();
+                }else{
+                    MySettings.setTempDevice(null);
+                    fragment.goToHomeFragment();
+                }
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_reboot_device), true);
                 fragment.goToHomeFragment();

@@ -323,24 +323,27 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                     scannedNetwork.setPassword(Constants.DEVICE_DEFAULT_PASSWORD);
                                     scannedNetwork.setSignal(""+result.level);
 
-                                    // DialogFragment.show() will take care of adding the fragment
-                                    // in a transaction.  We also want to remove any currently showing
-                                    // dialog, so make our own transaction and take care of that here.
-                                    PickSSIDDialogFragment ssidFragment = (PickSSIDDialogFragment) getFragmentManager().findFragmentByTag("ssidPickerDialogFragment");
-                                    if (ssidFragment != null) {
-                                        Log.d(TAG, "Fragment is showing");
-                                        ssidFragment.addNetworkToList(scannedNetwork);
-                                    }else{
-                                        Log.d(TAG, "Fragment is not showing");
-                                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                                        // Create and show the dialog.
-                                        PickSSIDDialogFragment fragment = PickSSIDDialogFragment.newInstance();
-                                        fragment.addNetworkToList(scannedNetwork);
-                                        fragment.setTargetFragment(AddDeviceFragmentSearch.this, 0);
-                                        fragment.show(fragmentTransaction, "ssidPickerDialogFragment");
-                                        getFragmentManager().executePendingTransactions();
+                                    if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                                        if(getFragmentManager() != null){
+                                            // DialogFragment.show() will take care of adding the fragment
+                                            // in a transaction.  We also want to remove any currently showing
+                                            // dialog, so make our own transaction and take care of that here.
+                                            PickSSIDDialogFragment ssidFragment = (PickSSIDDialogFragment) getFragmentManager().findFragmentByTag("ssidPickerDialogFragment");
+                                            if (ssidFragment != null) {
+                                                Log.d(TAG, "Fragment is showing");
+                                                ssidFragment.addNetworkToList(scannedNetwork);
+                                            }else{
+                                                Log.d(TAG, "Fragment is not showing");
+                                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                                // Create and show the dialog.
+                                                PickSSIDDialogFragment fragment = PickSSIDDialogFragment.newInstance();
+                                                fragment.addNetworkToList(scannedNetwork);
+                                                fragment.setTargetFragment(AddDeviceFragmentSearch.this, 0);
+                                                fragment.show(fragmentTransaction, "ssidPickerDialogFragment");
+                                                getFragmentManager().executePendingTransactions();
+                                            }
+                                        }
                                     }
-
                                 }else{
                                     mWifiManager.startScan();
                                 }

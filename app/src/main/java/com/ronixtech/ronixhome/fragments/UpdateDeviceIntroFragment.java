@@ -130,15 +130,7 @@ public class UpdateDeviceIntroFragment extends Fragment {
                         fragmentTransaction.addToBackStack("updateDeviceAutoFragment");
                         fragmentTransaction.commit();
                     }else{
-                        if(device.isHwFirmwareUpdateAvailable()){
-                            FragmentManager fragmentManager = getFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                            UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
-                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
-                            fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
-                            fragmentTransaction.commit();
-                        }else if(device.isFirmwareUpdateAvailable()){
+                        if(device.isFirmwareUpdateAvailable()){
                             int firmwareVersion = Integer.valueOf(device.getFirmwareVersion());
                             if(firmwareVersion >= Device.DEVICE_FIRMWARE_VERSION_AUTO_UPDATE_METHOD){
                                 FragmentManager fragmentManager = getFragmentManager();
@@ -157,6 +149,14 @@ public class UpdateDeviceIntroFragment extends Fragment {
                                 fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
                                 fragmentTransaction.commit();
                             }
+                        }else if(device.isHwFirmwareUpdateAvailable()){
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                            UpdateDeviceFirmwareDownloadFragment updateDeviceFirmwareDownloadFragment = new UpdateDeviceFirmwareDownloadFragment();
+                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareDownloadFragment, "updateDeviceFirmwareDownloadFragment");
+                            fragmentTransaction.addToBackStack("updateDeviceFirmwareDownloadFragment");
+                            fragmentTransaction.commit();
                         }
                     }
                 }

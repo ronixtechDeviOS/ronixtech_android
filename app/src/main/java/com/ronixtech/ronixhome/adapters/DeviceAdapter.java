@@ -325,8 +325,19 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                             }
                         }*/
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                        if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
+                            //turn on this line
+                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            toggleLine(item, 0, Line.LINE_STATE_ON);
+                        } else {
+                            //turn off this line
+                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            toggleLine(item, 0, Line.LINE_STATE_OFF);
+                        }
                         if(controlsEnabled){
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            /*view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                             view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                             if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
@@ -336,7 +347,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 //turn off this line
                                 tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 0, Line.LINE_STATE_OFF);
-                            }
+                            }*/
                         }else{
                             Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
@@ -345,34 +356,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.firstLineLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                boolean checked = ((ToggleButton) view).isChecked();
-                                MySettings.setControlState(true);
-                                if (checked) {
-                                    //turn on this line
-                                    toggleLine(item, 0, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    toggleLine(item, 0, Line.LINE_STATE_OFF);
-                                }
-                            }
-                        }*/
-                        if(controlsEnabled){
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            tempViewHolder.firstLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                            if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
-                                //turn on this line
-                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                toggleLine(item, 0, Line.LINE_STATE_ON);
-                            } else {
-                                //turn off this line
-                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                toggleLine(item, 0, Line.LINE_STATE_OFF);
-                            }
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
-                        }
+                        tempViewHolder.firstLineTypeImageView.performClick();
                     }
                 });
                 vHolder.secondLineTypeImageView.setOnClickListener(new View.OnClickListener() {
@@ -391,8 +375,19 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                             }
                         }*/
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                        if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
+                            //turn on this line
+                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            toggleLine(item, 1, Line.LINE_STATE_ON);
+                        } else {
+                            //turn off this line
+                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            toggleLine(item, 1, Line.LINE_STATE_OFF);
+                        }
                         if(controlsEnabled) {
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            /*view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                             view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                             if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
@@ -402,7 +397,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 //turn off this line
                                 tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 1, Line.LINE_STATE_OFF);
-                            }
+                            }*/
                         }else{
                             Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
@@ -412,34 +407,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.secondLineLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                boolean checked = ((ToggleButton) view).isChecked();
-                                MySettings.setControlState(true);
-                                if (checked) {
-                                    //turn on this line
-                                    toggleLine(item, 1, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    toggleLine(item, 1, Line.LINE_STATE_OFF);
-                                }
-                            }
-                        }*/
-                        if(controlsEnabled) {
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            tempViewHolder.secondLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                            if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
-                                //turn on this line
-                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                toggleLine(item, 1, Line.LINE_STATE_ON);
-                            } else {
-                                //turn off this line
-                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                toggleLine(item, 1, Line.LINE_STATE_OFF);
-                            }
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
-                        }
+                        tempViewHolder.secondLineTypeImageView.performClick();
                     }
 
                 });
@@ -459,8 +427,19 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                             }
                         }*/
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                        if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
+                            //turn on this line
+                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            toggleLine(item, 2, Line.LINE_STATE_ON);
+                        } else {
+                            //turn off this line
+                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            toggleLine(item, 2, Line.LINE_STATE_OFF);
+                        }
                         if(controlsEnabled) {
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            /*view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                             view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                             if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
                                 //turn on this line
@@ -470,7 +449,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 //turn off this line
                                 tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
                                 toggleLine(item, 2, Line.LINE_STATE_OFF);
-                            }
+                            }*/
                         }else{
                             Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
@@ -479,34 +458,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.thirdLineLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*if(!MySettings.isControlActive()){
-                            if(item.getIpAddress() != null && item.getIpAddress().length() >= 1) {
-                                MySettings.setControlState(true);
-                                boolean checked = ((ToggleButton) view).isChecked();
-                                if (checked) {
-                                    //turn on this line
-                                    toggleLine(item, 2, Line.LINE_STATE_ON);
-                                } else {
-                                    //turn off this line
-                                    toggleLine(item, 2, Line.LINE_STATE_OFF);
-                                }
-                            }
-                        }*/
-                        if(controlsEnabled) {
-                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            tempViewHolder.thirdLineTypeImageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                            if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
-                                //turn on this line
-                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                                toggleLine(item, 2, Line.LINE_STATE_ON);
-                            } else {
-                                //turn off this line
-                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                                toggleLine(item, 2, Line.LINE_STATE_OFF);
-                            }
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
-                        }
+                        tempViewHolder.thirdLineTypeImageView.performClick();
                     }
                 });
 

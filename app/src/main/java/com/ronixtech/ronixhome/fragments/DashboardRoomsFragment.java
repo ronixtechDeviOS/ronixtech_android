@@ -628,6 +628,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 rooms.addAll(MySettings.getPlaceRooms(place));
             }
             roomsGridAdapter.notifyDataSetChanged();
+            roomsDashboardListAdapter.notifyDataSetChanged();
 
             setLayoutVisibility();
 

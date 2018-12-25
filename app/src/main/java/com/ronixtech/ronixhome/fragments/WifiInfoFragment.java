@@ -283,8 +283,8 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
 
     @Override
     public void onNetworkSelected(WifiNetwork network){
-        Log.d("AAAA", "WifiInfoFragment onNetworkSelected - ID: " + network.getId() + " - SSID: " + network.getSsid());
         if(network != null) {
+            Log.d("AAAA", "WifiInfoFragment onNetworkSelected - ID: " + network.getId() + " - SSID: " + network.getSsid());
             ssid = network.getSsid();
             password = network.getPassword();
             ssidTextView.setText("" + ssid);

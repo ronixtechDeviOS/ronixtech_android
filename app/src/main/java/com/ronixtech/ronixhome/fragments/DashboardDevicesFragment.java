@@ -276,8 +276,10 @@ public class DashboardDevicesFragment extends Fragment {
                 //startTimer
                 Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
                 startTimer();
-                for (Device device:devices) {
-                    device.setDeviceMQTTReachable(false);
+                if(devices != null) {
+                    for (Device device : devices) {
+                        device.setDeviceMQTTReachable(false);
+                    }
                 }
             }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
                 //stopTimer
@@ -327,7 +329,7 @@ public class DashboardDevicesFragment extends Fragment {
                     });
                 }
             };
-            timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS); //execute in every REFRESH_RATE_MS
+            timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS /** (DevicesInMemory.getDevices().size()>=1 ? DevicesInMemory.getDevices().size() : 1)*/); //execute in every REFRESH_RATE_MS
         }
     }
 
@@ -501,8 +503,10 @@ public class DashboardDevicesFragment extends Fragment {
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
             Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
             startTimer();
-            for (Device device:devices) {
-                device.setDeviceMQTTReachable(false);
+            if(devices != null) {
+                for (Device device : devices) {
+                    device.setDeviceMQTTReachable(false);
+                }
             }
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
             //start MQTT in onStart
@@ -523,8 +527,10 @@ public class DashboardDevicesFragment extends Fragment {
         /*for (Device device:devices) {
             device.setDeviceMQTTReachable(false);
         }*/
-        for (Device device:devices) {
-            MySettings.addDevice(device);
+        if(devices != null) {
+            for (Device device : devices) {
+                MySettings.addDevice(device);
+            }
         }
     }
 
@@ -561,11 +567,13 @@ public class DashboardDevicesFragment extends Fragment {
                 Log.d(TAG, "Exception: " + e.getMessage());
             }
         }
-        for (Device device:devices) {
-            device.setDeviceMQTTReachable(false);
-        }
-        for (Device device:devices) {
-            MySettings.addDevice(device);
+        if(devices != null) {
+            for (Device device : devices) {
+                device.setDeviceMQTTReachable(false);
+            }
+            for (Device device : devices) {
+                MySettings.addDevice(device);
+            }
         }
         super.onDestroy();
     }
@@ -688,10 +696,12 @@ public class DashboardDevicesFragment extends Fragment {
                 @Override
                 public void connectionLost(Throwable throwable) {
                     Log.d(TAG, "MQTT connectionLost");
-                    for (Device device:devices) {
-                        device.setDeviceMQTTReachable(false);
+                    if(devices != null) {
+                        for (Device device : devices) {
+                            device.setDeviceMQTTReachable(false);
+                        }
+                        MainActivity.getInstance().refreshDevicesListFromMemory();
                     }
-                    MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
                 @Override
                 public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
@@ -969,34 +979,42 @@ public class DashboardDevicesFragment extends Fragment {
                             mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
                             Log.d(TAG, "MQTT connect onSuccess");
                             try {
-                                for (Device device:devices) {
-                                    subscribe(mqttAndroidClient, device, 1);
+                                if(devices != null) {
+                                    for (Device device : devices) {
+                                        subscribe(mqttAndroidClient, device, 1);
+                                    }
                                 }
                             }catch (MqttException e){
                                 Log.d(TAG, "Exception " + e.getMessage());
-                                for (Device device:devices) {
-                                    device.setDeviceMQTTReachable(false);
+                                if(devices != null) {
+                                    for (Device device : devices) {
+                                        device.setDeviceMQTTReachable(false);
+                                    }
+                                    MainActivity.getInstance().refreshDevicesListFromMemory();
                                 }
-                                MainActivity.getInstance().refreshDevicesListFromMemory();
                             }
                         }
 
                         @Override
                         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                             Log.d(TAG, "MQTT connect onFailure: " + exception.toString());
-                            for (Device device:devices) {
-                                device.setDeviceMQTTReachable(false);
+                            if(devices != null) {
+                                for (Device device : devices) {
+                                    device.setDeviceMQTTReachable(false);
+                                }
+                                MainActivity.getInstance().refreshDevicesListFromMemory();
                             }
-                            MainActivity.getInstance().refreshDevicesListFromMemory();
                         }
                     });
                 }
             } catch (MqttException e) {
                 e.printStackTrace();
-                for (Device device:devices) {
-                    device.setDeviceMQTTReachable(false);
+                if(devices != null) {
+                    for (Device device : devices) {
+                        device.setDeviceMQTTReachable(false);
+                    }
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
-                MainActivity.getInstance().refreshDevicesListFromMemory();
             }
         }
     }
@@ -1560,7 +1578,7 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }
 
-                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
 
                 if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
                     int currentFirmwareVersion = Integer.parseInt(device.getFirmwareVersion());
@@ -2162,7 +2180,7 @@ public class DashboardDevicesFragment extends Fragment {
 
                 JSONObject jObject = new JSONObject();
                 jObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, "");
-                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
 
                 if(device.isStaticIPAddress() && !device.isStaticIPSyncedState()){
                     WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);

@@ -368,7 +368,7 @@
     <string name="scanning_network">Scanning network for Smart Controller</string>
     <string name="last_seen">Last seen @ %s</string>
     <string name="firmware_available">New firmware available. Click here to update!</string>
-    <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable control functionality.</string>
+    <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable all control functionality.</string>
     <string name="firmware_up_to_date">Controller\'s firmware is up-to-date</string>
 
     <string name="update_device">Update Smart Controller Firmware</string>
@@ -398,6 +398,8 @@
     <string name="updating_firmware">Updating firmware</string>
     <string name="firmware_update_failed">Failed to update Controller\'s firmware. Please try again later, or contact support</string>
     <string name="unable_to_obtain_online_firmware_version">Unable to obtain online firmware version</string>
+
+    <string name="waiting_for_device">Waiting for controller...</string>
 
     <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
     <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>

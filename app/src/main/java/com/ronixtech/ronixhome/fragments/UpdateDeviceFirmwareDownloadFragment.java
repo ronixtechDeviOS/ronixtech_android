@@ -90,10 +90,10 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         device = MySettings.getTempDevice();
 
         if(device != null) {
-            if (device.isHwFirmwareUpdateAvailable()) {
-                totalNumberOfFiles = 1;
-            } else if (device.isFirmwareUpdateAvailable()) {
+            if(device.isFirmwareUpdateAvailable()) {
                 totalNumberOfFiles = 2;
+            }else if(device.isHwFirmwareUpdateAvailable()) {
+                totalNumberOfFiles = 1;
             }
         }
 
@@ -103,12 +103,12 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
                 @Override
                 public void onConnectionSuccess() {
-                    if(device.isHwFirmwareUpdateAvailable()){
-                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getHwVersion(), MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME);
+                    if(device.isFirmwareUpdateAvailable()){
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getWifiVersion(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_1);
                         DownloadTask downloadTask = new DownloadTask(getActivity(), fragment, device);
                         downloadTask.execute(url);
-                    }else if(device.isFirmwareUpdateAvailable()){
-                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getWifiVersion(), MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_FIRMWARE_FILE_NAME_1);
+                    }else if(device.isHwFirmwareUpdateAvailable()){
+                        String url = String.format(Constants.DEVICE_FIRMWARE_URL, device.getDeviceTypeID(), device.getHwVersion(), MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()), Constants.DEVICE_HW_FIRMWARE_ONLINE_FILE_NAME);
                         DownloadTask downloadTask = new DownloadTask(getActivity(), fragment, device);
                         downloadTask.execute(url);
                     }
@@ -225,10 +225,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
         protected void onPostExecute(String result){
             if(MainActivity.getInstance() != null && MainActivity.isResumed){
                 if(statusCode == 200) {
-                    if(device.isHwFirmwareUpdateAvailable()){
-                        progressTextView.setText(Utils.getString(context, R.string.download_firmware_files_complete));
-                        fragment.goToUploadFragment();
-                    }else if(device.isFirmwareUpdateAvailable()){
+                    if(device.isFirmwareUpdateAvailable()){
                         currentFile++;
 
                         progressTextView.setText(Utils.getStringExtraInt(context, R.string.downloading_firmware_file, 2, 2));
@@ -241,8 +238,10 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                             progressTextView.setText(Utils.getString(context, R.string.download_firmware_files_complete));
                             fragment.goToUploadFragment();
                         }
+                    }else if(device.isHwFirmwareUpdateAvailable()){
+                        progressTextView.setText(Utils.getString(context, R.string.download_firmware_files_complete));
+                        fragment.goToUploadFragment();
                     }
-
                 }else{
                     Utils.showToast(context, Utils.getString(context, R.string.download_firmware_file_failed), true);
                     fragment.goToHomeFragment();
@@ -278,14 +277,14 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                 input = connection.getInputStream();
 
                 String filename = "";
-                if(device.isHwFirmwareUpdateAvailable()){
-                    filename = Constants.DEVICE_HW_FIRMWARE_FILE_NAME;
-                }else if(device.isFirmwareUpdateAvailable()){
+                if(device.isFirmwareUpdateAvailable()){
                     if(currentFile == 1){
                         filename = Constants.DEVICE_FIRMWARE_FILE_NAME_1;
                     }else if(currentFile == 2){
                         filename = Constants.DEVICE_FIRMWARE_FILE_NAME_2;
                     }
+                }else if(device.isHwFirmwareUpdateAvailable()){
+                    filename = Constants.DEVICE_HW_FIRMWARE_FILE_NAME;
                 }
 
                 output = context.openFileOutput(filename, Context.MODE_PRIVATE);

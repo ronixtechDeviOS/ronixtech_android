@@ -106,8 +106,7 @@ public class LogViewerFragment extends android.support.v4.app.Fragment {
             }else{
                 //command = "logcat -d -v brief -s " + Constants.PACKAGE_NAME;
                 //command = "logcat -d -v brief";
-                command = "logcat -d -v brief -s MainActivity -s RegistrationFragment -s LoginFragment -s DeviceAdapter -s AddDeviceFragmentSearch -s AddDeviceFragmentGetData -s AddDeviceFragmentSendData -s AddDeviceFragmentSendData -s LinkedAccountsFragment -s ExportImportDB-s ExportDataFragment -s ImportDataFragment -s UpdateDeviceFirmwareDownloadFragment -s UpdateDeviceFirmwareUploadFragment -s UpdateDeviceAutoFragment -s NetworkDiscovery -s NetworkScannerAsyncTask -s DashboardDevicesFragment -s DashboardRoomsFragment";
-                process = Runtime.getRuntime().exec(command);
+                command = "logcat -d -v brief -s MainActivity -s RegistrationFragment -s LoginFragment -s DeviceAdapter -s AddDeviceFragmentSearch -s AddDeviceFragmentGetData -s AddDeviceFragmentSendData -s AddDeviceFragmentSendData -s LinkedAccountsFragment -s ExportImportDB-s ExportDataFragment -s ImportDataFragment -s UpdateDeviceFirmwareDownloadFragment -s UpdateDeviceFirmwareUploadFragment -s UpdateDeviceFirmwareLoadingFragment -s UpdateDeviceAutoFragment -s NetworkDiscovery -s NetworkScannerAsyncTask -s DashboardDevicesFragment -s DashboardRoomsFragment -s StatusGetter -s DeviceSyncer -s ModeGetter -s DeviceChecker";                process = Runtime.getRuntime().exec(command);
                 bufferedReader = new BufferedReader(
                         new InputStreamReader(process.getInputStream()));
 
