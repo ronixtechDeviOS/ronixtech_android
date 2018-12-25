@@ -62,8 +62,10 @@ public class PickLineDialogFragment extends DialogFragment {
 
         List<Device> devices = MySettings.getAllDevices();
         for (Device device:devices) {
-            for (Line line:device.getLines()) {
-                lines.add(line);
+            if(device.getDeviceTypeID() != Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                if(device.getLines() != null && device.getLines().size() >= 1){
+                    lines.addAll(device.getLines());
+                }
             }
         }
 

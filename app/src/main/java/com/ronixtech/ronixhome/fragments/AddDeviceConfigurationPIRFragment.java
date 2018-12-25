@@ -206,6 +206,16 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
                 Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.pir_max_devices_reached), true);
                 return;
             }
+
+            Device primaryDevice = MySettings.getDeviceByID2(line.getDeviceID());
+            if(primaryDevice != null){
+                line.setPrimaryDeviceChipID(primaryDevice.getChipID());
+            }
+
+            line.setPirPowerState(Line.LINE_STATE_ON);
+            line.setPirDimmingState(Line.DIMMING_STATE_ON);
+            line.setPirDimmingValue(10);
+
             this.selectedLines.add(line);
             adapter.notifyDataSetChanged();
             Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
@@ -219,11 +229,12 @@ public class AddDeviceConfigurationPIRFragment extends Fragment implements PickL
                 lineImageView.setImageResource(line.getType().getImageResourceID());
             }*/
         }
-        if(validateInputs()){
+
+        /*if(validateInputs()){
             Utils.setButtonEnabled(continueButton, true);
         }else{
             Utils.setButtonEnabled(continueButton, false);
-        }
+        }*/
     }
 
     public void goToSearchFragment(){

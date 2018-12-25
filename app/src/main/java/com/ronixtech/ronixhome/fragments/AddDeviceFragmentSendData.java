@@ -397,7 +397,7 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
-            if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null){
+            if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null && MySettings.getTempDevice().getLines().size() >= 1){
                 for (Line line:MySettings.getTempDevice().getLines()) {
                     statusCode = 0;
                     int numberOfRetries = 0;
@@ -419,8 +419,10 @@ public class AddDeviceFragmentSendData extends Fragment {
 
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("U_P_STT", "1");
-                            jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
-                            jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());
+                            /*jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
+                            jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());*/
+                            jsonObject.put("U_P_CID", line.getPrimaryDeviceChipID());
+                            jsonObject.put("U_P_CIP", MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getIpAddress());
                             jsonObject.put("U_P_LNO", ""+line.getPosition());
                             if(line.getPirPowerState() == Line.LINE_STATE_ON){
                                 if(line.getPirDimmingValue() == 10){
@@ -469,6 +471,8 @@ public class AddDeviceFragmentSendData extends Fragment {
                         }
                     }
                 }
+            }else{
+                statusCode = 200;
             }
 
             return null;
