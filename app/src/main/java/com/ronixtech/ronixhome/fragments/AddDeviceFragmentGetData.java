@@ -324,8 +324,8 @@ public class AddDeviceFragmentGetData extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+                AddDeviceConfigurationPreparingFragment addDeviceConfigurationPreparingFragment = new AddDeviceConfigurationPreparingFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPreparingFragment, "addDeviceConfigurationPreparingFragment");
                 //fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
                 fragmentTransaction.commitAllowingStateLoss();
             }

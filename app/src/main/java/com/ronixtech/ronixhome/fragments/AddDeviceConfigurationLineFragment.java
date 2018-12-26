@@ -82,7 +82,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
 
     AddDeviceConfigurationFragment parentFragment;
 
-    boolean unsavedChanges = false;
+    Line currentLine;
 
     public AddDeviceConfigurationLineFragment() {
         // Required empty public constructor
@@ -142,6 +142,17 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
             fragmentTransaction.commit();
             return null;
         }
+
+
+        currentLine = new Line();
+        currentLine.setPosition(LINE_POSITION);
+
+        for (Line line : device.getLines()) {
+            if(line.getPosition() == currentLine.getPosition()){
+                currentLine = line;
+            }
+        }
+
 
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
@@ -297,6 +308,12 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
             }
         });
 
+        if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+            lineDimmingCheckBox.setChecked(true);
+        }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+            lineDimmingCheckBox.setChecked(false);
+        }
+
         lineSelectedLineLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -339,41 +356,42 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(lineNameEditText.getWindowToken(), 0);
 
-                    //create the lines then device.setLines/line.setDeviceID then MySettings.addDevice()
-                    Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    //create the lines then device.setLines then MySettings.addDevice()
 
-                    if(dbDevice == null){
-                        MySettings.addDevice(device);
-                        dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-                    }
+                    Log.d(TAG, "Updating line #" + LINE_POSITION + ", deviceID = " + device.getId());
 
-                    long deviceID = dbDevice.getId();
-                    device.setId(deviceID);
-
-                    Log.d(TAG, "Adding line, deviceID = " + deviceID);
-
-                    Line newLine = new Line();
-                    newLine.setPosition(LINE_POSITION);
-                    if(lineNameEditText.getText().toString().length() >= 1){
-                        newLine.setName(lineNameEditText.getText().toString());
-                    }else{
-                        newLine.setName(lineNameEditText.getHint().toString());
-                    }
-                    newLine.setTypeID(lineType.getId());
-                    newLine.setPowerState(Line.LINE_STATE_OFF);
-                    newLine.setDeviceID(deviceID);
-                    if(lineDimmingCheckBox.isChecked()){
-                        newLine.setDimmingState(Line.DIMMING_STATE_ON);
-                    }else{
-                        newLine.setDimmingState(Line.DIMMING_STATE_OFF);
-                    }
-                    newLine.setMode(lineMode);
-                    if(lineMode == Line.MODE_SECONDARY){
-                        newLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
-                        newLine.setPrimaryLinePosition(lineSelectedLine.getPosition());
-                    }
+                    currentLine.setPosition(LINE_POSITION);
 
                     List<Line> tempDeviceLines = new ArrayList<>();
+                    tempDeviceLines.addAll(device.getLines());
+                    int numberOfTempDeviceLines = tempDeviceLines.size();
+                    for(int x = 0; x < numberOfTempDeviceLines; x++){
+                        Line tempDeviceLine = tempDeviceLines.get(x);
+                        if(tempDeviceLine.getPosition() == currentLine.getPosition()){
+                            device.getLines().remove(x);
+                            currentLine = tempDeviceLine;
+                        }
+                    }
+
+                    if(lineNameEditText.getText().toString().length() >= 1){
+                        currentLine.setName(lineNameEditText.getText().toString());
+                    }else{
+                        currentLine.setName(lineNameEditText.getHint().toString());
+                    }
+                    currentLine.setTypeID(lineType.getId());
+                    currentLine.setPowerState(Line.LINE_STATE_OFF);
+                    if(lineDimmingCheckBox.isChecked()){
+                        currentLine.setDimmingState(Line.DIMMING_STATE_ON);
+                    }else{
+                        currentLine.setDimmingState(Line.DIMMING_STATE_OFF);
+                    }
+                    currentLine.setMode(lineMode);
+                    if(lineMode == Line.MODE_SECONDARY){
+                        currentLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
+                        currentLine.setPrimaryLinePosition(lineSelectedLine.getPosition());
+                    }
+
+                    /*List<Line> tempDeviceLines = new ArrayList<>();
                     tempDeviceLines.addAll(device.getLines());
                     int numberOfTempDeviceLines = tempDeviceLines.size();
                     for(int x = 0; x < numberOfTempDeviceLines; x++){
@@ -381,8 +399,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         if(tempDeviceLine.getPosition() == newLine.getPosition()){
                             device.getLines().remove(x);
                         }
-                    }
-                    device.getLines().add(newLine);
+                    }*/
+                    device.getLines().add(currentLine);
                     MySettings.setTempDevice(device);
                     Log.d(TAG, "TempDevice: deviceID " + MySettings.getTempDevice().getId());
                     for (Line line:MySettings.getTempDevice().getLines()) {

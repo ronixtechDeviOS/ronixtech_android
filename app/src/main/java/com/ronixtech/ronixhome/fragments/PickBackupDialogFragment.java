@@ -10,6 +10,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.ronixtech.ronixhome.AppDatabase;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.adapters.BackupsAdapter;
@@ -66,7 +67,7 @@ public class PickBackupDialogFragment extends DialogFragment {
         }
         adapter = new BackupsAdapter(getActivity(), backupNames);
         listView.setAdapter(adapter);
-        listView.setDivider(null);
+        //listView.setDivider(null);
 
 
         //get all backup names from firebase storage using the email
@@ -76,7 +77,14 @@ public class PickBackupDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Backup selectedBackup = (Backup) adapter.getItem(position);
-                callback.onBackupSelected(selectedBackup);
+                if(selectedBackup != null){
+                    if(selectedBackup.getDbVersion() == AppDatabase.version) {
+                        callback.onBackupSelected(selectedBackup);
+                    }else{
+                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.backup_not_compatible), true);
+                    }
+                }
+
                 dismiss();
             }
         });

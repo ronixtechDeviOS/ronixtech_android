@@ -32,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.ronixtech.ronixhome.AppDatabase;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.ExportImportDB;
 import com.ronixtech.ronixhome.MySettings;
@@ -205,6 +206,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
         Map<String, Object> map = new HashMap<>();
         map.put("name", exportName);
         map.put("timestamp", timestamp);
+        map.put("db_version", AppDatabase.version);
         db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("exports").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {

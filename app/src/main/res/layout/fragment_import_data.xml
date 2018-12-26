@@ -36,7 +36,9 @@
                     android:id="@+id/progress_circle"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_centerInParent="true" />
+                    android:layout_centerInParent="true"
+                    android:layout_below="@id/downloading_database_files_title_textview"
+                    android:layout_marginTop="32dp"/>
 
                 <TextView
                     android:id="@+id/progress_textview"
@@ -44,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/progress_circle"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="32dp"
                     android:textColor="@color/blackColor"
                     android:textSize="18sp"
                     android:text="@string/downloading_database_files_preparing"/>

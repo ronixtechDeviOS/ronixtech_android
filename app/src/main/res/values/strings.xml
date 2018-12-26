@@ -61,26 +61,29 @@
     <string name="begin_exporting_title">To begin exporting your data, click on the Export Data button</string>
     <string name="begin_exporting_description">This will export all your Places, WiFi networks, Rooms, Devices and all app settings to the cloud.</string>
     <string name="export_name">Backup Name</string>
-    <string name="export_name_hint">Enter backiup name here (optional)</string>
-    <string name="uploading_database_files_preparing">Preparing to upload files</string>
-    <string name="uploading_database_files">Uploading files</string>
+    <string name="export_name_hint">Enter backup name here (optional)</string>
+    <string name="uploading_database_files_preparing">Preparing to upload backup</string>
+    <string name="uploading_database_files">Uploading backup</string>
     <string name="uploading_database_file">Uploading file %d/%d</string>
     <string name="uploading_database_files_complete">Upload Complete</string>
-    <string name="uploading_database_file_failed">Uploading files failed, please try again</string>
+    <string name="uploading_database_file_failed">Uploading backup failed, please try again</string>
     <string name="uploading_updating_online_database">Updating cloud data</string>
     <string name="uploading_updating_online_database_failed">Updating cloud data failed</string>
 
-    <string name="begin_importing_title">To begin importing your data, click on the Import Data button</string>
+    <string name="begin_importing_title">To begin importing your data, choose a backup then click on the Import Data button</string>
     <string name="begin_importing_description">This will overwrite all your Places, WiFi networks, Rooms, Devices and all app settings.\nThis cannot be undone</string>
     <string name="importing_name_title">Select backup to import:</string>
     <string name="importing_name">Backup Name</string>
     <string name="importing_name_hint">Tap here to select a backup from the cloud</string>
     <string name="downloading_database_file_not_found">No backups found</string>
-    <string name="downloading_database_files_preparing">Preparing to download files</string>
-    <string name="downloading_database_files">Downloading firmware files</string>
+    <string name="downloading_database_files_preparing">Preparing to download backup</string>
+    <string name="downloading_database_files">Downloading backup</string>
     <string name="downloading_database_file">Downloading file %d/%d</string>
     <string name="downloading_database_files_complete">Download Complete</string>
     <string name="downloading_database_file_failed">Downloading files failed, please try again</string>
+
+    <string name="backup_not_compatible">Backup not compatible with current app version</string>
+    <string name="backup_compatible">Backup compatible with current app version</string>
 
     <string name="import_successful">Data imported successfully</string>
     <string name="export_successful">Data exported successfully</string>
@@ -234,6 +237,7 @@
     <string name="configure_device_line">Configure Device</string>
     <string name="locate_device">Smart Controller Location</string>
     <string name="select_floor_first">Select a floor</string>
+    <string name="add_device_get_configuration">Getting Smart Controller Configuration</string>
 
     <string name="add_device_wifi_not_available">WiFi is not available on this device, please use a device with supported hardware.</string>
     <string name="add_device_searching">Searching For Smart Controller</string>

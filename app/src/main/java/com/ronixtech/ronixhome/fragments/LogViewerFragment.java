@@ -86,7 +86,9 @@ public class LogViewerFragment extends android.support.v4.app.Fragment {
             logsTextView.setText(""+logText);
 
             int pid = -1;
-            pid = Integer.parseInt(logText);
+            if(logText != null && logText.length() >= 1) {
+                pid = Integer.parseInt(logText);
+            }
             Log.d(TAG, "pid = " + pid);
 
             if(pid != -1){

@@ -45,6 +45,7 @@ import com.ronixtech.ronixhome.entities.Backup;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -211,8 +212,13 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                     Backup backup = new Backup();
                     backup.setName((String)document.getData().get("name"));
                     backup.setTimestamp((long)document.getData().get("timestamp"));
+                    if(document.getData().get("db_version") != null){
+                        backup.setDbVersion((long)document.getData().get("db_version"));
+                    }
                     backups.add(backup);
                 }
+
+                Collections.sort(backups);
 
                 Utils.dismissLoading();
 
@@ -241,6 +247,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
     }
 
     private void downloadFile(String exportName, String fileName){
+        progressTextView.setText(Utils.getStringExtraInt(getActivity(), R.string.downloading_database_file, currentFile, totalNumberOfFiles));
         //download 3 files to firebase-db/email/exports/timestamp (show picker for timestamp if more than 1 entry)
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
