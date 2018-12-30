@@ -993,7 +993,11 @@ public class Utils {
             if(mFirebaseAnalytics == null) {
                 mFirebaseAnalytics = FirebaseAnalytics.getInstance(MyApp.getInstance());
                 Bundle bundle = new Bundle();
-                bundle.putString("user", MySettings.getActiveUser().getEmail());
+                if(MySettings.getActiveUser() != null) {
+                    bundle.putString("user", MySettings.getActiveUser().getEmail());
+                }else{
+                    bundle.putString("user","unknown_user");
+                }
                 bundle.putString(tag, message);
                 String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
                 String[] versionNames = new String[]{
