@@ -110,6 +110,8 @@ public class Constants {
     public static final String DB_FILE_2 = DB_NAME + "-shm";
     public static final String DB_FILE_3 = DB_NAME + "-wal";
 
+    public static final String ANALYTICS_TAG = "analytics_custom_log";
+
     //device type constants
     public static final String DEVICE_NAME_IDENTIFIER = "RONIXTECHUNIT_";
     public static final String DEVICE_DEFAULT_PASSWORD = "ronixtechunit";

@@ -131,7 +131,7 @@ public class DashboardDevicesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
+        Utils.log(TAG, "onCreateView", true);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard_devices, container, false);
         if(room != null){
@@ -268,13 +268,13 @@ public class DashboardDevicesFragment extends Fragment {
                         mqttAndroidClient.unregisterResources();
                         mqttAndroidClient.close();
                     }catch (MqttException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }catch (Exception e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 //startTimer
-                Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
                 startTimer();
                 if(devices != null) {
                     for (Device device : devices) {
@@ -285,13 +285,13 @@ public class DashboardDevicesFragment extends Fragment {
                 //stopTimer
                 stopTimer();
                 //start MQTT in onStart
-                Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
                 //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
                 if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
                     String clientId = MqttClient.generateClientId();
                     getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
                 }else{
-                    Log.d(TAG, "MQTT is already connected");
+                    Utils.log(TAG, "MQTT is already connected", true);
                 }
             }
         }
@@ -314,7 +314,7 @@ public class DashboardDevicesFragment extends Fragment {
                                         if(!MySettings.isControlActive()) {
                                             getDeviceInfo(dev);
                                         }else{
-                                            Log.d(TAG, "Controls active, skipping get_status");
+                                            Utils.log(TAG, "Controls active, skipping get_status", true);
                                         }
                                     }else{
                                         MySettings.scanNetwork();
@@ -429,7 +429,7 @@ public class DashboardDevicesFragment extends Fragment {
     }
 
     private void getDeviceInfo(Device device){
-        Log.d(TAG, "Getting device info...");
+        Utils.log(TAG, "Getting device info...", true);
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
@@ -496,12 +496,12 @@ public class DashboardDevicesFragment extends Fragment {
 
     @Override
     public void onResume(){
-        Log.d(TAG, "onResume");
+        Utils.log(TAG, "onResume", true);
         super.onResume();
         isResumed = true;
         loadDevicesFromDatabase();
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-            Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode");
+            Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
             startTimer();
             if(devices != null) {
                 for (Device device : devices) {
@@ -515,7 +515,7 @@ public class DashboardDevicesFragment extends Fragment {
 
     @Override
     public void onPause(){
-        Log.d(TAG, "onPause");
+        Utils.log(TAG, "onPause", true);
         isResumed = false;
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
             stopTimer();
@@ -536,25 +536,25 @@ public class DashboardDevicesFragment extends Fragment {
 
     @Override
     public void onStart(){
-        Log.d(TAG, "onStart");
+        Utils.log(TAG, "onStart", true);
         super.onStart();
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
             //startTimer in onResume
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
+            Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
             //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
             if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
                 String clientId = MqttClient.generateClientId();
                 getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
             }else{
-                Log.d(TAG, "MQTT is already connected");
+                Utils.log(TAG, "MQTT is already connected", true);
             }
         }
     }
 
     @Override
     public void onDestroy(){
-        Log.d(TAG, "onDestroy");
+        Utils.log(TAG, "onDestroy", true);
         //stop MQTT
         if(mqttAndroidClient != null){
             try {
@@ -562,9 +562,9 @@ public class DashboardDevicesFragment extends Fragment {
                 mqttAndroidClient.unregisterResources();
                 mqttAndroidClient.close();
             }catch (MqttException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (Exception e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }
         }
         if(devices != null) {
@@ -691,11 +691,11 @@ public class DashboardDevicesFragment extends Fragment {
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
                 public void connectComplete(boolean b, String s) {
-                    Log.d(TAG, "MQTT connectComplete on " + s);
+                    Utils.log(TAG, "MQTT connectComplete on " + s, true);
                 }
                 @Override
                 public void connectionLost(Throwable throwable) {
-                    Log.d(TAG, "MQTT connectionLost");
+                    Utils.log(TAG, "MQTT connectionLost", true);
                     if(devices != null) {
                         for (Device device : devices) {
                             device.setDeviceMQTTReachable(false);
@@ -706,15 +706,15 @@ public class DashboardDevicesFragment extends Fragment {
                 @Override
                 public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
                     //setMessageNotification(s, new String(mqttMessage.getPayload()));
-                    Log.d(TAG, "MQTT messageArrived: 'topic': " + s);
-                    Log.d(TAG, "MQTT messageArrived: 'mqttMessage': " + new String(mqttMessage.getPayload()));
+                    Utils.log(TAG, "MQTT messageArrived: 'topic': " + s, true);
+                    Utils.log(TAG, "MQTT messageArrived: 'mqttMessage': " + new String(mqttMessage.getPayload()), true);
                     //make sure it's the 'status' topic, not the 'control' topic
                     if(s.contains("status")){
                         /*if(MySettings.isGetStatusActive()){
                            return;
                         }*/
                         if (MySettings.isControlActive()){
-                            Log.d(TAG, "Controls active, do nothing");
+                            Utils.log(TAG, "Controls active, do nothing", true);
                             return;
                         }
                         MySettings.setGetStatusState(true);
@@ -746,14 +746,14 @@ public class DashboardDevicesFragment extends Fragment {
                                                         jsonObject1.put("R_M_ALV", "0");
                                                         MqttMessage mqttMessage1 = new MqttMessage();
                                                         mqttMessage1.setPayload(jsonObject1.toString().getBytes());
-                                                        Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                                                        Log.d(TAG, "MQTT Publish data: " + mqttMessage1);
+                                                        Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                                                        Utils.log(TAG, "MQTT Publish data: " + mqttMessage1, true);
                                                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage1);
                                                         device.setDeviceMQTTReachable(true);
                                                     }catch (JSONException e){
-                                                        Log.d(TAG, "Exception: " + e.getMessage());
+                                                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                                                     }catch (MqttException e){
-                                                        Log.d(TAG, "Exception: " + e.getMessage());
+                                                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                                                     }
                                                 }
                                             }
@@ -967,7 +967,7 @@ public class DashboardDevicesFragment extends Fragment {
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                    Log.d(TAG, "MQTT deliveryComplete");
+                    Utils.log(TAG, "MQTT deliveryComplete", true);
                 }
             });
             try {
@@ -977,7 +977,7 @@ public class DashboardDevicesFragment extends Fragment {
                         @Override
                         public void onSuccess(IMqttToken asyncActionToken) {
                             mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
-                            Log.d(TAG, "MQTT connect onSuccess");
+                            Utils.log(TAG, "MQTT connect onSuccess", true);
                             try {
                                 if(devices != null) {
                                     for (Device device : devices) {
@@ -985,7 +985,7 @@ public class DashboardDevicesFragment extends Fragment {
                                     }
                                 }
                             }catch (MqttException e){
-                                Log.d(TAG, "Exception " + e.getMessage());
+                                Utils.log(TAG, "Exception " + e.getMessage(), true);
                                 if(devices != null) {
                                     for (Device device : devices) {
                                         device.setDeviceMQTTReachable(false);
@@ -997,7 +997,7 @@ public class DashboardDevicesFragment extends Fragment {
 
                         @Override
                         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            Log.d(TAG, "MQTT connect onFailure: " + exception.toString());
+                            Utils.log(TAG, "MQTT connect onFailure: " + exception.toString(), true);
                             if(devices != null) {
                                 for (Device device : devices) {
                                     device.setDeviceMQTTReachable(false);
@@ -1025,7 +1025,7 @@ public class DashboardDevicesFragment extends Fragment {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                    Utils.log(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), true);
                     device.setDeviceMQTTReachable(false);
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
@@ -1044,20 +1044,20 @@ public class DashboardDevicesFragment extends Fragment {
             token2.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Utils.log(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
                     try {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                         jsonObject.put("R_M_ALV", "1");
                         MqttMessage mqttMessage = new MqttMessage();
                         mqttMessage.setPayload(jsonObject.toString().getBytes());
-                        Log.d(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                        Log.d(TAG, "MQTT publish data: " + mqttMessage);
+                        Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                        Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                     }catch (JSONException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }catch (MqttException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
 
@@ -1099,13 +1099,13 @@ public class DashboardDevicesFragment extends Fragment {
             try{
                 this.device = device;
             }catch (Exception e){
-                Log.d(TAG, "Json exception " + e.getMessage());
+                Utils.log(TAG, "Json exception " + e.getMessage(), true);
             }
         }
 
         @Override
         protected void onPreExecute(){
-            Log.d(TAG, "Enabling getStatus flag...");
+            Utils.log(TAG, "Enabling getStatus flag...", true);
             MySettings.setGetStatusState(true);
         }
 
@@ -1141,7 +1141,7 @@ public class DashboardDevicesFragment extends Fragment {
             statusCode = 0;
             try{
                 URL url = new URL("http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS);
-                Log.d(TAG,  "statusGetter URL: " + url);
+                Utils.log(TAG, "statusGetter URL: " + url, true);
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
@@ -1155,7 +1155,7 @@ public class DashboardDevicesFragment extends Fragment {
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "statusGetter response: " + result.toString());
+                Utils.log(TAG, "statusGetter response: " + result.toString(), true);
                 if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
                     ronixUnit = true;
                 }else{
@@ -1368,7 +1368,7 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -1381,7 +1381,7 @@ public class DashboardDevicesFragment extends Fragment {
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -1394,7 +1394,7 @@ public class DashboardDevicesFragment extends Fragment {
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 if(!ronixUnit){
                     device.setErrorCount(device.getErrorCount() + 1);
                     //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
@@ -1414,7 +1414,7 @@ public class DashboardDevicesFragment extends Fragment {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                Log.d(TAG, "Disabling getStatus flag...");
+                Utils.log(TAG, "Disabling getStatus flag...", true);
                 MySettings.setGetStatusState(false);
             }
 
@@ -1436,7 +1436,7 @@ public class DashboardDevicesFragment extends Fragment {
 
         @Override
         protected void onPreExecute(){
-            Log.d(TAG, "Enabling getStatus flag...");
+            Utils.log(TAG, "Enabling getStatus flag...", true);
             MySettings.setGetStatusState(true);
         }
 
@@ -1475,7 +1475,7 @@ public class DashboardDevicesFragment extends Fragment {
 
                 //urlString = urlString.concat("?json_0").concat("=").concat(jObject.toString());
 
-                Log.d(TAG,  "statusGetter URL: " + urlString);
+                Utils.log(TAG, "statusGetter URL: " + urlString, true);
 
                 URL url = new URL(urlString);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -1596,7 +1596,7 @@ public class DashboardDevicesFragment extends Fragment {
                                     if(networkInterface != null){
                                         for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
                                             String submask = Utils.prefixToSubmask(address.getNetworkPrefixLength());
-                                            Log.d("AAAA", address.toString());
+                                            Utils.log(TAG, address.toString(), true);
                                             jObject.put("R_W_NMK", submask);
                                         }
                                     }else{
@@ -1614,7 +1614,7 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }
 
-                Log.d(TAG,  "statusGetter POST data: " + jObject.toString());
+                Utils.log(TAG, "statusGetter POST data: " + jObject.toString(), true);
 
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
@@ -1630,7 +1630,7 @@ public class DashboardDevicesFragment extends Fragment {
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "statusGetter response: " + result.toString());
+                Utils.log(TAG, "statusGetter response: " + result.toString(), true);
                 if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
                     ronixUnit = true;
                 }else{
@@ -2064,7 +2064,7 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -2077,7 +2077,7 @@ public class DashboardDevicesFragment extends Fragment {
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -2090,7 +2090,7 @@ public class DashboardDevicesFragment extends Fragment {
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 if(!ronixUnit){
                     device.setErrorCount(device.getErrorCount() + 1);
                     //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
@@ -2110,7 +2110,7 @@ public class DashboardDevicesFragment extends Fragment {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                Log.d(TAG, "Disabling getStatus flag...");
+                Utils.log(TAG, "Disabling getStatus flag...", true);
                 MySettings.setGetStatusState(false);
             }
 
@@ -2131,7 +2131,7 @@ public class DashboardDevicesFragment extends Fragment {
 
         @Override
         protected void onPreExecute(){
-            Log.d(TAG, "Enabling getStatus flag...");
+            Utils.log(TAG, "Enabling getStatus flag...", true);
             MySettings.setGetStatusState(true);
         }
 
@@ -2167,7 +2167,7 @@ public class DashboardDevicesFragment extends Fragment {
             statusCode = 0;
             try{
                 URL url = new URL("http://" + device.getIpAddress() + Constants.CONTROL_SOUND_DEVICE_CHANGE_MODE_URL);
-                Log.d(TAG,  "modeGetter URL: " + url);
+                Utils.log(TAG, "modeGetter URL: " + url, true);
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
@@ -2195,7 +2195,7 @@ public class DashboardDevicesFragment extends Fragment {
                             if(networkInterface != null){
                                 for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
                                     String submask = Utils.prefixToSubmask(address.getNetworkPrefixLength());
-                                    Log.d("AAAA", address.toString());
+                                    Utils.log(TAG, address.toString(), true);
                                     jObject.put("R_W_NMK", submask);
                                 }
                             }else{
@@ -2211,7 +2211,7 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }
 
-                Log.d(TAG,  "modeGetter POST data: " + jObject.toString());
+                Utils.log(TAG, "modeGetter POST data: " + jObject.toString(), true);
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                 outputStreamWriter.write(jObject.toString());
@@ -2226,7 +2226,7 @@ public class DashboardDevicesFragment extends Fragment {
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "modeGetter response: " + result.toString());
+                Utils.log(TAG, "modeGetter response: " + result.toString(), true);
                 if(result.length() >= 3){
                     JSONObject jsonObject = new JSONObject(result.toString());
                     if(jsonObject != null){
@@ -2291,7 +2291,7 @@ public class DashboardDevicesFragment extends Fragment {
                     }
                 }
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -2304,7 +2304,7 @@ public class DashboardDevicesFragment extends Fragment {
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -2317,7 +2317,7 @@ public class DashboardDevicesFragment extends Fragment {
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -2333,7 +2333,7 @@ public class DashboardDevicesFragment extends Fragment {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                Log.d(TAG, "Disabling getStatus flag...");
+                Utils.log(TAG, "Disabling getStatus flag...", true);
                 MySettings.setGetStatusState(false);
             }
 

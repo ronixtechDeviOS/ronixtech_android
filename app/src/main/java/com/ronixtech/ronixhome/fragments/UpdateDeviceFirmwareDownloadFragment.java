@@ -8,7 +8,6 @@ import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -150,7 +149,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 UpdateDeviceFirmwareUploadFragment updateDeviceFirmwareUploadFragment = new UpdateDeviceFirmwareUploadFragment();
                 fragmentTransaction.replace(R.id.fragment_view, updateDeviceFirmwareUploadFragment, "updateDeviceFirmwareUploadFragment");
-                fragmentTransaction.addToBackStack("updateDeviceFirmwareUploadFragment");
+                //fragmentTransaction.addToBackStack("updateDeviceFirmwareUploadFragment");
                 fragmentTransaction.commit();
             }
         }
@@ -257,7 +256,7 @@ public class UpdateDeviceFirmwareDownloadFragment extends Fragment {
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(sUrl[0]);
-                Log.d(TAG, "downloadFirmwareFile URL: " + url);
+                Utils.log(TAG, "downloadFirmwareFile URL: " + url, true);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 

@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,7 +38,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ronixtech.ronixhome.Constants;
-import com.ronixtech.ronixhome.CustomProgressDialog;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -263,16 +261,18 @@ public class LoginFragment extends Fragment {
                             user.setFirstName(fbUser.getDisplayName());
                             MySettings.setActiveUser(user);
                             Utils.dismissLoading();
-                            Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-                            startActivity(mainIntent);
-                            getActivity().finish();
+                            if(getActivity() != null) {
+                                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(mainIntent);
+                                getActivity().finish();
+                            }
                         }else{
                             Utils.dismissLoading();
                             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.login_failed), true);
                         }
                     }else {
                         // If sign in fails, display a message to the user.
-                        Log.d(TAG, "signInWithEmailAndPassword failure: " + task.getException());
+                        Utils.log(TAG, "signInWithEmailAndPassword failure: " + task.getException(), true);
                         if(task.getException() != null){
                             Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                         }
@@ -375,7 +375,7 @@ public class LoginFragment extends Fragment {
                         Utils.dismissLoading();
                         Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.password_reset_mail_sent_successfully), true);
                     }else{
-                        Log.d(TAG, "sendPasswordResetEmail failure: " + task.getException());
+                        Utils.log(TAG, "sendPasswordResetEmail failure: " + task.getException(), true);
                         if(task.getException() != null){
                             Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                         }
@@ -392,7 +392,7 @@ public class LoginFragment extends Fragment {
     private void loginFacebook(final String accessToken){
         String url = Constants.LOGIN_URL;
 
-        final CustomProgressDialog customProgressDialog = CustomProgressDialog.show(getActivity(), "", "");
+        Utils.showLoading(getActivity());
 
         JSONObject jsonObject = new JSONObject();
         try{
@@ -402,21 +402,21 @@ public class LoginFragment extends Fragment {
         }
 
 
-        Log.d(TAG,  "loginFacebook URL: " + url);
+        Utils.log(TAG, "loginFacebook URL: " + url, true);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 loginButton.setEnabled(true);
-                Log.d(TAG, "login response: " + response);
+                Utils.log(TAG, "login response: " + response, true);
 
-                if (customProgressDialog != null) customProgressDialog.dismiss();
+                Utils.dismissLoading();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 loginButton.setEnabled(true);
-                if (customProgressDialog != null) customProgressDialog.dismiss();
-                Log.d(TAG, "Volley Error: " + error.getMessage());
+                Utils.dismissLoading();
+                Utils.log(TAG, "Volley Error: " + error.getMessage(), true);
                 Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.server_connection_error), true);
             }
         }){

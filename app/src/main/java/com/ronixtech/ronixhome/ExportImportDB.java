@@ -1,7 +1,6 @@
 package com.ronixtech.ronixhome;
 
 import android.os.Environment;
-import android.util.Log;
 
 import com.ronixtech.ronixhome.activities.MainActivity;
 
@@ -24,14 +23,14 @@ public class ExportImportDB {
                     //directory is created;
                 }
             }
-            Log.d(TAG, "Created directory: " + ronixDirectory.getAbsolutePath());
+            Utils.log(TAG, "Created directory: " + ronixDirectory.getAbsolutePath(), true);
             File databaseDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/");
             if(!databaseDirectory.exists()) {
                 if(databaseDirectory.mkdir()) {
                     //directory is created;
                 }
             }
-            Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
+            Utils.log(TAG, "Created directory: " + databaseDirectory.getAbsolutePath(), true);
         }catch (Exception e){
             Utils.showToast(MainActivity.getInstance(), e.toString(), true);
             importSuccess = false;
@@ -45,14 +44,15 @@ public class ExportImportDB {
                 String backupDBPath  = Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/" + fileName;
                 String liveDBPath = Environment.getDataDirectory() + "//data//" + Constants.PACKAGE_NAME + "//databases//" + fileName;
 
-                Log.d(TAG, "Backup directory: " + backupDBPath);
-                Log.d(TAG, "Live Database directory: " + liveDBPath);
+
+                Utils.log(TAG, "Backup directory: " + backupDBPath, true);
+                Utils.log(TAG, "Live Database directory: " + liveDBPath, true);
 
                 File liveDBFile = new File(liveDBPath);
                 File backupDBFile = new File(backupDBPath);
 
-                Log.d(TAG, "Backup file object: " + backupDBFile.getAbsolutePath());
-                Log.d(TAG, "Live Database file object: " + liveDBFile.getAbsolutePath());
+                Utils.log(TAG, "Backup file object: " + backupDBFile.getAbsolutePath(), true);
+                Utils.log(TAG, "Live Database file object: " + liveDBFile.getAbsolutePath(), true);
 
                 FileChannel src = new FileInputStream(backupDBFile).getChannel();
                 FileChannel dst = new FileOutputStream(liveDBFile).getChannel();
@@ -81,14 +81,14 @@ public class ExportImportDB {
                     //directory is created;
                 }
             }
-            Log.d(TAG, "Created directory: " + ronixDirectory.getAbsolutePath());
+            Utils.log(TAG, "Created directory: " + ronixDirectory.getAbsolutePath(), true);
             File databaseDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/");
             if(!databaseDirectory.exists()) {
                 if(databaseDirectory.mkdir()) {
                     //directory is created;
                 }
             }
-            Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
+            Utils.log(TAG, "Created directory: " + databaseDirectory.getAbsolutePath(), true);
         }catch (Exception e){
             Utils.showToast(MainActivity.getInstance(), e.toString(), true);
             exportSuccess = false;
@@ -101,14 +101,14 @@ public class ExportImportDB {
                 String backupDBPath  = Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/" + fileName;
                 String liveDBPath = Environment.getDataDirectory() + "//data//" + Constants.PACKAGE_NAME + "//databases//" + fileName;
 
-                Log.d(TAG, "Backup directory: " + backupDBPath);
-                Log.d(TAG, "Live Database directory: " + liveDBPath);
+                Utils.log(TAG, "Backup directory: " + backupDBPath, true);
+                Utils.log(TAG, "Live Database directory: " + liveDBPath, true);
 
                 File backupDBFile = new File(backupDBPath);
                 File liveDBFile = new File(liveDBPath);
 
-                Log.d(TAG, "Backup file object: " + backupDBFile.getAbsolutePath());
-                Log.d(TAG, "Live Database file object: " + liveDBFile.getAbsolutePath());
+                Utils.log(TAG, "Backup file object: " + backupDBFile.getAbsolutePath(), true);
+                Utils.log(TAG, "Live Database file object: " + liveDBFile.getAbsolutePath(), true);
 
                 FileChannel src = new FileInputStream(liveDBFile).getChannel();
                 FileChannel dst = new FileOutputStream(backupDBFile).getChannel();

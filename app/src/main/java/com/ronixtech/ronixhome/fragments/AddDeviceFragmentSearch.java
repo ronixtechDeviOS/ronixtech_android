@@ -24,7 +24,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -315,7 +314,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
                                     //show popup if not already shown, and add scanned network to its list
 
-                                    Log.d(TAG, "Found ssid: " + result.SSID);
+                                    Utils.log(TAG, "Found ssid: " + result.SSID, true);
 
                                     WifiNetwork scannedNetwork = new WifiNetwork();
                                     scannedNetwork.setSsid(result.SSID);
@@ -330,10 +329,10 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                             // dialog, so make our own transaction and take care of that here.
                                             PickSSIDDialogFragment ssidFragment = (PickSSIDDialogFragment) getFragmentManager().findFragmentByTag("ssidPickerDialogFragment");
                                             if (ssidFragment != null) {
-                                                Log.d(TAG, "Fragment is showing");
+                                                Utils.log(TAG, "Fragment is showing", true);
                                                 ssidFragment.addNetworkToList(scannedNetwork);
                                             }else{
-                                                Log.d(TAG, "Fragment is not showing");
+                                                Utils.log(TAG, "Fragment is not showing", true);
                                                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                                                 // Create and show the dialog.
                                                 PickSSIDDialogFragment fragment = PickSSIDDialogFragment.newInstance();
@@ -359,7 +358,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                             new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 }
             }catch (Exception e){
-                Log.d(TAG, "Error registering mWifiScanReceiver");
+                Utils.log(TAG, "Error registering mWifiScanReceiver", true);
             }
 
             mWifiManager.startScan();
@@ -395,7 +394,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                 WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                                 String connectedSSID = wifiInfo.getSSID();
 
-                                Log.d(TAG, "Currently connected to: " + connectedSSID);
+                                Utils.log(TAG, "Currently connected to: " + connectedSSID, true);
 
                                 if(connectedSSID.toLowerCase().contains(ssid.toLowerCase())){
                                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.connected_to) + " " + connectedSSID, true);
@@ -407,7 +406,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                             getActivity().unregisterReceiver(mWifiConnectionReceiver);
                                         }
                                     }catch (Exception e){
-                                        Log.d(TAG, "Error unregistering mWifiConnectionReceiver");
+                                        Utils.log(TAG, "Error unregistering mWifiConnectionReceiver", true);
                                     }
 
                                     if(MainActivity.getInstance() != null && MainActivity.isResumed){
@@ -441,16 +440,16 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                             new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
                 }
             }catch (Exception e){
-                Log.d(TAG, "Error registering mWifiConnectionReceiver");
+                Utils.log(TAG, "Error registering mWifiConnectionReceiver", true);
             }
         }
 
         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
             if(i != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)){
-                Log.d(TAG, "Removing network '" + i.SSID + "' from saved networks");
+                Utils.log(TAG, "Removing network '" + i.SSID + "' from saved networks", true);
                 if(!mWifiManager.removeNetwork(i.networkId)){
-                    Log.d(TAG, "Failed to remove network " + i.SSID + ", disabling it");
+                    Utils.log(TAG, "Failed to remove network " + i.SSID + ", disabling it", true);
                     mWifiManager.disableNetwork(i.networkId);
                 }
             }
@@ -511,10 +510,10 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             networkID = getExistingNetworkId(ssid);
         }
 
-        Log.d(TAG, "Added network, new ID:" + networkID);
+        Utils.log(TAG, "Added network, new ID:" + networkID, true);
 
         if(networkID != -1) {
-            Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID);
+            Utils.log(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID, true);
             mWifiManager.disconnect();
             mWifiManager.enableNetwork(networkID, true);
             mWifiManager.reconnect();
@@ -522,7 +521,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             list = mWifiManager.getConfiguredNetworks();
             for(WifiConfiguration i : list) {
                 if(i.SSID != null && i.SSID.toLowerCase().contains(ssid.toLowerCase()/*"\"" + ssid.toLowerCase() + "\""*/)) {
-                    Log.d(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + conf.networkId);
+                    Utils.log(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + conf.networkId, true);
                     mWifiManager.disconnect();
                     mWifiManager.enableNetwork(i.networkId, true);
                     mWifiManager.reconnect();
@@ -591,12 +590,12 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             }
         }.start();
 
-        Log.d(TAG, "User chose ssid " + network.getSsid());
+        Utils.log(TAG, "User chose ssid " + network.getSsid(), true);
         Device device = new Device();
         device.setMacAddress(network.getMacAddress());
         device.setName(network.getSsid());
         MySettings.setTempDevice(device);
-        Log.d(TAG, "Connecting to " + network.getSsid() + " with default password");
+        Utils.log(TAG, "Connecting to " + network.getSsid() + " with default password", true);
         try {
             if (mWifiScanReceiver != null) {
                 if (getActivity() != null) {
@@ -604,7 +603,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 }
             }
         }catch (Exception e){
-            Log.d(TAG, "Error unregistering mWifiScanReceiver");
+            Utils.log(TAG, "Error unregistering mWifiScanReceiver", true);
         }
         Handler handler = new Handler();
         handler.post(new Runnable() {
@@ -707,13 +706,13 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
     @Override
     public void onStop(){
-        Log.d(TAG, "onStop");
+        Utils.log(TAG, "onStop", true);
         if(getActivity() != null) {
             try{
                 getActivity().unregisterReceiver(mWifiScanReceiver);
                 getActivity().unregisterReceiver(mWifiConnectionReceiver);
             }catch (Exception e){
-                Log.d(TAG, "Already unregistered - " + e.getMessage());
+                Utils.log(TAG, "Already unregistered - " + e.getMessage(), true);
             }
         }
         super.onStop();

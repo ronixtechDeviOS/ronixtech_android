@@ -1944,16 +1944,16 @@ public class DeviceAdapter extends ArrayAdapter {
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                     MqttMessage mqttMessage = new MqttMessage();
                     mqttMessage.setPayload(jsonObject.toString().getBytes());
-                    Log.d(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                    Log.d(TAG, "MQTT publish data: " + mqttMessage);
+                    Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                    Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
                     mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (MqttException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }else{
-                Log.d(TAG, "mqttAndroidClient is null");
+                Utils.log(TAG, "mqttAndroidClient is null", true);
             }
             MySettings.setControlState(false);
         }
@@ -2025,13 +2025,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                     MqttMessage mqttMessage = new MqttMessage();
                     mqttMessage.setPayload(jsonObject.toString().getBytes());
-                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                    Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                    Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                    Utils.log(TAG, "MQTT Publish data: " + mqttMessage, true);
                     mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (MqttException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
             MySettings.setControlState(false);
@@ -2102,13 +2102,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                     MqttMessage mqttMessage = new MqttMessage();
                     mqttMessage.setPayload(jsonObject.toString().getBytes());
-                    Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                    Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                    Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                    Utils.log(TAG, "MQTT Publish data: " + mqttMessage, true);
                     mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (MqttException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
             MySettings.setControlState(false);
@@ -2235,14 +2235,14 @@ public class DeviceAdapter extends ArrayAdapter {
 
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -2255,11 +2255,11 @@ public class DeviceAdapter extends ArrayAdapter {
                     try {
                         Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 try{
-                    Log.d(TAG, "toggleLine attempt #"+numberOfAttempts);
+                    Utils.log(TAG, "toggleLine attempt #"+numberOfAttempts, true);
                     String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
                     if(position == 0){
                         urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
@@ -2276,7 +2276,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                     URL url = new URL(urlString);
 
-                    Log.d(TAG,  "toggleLine URL: " + url);
+                    Utils.log(TAG, "toggleLine URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setDoInput(false);
@@ -2295,15 +2295,15 @@ public class DeviceAdapter extends ArrayAdapter {
                     Log.d(TAG,  "toggleLine response: " + result.toString());*/
                 }catch (MalformedURLException e){
                     line.setPowerState(oldState);
-                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                    Utils.log(TAG, "Exception MalformedURLException: " + e.getMessage(), true);
                 }catch (IOException e){
                     line.setPowerState(oldState);
-                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                    Utils.log(TAG, "Exception IOException: " + e.getMessage(), true);
                 }catch (Exception e){
                     line.setPowerState(oldState);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
-                    Log.d(TAG,  "toggleLine responseCode: " + statusCode);
+                    Utils.log(TAG, "toggleLine responseCode: " + statusCode, true);
                     if(urlConnection != null) {
                         urlConnection.disconnect();
                     }
@@ -2482,14 +2482,14 @@ public class DeviceAdapter extends ArrayAdapter {
 
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -2502,11 +2502,11 @@ public class DeviceAdapter extends ArrayAdapter {
                     try {
                         Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 try{
-                    Log.d(TAG, "toggleDimming attempt #"+numberOfAttempts);
+                    Utils.log(TAG, "toggleDimming attempt #"+numberOfAttempts, true);
                     String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
                     if(position == 0){
                         urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_STATE);
@@ -2518,7 +2518,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     urlString = urlString.concat("&" + Constants.PARAMETER_COMMAND_ONE + "=" + state);
                     URL url = new URL(urlString);
 
-                    Log.d(TAG,  "toggleDimming URL: " + url);
+                    Utils.log(TAG, "toggleDimming URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setDoInput(false);
@@ -2537,15 +2537,16 @@ public class DeviceAdapter extends ArrayAdapter {
 
                 }catch (MalformedURLException e){
                     line.setDimmingState(oldState);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
                     line.setDimmingState(oldState);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (Exception e){
                     line.setDimmingState(oldState);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
-                    Log.d(TAG,  "toggleDimming responseCode: " + statusCode);
+                    Utils.log(TAG, "toggleDimming responseCode: " + statusCode, true);
+                    Utils.log(TAG, "", true);
                     if(urlConnection != null) {
                         urlConnection.disconnect();
                     }
@@ -2653,14 +2654,14 @@ public class DeviceAdapter extends ArrayAdapter {
 
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -2673,11 +2674,11 @@ public class DeviceAdapter extends ArrayAdapter {
                     try {
                         Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 try{
-                    Log.d(TAG, "controlDimming attempt #"+numberOfAttemtps);
+                    Utils.log(TAG, "controlDimming attempt #"+numberOfAttemtps, true);
                     String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_DEVICE_URL;
                     if(position == 0){
                         urlString = urlString.concat("?" + Constants.PARAMETER_COMMAND_ZERO + "=" + Constants.PARAMETER_FIRST_LINE_DIMMING_CONTROL_VALUE);
@@ -2694,7 +2695,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                     URL url = new URL(urlString);
 
-                    Log.d(TAG,  "controlDimming URL: " + url);
+                    Utils.log(TAG, "controlDimming URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setDoInput(false);
@@ -2712,15 +2713,15 @@ public class DeviceAdapter extends ArrayAdapter {
                     Log.d(TAG,  "controlDimming response: " + result.toString());*/
                 }catch (MalformedURLException e){
                     line.setDimmingVvalue(oldValue);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
                     line.setDimmingVvalue(oldValue);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (Exception e){
                     line.setDimmingVvalue(oldValue);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
-                    Log.d(TAG,  "controlDimming responseCode: " + statusCode);
+                    Utils.log(TAG, "controlDimming responseCode: " + statusCode, true);
                     if(urlConnection != null) {
                         urlConnection.disconnect();
                     }
@@ -2760,7 +2761,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
         @Override
         protected void onPreExecute(){
-            Log.d(TAG, "Enabling getStatus flag...");
+            Utils.log(TAG, "Enabling getStatus flag...", true);
             MySettings.setGetStatusState(true);
         }
 
@@ -2783,14 +2784,14 @@ public class DeviceAdapter extends ArrayAdapter {
         protected Void doInBackground(Void... params) {
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -2798,7 +2799,7 @@ public class DeviceAdapter extends ArrayAdapter {
             statusCode = 0;
             try{
                 URL url = new URL("http://" + device.getIpAddress() + Constants.CONTROL_SOUND_DEVICE_CHANGE_MODE_URL);
-                Log.d(TAG,  "devicePinger URL: " + url);
+                Utils.log(TAG, "devicePinger URL: " + url, true);
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
@@ -2813,7 +2814,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 jObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, "");
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                Log.d(TAG,  "devicePinger POST data: " + jObject.toString());
+                Utils.log(TAG, "devicePinger POST data: " + jObject.toString(), true);
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                 outputStreamWriter.write(jObject.toString());
@@ -2828,18 +2829,18 @@ public class DeviceAdapter extends ArrayAdapter {
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "devicePinger response: " + result.toString());
+                Utils.log(TAG, "devicePinger response: " + result.toString(), true);
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }finally {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                Log.d(TAG, "Disabling getStatus flag...");
+                Utils.log(TAG, "Disabling getStatus flag...", true);
                 MySettings.setGetStatusState(false);
             }
 
@@ -2920,14 +2921,14 @@ public class DeviceAdapter extends ArrayAdapter {
 
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -2940,11 +2941,11 @@ public class DeviceAdapter extends ArrayAdapter {
                     try {
                         Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 try{
-                    Log.d(TAG, "changeMode attempt #"+numberOfAttempts);
+                    Utils.log(TAG, "changeMode attempt #"+numberOfAttempts, true);
                     String urlString = "http://" + device.getIpAddress() + Constants.CONTROL_SOUND_DEVICE_CHANGE_MODE_URL;
                     /*if(mode == SoundDeviceData.MODE_LINE_IN){
                         urlString = urlString.concat("?" + Constants.PARAMETER_SOUND_CONTROLLER_MODE + "=" + Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN);
@@ -2958,7 +2959,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     URL url = new URL(urlString);
 
-                    Log.d(TAG,  "changeMode URL: " + url);
+                    Utils.log(TAG, "changeMode URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setDoOutput(true);
@@ -2981,7 +2982,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "changeMode POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "changeMode POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -2999,15 +3000,15 @@ public class DeviceAdapter extends ArrayAdapter {
                     Log.d(TAG,  "toggleLine response: " + result.toString());*/
                 }catch (MalformedURLException e){
                     device.getSoundDeviceData().setMode(oldMode);
-                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                    Utils.log(TAG, "Exception MalformedURLException: " + e.getMessage(), true);
                 }catch (IOException e){
                     device.getSoundDeviceData().setMode(oldMode);
-                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                    Utils.log(TAG, "Exception IOException: " + e.getMessage(), true);
                 }catch (Exception e){
                     device.getSoundDeviceData().setMode(oldMode);
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
-                    Log.d(TAG,  "changeMode responseCode: " + statusCode);
+                    Utils.log(TAG, "changeMode responseCode: " + statusCode, true);
                     if(urlConnection != null) {
                         urlConnection.disconnect();
                     }
@@ -3086,14 +3087,14 @@ public class DeviceAdapter extends ArrayAdapter {
         protected Void doInBackground(Void... params) {
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -3106,16 +3107,16 @@ public class DeviceAdapter extends ArrayAdapter {
                     try {
                         Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 try{
-                    Log.d(TAG, "factoryReset attempt #"+numberOfAttempts);
+                    Utils.log(TAG, "factoryReset attempt #"+numberOfAttempts, true);
                     String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_FACTORY_RESET;
 
                     URL url = new URL(urlString);
 
-                    Log.d(TAG,  "factoryReset URL: " + url);
+                    Utils.log(TAG, "factoryReset URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setDoInput(false);
@@ -3131,13 +3132,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     while((dataLine = bufferedReader.readLine()) != null) {
                         result.append(dataLine);
                     }
-                    Log.d(TAG,  "factoryReset response: " + result.toString());
+                    Utils.log(TAG, "factoryReset response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                    Utils.log(TAG, "Exception MalformedURLException: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                    Utils.log(TAG, "Exception IOException: " + e.getMessage(), true);
                 }catch (Exception e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -3195,14 +3196,14 @@ public class DeviceAdapter extends ArrayAdapter {
         protected Void doInBackground(Void... params) {
             boolean statusWasActive = false;
             while(MySettings.isGetStatusActive()){
-                Log.d(TAG, "getStatusActive, doing nothing...");
+                Utils.log(TAG, "getStatusActive, doing nothing...", true);
                 statusWasActive = true;
             }
             if(statusWasActive) {
                 try {
                     Thread.sleep(Constants.DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
 
@@ -3215,16 +3216,16 @@ public class DeviceAdapter extends ArrayAdapter {
                     try {
                         Thread.sleep(Constants.DELAY_TIME_MS);
                     } catch (InterruptedException e) {
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
                 try{
-                    Log.d(TAG, "rebootDevice attempt #"+numberOfAttempts);
+                    Utils.log(TAG, "rebootDevice attempt #"+numberOfAttempts, true);
                     String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_SOUND_SYSTEM_SHUTDOWN_URL;
 
                     URL url = new URL(urlString);
 
-                    Log.d(TAG,  "rebootDevice URL: " + url);
+                    Utils.log(TAG, "rebootDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -3239,7 +3240,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_SHUTDOWN_MODE, Constants.PARAMETER_SOUND_CONTROLLER_OPTION_REBOOT);
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, ""+device.getAccessToken());
 
-                    Log.d(TAG,  "rebootDevice POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "rebootDevice POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -3253,13 +3254,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     while((dataLine = bufferedReader.readLine()) != null) {
                         result.append(dataLine);
                     }
-                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                    Utils.log(TAG, "rebootDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception MalformedURLException: " + e.getMessage());
+                    Utils.log(TAG, "Exception MalformedURLException: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception IOException: " + e.getMessage());
+                    Utils.log(TAG, "Exception IOException: " + e.getMessage(), true);
                 }catch (Exception e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -3283,7 +3284,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     mqttAndroidClient.close();
                 }
             }catch (MqttException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }
         }
     }
@@ -3310,21 +3311,21 @@ public class DeviceAdapter extends ArrayAdapter {
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
                 public void connectComplete(boolean b, String s) {
-                    Log.d(TAG, "Connection complete on " + s);
+                    Utils.log(TAG, "Connection complete on " + s, true);
                 }
                 @Override
                 public void connectionLost(Throwable throwable) {
-                    Log.d(TAG, "Connection lost");
+                    Utils.log(TAG, "Connection lost", true);
                 }
                 @Override
                 public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
                     //setMessageNotification(s, new String(mqttMessage.getPayload()));
-                    Log.d(TAG, "Message arrived: 's': " + s);
-                    Log.d(TAG, "Message arrived: 'mqttMessage': " + new String(mqttMessage.getPayload()));
+                    Utils.log(TAG, "Message arrived: 's': " + s, true);
+                    Utils.log(TAG, "Message arrived: 'mqttMessage': " + new String(mqttMessage.getPayload()), true);
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                    Log.d(TAG, "Delivery complete");
+                    Utils.log(TAG, "Delivery complete", true);
                 }
             });
             try {
@@ -3335,19 +3336,19 @@ public class DeviceAdapter extends ArrayAdapter {
                             @Override
                             public void onSuccess(IMqttToken asyncActionToken) {
                                 mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
-                                Log.d(TAG, "Success");
+                                Utils.log(TAG, "Success", true);
                                 try {
                                     for (Device device:devices) {
                                         subscribe(mqttAndroidClient, String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), 1);
                                     }
                                 }catch (MqttException e){
-                                    Log.d(TAG, "Exception " + e.getMessage());
+                                    Utils.log(TAG, "Exception " + e.getMessage(), true);
                                 }
                             }
 
                             @Override
                             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                                Log.d(TAG, "Failure " + exception.toString());
+                                Utils.log(TAG, "Failure " + exception.toString(), true);
                             }
                         });
                     }
@@ -3365,7 +3366,7 @@ public class DeviceAdapter extends ArrayAdapter {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "Subscribe Successfully on " + topic);
+                    Utils.log(TAG, "Subscribe Successfully on " + topic, true);
                 }
 
                 @Override

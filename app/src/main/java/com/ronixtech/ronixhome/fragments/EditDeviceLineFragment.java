@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -340,11 +339,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 if(!lineNameEditText.getText().toString().equals(currentLine.getName())){
                     unsavedChanges = true;
                     parentFragment.tabUserChangesState(LINE_POSITION, true);
-                    Log.d("AAAA", "lineNameEditText - afterTextChanged - changes");
+                    Utils.log(TAG, "lineNameEditText - afterTextChanged - changes", true);
                 }else{
                     unsavedChanges = false;
                     parentFragment.tabUserChangesState(LINE_POSITION, false);
-                    Log.d("AAAA", "lineNameEditText - afterTextChanged - no changes");
+                    Utils.log(TAG, "lineNameEditText - afterTextChanged - no changes", true);
                 }
             }
         });
@@ -367,11 +366,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 if(lineMode != currentLine.getMode()){
                     unsavedChanges = true;
                     parentFragment.tabUserChangesState(LINE_POSITION, true);
-                    Log.d("AAAA", "lineModeRadioGroup - onCheckedChanged - changes");
+                    Utils.log(TAG, "lineModeRadioGroup - onCheckedChanged - changes", true);
                 }else{
                     unsavedChanges = false;
                     parentFragment.tabUserChangesState(LINE_POSITION, false);
-                    Log.d("AAAA", "lineModeRadioGroup - onCheckedChanged - no changes");
+                    Utils.log(TAG, "lineModeRadioGroup - onCheckedChanged - no changes", true);
                 }
             }
         });
@@ -437,8 +436,8 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                             jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                             MqttMessage mqttMessage = new MqttMessage();
                             mqttMessage.setPayload(jsonObject.toString().getBytes());
-                            Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                            Log.d(TAG, "MQTT Publish data: " + mqttMessage);
+                            Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                            Utils.log(TAG, "MQTT Publish data: " + mqttMessage, true);
                             mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
 
                             //sync success
@@ -451,11 +450,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                             }
                             MySettings.updateLineDimmingState(currentLine, currentLine.getDimmingState());
                         }catch (JSONException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                             Utils.dismissLoading();
                             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.smart_controller_connection_error), true);
                         }catch (MqttException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                             Utils.dismissLoading();
                             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.smart_controller_connection_error), true);
                         }finally {
@@ -526,10 +525,10 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "continueButton onClick");
+                Utils.log(TAG, "continueButton onClick", true);
                 //if all valid
                 if(validateInputs()){
-                    Log.d(TAG, "continueButton validateInputs()");
+                    Utils.log(TAG, "continueButton validateInputs()", true);
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(lineNameEditText.getWindowToken(), 0);
 
@@ -560,10 +559,10 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     parentFragment.tabUserChangesState(LINE_POSITION, false);
 
                     int last = DEVICE_NUMBER_OF_LINES - 1;
-                    Log.d(TAG, "continueButton last: " + last);
-                    Log.d(TAG, "continueButton LINE_POSITION: " + LINE_POSITION);
+                    Utils.log(TAG, "continueButton last: " + last, true);
+                    Utils.log(TAG, "continueButton LINE_POSITION: " + LINE_POSITION, true);
                     if(LINE_POSITION < last){
-                        Log.d(TAG, "AAAA move to next fragment");
+                        Utils.log(TAG, "continueButton move to next fragment", true);
                         parentFragment.moveToNextFragment();
                     }else{
                         if(parentFragment.getUnsavedChanges()){
@@ -579,7 +578,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             //set what would happen when positive button is clicked
-                                            Log.d("continueButton", "pop backstack!");
+                                            Utils.log(TAG, "continueButton pop backstack!", true);
                                             if(parentFragment.getFragmentManager() != null){
                                                 parentFragment.getFragmentManager().popBackStack();
                                             }
@@ -594,7 +593,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                                     })
                                     .show();
                         }else{
-                            Log.d(TAG, "continueButton pop backstack!");
+                            Utils.log(TAG, "continueButton pop backstack!", true);
                             if(parentFragment.getFragmentManager() != null){
                                 parentFragment.getFragmentManager().popBackStack();
                             }
@@ -641,11 +640,11 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             if(type.getId() != currentLine.getTypeID()){
                 unsavedChanges = true;
                 parentFragment.tabUserChangesState(LINE_POSITION, true);
-                Log.d("AAAA", "onTypeSelected - changes");
+                Utils.log(TAG, "onTypeSelected - changes", true);
             }else{
                 unsavedChanges = false;
                 parentFragment.tabUserChangesState(LINE_POSITION, false);
-                Log.d("AAAA", "onTypeSelected - no changes");
+                Utils.log(TAG, "onTypeSelected - no changes", true);
             }
         }
     }
@@ -692,17 +691,17 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
 
                     if(lineSelectedLine.getId() != oldSelectedLine.getId()){
                         unsavedChanges = true;
-                        Log.d("AAAA", "onLineSelected - changes");
+                        Utils.log(TAG, "onLineSelected - changes", true);
                         parentFragment.tabUserChangesState(LINE_POSITION, true);
                     }else{
                         unsavedChanges = false;
-                        Log.d("AAAA", "onLineSelected - no changes");
+                        Utils.log(TAG, "onLineSelected - no changes", true);
                         parentFragment.tabUserChangesState(LINE_POSITION, false);
                     }
                 }
             }else{
                 unsavedChanges = true;
-                Log.d("AAAA", "onLineSelected - changes");
+                Utils.log(TAG, "onLineSelected - changes", true);
                 parentFragment.tabUserChangesState(LINE_POSITION, true);
             }
         }
@@ -870,7 +869,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "syncDimmingState URL: " + url);
+                    Utils.log(TAG, "syncDimmingState URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONTROL_TIMEOUT);
@@ -897,7 +896,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     }
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "syncDimmingState POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "syncDimmingState POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -913,13 +912,13 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "syncDimmingState response: " + result.toString());
+                    Utils.log(TAG, "syncDimmingState response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();

@@ -13,7 +13,6 @@ import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -310,7 +309,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "resetPairings URL: " + url);
+                    Utils.log(TAG, "resetPairings URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -327,7 +326,7 @@ public class AddDeviceFragmentSendData extends Fragment {
 
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "resetPairings POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "resetPairings POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -343,13 +342,13 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "resetPairings response: " + result.toString());
+                    Utils.log(TAG, "resetPairings response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -406,7 +405,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                             String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
                             URL url = new URL(urlString);
-                            Log.d(TAG,  "addPairing URL: " + url);
+                            Utils.log(TAG, "addPairing URL: " + url, true);
 
                             urlConnection = (HttpURLConnection) url.openConnection();
                             urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -440,7 +439,7 @@ public class AddDeviceFragmentSendData extends Fragment {
 
                             jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                            Log.d(TAG,  "addPairing POST data: " + jsonObject.toString());
+                            Utils.log(TAG, "addPairing POST data: " + jsonObject.toString(), true);
 
                             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                             outputStreamWriter.write(jsonObject.toString());
@@ -456,13 +455,13 @@ public class AddDeviceFragmentSendData extends Fragment {
                                 result.append(dataLine);
                             }
                             urlConnection.disconnect();
-                            Log.d(TAG,  "addPairing response: " + result.toString());
+                            Utils.log(TAG, "addPairing response: " + result.toString(), true);
                         }catch (MalformedURLException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (IOException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (JSONException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }finally {
                             if(urlConnection != null) {
                                 urlConnection.disconnect();
@@ -527,7 +526,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                             urlString = urlString.concat("&").concat("primary_line_position").concat("=").concat(""+line.getPrimaryLinePosition());
 
                             URL url = new URL(urlString);
-                            Log.d(TAG,  "addPairing URL: " + url);
+                            Utils.log(TAG, "addPairing URL: " + url, true);
 
                             urlConnection = (HttpURLConnection) url.openConnection();
                             urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -542,11 +541,11 @@ public class AddDeviceFragmentSendData extends Fragment {
                                 result.append(dataLine);
                             }
                             urlConnection.disconnect();
-                            Log.d(TAG,  "addPairing response: " + result.toString());
+                            Utils.log(TAG, "addPairing response: " + result.toString(), true);
                         }catch (MalformedURLException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (IOException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }finally {
                             if(urlConnection != null) {
                                 urlConnection.disconnect();
@@ -603,7 +602,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "sendDimmingControls URL: " + url);
+                    Utils.log(TAG, "sendDimmingControls URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -629,7 +628,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "sendDimmingControls POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "sendDimmingControls POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -645,13 +644,13 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "sendDimmingControls response: " + result.toString());
+                    Utils.log(TAG, "sendDimmingControls response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -756,7 +755,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
+                    Utils.log(TAG, "sendConfigurationToDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -771,11 +770,11 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
+                    Utils.log(TAG, "sendConfigurationToDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -864,7 +863,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
+                    Utils.log(TAG, "sendConfigurationToDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -882,7 +881,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "sendConfigurationToDevice POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "sendConfigurationToDevice POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -898,13 +897,13 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
+                    Utils.log(TAG, "sendConfigurationToDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -960,7 +959,7 @@ public class AddDeviceFragmentSendData extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_REBOOT_URL);
-                    Log.d(TAG,  "rebootDevice URL: " + url);
+                    Utils.log(TAG, "rebootDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -974,11 +973,11 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                    Utils.log(TAG, "rebootDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -1034,7 +1033,7 @@ public class AddDeviceFragmentSendData extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_SOUND_SYSTEM_SHUTDOWN_URL);
-                    Log.d(TAG,  "rebootDevice URL: " + url);
+                    Utils.log(TAG, "rebootDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -1049,7 +1048,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     jsonObject.put(Constants.PARAMETER_SOUND_CONTROLLER_SHUTDOWN_MODE, Constants.PARAMETER_SOUND_CONTROLLER_OPTION_REBOOT);
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "rebootDevice POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "rebootDevice POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -1064,13 +1063,13 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                    Utils.log(TAG, "rebootDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -220,10 +219,10 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
             if(statusCode == 200){
                 loadingCountDownTimer.cancel();
                 MySettings.setTempDevice(device);
-                Log.d(TAG, "onPostExecute - Adding new device...");
+                /*Log.d(TAG, "onPostExecute - Adding new device...");
                 MySettings.addDevice(device);
                 Device dbDevice = MySettings.getDeviceByChipID2(device.getChipID());
-                Log.d(TAG, "onPostExecute - Added new device. deviceID: " + dbDevice.getId());
+                Log.d(TAG, "onPostExecute - Added new device. deviceID: " + dbDevice.getId());*/
                 fragment.goToConfigurationFragment();
             }
         }
@@ -235,7 +234,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
             try{
                 String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
-                Log.d(TAG,  "deviceConfigGetter URL: " + urlString);
+                Utils.log(TAG, "deviceConfigGetter URL: " + urlString, true);
 
                 URL url = new URL(urlString);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -249,7 +248,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
 
                 JSONObject jObject = new JSONObject();
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
-                Log.d(TAG,  "deviceConfigGetter POST data: " + jObject.toString());
+                Utils.log(TAG, "deviceConfigGetter POST data: " + jObject.toString(), true);
 
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
@@ -265,7 +264,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "deviceConfigGetter response: " + result.toString());
+                Utils.log(TAG, "deviceConfigGetter response: " + result.toString(), true);
                 if(result.length() >= 10){
                     JSONObject jsonObject = new JSONObject(result.toString());
                     if(jsonObject != null){
@@ -470,7 +469,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                                 long deviceID = dbDevice.getId();
                                 device.setId(deviceID);
 
-                                Log.d(TAG, "Adding line, deviceID = " + deviceID);
+                                Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
 
                                 //loop over the number of lines
                                 if(firstLinePreset){
@@ -625,7 +624,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                                 long deviceID = dbDevice.getId();
                                 device.setId(deviceID);
 
-                                Log.d(TAG, "Adding line, deviceID = " + deviceID);
+                                Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
 
                                 //loop over the number of lines
                                 if(firstLinePreset){
@@ -710,11 +709,11 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                     }
                 }
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }finally {
                 if(urlConnection != null) {
                     urlConnection.disconnect();

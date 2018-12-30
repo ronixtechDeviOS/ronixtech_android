@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -363,7 +362,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "resetPairings URL: " + url);
+                    Utils.log(TAG, "resetPairings URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -380,7 +379,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "resetPairings POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "resetPairings POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -396,13 +395,13 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "resetPairings response: " + result.toString());
+                    Utils.log(TAG, "resetPairings response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -470,7 +469,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                             String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                             URL url = new URL(urlString);
-                            Log.d(TAG,  "addPairing URL: " + url);
+                            Utils.log(TAG, "addPairing URL: " + url, true);
 
                             urlConnection = (HttpURLConnection) url.openConnection();
                             urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -502,7 +501,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
                             jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                            Log.d(TAG,  "addPairing POST data: " + jsonObject.toString());
+                            Utils.log(TAG, "addPairing POST data: " + jsonObject.toString(), true);
 
                             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                             outputStreamWriter.write(jsonObject.toString());
@@ -518,13 +517,13 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                                 result.append(dataLine);
                             }
                             urlConnection.disconnect();
-                            Log.d(TAG,  "addPairing response: " + result.toString());
+                            Utils.log(TAG, "addPairing response: " + result.toString(), true);
                         }catch (MalformedURLException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (IOException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (JSONException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }finally {
                             if(urlConnection != null) {
                                 urlConnection.disconnect();

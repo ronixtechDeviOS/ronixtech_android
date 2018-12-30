@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -308,7 +307,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_GET_FIRMWARE_FILE_NAME_URL);
-                    Log.d(TAG,  "getFirmwareFileName URL: " + url);
+                    Utils.log(TAG, "getFirmwareFileName URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -322,12 +321,12 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "getFirmwareFileName response: " + result.toString());
+                    Utils.log(TAG, "getFirmwareFileName response: " + result.toString(), true);
                     filename = result.toString();
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -383,7 +382,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             while(statusCode != 204 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_HARDWARE_SYNC_URL);
-                    Log.d(TAG,  "hardwareSync URL: " + url);
+                    Utils.log(TAG, "hardwareSync URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -403,11 +402,11 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "hardwareSync response: " + result.toString());
+                    Utils.log(TAG, "hardwareSync response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -464,7 +463,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             while(!statusResult.contains("SYNC") && numberOfRetries <= 100){
                 try{
                     URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_HARDWARE_SYNC_URL);
-                    Log.d(TAG,  "hardwareSyncChecker URL: " + url);
+                    Utils.log(TAG, "hardwareSyncChecker URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -479,18 +478,18 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     }
                     statusResult = result.toString();
                     urlConnection.disconnect();
-                    Log.d(TAG,  "hardwareSyncChecker response: " + result.toString());
+                    Utils.log(TAG, "hardwareSyncChecker response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     urlConnection.disconnect();
                     numberOfRetries++;
                     try{
                         Thread.sleep(100);
                     }catch (InterruptedException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
             }
@@ -531,9 +530,16 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
                 }
 
-                DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
-                deviceRebooter.execute();
-                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull_rebooting), true);
+                if(device.isFirmwareUpdateAvailable()){
+                    Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull_rebooting), true);
+                    DeviceRebooter deviceRebooter = new DeviceRebooter(activity, fragment, device);
+                    deviceRebooter.execute();
+                }else if(device.isHwFirmwareUpdateAvailable()){
+                    Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull), true);
+                    MySettings.setTempDevice(null);
+                    fragment.goToHomeFragment();
+                }
+
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_upload_firmware), true);
                 fragment.goToHomeFragment();
@@ -564,7 +570,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     }else if(device.isHwFirmwareUpdateAvailable()){
                         upLoadServerUri = "http://" + device.getIpAddress() /*+ ":88"*/ + Constants.DEVICE_HARDWARE_UPLOAD_FIRMWARE_URL;
                     }
-                    Log.d(TAG, "uploadFirmware URL: " + upLoadServerUri);
+                    Utils.log(TAG, "uploadFirmware URL: " + upLoadServerUri, true);
 
                     // open a URL connection to the Servlet
                     URL url = new URL(upLoadServerUri);
@@ -589,10 +595,10 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
 
                     if(device.isFirmwareUpdateAvailable()){
                         fileInputStream = activity.openFileInput(filename);
-                        Log.d(TAG, "uploadFirmware file: " + filename);
+                        Utils.log(TAG, "uploadFirmware file: " + filename, true);
                     }else if(device.isHwFirmwareUpdateAvailable()){
                         fileInputStream = activity.openFileInput(Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
-                        Log.d(TAG, "uploadFirmware file: " + Constants.DEVICE_HW_FIRMWARE_FILE_NAME);
+                        Utils.log(TAG, "uploadFirmware file: " + Constants.DEVICE_HW_FIRMWARE_FILE_NAME, true);
                     }
 
                     // create a buffer of maximum size
@@ -624,12 +630,12 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                         result.append(dataLine);
                     }
 
-                    Log.d(TAG, "uploadFirmware response: " + result.toString());
+                    Utils.log(TAG, "uploadFirmware response: " + result.toString(), true);
 
                     // Responses from the server (code and message)
                     statusCode = conn.getResponseCode();
 
-                    Log.d(TAG, "uploadFirmware response code: " + statusCode);
+                    Utils.log(TAG, "uploadFirmware response code: " + statusCode, true);
 
                     // close the streams //
                     fileInputStream.close();
@@ -638,7 +644,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     in.close();
                     bufferedReader.close();
                 } catch (Exception e) {
-                    Log.d(TAG, "Exception: " + e.getMessage() + " - " + e.getStackTrace());
+                    Utils.log(TAG, "Exception: " + e.getMessage() + " - " + e.getStackTrace(), true);
                 }finally {
                     try {
                         if (dos != null) {
@@ -721,7 +727,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_FIRMWARE_REBOOT_URL);
-                    Log.d(TAG,  "rebootDevice URL: " + url);
+                    Utils.log(TAG, "rebootDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -735,12 +741,12 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                    Utils.log(TAG, "rebootDevice response: " + result.toString(), true);
                     filename = result.toString();
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     urlConnection.disconnect();
                     numberOfRetries++;

@@ -450,16 +450,16 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                     MqttMessage mqttMessage = new MqttMessage();
                     mqttMessage.setPayload(jsonObject.toString().getBytes());
-                    Log.d(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                    Log.d(TAG, "MQTT publish data: " + mqttMessage);
+                    Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                    Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
                     mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (MqttException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }else{
-                Log.d(TAG, "mqttAndroidClient is null");
+                Utils.log(TAG, "mqttAndroidClient is null", true);
             }
             MySettings.setControlState(false);
         }
@@ -481,22 +481,22 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             //Wifi is available
             if(mWifiManager.isWifiEnabled()){
                 //Wifi is ON, check which SSID is currently associated with this device
-                Log.d(TAG, "Wifi is ON, check which SSID is currently associated with this device");
+                Utils.log(TAG, "Wifi is ON, check which SSID is currently associated with this device", true);
                 WifiInfo mWifiInfo = mWifiManager.getConnectionInfo();
                 if(mWifiInfo != null){
                     //Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode
-                    Log.d(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode");
+                    Utils.log(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode", true);
                     String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
-                    Log.d(TAG, "Currently connected to: " + ssid);
+                    Utils.log(TAG, "Currently connected to: " + ssid, true);
                     WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
                     if(wifiNetwork != null){
-                        Log.d(TAG, "wifinetwork DB id: " + wifiNetwork.getId());
+                        Utils.log(TAG, "wifinetwork DB id: " + wifiNetwork.getId(), true);
                         long placeID = wifiNetwork.getPlaceID();
-                        Log.d(TAG, "wifinetwork placeID: " + placeID);
+                        Utils.log(TAG, "wifinetwork placeID: " + placeID, true);
                         if(placeID != -1){
                             Place localPlace = MySettings.getPlace(placeID);
                             if(localPlace != null){
-                                Log.d(TAG, "wifinetwork DB placeName: " + localPlace.getName());
+                                Utils.log(TAG, "wifinetwork DB placeName: " + localPlace.getName(), true);
                                 localPlace.setMode(Place.PLACE_MODE_LOCAL);
                                 MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
                                 if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
@@ -506,15 +506,15 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         }
                     }else{
                         //Wifi network is NOT associated with any Place
-                        Log.d(TAG, "Wifi network is NOT associated with any Place");
+                        Utils.log(TAG, "Wifi network is NOT associated with any Place", true);
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
-                    Log.d(TAG, "Wifi is ON but not connected to any ssid");
+                    Utils.log(TAG, "Wifi is ON but not connected to any ssid", true);
                 }
             }else{
                 //Wifi is OFF
-                Log.d(TAG, "Wifi is OFF");
+                Utils.log(TAG, "Wifi is OFF", true);
             }
         }else {
             //Wifi is not available
@@ -667,11 +667,11 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
                 public void connectComplete(boolean b, String s) {
-                    Log.d(TAG, "MQTT connectComplete on " + s);
+                    Utils.log(TAG, "MQTT connectComplete on " + s, true);
                 }
                 @Override
                 public void connectionLost(Throwable throwable) {
-                    Log.d(TAG, "MQTT connectionLost");
+                    Utils.log(TAG, "MQTT connectionLost", true);
                     for (Device device:placeDevices) {
                         device.setDeviceMQTTReachable(false);
                     }
@@ -680,15 +680,15 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 @Override
                 public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
                     //setMessageNotification(s, new String(mqttMessage.getPayload()));
-                    Log.d(TAG, "MQTT messageArrived: 'topic': " + s);
-                    Log.d(TAG, "MQTT messageArrived: 'mqttMessage': " + new String(mqttMessage.getPayload()));
+                    Utils.log(TAG, "MQTT messageArrived: 'topic': " + s, true);
+                    Utils.log(TAG, "MQTT messageArrived: 'mqttMessage': " + new String(mqttMessage.getPayload()), true);
                     //make sure it's the 'status' topic, not the 'control' topic
                     if(s.contains("status")){
                         /*if(MySettings.isGetStatusActive()){
                            return;
                         }*/
                         if (MySettings.isControlActive()){
-                            Log.d(TAG, "Controls active, do nothing");
+                            Utils.log(TAG, "Controls active, do nothing", true);
                             return;
                         }
                         MySettings.setGetStatusState(true);
@@ -720,14 +720,14 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                                                         jsonObject1.put("R_M_ALV", "0");
                                                         MqttMessage mqttMessage1 = new MqttMessage();
                                                         mqttMessage1.setPayload(jsonObject1.toString().getBytes());
-                                                        Log.d(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                                                        Log.d(TAG, "MQTT Publish data: " + mqttMessage1);
+                                                        Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                                                        Utils.log(TAG, "MQTT Publish data: " + mqttMessage1, true);
                                                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage1);
                                                         device.setDeviceMQTTReachable(true);
                                                     }catch (JSONException e){
-                                                        Log.d(TAG, "Exception: " + e.getMessage());
+                                                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                                                     }catch (MqttException e){
-                                                        Log.d(TAG, "Exception: " + e.getMessage());
+                                                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                                                     }
                                                 }
                                             }
@@ -941,7 +941,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                    Log.d(TAG, "MQTT deliveryComplete");
+                    Utils.log(TAG, "MQTT deliveryComplete", true);
                 }
             });
             try {
@@ -951,13 +951,13 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         @Override
                         public void onSuccess(IMqttToken asyncActionToken) {
                             mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
-                            Log.d(TAG, "MQTT connect onSuccess");
+                            Utils.log(TAG, "MQTT connect onSuccess", true);
                             try {
                                 for (Device device:placeDevices) {
                                     subscribe(mqttAndroidClient, device, 1);
                                 }
                             }catch (MqttException e){
-                                Log.d(TAG, "Exception " + e.getMessage());
+                                Utils.log(TAG, "Exception " + e.getMessage(), true);
                                 for (Device device:placeDevices) {
                                     device.setDeviceMQTTReachable(false);
                                 }
@@ -967,7 +967,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
                         @Override
                         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            Log.d(TAG, "MQTT connect onFailure: " + exception.toString());
+                            Utils.log(TAG, "MQTT connect onFailure: " + exception.toString(), true);
                             for (Device device:placeDevices) {
                                 device.setDeviceMQTTReachable(false);
                             }
@@ -991,7 +991,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                    Utils.log(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), true);
                     device.setDeviceMQTTReachable(false);
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
@@ -1010,20 +1010,20 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             token2.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    Log.d(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                    Utils.log(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
                     try {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
                         jsonObject.put("R_M_ALV", "1");
                         MqttMessage mqttMessage = new MqttMessage();
                         mqttMessage.setPayload(jsonObject.toString().getBytes());
-                        Log.d(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
-                        Log.d(TAG, "MQTT publish data: " + mqttMessage);
+                        Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                        Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
                     }catch (JSONException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }catch (MqttException e){
-                        Log.d(TAG, "Exception: " + e.getMessage());
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
                 }
 
@@ -1132,25 +1132,25 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     @Override
     public void onStart(){
-        Log.d(TAG, "onStart");
+        Utils.log(TAG, "onStart", true);
         super.onStart();
         if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
             //startTimer in onResume
         }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            Log.d(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT");
+            Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
             //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
             if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
                 String clientId = MqttClient.generateClientId();
                 getMqttClient(getActivity(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
             }else{
-                Log.d(TAG, "MQTT is already connected");
+                Utils.log(TAG, "MQTT is already connected", true);
             }
         }
     }
 
     @Override
     public void onDestroy(){
-        Log.d(TAG, "onDestroy");
+        Utils.log(TAG, "onDestroy", true);
         //stop MQTT
         if(mqttAndroidClient != null){
             try {
@@ -1158,9 +1158,9 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 mqttAndroidClient.unregisterResources();
                 mqttAndroidClient.close();
             }catch (MqttException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (Exception e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }
         }
         for (Device device:placeDevices) {
@@ -1219,7 +1219,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
         @Override
         protected void onPreExecute(){
-            Log.d(TAG, "Enabling getStatus flag...");
+            Utils.log(TAG, "Enabling getStatus flag...", true);
             MySettings.setGetStatusState(true);
         }
 
@@ -1245,7 +1245,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
                 //urlString = urlString.concat("?json_0").concat("=").concat(jObject.toString());
 
-                Log.d(TAG,  "deviceToggler URL: " + urlString);
+                Utils.log(TAG, "deviceToggler URL: " + urlString, true);
 
                 URL url = new URL(urlString);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -1316,7 +1316,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                Log.d(TAG,  "deviceToggler POST data: " + jObject.toString());
+                Utils.log(TAG, "deviceToggler POST data: " + jObject.toString(), true);
 
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
@@ -1332,7 +1332,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "deviceToggler response: " + result.toString());
+                Utils.log(TAG, "deviceToggler response: " + result.toString(), true);
                 if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
                     ronixUnit = true;
                 }else{
@@ -1738,7 +1738,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     }
                 }
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -1751,7 +1751,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
                 //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
@@ -1764,7 +1764,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 if(!ronixUnit){
                     device.setErrorCount(device.getErrorCount() + 1);
                     //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
@@ -1784,7 +1784,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 if(urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                Log.d(TAG, "Disabling getStatus flag...");
+                Utils.log(TAG, "Disabling getStatus flag...", true);
                 MySettings.setGetStatusState(false);
             }
 

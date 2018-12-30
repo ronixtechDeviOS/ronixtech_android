@@ -1,7 +1,6 @@
 package com.ronixtech.ronixhome;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -24,7 +23,7 @@ public class DeviceScanner extends Worker{
 
     @Override
     public Worker.Result doWork(){
-        Log.d(TAG, "doWork for DeviceScanner");
+        Utils.log(TAG, "doWork for DeviceScanner", true);
         // Do the work here--in this case, compress the stored images.
         // In this example no parameters are passed; the task is
         // assumed to be "compress the whole library."
@@ -68,11 +67,11 @@ public class DeviceScanner extends Worker{
         //volley request to device to get its status
         String url = "http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS;
 
-        Log.d(TAG,  "getDeviceStatus URL: " + url);
+        Utils.log(TAG, "getDeviceStatus URL: " + url, true);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "getDeviceStatus response: " + response);
+                Utils.log(TAG, "getDeviceStatus response: " + response, true);
 
                 device.setErrorCount(0);
 
@@ -82,7 +81,7 @@ public class DeviceScanner extends Worker{
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley Error: " + error.getMessage());
+                Utils.log(TAG, "Volley Error: " + error.getMessage(), true);
                 MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     MySettings.updateDeviceIP(device, "");
@@ -107,7 +106,7 @@ public class DeviceScanner extends Worker{
                 jsonObject = new JSONObject(data);
                 this.device = device;
             }catch (Exception e){
-                Log.d(TAG, "Json exception " + e.getMessage());
+                Utils.log(TAG, "Json exception: " + e.getMessage(), true);
             }
         }
 
@@ -265,7 +264,7 @@ public class DeviceScanner extends Worker{
                         MainActivity.getInstance().refreshDevicesListFromMemory();
                     }
                 }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
+                    Utils.log(TAG, "Json exception: " + e.getMessage(), true);
                 }
             }
             return null;

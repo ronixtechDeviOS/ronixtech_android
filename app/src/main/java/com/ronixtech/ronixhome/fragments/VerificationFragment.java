@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -128,10 +127,10 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
                         if (task.isSuccessful()) {
                             Utils.dismissLoading();
                             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.verification_mail_sent_successfully), true);
-                            Log.d(TAG, "sendEmailVerification Email sent.");
+                            Utils.log(TAG, "sendEmailVerification Email sent.", true);
                         } else {
                             // If sending mail fails, display a message to the user.
-                            Log.d(TAG, "sendEmailVerification failure: " + task.getException());
+                            Utils.log(TAG, "sendEmailVerification failure: " + task.getException(), true);
                             if (task.getException() != null) {
                                 Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                             }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -261,7 +260,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             public void onClick(View view) {
                 if(selectedPlace != null){
                     if(selectedFloor != null){
-                        if(MySettings.getFloorRooms(selectedFloor.getId()) == null || MySettings.getFloorRooms(selectedFloor.getId()).size() < 1){
+                        /*if(MySettings.getFloorRooms(selectedFloor.getId()) == null || MySettings.getFloorRooms(selectedFloor.getId()).size() < 1){
                             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                         }else{
                             // DialogFragment.show() will take care of adding the fragment
@@ -280,7 +279,23 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                             fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
                             fragment.setParentFragment(AddDeviceSelectLocationFragment.this);
                             fragment.show(ft, "pickRoomDialogFragment");
+                        }*/
+                        // DialogFragment.show() will take care of adding the fragment
+                        // in a transaction.  We also want to remove any currently showing
+                        // dialog, so make our own transaction and take care of that here.
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
+                        if (prev != null) {
+                            ft.remove(prev);
                         }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        PickRoomDialogFragment fragment = PickRoomDialogFragment.newInstance();
+                        fragment.setFloorID(selectedFloor.getId());
+                        fragment.setTargetFragment(AddDeviceSelectLocationFragment.this, 0);
+                        fragment.setParentFragment(AddDeviceSelectLocationFragment.this);
+                        fragment.show(ft, "pickRoomDialogFragment");
                     }else{
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
@@ -478,7 +493,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
 
     @Override
     public void onWifiNetworkSelected(WifiNetwork wifiNetwork){
-        Log.d("AAAA", "AddDeviceSelectLocationFragment onWifiNetworkSelected - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
+        Utils.log(TAG, "AddDeviceSelectLocationFragment onWifiNetworkSelected - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid(), true);
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
@@ -492,7 +507,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
 
     @Override
     public void onNetworkAdded(WifiNetwork wifiNetwork){
-        Log.d("AAAA", "AddDeviceSelectLocationFragment onNetworkAdded - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
+        Utils.log(TAG, "AddDeviceSelectLocationFragment onNetworkAdded - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid(), true);
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());

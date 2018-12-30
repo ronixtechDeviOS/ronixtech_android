@@ -82,54 +82,54 @@ public class NetworkDiscovery {
                     mNsdManager.discoverServices("_http._tcp", NsdManager.PROTOCOL_DNS_SD, new NsdManager.DiscoveryListener() {
                         @Override
                         public void onStartDiscoveryFailed(String serviceType, int errorCode) {
-                            Log.d(TAG, "onStartDiscoveryFailed failed: Error code:" + errorCode);
+                            Utils.log(TAG, "onStartDiscoveryFailed failed: Error code:" + errorCode, true);
                             //mNsdManager.stopServiceDiscovery(this);
                         }
 
                         @Override
                         public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-                            Log.d(TAG, "onStopDiscoveryFailed failed: Error code:" + errorCode);
+                            Utils.log(TAG, "onStopDiscoveryFailed failed: Error code:" + errorCode, true);
                             //mNsdManager.stopServiceDiscovery(this);
                         }
 
                         @Override
                         public void onDiscoveryStarted(String serviceType) {
-                            Log.d(TAG, "onDiscoveryStarted discovery started");
+                            Utils.log(TAG, "onDiscoveryStarted discovery started", true);
                         }
 
                         @Override
                         public void onDiscoveryStopped(String serviceType) {
-                            Log.d(TAG, "onDiscoveryStopped stopped: " + serviceType);
+                            Utils.log(TAG, "onDiscoveryStopped stopped: " + serviceType, true);
                         }
 
                         @Override
                         public void onServiceFound(NsdServiceInfo serviceInfo) {
                             // A service was found! Do something with it.
-                            Log.d(TAG, "onServiceFound discovery success");
+                            Utils.log(TAG, "onServiceFound discovery success", true);
                             // The name of the service tells the user what they'd be
                             // connecting to. It could be "Bob's Chat App".
-                            Log.d(TAG, "Service Name: " + serviceInfo.getServiceName());
+                            Utils.log(TAG, "Service Name: " + serviceInfo.getServiceName(), true);
                             // Service type is the string containing the protocol and
                             // transport layer for this service.
-                            Log.d(TAG, "Service Type: " + serviceInfo.getServiceType());
+                            Utils.log(TAG, "Service Type: " + serviceInfo.getServiceType(), true);
 
                             if(serviceInfo.getServiceName().startsWith(Constants.DEVICE_NAME_IDENTIFIER)){
                                 mNsdManager.resolveService(serviceInfo, new NsdManager.ResolveListener() {
                                     @Override
                                     public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                                         // Called when the resolve fails. Use the error code to debug.
-                                        Log.d(TAG, "onResolveFailed: " + errorCode);
+                                        Utils.log(TAG, "onResolveFailed: " + errorCode, true);
                                     }
 
                                     @Override
                                     public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                                        Log.d(TAG, "onServiceResolved: " + serviceInfo);
+                                        Utils.log(TAG, "onServiceResolved: " + serviceInfo, true);
 
                                         NsdServiceInfo mService = serviceInfo;
                                         int port = mService.getPort();
                                         InetAddress host = mService.getHost();
-                                        Log.d(TAG, "PORT: " + port);
-                                        Log.d(TAG, "HOST: " + host);
+                                        Utils.log(TAG, "PORT: " + port, true);
+                                        Utils.log(TAG, "HOST: " + host, true);
 
                                         if (serviceInfo.getServiceName().startsWith(Constants.DEVICE_NAME_IDENTIFIER)) {
 
@@ -138,7 +138,7 @@ public class NetworkDiscovery {
                                                 Device device = DevicesInMemory.getDeviceByChipID(serviceInfo.getServiceName().substring(index+1));
                                                 if(device != null){
                                                     if(device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(host.getHostAddress())){
-                                                        Log.d(TAG, "Device " + device.getName() + " updated with IP: " + host.getHostAddress());
+                                                        Utils.log(TAG, "Device " + device.getName() + " updated with IP: " + host.getHostAddress(), true);
                                                         Utils.showNotification(device);
 
                                                         device.setIpAddress(host.getHostAddress());
@@ -149,7 +149,7 @@ public class NetworkDiscovery {
                                                             MainActivity.getInstance().refreshDevicesListFromMemory();
                                                         }
                                                     }else{
-                                                        Log.d(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + host.getHostAddress());
+                                                        Utils.log(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + host.getHostAddress(), true);
                                                     }
                                                 }
                                             }
@@ -163,13 +163,13 @@ public class NetworkDiscovery {
                         public void onServiceLost(NsdServiceInfo serviceInfo) {
                             // When the network service is no longer available.
                             // Internal bookkeeping code goes here.
-                            Log.d(TAG, "onServiceLost discovery lost: " + serviceInfo);
+                            Utils.log(TAG, "onServiceLost discovery lost: " + serviceInfo, true);
                         }
                     });
                 }catch (IllegalArgumentException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (Exception e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
             }
         }
@@ -180,19 +180,19 @@ public class NetworkDiscovery {
             QueryListener listener = new QueryListener() {
                 @Override
                 public void queryAnswered(DNSSDService query, int flags, int ifIndex, String fullName, int rrtype, int rrclass, byte[] rdata, int ttl) {
-                    Log.d(TAG, "queryAnswered fullName " + fullName);
-                    Log.d(TAG, "queryAnswered serviceName " + serviceName);
+                    Utils.log(TAG, "queryAnswered fullName " + fullName, true);
+                    Utils.log(TAG, "queryAnswered serviceName " + serviceName, true);
 
                     try {
                         InetAddress address = InetAddress.getByAddress(rdata);
                         if (address instanceof Inet4Address) {
-                            Log.d(TAG, "queryAnswered InetAddress address: " + address.toString().substring(1));
+                            Utils.log(TAG, "queryAnswered InetAddress address: " + address.toString().substring(1), true);
                             int index = serviceName.indexOf("_");
                             if(index != -1){
                                 Device device = DevicesInMemory.getDeviceByChipID(serviceName.substring(index+1));
                                 if(device != null){
                                     if(device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(address.toString().substring(1))){
-                                        Log.d(TAG, "Device " + device.getName() + " updated with IP: " + address.toString().substring(1));
+                                        Utils.log(TAG, "Device " + device.getName() + " updated with IP: " + address.toString().substring(1), true);
                                         Utils.showNotification(device);
 
                                         device.setIpAddress(address.toString().substring(1));
@@ -203,7 +203,7 @@ public class NetworkDiscovery {
                                             MainActivity.getInstance().refreshDevicesListFromMemory();
                                         }
                                     }else{
-                                        Log.d(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + address.toString().substring(1));
+                                        Utils.log(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + address.toString().substring(1), true);
                                     }
                                 }
                             }

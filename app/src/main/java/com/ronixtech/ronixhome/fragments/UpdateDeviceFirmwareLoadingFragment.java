@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -213,7 +212,7 @@ public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.
 
         @Override
         protected void onPreExecute(){
-            Log.d(TAG, "Enabling getStatus flag...");
+            Utils.log(TAG, "Enabling getStatus flag...", true);
             MySettings.setGetStatusState(true);
         }
 
@@ -242,7 +241,7 @@ public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.
             try{
                 String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
-                Log.d(TAG,  "deviceChecker URL: " + urlString);
+                Utils.log(TAG, "deviceChecker URL: " + urlString, true);
 
                 URL url = new URL(urlString);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -256,7 +255,7 @@ public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.
 
                 JSONObject jObject = new JSONObject();
                 jObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-                Log.d(TAG,  "deviceChecker POST data: " + jObject.toString());
+                Utils.log(TAG, "deviceChecker POST data: " + jObject.toString(), true);
 
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
@@ -272,23 +271,23 @@ public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.
                     result.append(dataLine);
                 }
                 urlConnection.disconnect();
-                Log.d(TAG,  "deviceChecker response: " + result.toString());
+                Utils.log(TAG, "deviceChecker response: " + result.toString(), true);
                 if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
                     ronixUnit = true;
                 }else{
                     ronixUnit = false;
                 }
             }catch (MalformedURLException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (IOException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }catch (JSONException e){
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
             }finally {
                 if(urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                Log.d(TAG, "Disabling getStatus flag...");
+                Utils.log(TAG, "Disabling getStatus flag...", true);
                 MySettings.setGetStatusState(false);
             }
 

@@ -20,7 +20,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -308,22 +307,22 @@ public class MainActivity extends AppCompatActivity
             //Wifi is available
             if(mWifiManager.isWifiEnabled()){
                 //Wifi is ON, check which SSID is currently associated with this device
-                Log.d(TAG, "Wifi is ON, check which SSID is currently associated with this device");
+                Utils.log(TAG, "Wifi is ON, check which SSID is currently associated with this device", true);
                 WifiInfo mWifiInfo = mWifiManager.getConnectionInfo();
                 if(mWifiInfo != null){
                     //Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode
-                    Log.d(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode");
+                    Utils.log(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode", true);
                     String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
-                    Log.d(TAG, "Currently connected to: " + ssid);
+                    Utils.log(TAG, "Currently connected to: " + ssid, true);
                     WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
                     if(wifiNetwork != null){
-                        Log.d(TAG, "wifinetwork DB id: " + wifiNetwork.getId());
+                        Utils.log(TAG, "wifinetwork DB id: " + wifiNetwork.getId(), true);
                         long placeID = wifiNetwork.getPlaceID();
-                        Log.d(TAG, "wifinetwork placeID: " + placeID);
+                        Utils.log(TAG, "wifinetwork placeID: " + placeID, true);
                         if(placeID != -1){
                             Place localPlace = MySettings.getPlace(placeID);
                             if(localPlace != null){
-                                Log.d(TAG, "wifinetwork DB placeName: " + localPlace.getName());
+                                Utils.log(TAG, "wifinetwork DB placeName: " + localPlace.getName(), true);
                                 localPlace.setMode(Place.PLACE_MODE_LOCAL);
                                 MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
                                 if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
@@ -333,15 +332,15 @@ public class MainActivity extends AppCompatActivity
                         }
                     }else{
                         //Wifi network is NOT associated with any Place
-                        Log.d(TAG, "Wifi network is NOT associated with any Place");
+                        Utils.log(TAG, "Wifi network is NOT associated with any Place", true);
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
-                    Log.d(TAG, "Wifi is ON but not connected to any ssid");
+                    Utils.log(TAG, "Wifi is ON but not connected to any ssid", true);
                 }
             }else{
                 //Wifi is OFF
-                Log.d(TAG, "Wifi is OFF");
+                Utils.log(TAG, "Wifi is OFF", true);
             }
         }else {
             //Wifi is not available
@@ -380,11 +379,11 @@ public class MainActivity extends AppCompatActivity
     private void getLatestFirmwareVersion(){
         String url = Constants.DEVICE_LATEST_FIRMWARE_VERSIONS_URL;
 
-        Log.d(TAG, "getLatestFirmwareVersions URL: " + url);
+        Utils.log(TAG, "getLatestFirmwareVersions URL: " + url, true);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "getLatestFirmwareVersions response: " + response);
+                Utils.log(TAG, "getLatestFirmwareVersions response: " + response, true);
                 try{
                     JSONArray jsonArray = new JSONArray(response);
                     int length = jsonArray.length();
@@ -404,13 +403,13 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
+                    Utils.log(TAG, "Json exception: " + e.getMessage(), true);
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley error: " + error.getMessage());
+                Utils.log(TAG, "Volley error: \" + error.getMessage()", true);
             }
         });
         stringRequest.setShouldCache(false);

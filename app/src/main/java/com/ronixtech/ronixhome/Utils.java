@@ -11,6 +11,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.TimeUnit;
 import com.ronixtech.ronixhome.entities.Type;
@@ -58,6 +60,7 @@ public class Utils {
 
     private static CustomProgressDialog customProgressDialog;
 
+    private static FirebaseAnalytics mFirebaseAnalytics;
 
     public static FragmentTransaction setAnimations(FragmentTransaction originalFragmentTransaction, int animationType){
         switch (animationType){
@@ -236,7 +239,7 @@ public class Utils {
                     editText.setError(errorMessage);
                 }
             }catch (JSONException e){
-                Log.d("Utils", "Json exception: " + e.getMessage());
+                Utils.log(TAG, "Json exception: " + e.getMessage(), true);
             }
 
         }
@@ -366,12 +369,12 @@ public class Utils {
             File dir = new File("/sys/devices/system/cpu/");
             //Filter to only list the devices we care about
             File[] files = dir.listFiles(new CpuFilter());
-            Log.d("Utils", "CPU Count: "+files.length);
+            Utils.log(TAG, "CPU Count: "+files.length, true);
             //Return the number of cores (virtual CPU devices)
             return files.length;
         } catch(Exception e) {
             //Print exception
-            Log.d("Utils", "CPU Count: Failed.");
+            Utils.log(TAG, "CPU Count: Failed.", true);
             e.printStackTrace();
             //Default to return 1 core
             return 1;
@@ -644,7 +647,7 @@ public class Utils {
                 return !ipAddr.equals("");
 
             } catch (Exception e) {
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 return false;
             }
         }
@@ -821,16 +824,16 @@ public class Utils {
             } catch (IOException ioException) {
                 // Catch network or other I/O problems.
                 errorMessage = Utils.getStringExtraInt(context, R.string.geocoding_error_service_not_available);
-                Log.d(TAG, errorMessage, ioException);
+                Utils.log(TAG, errorMessage, true);
                 return false;
             } catch (IllegalArgumentException illegalArgumentException) {
                 // Catch invalid latitude or longitude values.
                 errorMessage = Utils.getStringExtraInt(context, R.string.geocoding_error_invalid_lat_long);
-                Log.d(TAG, errorMessage + ". " + "Latitude = " + latitude + ", Longitude = " + longitude, illegalArgumentException);
+                Utils.log(TAG, errorMessage + ". " + "Latitude = " + latitude + ", Longitude = " + longitude, true);
                 return false;
             }catch (Exception e) {
                 errorMessage = errorMessage;
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 return false;
             }
 
@@ -838,11 +841,11 @@ public class Utils {
             if (addresses == null || addresses.size()  == 0) {
                 if (errorMessage.isEmpty()) {
                     errorMessage = Utils.getStringExtraInt(context, R.string.geocoding_error_no_address_found);
-                    Log.d(TAG, errorMessage);
+                    Utils.log(TAG, errorMessage, true);
                 }
                 return false;
             } else {
-                Log.d(TAG, Utils.getStringExtraInt(context, R.string.geocoding_error_address_found));
+                Utils.log(TAG, Utils.getStringExtraInt(context, R.string.geocoding_error_address_found), true);
                 Address address = addresses.get(0);
                 ArrayList<String> addressFragments = new ArrayList<>();
 
@@ -981,6 +984,61 @@ public class Utils {
             }
         }else {
             return "";
+        }
+    }
+
+    public static void log(String tag, String message, boolean analytics){
+        Log.d(tag, message);
+        if(analytics){
+            if(mFirebaseAnalytics == null) {
+                mFirebaseAnalytics = FirebaseAnalytics.getInstance(MyApp.getInstance());
+                Bundle bundle = new Bundle();
+                bundle.putString("user", MySettings.getActiveUser().getEmail());
+                bundle.putString(tag, message);
+                String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
+                String[] versionNames = new String[]{
+                        "ANDROID BASE", "ANDROID BASE 1.1", "CUPCAKE", "DONUT",
+                        "ECLAIR", "ECLAIR_0_1", "ECLAIR_MR1", "FROYO", "GINGERBREAD",
+                        "GINGERBREAD_MR1", "HONEYCOMB", "HONEYCOMB_MR1", "HONEYCOMB_MR2",
+                        "ICE_CREAM_SANDWICH", "ICE_CREAM_SANDWICH_MR1",
+                        "JELLY_BEAN", "JELLY_BEAN_MR1", "JELLY_BEAN_MR2", "KITKAT", "KITKAT_WATCH",
+                        "LOLLIPOP", "LOLLIPOP_MR1", "MARSHMALLOW", "NOUGAT", "OREO", "OREO_MR1"
+                };
+                int nameIndex = Build.VERSION.SDK_INT - 1;
+                if (nameIndex < versionNames.length) {
+                    versionName = versionNames[nameIndex];
+                }
+                bundle.putString("timestamp", getTimeStringDateHoursMinutes(new java.util.Date().getTime()));
+                bundle.putString("android_version", versionName  + " (" + Build.VERSION.RELEASE + ")");
+                bundle.putString("sdk_version", ""+Build.VERSION.SDK_INT);
+                bundle.putString("device_manufacturer", ""+Build.MANUFACTURER);
+                bundle.putString("device_brand", ""+Build.BRAND);
+                bundle.putString("device_model", ""+android.os.Build.MODEL);
+                mFirebaseAnalytics.logEvent(Constants.ANALYTICS_TAG, bundle);
+            }else{
+                Bundle bundle = new Bundle();
+                bundle.putString(tag, message);
+                String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
+                String[] versionNames = new String[]{
+                        "ANDROID BASE", "ANDROID BASE 1.1", "CUPCAKE", "DONUT",
+                        "ECLAIR", "ECLAIR_0_1", "ECLAIR_MR1", "FROYO", "GINGERBREAD",
+                        "GINGERBREAD_MR1", "HONEYCOMB", "HONEYCOMB_MR1", "HONEYCOMB_MR2",
+                        "ICE_CREAM_SANDWICH", "ICE_CREAM_SANDWICH_MR1",
+                        "JELLY_BEAN", "JELLY_BEAN_MR1", "JELLY_BEAN_MR2", "KITKAT", "KITKAT_WATCH",
+                        "LOLLIPOP", "LOLLIPOP_MR1", "MARSHMALLOW", "NOUGAT", "OREO", "OREO_MR1"
+                };
+                int nameIndex = Build.VERSION.SDK_INT - 1;
+                if (nameIndex < versionNames.length) {
+                    versionName = versionNames[nameIndex];
+                }
+                bundle.putString("timestamp", getTimeStringDateHoursMinutes(new java.util.Date().getTime()));
+                bundle.putString("android_version", versionName  + " (" + Build.VERSION.RELEASE + ")");
+                bundle.putString("sdk_version", ""+Build.VERSION.SDK_INT);
+                bundle.putString("device_manufacturer", ""+Build.MANUFACTURER);
+                bundle.putString("device_brand", ""+Build.BRAND);
+                bundle.putString("device_model", ""+android.os.Build.MODEL);
+                mFirebaseAnalytics.logEvent(Constants.ANALYTICS_TAG, bundle);
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,7 @@ public class LogViewerFragment extends android.support.v4.app.Fragment {
             if(logText != null && logText.length() >= 1) {
                 pid = Integer.parseInt(logText);
             }
-            Log.d(TAG, "pid = " + pid);
+            Utils.log(TAG, "pid = " + pid, true);
 
             if(pid != -1){
                 command = "logcat -d -v brief --pid=" + pid;
@@ -124,7 +123,7 @@ public class LogViewerFragment extends android.support.v4.app.Fragment {
 
         } catch (IOException e) {
             // Handle Exception
-            Log.d(TAG, e.getMessage());
+            Utils.log(TAG, e.getMessage(), true);
         }
 
         shareLogButon.setOnClickListener(new View.OnClickListener() {

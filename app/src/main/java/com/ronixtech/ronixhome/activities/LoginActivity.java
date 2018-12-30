@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -40,14 +39,14 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
                     @Override
                     public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        Log.d(TAG, "getDynamicLink - onSuccess");
+                        Utils.log(TAG, "getDynamicLink - onSuccess", true);
                         // Get deep link from result (may be null if no link is found)
                         Uri deepLink = null;
                         if (pendingDynamicLinkData != null) {
                             deepLink = pendingDynamicLinkData.getLink();
                         }
 
-                        Log.d(TAG, "getDynamicLink - onSuccess - deepLink: " + deepLink);
+                        Utils.log(TAG, "getDynamicLink - onSuccess - deepLink: " + deepLink, true);
 
                         if(deepLink != null && deepLink.toString().contains("oobCode")){
                             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -57,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                             fragmentTransaction.commit();
 
-                            Log.d(TAG, "getDynamicLink - onSuccess - oobCode: " + deepLink.getQueryParameter("oobCode"));
+                            Utils.log(TAG, "getDynamicLink - onSuccess - oobCode: " + deepLink.getQueryParameter("oobCode"), true);
                             FirebaseAuth mAuth = FirebaseAuth.getInstance();
                             if(mAuth != null){
                                 mAuth.applyActionCode(deepLink.getQueryParameter("oobCode")).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -70,29 +69,29 @@ public class LoginActivity extends AppCompatActivity {
                                                     FirebaseUser fbUser = mAuth.getCurrentUser();
                                                     if(fbUser != null){
                                                         if(fbUser.isEmailVerified()){
-                                                            Log.d(TAG, "fbUser is verified");
+                                                            Utils.log(TAG, "fbUser is verified", true);
                                                             Utils.dismissLoading();
                                                             Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
                                                             startActivity(mainIntent);
                                                             finish();
                                                         }else{
-                                                            Log.d(TAG, "fbUser is not verified");
+                                                            Utils.log(TAG, "fbUser is not verified", true);
                                                             Utils.dismissLoading();
                                                         }
                                                     }else{
-                                                        Log.d(TAG, "fbUser is null");
+                                                        Utils.log(TAG, "fbUser is null", true);
                                                         Utils.dismissLoading();
                                                     }
                                                 }
                                             });
                                         }else{
-                                            Log.d(TAG, "task failed: " + task.getException());
+                                            Utils.log(TAG, "task failed: " + task.getException(), true);
                                             Utils.dismissLoading();
                                         }
                                     }
                                 });
                             }else{
-                                Log.d(TAG, "mAuth is null");
+                                Utils.log(TAG, "mAuth is null", true);
                                 Utils.dismissLoading();
                             }
                         }else if(deepLink != null && deepLink.toString().contains(Constants.PARAMETER_EMAIL)){
@@ -114,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Utils.dismissLoading();
-                        Log.d(TAG, "getDynamicLink - onFailure: " + e.getMessage());
+                        Utils.log(TAG, "getDynamicLink - onFailure: " + e.getMessage(), true);
                     }
                 });
 

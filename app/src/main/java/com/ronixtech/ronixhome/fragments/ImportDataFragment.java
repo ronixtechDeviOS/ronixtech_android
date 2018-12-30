@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -155,14 +154,14 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                                         //directory is created;
                                     }
                                 }
-                                Log.d(TAG, "Created directory: " + ronixDirectory.getAbsolutePath());
+                                Utils.log(TAG, "Created directory: " + ronixDirectory.getAbsolutePath(), true);
                                 File databaseDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/");
                                 if(!databaseDirectory.exists()) {
                                     if(databaseDirectory.mkdir()) {
                                         //directory is created;
                                     }
                                 }
-                                Log.d(TAG, "Created directory: " + databaseDirectory.getAbsolutePath());
+                                Utils.log(TAG, "Created directory: " + databaseDirectory.getAbsolutePath(), true);
 
                                 downloadFile(selectedBackup.getName(), Constants.DB_FILE_1);
                             }catch (Exception e){
@@ -208,7 +207,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                 List<Backup> backups = new ArrayList<>();
 
                 for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
+                    Utils.log(TAG, document.getId() + " => " + document.getData(), true);
                     Backup backup = new Backup();
                     backup.setName((String)document.getData().get("name"));
                     backup.setTimestamp((long)document.getData().get("timestamp"));
@@ -299,8 +298,8 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Log.d("AAAA", "Exception: " + exception.getMessage());
-                Log.d("AAAA", "Exception: " + exception.getStackTrace());
+                Utils.log(TAG, "Exception: " + exception.getMessage(), true);
+                Utils.log(TAG, "Exception: " + exception.getStackTrace(), true);
                 // Handle any errors
                 Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.downloading_database_file_failed), true);
                 if(getFragmentManager() != null){

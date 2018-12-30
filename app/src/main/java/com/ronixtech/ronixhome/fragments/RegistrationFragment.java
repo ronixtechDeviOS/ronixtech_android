@@ -9,7 +9,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -255,7 +254,7 @@ public class RegistrationFragment extends Fragment {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign up success, update database with the signed-up user's information
-                                Log.d(TAG, "createUserWithEmail success");
+                                Utils.log(TAG, "createUserWithEmail success", true);
                                 FirebaseUser fbUser = mAuth.getCurrentUser();
                                 UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(firstName + "" + lastName)
@@ -293,13 +292,15 @@ public class RegistrationFragment extends Fragment {
                                                             if (task.isSuccessful()) {
                                                                 Utils.dismissLoading();
                                                                 Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.verification_mail_sent_successfully), true);
-                                                                Log.d(TAG, "sendEmailVerification Email sent.");
-                                                                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-                                                                startActivity(mainIntent);
-                                                                getActivity().finish();
+                                                                Utils.log(TAG, "sendEmailVerification Email sent.", true);
+                                                                if(getActivity() != null) {
+                                                                    Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                                                                    startActivity(mainIntent);
+                                                                    getActivity().finish();
+                                                                }
                                                             } else {
                                                                 // If sending mail fails, display a message to the user.
-                                                                Log.d(TAG, "sendEmailVerification failure: " + task.getException());
+                                                                Utils.log(TAG, "sendEmailVerification failure: " + task.getException(), true);
                                                                 if (task.getException() != null) {
                                                                     Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                                                                 }
@@ -313,7 +314,7 @@ public class RegistrationFragment extends Fragment {
                                                     Utils.dismissLoading();
                                                 }
                                             }else{
-                                                Log.d(TAG, "userProfileChangeRequest failure: " + task.getException());
+                                                Utils.log(TAG, "userProfileChangeRequest failure: " + task.getException(), true);
                                                 if(task.getException() != null){
                                                     Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                                                 }
@@ -328,7 +329,7 @@ public class RegistrationFragment extends Fragment {
                                 }
                             } else {
                                 // If sign in fails, display a message to the user.
-                                Log.d(TAG, "createUserWithEmail failure: " + task.getException());
+                                Utils.log(TAG, "createUserWithEmail failure: " + task.getException(), true);
                                 if(task.getException() != null){
                                     Utils.showToast(getActivity(), "" + task.getException().getMessage(), true);
                                 }

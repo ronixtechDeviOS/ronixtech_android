@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Count;
@@ -74,12 +73,12 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try
         {
-            Log.d(TAG, "DHCP: gateway: " + Utils.intToIp(dhcpInfo.gateway));
-            Log.d(TAG, "DHCP: dns1: " + Utils.intToIp(dhcpInfo.dns1));
-            Log.d(TAG, "DHCP: dns2: " + Utils.intToIp(dhcpInfo.dns2));
-            Log.d(TAG, "DHCP: ipAddress: " + Utils.intToIp(dhcpInfo.ipAddress));
-            Log.d(TAG, "DHCP: netmask: " + Utils.intToIp(dhcpInfo.netmask));
-            Log.d(TAG, "DHCP: serverAddress: " + Utils.intToIp(dhcpInfo.serverAddress));
+            Utils.log(TAG, "DHCP: gateway: " + Utils.intToIp(dhcpInfo.gateway), true);
+            Utils.log(TAG, "DHCP: dns1: " + Utils.intToIp(dhcpInfo.dns1), true);
+            Utils.log(TAG, "DHCP: dns2: " + Utils.intToIp(dhcpInfo.dns2), true);
+            Utils.log(TAG, "DHCP: ipAddress: " + Utils.intToIp(dhcpInfo.ipAddress), true);
+            Utils.log(TAG, "DHCP: netmask: " + Utils.intToIp(dhcpInfo.netmask), true);
+            Utils.log(TAG, "DHCP: serverAddress: " + Utils.intToIp(dhcpInfo.serverAddress), true);
             InetAddress host = InetAddress.getByName(Utils.intToIp(dhcpInfo.gateway));
             byte[] ip = host.getAddress();
 
@@ -90,14 +89,14 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
             END_IP = START_IP + RANGE;
             ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-            Log.d(TAG, "Resetting counter");
+            Utils.log(TAG, "Resetting counter", true);
             Count.reset();
 
             for(CURRENT_THREAD = 0; CURRENT_THREAD < NUMBER_OF_THREADS; CURRENT_THREAD++){
                 int currentThread = CURRENT_THREAD;
                 int startIP = START_IP;
                 int endIP = END_IP;
-                Log.d(TAG, "RANGE #" + currentThread + " START " + START_IP + " END " + END_IP);
+                Utils.log(TAG, "RANGE #" + currentThread + " START " + START_IP + " END " + END_IP, true);
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
@@ -142,7 +141,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     private void readAddresses() {
-        Log.d(TAG, "Reading addresses from local /proc/net/arp file");
+        Utils.log(TAG, "Reading addresses from local /proc/net/arp file", true);
         List<Device> devices = new ArrayList<>();
         devices.addAll(DevicesInMemory.getDevices());
         //List<WifiDevice> wifiDevices = new ArrayList<>();
@@ -170,7 +169,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                             if(device.getMacAddress().toLowerCase().substring(2).equals(mac.toLowerCase().substring(2))){//skip the first 2 letters as each ESP unit has 2 MAC addresses with 2 different beginnings
                                 if(!arpResult.equals("0x0")) {//failed arp request has 0x0 in 3rd entry in the arp file, so it's not an up to date ip address
                                     if(device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(scannedIP)){
-                                        Log.d(TAG, "Device " + device.getName() + " updated with IP: " + scannedIP);
+                                        Utils.log(TAG, "Device " + device.getName() + " updated with IP: " + scannedIP, true);
                                         Utils.showNotification(device);
 
                                         device.setIpAddress(scannedIP);
@@ -181,7 +180,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                                             MainActivity.getInstance().refreshDevicesListFromMemory();
                                         }
                                     }else{
-                                        Log.d(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + scannedIP);
+                                        Utils.log(TAG, "Device " + device.getName() + " already has an up-to-date IP: " + scannedIP, true);
                                     }
                                 }
                             }else{
@@ -192,17 +191,17 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                 }
             }
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "Exception: " + e.getMessage());
+            Utils.log(TAG, "Exception: " + e.getMessage(), true);
             e.printStackTrace();
         } catch (IOException e) {
-            Log.d(TAG, "Exception: " + e.getMessage());
+            Utils.log(TAG, "Exception: " + e.getMessage(), true);
             e.printStackTrace();
         } finally{
-            Log.d(TAG, "increment counter");
+            Utils.log(TAG, "increment counter", true);
             Count.increment();
-            Log.d(TAG, "count=" + Count.count + " NumberOfThreads=" + NUMBER_OF_THREADS);
+            Utils.log(TAG, "count=" + Count.count + " NumberOfThreads=" + NUMBER_OF_THREADS, true);
             if(Count.count >= NUMBER_OF_THREADS){
-                Log.d(TAG, "ALL THREADS FINISHED SCANNING");
+                Utils.log(TAG, "ALL THREADS FINISHED SCANNING", true);
                 MySettings.setCurrentScanningState(false);
                 //Utils.hideUpdatingNotification();
                 Count.reset();
@@ -210,7 +209,7 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 e.printStackTrace();
             }
             if(MainActivity.getInstance() != null){
