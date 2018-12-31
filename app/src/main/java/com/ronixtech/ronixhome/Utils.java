@@ -999,7 +999,7 @@ public class Utils {
                     bundle.putString("user","unknown_user");
                 }
                 bundle.putString(tag, message);
-                String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
+                /*String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
                 String[] versionNames = new String[]{
                         "ANDROID BASE", "ANDROID BASE 1.1", "CUPCAKE", "DONUT",
                         "ECLAIR", "ECLAIR_0_1", "ECLAIR_MR1", "FROYO", "GINGERBREAD",
@@ -1012,8 +1012,8 @@ public class Utils {
                 if (nameIndex < versionNames.length) {
                     versionName = versionNames[nameIndex];
                 }
+                bundle.putString("android_version", versionName  + " (" + Build.VERSION.RELEASE + ")");*/
                 bundle.putString("timestamp", getTimeStringDateHoursMinutes(new java.util.Date().getTime()));
-                bundle.putString("android_version", versionName  + " (" + Build.VERSION.RELEASE + ")");
                 bundle.putString("sdk_version", ""+Build.VERSION.SDK_INT);
                 bundle.putString("device_manufacturer", ""+Build.MANUFACTURER);
                 bundle.putString("device_brand", ""+Build.BRAND);
@@ -1022,7 +1022,7 @@ public class Utils {
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString(tag, message);
-                String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
+                /*String versionName = Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT + 1].getName();
                 String[] versionNames = new String[]{
                         "ANDROID BASE", "ANDROID BASE 1.1", "CUPCAKE", "DONUT",
                         "ECLAIR", "ECLAIR_0_1", "ECLAIR_MR1", "FROYO", "GINGERBREAD",
@@ -1035,8 +1035,8 @@ public class Utils {
                 if (nameIndex < versionNames.length) {
                     versionName = versionNames[nameIndex];
                 }
+                bundle.putString("android_version", versionName  + " (" + Build.VERSION.RELEASE + ")");*/
                 bundle.putString("timestamp", getTimeStringDateHoursMinutes(new java.util.Date().getTime()));
-                bundle.putString("android_version", versionName  + " (" + Build.VERSION.RELEASE + ")");
                 bundle.putString("sdk_version", ""+Build.VERSION.SDK_INT);
                 bundle.putString("device_manufacturer", ""+Build.MANUFACTURER);
                 bundle.putString("device_brand", ""+Build.BRAND);
