@@ -293,6 +293,10 @@
     <string name="add_devices_first">No Smart Controllers added, please add a Smart Controller first</string>
     <string name="pir_max_devices_reached">Maximum number of devices is 9</string>
 
+    <string name="pick_line_title">Pick a Device</string>
+    <string name="pick_line_description">Locate the device</string>
+    <string name="no_lines">No devices in selected room. Please select a room which has at least 1 device</string>
+
     <string name="select_paired_devices">Select Smart Controller(s)</string>
     <string name="pairing_description">Please select which controller(s) this controller will be paired to</string>
     <string name="device_selection_hint">Tap here to select a Smart Controller</string>

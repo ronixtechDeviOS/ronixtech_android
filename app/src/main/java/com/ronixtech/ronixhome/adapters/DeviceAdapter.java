@@ -1893,24 +1893,30 @@ public class DeviceAdapter extends ArrayAdapter {
                             switch(position){
                                 case 0:
                                     jsonObject.put("L_0_DIM", ":");
+                                    //jsonObject.put("L_0_STT", "1");
                                     break;
                                 case 1:
                                     jsonObject.put("L_1_DIM", ":");
+                                    //jsonObject.put("L_1_STT", "1");
                                     break;
                                 case 2:
                                     jsonObject.put("L_2_DIM", ":");
+                                    //jsonObject.put("L_2_STT", "1");
                                     break;
                             }
                         }else if(state == Line.LINE_STATE_OFF){
                             switch (position){
                                 case 0:
                                     jsonObject.put("L_0_DIM", "0");
+                                    //jsonObject.put("L_0_STT", "0");
                                     break;
                                 case 1:
                                     jsonObject.put("L_1_DIM", "0");
+                                    //jsonObject.put("L_1_STT", "0");
                                     break;
                                 case 2:
                                     jsonObject.put("L_2_DIM", "0");
+                                    //jsonObject.put("L_2_STT", "0");
                                     break;
                             }
                         }
@@ -1918,25 +1924,25 @@ public class DeviceAdapter extends ArrayAdapter {
                         if(state == Line.LINE_STATE_ON){
                             switch(position){
                                 case 0:
-                                    jsonObject.put("L_0_STT", 1);
+                                    jsonObject.put("L_0_STT", "1");
                                     break;
                                 case 1:
-                                    jsonObject.put("L_1_STT", 1);
+                                    jsonObject.put("L_1_STT", "1");
                                     break;
                                 case 2:
-                                    jsonObject.put("L_2_STT", 1);
+                                    jsonObject.put("L_2_STT", "1");
                                     break;
                             }
                         }else if(state == Line.LINE_STATE_OFF){
                             switch(position){
                                 case 0:
-                                    jsonObject.put("L_0_STT", 0);
+                                    jsonObject.put("L_0_STT", "0");
                                     break;
                                 case 1:
-                                    jsonObject.put("L_1_STT", 0);
+                                    jsonObject.put("L_1_STT", "0");
                                     break;
                                 case 2:
-                                    jsonObject.put("L_2_STT", 0);
+                                    jsonObject.put("L_2_STT", "0");
                                     break;
                             }
                         }
