@@ -68,6 +68,7 @@ public class LoginFragment extends Fragment {
     private static final String EMAIL = "email";
     CallbackManager callbackManager;
 
+    ImageView logoImageView;
     EditText emailEditText, passwordEditText;
     ImageView togglePasswordVisibilityImageView;
     Button loginButton, registerButton, resetPasswordButton;
@@ -107,6 +108,7 @@ public class LoginFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
+        logoImageView = view.findViewById(R.id.logo_imageview);
         emailEditText = view.findViewById(R.id.login_email_edittext);
         passwordEditText = view.findViewById(R.id.login_password_edittext);
         togglePasswordVisibilityImageView = view.findViewById(R.id.toggle_password_visibility_imageview);
@@ -158,6 +160,7 @@ public class LoginFragment extends Fragment {
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
+                        passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
                     case MotionEvent.ACTION_CANCEL:
                         // RELEASED
@@ -165,6 +168,7 @@ public class LoginFragment extends Fragment {
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
+                        passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
                 }
                 return false;
@@ -200,7 +204,6 @@ public class LoginFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-
         resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -209,7 +212,6 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,7 +220,6 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-
         passwordEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -235,6 +236,8 @@ public class LoginFragment extends Fragment {
         if(resetPassEmail != null && resetPassEmail.length() >= 1){
             emailEditText.setText(resetPassEmail);
         }
+
+        logoImageView.requestFocus();
 
         return view;
     }
@@ -400,7 +403,6 @@ public class LoginFragment extends Fragment {
         }catch (JSONException e){
 
         }
-
 
         Utils.log(TAG, "loginFacebook URL: " + url, true);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {

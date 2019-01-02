@@ -132,6 +132,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
         this.selectedLines.addAll(device.getLines());
         adapter.notifyDataSetChanged();
+        Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
 
         lineSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -47,6 +47,7 @@ public class RegistrationFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    ImageView logoImageView;
     EditText firstNameEditText, lastNameEditText, emailEditText, passwordEditText;
     ImageView togglePasswordVisibilityImageView;
     Button registerButton;
@@ -83,6 +84,7 @@ public class RegistrationFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_registration, container, false);
 
+        logoImageView = view.findViewById(R.id.logo_imageview);
         firstNameEditText = view.findViewById(R.id.registration_first_name_edittext);
         lastNameEditText = view.findViewById(R.id.registration_last_name_edittext);
         emailEditText = view.findViewById(R.id.registration_email_edittext);
@@ -109,6 +111,7 @@ public class RegistrationFragment extends Fragment {
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
+                        passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
                     case MotionEvent.ACTION_CANCEL:
                         // RELEASED
@@ -116,6 +119,7 @@ public class RegistrationFragment extends Fragment {
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
+                        passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
                 }
                 return false;
@@ -228,6 +232,7 @@ public class RegistrationFragment extends Fragment {
                 }
             }
         });
+
         passwordEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -240,6 +245,9 @@ public class RegistrationFragment extends Fragment {
                 return false;
             }
         });
+
+        logoImageView.requestFocus();
+
         return view;
     }
 

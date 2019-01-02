@@ -17,6 +17,7 @@
                 android:id="@+id/logo_imageview"
                 android:layout_width="125dp"
                 android:layout_height="125dp"
+                android:focusableInTouchMode="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="64dp"
                 android:src="@drawable/logo_text_big"/>
@@ -32,21 +33,24 @@
                 android:orientation="vertical">
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_height="50dp"
                     android:background="@drawable/button_background_round_gray">
-                    <EditText
-                        android:id="@+id/registration_first_name_edittext"
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="50dp"
-                        android:paddingLeft="50dp"
-                        android:imeOptions="actionNext"
-                        android:inputType="textPersonName"
-                        android:hint="@string/first_name"/>
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/registration_first_name_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="50dp"
+                            android:paddingEnd="50dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="textPersonName"
+                            android:hint="@string/first_name"/>
+                    </android.support.design.widget.TextInputLayout>
                     <RelativeLayout
                         android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/background_blue_rounded_left">
                         <ImageView
                             android:layout_width="32dp"
@@ -66,21 +70,25 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/button_background_round_gray">
-                    <EditText
-                        android:id="@+id/registration_last_name_edittext"
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="50dp"
-                        android:paddingLeft="50dp"
-                        android:imeOptions="actionNext"
-                        android:inputType="textPersonName"
-                        android:hint="@string/last_name"/>
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/registration_last_name_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="50dp"
+                            android:paddingEnd="50dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="textPersonName"
+                            android:hint="@string/last_name"/>
+                    </android.support.design.widget.TextInputLayout>
                     <RelativeLayout
                         android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/background_blue_rounded_left">
                         <ImageView
                             android:layout_width="32dp"
@@ -100,21 +108,25 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/button_background_round_gray">
-                    <EditText
-                        android:id="@+id/registration_email_edittext"
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="50dp"
-                        android:paddingLeft="50dp"
-                        android:imeOptions="actionNext"
-                        android:inputType="textEmailAddress"
-                        android:hint="@string/email"/>
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/registration_email_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="50dp"
+                            android:paddingEnd="50dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="textEmailAddress"
+                            android:hint="@string/email"/>
+                    </android.support.design.widget.TextInputLayout>
                     <RelativeLayout
                         android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/background_blue_rounded_left">
                         <ImageView
                             android:layout_width="32dp"
@@ -134,18 +146,22 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/button_background_round_gray">
-                    <EditText
-                        android:id="@+id/registration_password_edittext"
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="50dp"
-                        android:paddingLeft="50dp"
-                        android:imeOptions="actionDone"
-                        android:inputType="textPassword"
-                        android:hint="@string/password"/>
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/registration_password_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="50dp"
+                            android:paddingEnd="50dp"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPassword"
+                            android:hint="@string/password"/>
+                    </android.support.design.widget.TextInputLayout>
                     <ImageView
                         android:id="@+id/toggle_password_visibility_imageview"
                         android:layout_width="32dp"
@@ -158,7 +174,7 @@
                         android:layout_marginRight="8dp"/>
                     <RelativeLayout
                         android:layout_width="45dp"
-                        android:layout_height="45dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/background_blue_rounded_left">
                         <ImageView
                             android:layout_width="32dp"
