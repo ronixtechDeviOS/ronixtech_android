@@ -11,6 +11,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -19,10 +20,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,7 +34,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.HttpConnector;
@@ -51,6 +56,7 @@ import com.ronixtech.ronixhome.fragments.ExportDataFragment;
 import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
 import com.ronixtech.ronixhome.fragments.ImportDataFragment;
 import com.ronixtech.ronixhome.fragments.LinkedAccountsFragment;
+import com.ronixtech.ronixhome.fragments.LogViewerFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 
@@ -78,9 +84,14 @@ public class MainActivity extends AppCompatActivity
     private static TextView mTitle;
 
     TextView userNameTextView, userEmailTextView;
+    ImageView userImageView;
 
     BroadcastReceiver myWifiReceiver;
     IntentFilter intentFilter;
+
+    int logCounterMAX = 8;
+    int logCounterToast = 3;
+    int logCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +124,25 @@ public class MainActivity extends AppCompatActivity
             startActivity(loginIntent);
             finish();
             return;
+        }
+
+        //check if MySettings.getAciveUser() is verified or not
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth != null && mAuth.getCurrentUser() != null){
+            mAuth.getCurrentUser().reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    FirebaseUser fbUser = mAuth.getCurrentUser();
+                    if(fbUser != null) {
+                        if (!fbUser.isEmailVerified()) {
+                            Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                            loginIntent.putExtra("action", "verify");
+                            startActivity(loginIntent);
+                            finish();
+                        }
+                    }
+                }
+            });
         }
 
         if(MySettings.getDefaultPlaceID() != -1){
@@ -178,13 +208,37 @@ public class MainActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
                 fragmentTransaction.addToBackStack("userProfileFragment");
                 fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
             }
         });
         userNameTextView = headerLayout.findViewById(R.id.user_name_textview);
         userEmailTextView = headerLayout.findViewById(R.id.user_email_textview);
+        userImageView = headerLayout.findViewById(R.id.imageView);
 
         userNameTextView.setText(MySettings.getActiveUser().getFirstName() + " " + MySettings.getActiveUser().getLastName());
         userEmailTextView.setText(MySettings.getActiveUser().getEmail());
+
+        logCounter = 0;
+        userImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logCounter++;
+                if(logCounter >= logCounterMAX){
+                    logCounter = 0;
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    LogViewerFragment logViewerFragment = new LogViewerFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, logViewerFragment, "logViewerFragment");
+                    fragmentTransaction.addToBackStack("logViewerFragment");
+                    fragmentTransaction.commit();
+                    drawer.closeDrawer(Gravity.START);
+                }else{
+                    if(logCounter >= logCounterToast){
+                        Utils.showToast(mInstance, Utils.getStringExtraInt(mInstance, R.string.log_viewier_message, (logCounterMAX - logCounter)), false);
+                    }
+                }
+            }
+        });
 
         RelativeLayout currentVersionLayout = (RelativeLayout) navigationView.getMenu().findItem(R.id.nav_current_version).getActionView();
         TextView currentVersionTextView = currentVersionLayout.findViewById(R.id.current_version_textview);
@@ -253,22 +307,22 @@ public class MainActivity extends AppCompatActivity
             //Wifi is available
             if(mWifiManager.isWifiEnabled()){
                 //Wifi is ON, check which SSID is currently associated with this device
-                Log.d(TAG, "Wifi is ON, check which SSID is currently associated with this device");
+                Utils.log(TAG, "Wifi is ON, check which SSID is currently associated with this device", true);
                 WifiInfo mWifiInfo = mWifiManager.getConnectionInfo();
                 if(mWifiInfo != null){
                     //Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode
-                    Log.d(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode");
+                    Utils.log(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode", true);
                     String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
-                    Log.d(TAG, "Currently connected to: " + ssid);
+                    Utils.log(TAG, "Currently connected to: " + ssid, true);
                     WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
                     if(wifiNetwork != null){
-                        Log.d(TAG, "wifinetwork DB id: " + wifiNetwork.getId());
+                        Utils.log(TAG, "wifinetwork DB id: " + wifiNetwork.getId(), true);
                         long placeID = wifiNetwork.getPlaceID();
-                        Log.d(TAG, "wifinetwork placeID: " + placeID);
+                        Utils.log(TAG, "wifinetwork placeID: " + placeID, true);
                         if(placeID != -1){
                             Place localPlace = MySettings.getPlace(placeID);
                             if(localPlace != null){
-                                Log.d(TAG, "wifinetwork DB placeName: " + localPlace.getName());
+                                Utils.log(TAG, "wifinetwork DB placeName: " + localPlace.getName(), true);
                                 localPlace.setMode(Place.PLACE_MODE_LOCAL);
                                 MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
                                 if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
@@ -278,15 +332,15 @@ public class MainActivity extends AppCompatActivity
                         }
                     }else{
                         //Wifi network is NOT associated with any Place
-                        Log.d(TAG, "Wifi network is NOT associated with any Place");
+                        Utils.log(TAG, "Wifi network is NOT associated with any Place", true);
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
-                    Log.d(TAG, "Wifi is ON but not connected to any ssid");
+                    Utils.log(TAG, "Wifi is ON but not connected to any ssid", true);
                 }
             }else{
                 //Wifi is OFF
-                Log.d(TAG, "Wifi is OFF");
+                Utils.log(TAG, "Wifi is OFF", true);
             }
         }else {
             //Wifi is not available
@@ -325,11 +379,11 @@ public class MainActivity extends AppCompatActivity
     private void getLatestFirmwareVersion(){
         String url = Constants.DEVICE_LATEST_FIRMWARE_VERSIONS_URL;
 
-        Log.d(TAG, "getLatestFirmwareVersions URL: " + url);
+        Utils.log(TAG, "getLatestFirmwareVersions URL: " + url, true);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "getLatestFirmwareVersions response: " + response);
+                Utils.log(TAG, "getLatestFirmwareVersions response: " + response, true);
                 try{
                     JSONArray jsonArray = new JSONArray(response);
                     int length = jsonArray.length();
@@ -349,13 +403,13 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }catch (JSONException e){
-                    Log.d(TAG, "Json exception: " + e.getMessage());
+                    Utils.log(TAG, "Json exception: " + e.getMessage(), true);
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley error: " + error.getMessage());
+                Utils.log(TAG, "Volley error: \" + error.getMessage()", true);
             }
         });
         stringRequest.setShouldCache(false);

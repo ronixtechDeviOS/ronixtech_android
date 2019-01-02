@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -514,7 +513,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
 
     @Override
     public void onWifiNetworkSelected(WifiNetwork wifiNetwork){
-        Log.d("AAAA", "EditDeviceSelectLocationFragment onWifiNetworkSelected - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
+        Utils.log(TAG, "EditDeviceSelectLocationFragment onWifiNetworkSelected - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid(), true);
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
@@ -528,7 +527,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
 
     @Override
     public void onNetworkAdded(WifiNetwork wifiNetwork){
-        Log.d("AAAA", "EditDeviceSelectLocationFragment onNetworkAdded - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid());
+        Utils.log(TAG, "EditDeviceSelectLocationFragment onNetworkAdded - ID: " + wifiNetwork.getId() + " - SSID: " + wifiNetwork.getSsid(), true);
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
@@ -672,7 +671,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                     }
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "sendConfigurationToDevice URL: " + url);
+                    Utils.log(TAG, "sendConfigurationToDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -687,11 +686,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "sendConfigurationToDevice response: " + result.toString());
+                    Utils.log(TAG, "sendConfigurationToDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -751,7 +750,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL("http://" + device.getIpAddress() + Constants.DEVICE_REBOOT_URL);
-                    Log.d(TAG,  "rebootDevice URL: " + url);
+                    Utils.log(TAG, "rebootDevice URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -765,11 +764,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "rebootDevice response: " + result.toString());
+                    Utils.log(TAG, "rebootDevice response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.ronixtech.ronixhome.AppDatabase;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Backup;
@@ -52,7 +53,8 @@ public class BackupsAdapter extends ArrayAdapter{
             rowView = inflater.inflate(R.layout.list_item_backup, null);
             vHolder = new ViewHolder();
             vHolder.nameTextView = rowView.findViewById(R.id.backup_item_name_textview);
-            vHolder.timestampTextView = rowView.findViewById(R.id.backup_item_timestamp_name_textview);
+            vHolder.timestampTextView = rowView.findViewById(R.id.backup_item_timestamp_textview);
+            vHolder.incompatibleTextView = rowView.findViewById(R.id.backup_item_incompatible_textview);
             rowView.setTag(vHolder);
         }
         else{
@@ -63,11 +65,18 @@ public class BackupsAdapter extends ArrayAdapter{
 
         vHolder.nameTextView.setText(""+item.getName());
         vHolder.timestampTextView.setText(Utils.getStringExtraText(activity, R.string.date_backup_variable, Utils.getTimeStringDateHoursMinutes(item.getTimestamp())));
+        if(item.getDbVersion() == AppDatabase.version){
+            vHolder.incompatibleTextView.setText(Utils.getString(activity, R.string.backup_compatible));
+            vHolder.incompatibleTextView.setTextColor(activity.getResources().getColor(R.color.greenColor));
+        }else{
+            vHolder.incompatibleTextView.setText(Utils.getString(activity, R.string.backup_not_compatible));
+            vHolder.incompatibleTextView.setTextColor(activity.getResources().getColor(R.color.redColor));
+        }
 
         return rowView;
     }
 
     public static class ViewHolder{
-        TextView nameTextView, timestampTextView;
+        TextView nameTextView, timestampTextView, incompatibleTextView;
     }
 }

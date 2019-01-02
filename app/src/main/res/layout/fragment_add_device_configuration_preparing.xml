@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.AddDeviceConfigurationPreparingFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/whiteColor">
+
+        <TextView
+            android:id="@+id/loading_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textColor="@color/blackColor"
+            android:text="@string/waiting_for_device"/>
+
+        <com.github.lzyzsd.circleprogress.DonutProgress
+            android:id="@+id/progress_circle"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerInParent="true"
+            app:donut_progress="0"
+            app:donut_finished_color="@color/blueColor"
+            app:donut_unfinished_color="@color/lightGrayColor"
+            app:donut_text_color="@color/blueColor"
+            app:donut_circle_starting_degree="270"/>
+
+        <TextView
+            android:id="@+id/progress_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/progress_circle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/blackColor"
+            android:textSize="18sp"
+            android:text="@string/add_device_get_configuration"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

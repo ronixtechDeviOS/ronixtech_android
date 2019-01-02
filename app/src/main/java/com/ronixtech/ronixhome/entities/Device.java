@@ -47,7 +47,7 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_PLUG_3lines = 100033;
 
 
-    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 10;
+    public static final int MAX_CONSECUTIVE_ERROR_COUNT = 15;
 
     public static final int CONTROL_TIMEOUT = 350;
     public static final int CONTROL_NUMBER_OF_RETRIES = 1;

@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,8 @@ import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 
+import java.util.Calendar;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -38,6 +41,9 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
 
     private Device device;
     private int placeMode;
+
+    private int logCounterMAX = 5;
+    private int logCounter;
 
     public DeviceInfoFragment() {
         // Required empty public constructor
@@ -74,6 +80,8 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         }
         setHasOptionsMenu(true);
 
+        logCounter = 0;
+
         nameTextView = view.findViewById(R.id.device_name_textview);
         macAddressTextView = view.findViewById(R.id.device_mac_address_textview);
         typeTextView = view.findViewById(R.id.device_type_textview);
@@ -104,7 +112,21 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
         if(device != null){
             nameTextView.setText(""+device.getName());
             macAddressTextView.setText(""+device.getMacAddress());
-            lastSeenTextView.setText(Utils.getTimeStringHoursMinutesSeconds(device.getLastSeenTimestamp()));
+
+            //show full date if not same day (if it's a new day)
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            long currentTimestamp = cal2.getTimeInMillis();
+            cal1.setTimeInMillis(device.getLastSeenTimestamp());
+            cal2.setTimeInMillis(currentTimestamp);
+            boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+            if (!sameDay) {
+                lastSeenTextView.setText(Utils.getTimeStringDateHoursMinutes(device.getLastSeenTimestamp()));
+            }else{
+                lastSeenTextView.setText(Utils.getTimeStringHoursMinutesSeconds(device.getLastSeenTimestamp()));
+            }
+
             typeTextView.setText(Device.getDeviceTypeString(device.getDeviceTypeID()));
             if(device.isDeviceMQTTReachable()){
                 statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_reachable));
@@ -290,6 +312,25 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 }
             });
         }
+
+        accessTokenTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logCounter++;
+                if(logCounter >= logCounterMAX){
+                    logCounter = 0;
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    LogViewerFragment logViewerFragment = new LogViewerFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, logViewerFragment, "logViewerFragment");
+                    fragmentTransaction.addToBackStack("logViewerFragment");
+                    fragmentTransaction.commit();
+                }else{
+                    Utils.showToast(getActivity(), Utils.getStringExtraInt(getActivity(), R.string.log_viewier_message, (logCounterMAX - logCounter)), false);
+                }
+            }
+        });
 
         return view;
     }

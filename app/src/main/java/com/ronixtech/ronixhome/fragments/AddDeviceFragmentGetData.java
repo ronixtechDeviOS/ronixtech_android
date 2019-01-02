@@ -12,7 +12,6 @@ import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -324,8 +323,8 @@ public class AddDeviceFragmentGetData extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceConfigurationFragment addDeviceConfigurationFragment = new AddDeviceConfigurationFragment();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationFragment, "addDeviceConfigurationFragment");
+                AddDeviceConfigurationPreparingFragment addDeviceConfigurationPreparingFragment = new AddDeviceConfigurationPreparingFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationPreparingFragment, "addDeviceConfigurationPreparingFragment");
                 //fragmentTransaction.addToBackStack("addDeviceConfigurationFragment");
                 fragmentTransaction.commitAllowingStateLoss();
             }
@@ -444,7 +443,7 @@ public class AddDeviceFragmentGetData extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL(Constants.DEVICE_URL + Constants.GET_DEVICE_TYPE_URL);
-                    Log.d(TAG,  "getDeviceType URL: " + url);
+                    Utils.log(TAG, "getDeviceType URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -458,7 +457,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "getDeviceType response: " + result.toString());
+                    Utils.log(TAG, "getDeviceType response: " + result.toString(), true);
                     if(result.length() >= 3){
                         JSONObject jsonObject = new JSONObject(result.toString());
                         if(jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
@@ -476,11 +475,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                         }
                     }
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -534,7 +533,7 @@ public class AddDeviceFragmentGetData extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL(Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL);
-                    Log.d(TAG,  "getDeviceType2 URL: " + url);
+                    Utils.log(TAG, "getDeviceType2 URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setDoOutput(true);
@@ -548,7 +547,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                     JSONObject jObject = new JSONObject();
                     jObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "getDeviceType2 POST data: " + jObject.toString());
+                    Utils.log(TAG, "getDeviceType2 POST data: " + jObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jObject.toString());
@@ -563,7 +562,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "getDeviceType2 response: " + result.toString());
+                    Utils.log(TAG, "getDeviceType2 response: " + result.toString(), true);
                     if(result.length() >= 3){
                         JSONObject jsonObject = new JSONObject(result.toString());
                         if(jsonObject.has("UNIT_STATUS")){
@@ -581,11 +580,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                         }
                     }
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -713,7 +712,7 @@ public class AddDeviceFragmentGetData extends Fragment {
             while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
                 try{
                     URL url = new URL(Constants.DEVICE_URL + Constants.GET_CHIP_ID_URL);
-                    Log.d(TAG,  "getChipID URL: " + url);
+                    Utils.log(TAG, "getChipID URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -727,7 +726,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "getChipID response: " + result.toString());
+                    Utils.log(TAG, "getChipID response: " + result.toString(), true);
                     if(result.length() >= 3){
                         JSONObject jsonObject = new JSONObject(result.toString());
                         if(jsonObject.has(Constants.PARAMETER_DEVICE_CHIP_ID)){
@@ -745,11 +744,11 @@ public class AddDeviceFragmentGetData extends Fragment {
                         }
                     }
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();

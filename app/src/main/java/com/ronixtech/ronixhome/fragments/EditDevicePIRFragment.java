@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,7 +66,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
     LinePIRConfigurationAdapter adapter;
     ListView selectedLinesListView;
     List<Line> selectedLines;
-    Button continueButton;
+    Button saveButton;
 
     Device device;
 
@@ -116,7 +115,8 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
             }
         });
         selectedLinesListView.setAdapter(adapter);
-        continueButton = view.findViewById(R.id.continue_button);
+
+        saveButton = view.findViewById(R.id.save_button);
 
         device = MySettings.getTempDevice();
         if(device == null){
@@ -157,7 +157,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
             }
         });
 
-        continueButton.setOnClickListener(new View.OnClickListener() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(validateInputs()){
@@ -194,6 +194,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     List<Line> lines = new ArrayList<>();
                     for (Line line:selectedLines) {
                         Line newLine = new Line(line);
+                        newLine.setId(0);
                         newLine.setDeviceID(device.getId());
                         lines.add(newLine);
                     }
@@ -223,6 +224,16 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                 Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.pir_max_devices_reached), true);
                 return;
             }
+
+            Device primaryDevice = MySettings.getDeviceByID2(line.getDeviceID());
+            if(primaryDevice != null){
+                line.setPrimaryDeviceChipID(primaryDevice.getChipID());
+            }
+
+            line.setPirPowerState(Line.LINE_STATE_ON);
+            line.setPirDimmingState(Line.DIMMING_STATE_ON);
+            line.setPirDimmingValue(10);
+
             this.selectedLines.add(line);
             adapter.notifyDataSetChanged();
             Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
@@ -236,11 +247,12 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                 lineImageView.setImageResource(line.getType().getImageResourceID());
             }*/
         }
-        if(validateInputs()){
-            Utils.setButtonEnabled(continueButton, true);
+
+        /*if(validateInputs()){
+            Utils.setButtonEnabled(saveButton, true);
         }else{
-            Utils.setButtonEnabled(continueButton, false);
-        }
+            Utils.setButtonEnabled(saveButton, false);
+        }*/
     }
 
     private boolean validateInputs(){
@@ -330,6 +342,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                 PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment, device);
                 pirAddPairings.execute();
             }else{
+                Utils.dismissLoading();
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     if(fragment.getFragmentManager() != null) {
@@ -349,7 +362,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "resetPairings URL: " + url);
+                    Utils.log(TAG, "resetPairings URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -366,7 +379,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "resetPairings POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "resetPairings POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -382,13 +395,13 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "resetPairings response: " + result.toString());
+                    Utils.log(TAG, "resetPairings response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();
@@ -427,12 +440,14 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200) {
+                Utils.dismissLoading();
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     if(fragment.getFragmentManager() != null) {
                         fragment.getFragmentManager().popBackStack();
                     }
                 }
             }else{
+                Utils.dismissLoading();
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     if(fragment.getFragmentManager() != null) {
@@ -445,7 +460,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
         @Override
         protected Void doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
-            if(device.getLines() != null){
+            if(device.getLines() != null && device.getLines().size() >= 1){
                 for (Line line:device.getLines()) {
                     statusCode = 0;
                     int numberOfRetries = 0;
@@ -454,7 +469,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                             String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                             URL url = new URL(urlString);
-                            Log.d(TAG,  "addPairing URL: " + url);
+                            Utils.log(TAG, "addPairing URL: " + url, true);
 
                             urlConnection = (HttpURLConnection) url.openConnection();
                             urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -467,8 +482,8 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("U_P_STT", "1");
-                            jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
-                            jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());
+                            jsonObject.put("U_P_CID", line.getPrimaryDeviceChipID());
+                            jsonObject.put("U_P_CIP", MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getIpAddress());
                             jsonObject.put("U_P_LNO", ""+line.getPosition());
                             if(line.getPirPowerState() == Line.LINE_STATE_ON){
                                 if(line.getPirDimmingValue() == 10){
@@ -486,7 +501,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
 
                             jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                            Log.d(TAG,  "addPairing POST data: " + jsonObject.toString());
+                            Utils.log(TAG, "addPairing POST data: " + jsonObject.toString(), true);
 
                             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                             outputStreamWriter.write(jsonObject.toString());
@@ -502,13 +517,13 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                                 result.append(dataLine);
                             }
                             urlConnection.disconnect();
-                            Log.d(TAG,  "addPairing response: " + result.toString());
+                            Utils.log(TAG, "addPairing response: " + result.toString(), true);
                         }catch (MalformedURLException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (IOException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }catch (JSONException e){
-                            Log.d(TAG, "Exception: " + e.getMessage());
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         }finally {
                             if(urlConnection != null) {
                                 urlConnection.disconnect();
@@ -517,6 +532,8 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                         }
                     }
                 }
+            }else{
+                statusCode = 200;
             }
 
             return null;

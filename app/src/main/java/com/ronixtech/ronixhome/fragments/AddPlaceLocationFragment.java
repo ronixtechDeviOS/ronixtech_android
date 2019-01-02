@@ -17,7 +17,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -198,11 +197,10 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                         //Context context = getApplicationContext();
                         startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                     }catch (GooglePlayServicesNotAvailableException e){
-                        Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                        Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                         Utils.showToast(getActivity(), "Google Play Services not available.", true);
-                        Log.d(TAG, "PlacePicker,");
                     }catch (GooglePlayServicesRepairableException e){
-                        Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                        Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                         Utils.showToast(getActivity(), "Google Play Services not available.", true);
                     }
                 }
@@ -218,9 +216,9 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                     //Context context = getApplicationContext();
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                 }catch (GooglePlayServicesNotAvailableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                    Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                 }catch (GooglePlayServicesRepairableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                    Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                 }
             }
         }
@@ -370,9 +368,9 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                             //Context context = getApplicationContext();
                             startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                         }catch (GooglePlayServicesNotAvailableException e){
-                            Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                            Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                         }catch (GooglePlayServicesRepairableException e){
-                            Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                            Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                         }
                     }
                 }
@@ -476,9 +474,9 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                     //Context context = getApplicationContext();
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                 }catch (GooglePlayServicesNotAvailableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                    Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                 }catch (GooglePlayServicesRepairableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                    Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                 }
             }
         }else if(requestCode == RC_ACTIVITY_LOCATION_TURN_ON){
@@ -489,9 +487,9 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                     //Context context = getApplicationContext();
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                 }catch (GooglePlayServicesNotAvailableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                    Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                 }catch (GooglePlayServicesRepairableException e){
-                    Log.d(TAG, "PlacePicker, Google Play Services not available.");
+                    Utils.log(TAG, "PlacePicker, Google Play Services not available.", true);
                 }
             }
         }

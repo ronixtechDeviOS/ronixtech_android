@@ -9,7 +9,6 @@ import android.os.CountDownTimer;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -230,7 +229,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
                     String urlString = "http://" + MySettings.getTempDevice().getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Log.d(TAG,  "updateFirmware URL: " + url);
+                    Utils.log(TAG, "updateFirmware URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -245,7 +244,7 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
                     jsonObject.put(Constants.PARAMETER_DEVICE_FIRMWARE_URL, sUrl[0]);
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 
-                    Log.d(TAG,  "updateFirmware POST data: " + jsonObject.toString());
+                    Utils.log(TAG, "updateFirmware POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -261,13 +260,13 @@ public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Log.d(TAG,  "updateFirmware response: " + result.toString());
+                    Utils.log(TAG, "updateFirmware response: " + result.toString(), true);
                 }catch (MalformedURLException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
-                    Log.d(TAG, "Exception: " + e.getMessage());
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
                         urlConnection.disconnect();

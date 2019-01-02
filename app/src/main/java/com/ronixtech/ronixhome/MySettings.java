@@ -734,7 +734,7 @@ public class MySettings {
     }
     public static void scanDevices(){
         if(!MySettings.getCurrentScanningState()){
-            Log.d(TAG, "scanningNetwork starting");
+            Utils.log(TAG, "scanningNetwork starting", true);
             // Create a Constraints that defines when the task should run
             Constraints myConstraints = new Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -752,7 +752,7 @@ public class MySettings {
             WorkManager.getInstance().cancelAllWorkByTag("DeviceScanner");
             WorkManager.getInstance().enqueue(deviceScannerWork);
         }else{
-            Log.d(TAG, "scanningNetwork already started");
+            Utils.log(TAG, "scanningNetwork already started", true);
         }
     }
 

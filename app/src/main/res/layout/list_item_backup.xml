@@ -31,7 +31,7 @@
             android:textColor="@color/blackColor"
             android:text="BACKUP_NAME"/>
         <TextView
-            android:id="@+id/backup_item_timestamp_name_textview"
+            android:id="@+id/backup_item_timestamp_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/backup_item_name_textview"
@@ -39,6 +39,15 @@
             android:textSize="16sp"
             android:textColor="@color/blackColor"
             android:text="BACKUP_TIMESTAMP"/>
+        <TextView
+            android:id="@+id/backup_item_incompatible_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/backup_item_timestamp_textview"
+            android:layout_marginTop="4dp"
+            android:textSize="16sp"
+            android:textColor="@color/redColor"
+            android:text="@string/backup_not_compatible"/>
     </RelativeLayout>
 
 </RelativeLayout>

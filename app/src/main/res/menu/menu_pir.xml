@@ -10,6 +10,10 @@
         android:orderInCategory="100"
         android:title="@string/edit_device" />
     <item
+        android:id="@+id/action_edit_device_location"
+        android:orderInCategory="100"
+        android:title="@string/edit_device_location" />
+    <item
         android:id="@+id/action_update_device"
         android:orderInCategory="100"
         android:title="@string/update_device" />

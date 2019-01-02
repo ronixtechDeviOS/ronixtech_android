@@ -57,7 +57,6 @@
             <item
                 android:id="@+id/nav_linked_accounts"
                 android:icon="@drawable/baseline_person_gray_48"
-                android:visible="false"
                 android:title="@string/linked_accounts" />
             <item
                 android:id="@+id/nav_upload_data"

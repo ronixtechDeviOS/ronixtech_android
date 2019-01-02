@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,7 +66,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_success, container, false);
-        //MainActivity.setActionBarTitle(getActivity().getResources().getStringExtraInt(R.string.add_new_place), getResources().getColor(R.color.whiteColor));
+        MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
         successMessageTextView = view.findViewById(R.id.succes_message_textview);

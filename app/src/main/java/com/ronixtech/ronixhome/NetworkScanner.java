@@ -35,7 +35,7 @@ public class NetworkScanner extends Worker {
 
     @Override
     public Worker.Result doWork(){
-        Log.d(TAG, "doWork for NetworkScanner");
+        Utils.log(TAG, "doWork for NetworkScanner", true);
         // Do the work here--in this case, compress the stored images.
         // In this example no parameters are passed; the task is
         // assumed to be "compress the whole library."
@@ -46,12 +46,12 @@ public class NetworkScanner extends Worker {
 
         try
         {
-            Log.d(TAG, "DHCP: gateway: " + intToIp(dhcpInfo.gateway));
-            Log.d(TAG, "DHCP: dns1: " + intToIp(dhcpInfo.dns1));
-            Log.d(TAG, "DHCP: dns2: " + intToIp(dhcpInfo.dns2));
-            Log.d(TAG, "DHCP: ipAddress: " + intToIp(dhcpInfo.ipAddress));
-            Log.d(TAG, "DHCP: netmask: " + intToIp(dhcpInfo.netmask));
-            Log.d(TAG, "DHCP: serverAddress: " + intToIp(dhcpInfo.serverAddress));
+            Utils.log(TAG, "DHCP: gateway: " + intToIp(dhcpInfo.gateway), true);
+            Utils.log(TAG, "DHCP: dns1: " + intToIp(dhcpInfo.dns1), true);
+            Utils.log(TAG, "DHCP: dns2: " + intToIp(dhcpInfo.dns2), true);
+            Utils.log(TAG, "DHCP: ipAddress: " + intToIp(dhcpInfo.ipAddress), true);
+            Utils.log(TAG, "DHCP: netmask: " + intToIp(dhcpInfo.netmask), true);
+            Utils.log(TAG, "DHCP: serverAddress: " + intToIp(dhcpInfo.serverAddress), true);
             InetAddress host = InetAddress.getByName(intToIp(dhcpInfo.gateway));
             byte[] ip = host.getAddress();
 
@@ -62,14 +62,14 @@ public class NetworkScanner extends Worker {
             END_IP = START_IP + RANGE;
             ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-            Log.d(TAG, "resetting counter");
+            Utils.log(TAG, "resetting counter", true);
             Count.reset();
 
             for(CURRENT_THREAD = 0; CURRENT_THREAD < NUMBER_OF_THREADS; CURRENT_THREAD++){
                 int currentThread = CURRENT_THREAD;
                 int startIP = START_IP;
                 int endIP = END_IP;
-                Log.d(TAG, "RANGE #" + currentThread + " START " + START_IP + " END " + END_IP);
+                Utils.log(TAG, "RANGE #" + currentThread + " START " + START_IP + " END " + END_IP, true);
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
@@ -79,15 +79,15 @@ public class NetworkScanner extends Worker {
                                 InetAddress address = InetAddress.getByAddress(ip);
                                 if(address != null){
                                     if (address.isReachable(50)) {
-                                        Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is turned on and can be pinged");
+                                        Utils.log(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is turned on and can be pinged", true);
                                     } /*else if (!address.getHostAddress().equals(address.getHostName())) {
                                         Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is known in a DNS lookup");
 
                                     }*/ else {
-                                        Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable");
+                                        Utils.log(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable", true);
                                     }
                                 }else{
-                                    Log.d(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable");
+                                    Utils.log(TAG, "THREAD #" + currentThread + " - ping - " + address + " machine is not reachable", true);
                                 }
                             }
                             readAddresses();
@@ -184,7 +184,7 @@ public class NetworkScanner extends Worker {
             }*/
         }catch(UnknownHostException e1)
         {
-            Log.d(TAG, "Exception: " + e1.getMessage());
+            Utils.log(TAG, "Exception: " + e1.getMessage(), true);
             e1.printStackTrace();
         }
 
@@ -196,7 +196,7 @@ public class NetworkScanner extends Worker {
     }
 
     private void readAddresses() {
-        Log.d(TAG, "Reading addresses from local /proc/net/arp file");
+        Utils.log(TAG, "Reading addresses from local /proc/net/arp file", true);
         List<Device> devices = MySettings.getAllDevices();
         //List<WifiDevice> wifiDevices = new ArrayList<>();
         BufferedReader bufferedReader = null;
@@ -206,7 +206,7 @@ public class NetworkScanner extends Worker {
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                Log.d(TAG, "rawfiledata " + line);
+                Utils.log(TAG, "rawfiledata " + line, true);
                 String[] splitted = line.split(" +");
                 if (splitted != null && splitted.length >= 4) {
                     String arpResult = splitted[2];
@@ -222,7 +222,7 @@ public class NetworkScanner extends Worker {
                             //Log.d(TAG, "Checking if device " + device.getName() + " has an IP in the local /proc/net/arp file");
                             if(device.getMacAddress().toLowerCase().substring(2).equals(mac.toLowerCase().substring(2))){
                                 if(!arpResult.equals("0x0")) {//failed arp request has 0x0 in 3rd entry in the arp file, so it's not an up to date ip address
-                                    Log.d(TAG, "Device " + device.getName() + " updated with IP: " + ip);
+                                    Utils.log(TAG, "Device " + device.getName() + " updated with IP: " + ip, true);
                                     Utils.showNotification(device);
                                     MySettings.updateDeviceIP(device, ip);
                                     if(MainActivity.getInstance() != null) {
@@ -240,17 +240,17 @@ public class NetworkScanner extends Worker {
                 MainActivity.getInstance().refreshDevicesListFromMemory();
             }
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "Exception: " + e.getMessage());
+            Utils.log(TAG, "Exception: " + e.getMessage(), true);
             e.printStackTrace();
         } catch (IOException e) {
-            Log.d(TAG, "Exception: " + e.getMessage());
+            Utils.log(TAG, "Exception: " + e.getMessage(), true);
             e.printStackTrace();
         } finally{
-            Log.d(TAG, "increment counter");
+            Utils.log(TAG, "increment counter", true);
             Count.increment();
-            Log.d(TAG, "count=" + Count.count + " NumberOfThreads=" + NUMBER_OF_THREADS);
+            Utils.log(TAG, "count=" + Count.count + " NumberOfThreads=" + NUMBER_OF_THREADS, true);
             if(Count.count >= NUMBER_OF_THREADS){
-                Log.d(TAG, "ALL THREADS FINISHED SCANNING");
+                Utils.log(TAG, "ALL THREADS FINISHED SCANNING", true);
                 MySettings.setCurrentScanningState(false);
                 //Utils.hideUpdatingNotification();
                 Count.reset();
@@ -258,7 +258,7 @@ public class NetworkScanner extends Worker {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                Log.d(TAG, "Exception: " + e.getMessage());
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 e.printStackTrace();
             }
         }

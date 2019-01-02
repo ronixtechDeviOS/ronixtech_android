@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class PiFinder {
+    private static final String TAG = PiFinder.class.getSimpleName();
 
     String[] ipAddress;
     String ipString = "";
@@ -87,7 +88,7 @@ public class PiFinder {
                         pi.add(tempLine[1].substring(1, tempLine[1].length() - 1));
                         pi.add(tempLine[3]);
 
-                        Log.d("AAAA", line);
+                        Utils.log(TAG, line, true);
 
                         pis.add(pi);
                     }

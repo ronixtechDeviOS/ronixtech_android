@@ -23,7 +23,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -331,58 +330,58 @@ public class WifiListFragment extends Fragment {
     }
 
     private void checkLocationPermissions(){
-        Log.d(TAG, "location - chechLocationPermissions");
+        Utils.log(TAG, "location - chechLocationPermissions", true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            Log.d(TAG, "location - checkLocationPermissions greater than M");
+            Utils.log(TAG, "location - checkLocationPermissions greater than M", true);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
-                Log.d(TAG, "location - checkLocationPermissions checkSelfPermission TRUE");
+                Utils.log(TAG, "location - checkLocationPermissions checkSelfPermission TRUE", true);
                 checkWifiAccessPermissions();
             }else{
-                Log.d(TAG, "location - checkLocationPermissions checkSelfPermission FALSE");
+                Utils.log(TAG, "location - checkLocationPermissions checkSelfPermission FALSE", true);
                 requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, RC_PERMISSION_LOCATION);
             }
         }else{
             //no need to show runtime permission stuff
-            Log.d(TAG, "location - checkLocationPermissions older than M");
+            Utils.log(TAG, "location - checkLocationPermissions older than M", true);
             checkWifiAccessPermissions();
         }
     }
 
     private void checkWifiAccessPermissions(){
-        Log.d(TAG, "wifiaccess - checkWifiAccessPermissions");
+        Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions", true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            Log.d(TAG, "wifiaccess - checkWifiAccessPermissions greater than M");
+            Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions greater than M", true);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
-                Log.d(TAG, "wifiaccess - checkWifiAccessPermissions checkSelfPermission TRUE");
+                Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions checkSelfPermission TRUE", true);
                 checkWifiChangePermissions();
             }else{
-                Log.d(TAG, "wifiaccess - checkWifiAccessPermissions checkSelfPermission FALSE");
+                Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions checkSelfPermission FALSE", true);
                 requestPermissions(new String[]{"android.permission.ACCESS_WIFI_STATE"}, RC_PERMISSION_ACCESS_WIFI_STATE);
             }
         }else{
             //no need to show runtime permission stuff
-            Log.d(TAG, "wifiaccess - checkWifiAccessPermissions older than M");
+            Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions older than M", true);
             checkWifiChangePermissions();
         }
     }
 
     private void checkWifiChangePermissions(){
-        Log.d(TAG, "wifichange - checkWifiChangePermissions");
+        Utils.log(TAG, "wifichange - checkWifiChangePermissions", true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            Log.d(TAG, "wifichange - checkWifiChangePermissions greater than M");
+            Utils.log(TAG, "wifichange - checkWifiChangePermissions greater than M", true);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
-                Log.d(TAG, "wifichange - checkWifiChangePermissions checkSelfPermission TRUE");
+                Utils.log(TAG, "wifichange - checkWifiChangePermissions checkSelfPermission TRUE", true);
                 refreshNetworks();
             }else{
-                Log.d(TAG, "wifichange - checkWifiChangePermissions checkSelfPermission FALSE");
+                Utils.log(TAG, "wifichange - checkWifiChangePermissions checkSelfPermission FALSE", true);
                 requestPermissions(new String[]{"android.permission.CHANGE_WIFI_STATE"}, RC_PERMISSION_CHANGE_WIFI_STATE);
             }
         }else{
             //no need to show runtime permission stuff
-            Log.d(TAG, "wifichange - checkWifiChangePermissions older than M");
+            Utils.log(TAG, "wifichange - checkWifiChangePermissions older than M", true);
             refreshNetworks();
         }
     }
@@ -497,7 +496,7 @@ public class WifiListFragment extends Fragment {
                                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     }
                 }catch (IllegalArgumentException e){
-                    Log.d(TAG, "Error registering mWifiScanReceiver");
+                    Utils.log(TAG, "Error registering mWifiScanReceiver", true);
                 }
 
                 mWifiManager.startScan();
@@ -512,7 +511,7 @@ public class WifiListFragment extends Fragment {
                 getActivity().unregisterReceiver(mWifiScanReceiver);
             }
         }catch (IllegalArgumentException e){
-            Log.d(TAG, "Error unregistering mWifiScanReceiver");
+            Utils.log(TAG, "Error unregistering mWifiScanReceiver", true);
         }
 
         continueButton.setText(Utils.getString(getActivity(), R.string.connecting));
@@ -560,7 +559,7 @@ public class WifiListFragment extends Fragment {
                         new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
             }
         }catch (IllegalArgumentException e){
-            Log.d(TAG, "Error registering mWifiConnectionReceiver");
+            Utils.log(TAG, "Error registering mWifiConnectionReceiver", true);
         }
 
         WifiConfiguration conf = new WifiConfiguration();
@@ -594,20 +593,20 @@ public class WifiListFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
         switch (requestCode){
             case RC_PERMISSION_LOCATION: {
-                Log.d(TAG, "location - onRequestPermissionsResult");
+                Utils.log(TAG, "location - onRequestPermissionsResult", true);
                 // If request is cancelled, the result arrays are empty.
                 if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     //allowed
-                    Log.d(TAG, "location - onRequestPermissionsResult allowed");
+                    Utils.log(TAG, "location - onRequestPermissionsResult allowed", true);
                     checkWifiAccessPermissions();
                 }
                 else{
                     //denied
-                    Log.d(TAG, "location - onRequestPermissionsResult denied");
+                    Utils.log(TAG, "location - onRequestPermissionsResult denied", true);
                     Utils.showToast(getActivity(), "You need to enable location permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
-                        Log.d(TAG, "location - onRequestPermissionsResult shouldShowRequestPermissionRationale ");
+                        Utils.log(TAG, "location - onRequestPermissionsResult shouldShowRequestPermissionRationale ", true);
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("Location permission")
                                 .setMessage("You need to enable location permissions for the app to detect nearby devices")
@@ -622,20 +621,20 @@ public class WifiListFragment extends Fragment {
                 }
             }
             case RC_PERMISSION_ACCESS_WIFI_STATE: {
-                Log.d(TAG, "wifiaccess - onRequestPermissionsResult");
+                Utils.log(TAG, "wifiaccess - onRequestPermissionsResult", true);
                 // If request is cancelled, the result arrays are empty.
                 if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     //allowed
-                    Log.d(TAG, "wifiaccess - onRequestPermissionsResult allowed");
+                    Utils.log(TAG, "wifiaccess - onRequestPermissionsResult allowed", true);
                     checkWifiChangePermissions();
                 }
                 else{
                     //denied
-                    Log.d(TAG, "wifiaccess - onRequestPermissionsResult denied");
+                    Utils.log(TAG, "wifiaccess - onRequestPermissionsResult denied", true);
                     Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_WIFI_STATE")) {
-                        Log.d(TAG, "wifiaccess - onRequestPermissionsResult shouldShowRequestPermissionRationale ");
+                        Utils.log(TAG, "wifiaccess - onRequestPermissionsResult shouldShowRequestPermissionRationale ", true);
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("Access WiFi permission")
                                 .setMessage("You need to enable WiFi permissions for the app to detect nearby WiFi networks")
@@ -650,20 +649,20 @@ public class WifiListFragment extends Fragment {
                 }
             }
             case RC_PERMISSION_CHANGE_WIFI_STATE: {
-                Log.d(TAG, "wifichange - onRequestPermissionsResult");
+                Utils.log(TAG, "wifichange - onRequestPermissionsResult", true);
                 // If request is cancelled, the result arrays are empty.
                 if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     //allowed
-                    Log.d(TAG, "wifichange - onRequestPermissionsResult allowed");
+                    Utils.log(TAG, "wifichange - onRequestPermissionsResult allowed", true);
                     refreshNetworks();
                 }
                 else{
                     //denied
-                    Log.d(TAG, "wifichange - onRequestPermissionsResult denied");
+                    Utils.log(TAG, "wifichange - onRequestPermissionsResult denied", true);
                     Utils.showToast(getActivity(), "You need to enable WiFi permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.CHANGE_WIFI_STATE")) {
-                        Log.d(TAG, "wifichange - onRequestPermissionsResult shouldShowRequestPermissionRationale ");
+                        Utils.log(TAG, "wifichange - onRequestPermissionsResult shouldShowRequestPermissionRationale ", true);
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("Modify WiFi permission")
                                 .setMessage("You need to enable WiFi permissions for the app to configure your RonixTech device")
@@ -744,7 +743,7 @@ public class WifiListFragment extends Fragment {
                 getActivity().unregisterReceiver(mWifiScanReceiver);
                 getActivity().unregisterReceiver(mWifiConnectionReceiver);
             }catch (Exception e){
-                Log.d(TAG, "Already unregistered - " + e.getMessage());
+                Utils.log(TAG, "Already unregistered - " + e.getMessage(), true);
             }
         }
         super.onStop();

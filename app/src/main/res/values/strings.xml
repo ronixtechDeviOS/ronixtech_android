@@ -7,6 +7,15 @@
     <string name="forgot_password">Forgot Password?</string>
     <string name="register">Create New Account</string>
 
+    <string name="password_reset_mail_sent_successfully">An email has been sent to you. Please check your inbox.</string>
+
+    <string name="verification_mail_sent_successfully">An email has been sent to you. Please check your inbox.</string>
+    <string name="verification_title">Thanks for registering</string>
+    <string name="verification">Verification</string>
+    <string name="verification_message_hint">A verification email has been sent to %s. Please check your inbox and follow the instructions in the email to verify your account</string>
+    <string name="verification_message_resend">If you haven\'nt received a verification email, please click on \'Resend Email\' and re-check your inbox.</string>
+    <string name="verification_resend">Resend Email</string>
+
     <string name="name">Name</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
@@ -52,26 +61,29 @@
     <string name="begin_exporting_title">To begin exporting your data, click on the Export Data button</string>
     <string name="begin_exporting_description">This will export all your Places, WiFi networks, Rooms, Devices and all app settings to the cloud.</string>
     <string name="export_name">Backup Name</string>
-    <string name="export_name_hint">Enter backiup name here (optional)</string>
-    <string name="uploading_database_files_preparing">Preparing to upload files</string>
-    <string name="uploading_database_files">Uploading files</string>
+    <string name="export_name_hint">Enter backup name here (optional)</string>
+    <string name="uploading_database_files_preparing">Preparing to upload backup</string>
+    <string name="uploading_database_files">Uploading backup</string>
     <string name="uploading_database_file">Uploading file %d/%d</string>
     <string name="uploading_database_files_complete">Upload Complete</string>
-    <string name="uploading_database_file_failed">Uploading files failed, please try again</string>
+    <string name="uploading_database_file_failed">Uploading backup failed, please try again</string>
     <string name="uploading_updating_online_database">Updating cloud data</string>
     <string name="uploading_updating_online_database_failed">Updating cloud data failed</string>
 
-    <string name="begin_importing_title">To begin importing your data, click on the Import Data button</string>
+    <string name="begin_importing_title">To begin importing your data, choose a backup then click on the Import Data button</string>
     <string name="begin_importing_description">This will overwrite all your Places, WiFi networks, Rooms, Devices and all app settings.\nThis cannot be undone</string>
     <string name="importing_name_title">Select backup to import:</string>
     <string name="importing_name">Backup Name</string>
     <string name="importing_name_hint">Tap here to select a backup from the cloud</string>
     <string name="downloading_database_file_not_found">No backups found</string>
-    <string name="downloading_database_files_preparing">Preparing to download files</string>
-    <string name="downloading_database_files">Downloading firmware files</string>
+    <string name="downloading_database_files_preparing">Preparing to download backup</string>
+    <string name="downloading_database_files">Downloading backup</string>
     <string name="downloading_database_file">Downloading file %d/%d</string>
     <string name="downloading_database_files_complete">Download Complete</string>
     <string name="downloading_database_file_failed">Downloading files failed, please try again</string>
+
+    <string name="backup_not_compatible">Backup not compatible with current app version</string>
+    <string name="backup_compatible">Backup compatible with current app version</string>
 
     <string name="import_successful">Data imported successfully</string>
     <string name="export_successful">Data exported successfully</string>
@@ -225,6 +237,7 @@
     <string name="configure_device_line">Configure Device</string>
     <string name="locate_device">Smart Controller Location</string>
     <string name="select_floor_first">Select a floor</string>
+    <string name="add_device_get_configuration">Getting Smart Controller Configuration</string>
 
     <string name="add_device_wifi_not_available">WiFi is not available on this device, please use a device with supported hardware.</string>
     <string name="add_device_searching">Searching For Smart Controller</string>
@@ -280,6 +293,10 @@
     <string name="add_devices_first">No Smart Controllers added, please add a Smart Controller first</string>
     <string name="pir_max_devices_reached">Maximum number of devices is 9</string>
 
+    <string name="pick_line_title">Pick a Device</string>
+    <string name="pick_line_description">Locate the device</string>
+    <string name="no_lines">No devices in selected room. Please select a room which has at least 1 device</string>
+
     <string name="select_paired_devices">Select Smart Controller(s)</string>
     <string name="pairing_description">Please select which controller(s) this controller will be paired to</string>
     <string name="device_selection_hint">Tap here to select a Smart Controller</string>
@@ -289,6 +306,8 @@
     <string name="sound_controller_configuration_description">Please select the number of speakers that will be connected to this controller</string>
     <string name="number_of_speakers">Number of speakers:</string>
 
+    <string name="room_devices_on">Turn ON</string>
+    <string name="room_devices_off">Turn OFF</string>
     <string name="toggle_dimming">Toggle dimming</string>
     <string name="enable_dimming">Enable dimming</string>
     <string name="disable_dimming">Disable dimming</string>
@@ -357,7 +376,7 @@
     <string name="scanning_network">Scanning network for Smart Controller</string>
     <string name="last_seen">Last seen @ %s</string>
     <string name="firmware_available">New firmware available. Click here to update!</string>
-    <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable control functionality.</string>
+    <string name="firmware_update_required">Current firmware is obsolete. Update smart controller\'s firmware to enable all control functionality.</string>
     <string name="firmware_up_to_date">Controller\'s firmware is up-to-date</string>
 
     <string name="update_device">Update Smart Controller Firmware</string>
@@ -387,6 +406,8 @@
     <string name="updating_firmware">Updating firmware</string>
     <string name="firmware_update_failed">Failed to update Controller\'s firmware. Please try again later, or contact support</string>
     <string name="unable_to_obtain_online_firmware_version">Unable to obtain online firmware version</string>
+
+    <string name="waiting_for_device">Waiting for controller...</string>
 
     <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
     <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>
@@ -458,6 +479,7 @@
     <string name="registration_failed">Registration failed</string>
     <string name="login_failed">Login failed</string>
     <string name="reset_password_failed">Failed to send password reset email</string>
+    <string name="verification_email_failed">Failed to send verification email</string>
 
 
     <string name="date_backup_variable">Date: %s</string>
@@ -484,6 +506,13 @@
     <string name="current_version">Current Version</string>
     <string name="current_version_colon">Current Version:</string>
     <string name="latest_version">Online Version</string>
+
+    <string name="log_viewer">Log Viewer</string>
+    <string name="log_viewier_message">Tap %d times to view device logs</string>
+    <string name="share_log">Share Log</string>
+    <string name="share_log_message">RonixHome Log</string>
+    <string name="no_log_text">No logs found to share!</string>
+    <string name="share_using">Share using</string>
 
 
     <string name="facebook_app_id">1276072825863636</string>
