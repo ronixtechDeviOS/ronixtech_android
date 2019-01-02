@@ -130,9 +130,13 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
             fragmentTransaction.commit();
         }
 
-        this.selectedLines.addAll(device.getLines());
-        adapter.notifyDataSetChanged();
-        Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
+        if(device != null) {
+            this.selectedLines.addAll(device.getLines());
+            adapter.notifyDataSetChanged();
+            Utils.justifyListViewHeightBasedOnChildren(selectedLinesListView);
+
+            deviceNameEditText.setText(device.getName());
+        }
 
         lineSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
