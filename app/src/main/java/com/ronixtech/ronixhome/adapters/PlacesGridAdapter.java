@@ -21,6 +21,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Floor;
+import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.EditPlaceFragment;
@@ -39,6 +40,7 @@ public class PlacesGridAdapter extends BaseAdapter {
     public interface PlacesListener{
         public void onPlaceDeleted();
         public void onDefaultPlaceRequested();
+        public void onPlaceDevicesToggled(Place place, int newState);
     }
 
     public PlacesGridAdapter(Activity activity, List<Place> places, FragmentManager fragmentManager, PlacesListener listener) {
@@ -121,6 +123,7 @@ public class PlacesGridAdapter extends BaseAdapter {
         });
 
 
+        final ViewHolder tempViewHolder = vHolder;
         vHolder.advancedOptionsMenuImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,7 +136,11 @@ public class PlacesGridAdapter extends BaseAdapter {
                     @Override
                     public boolean onMenuItemClick(MenuItem item1) {
                         int id = item1.getItemId();
-                        if(id == R.id.action_edit_place){
+                        if(id == R.id.action_place_device_on){
+                            placesListener.onPlaceDevicesToggled(item, Line.LINE_STATE_ON);
+                        }else if(id == R.id.action_place_device_off){
+                            placesListener.onPlaceDevicesToggled(item, Line.LINE_STATE_OFF);
+                        }else if(id == R.id.action_edit_place){
                             MySettings.setCurrentPlace(item);
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -176,49 +183,7 @@ public class PlacesGridAdapter extends BaseAdapter {
         vHolder.placeItemLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                PopupMenu popup = new PopupMenu(activity, v);
-                popup.getMenuInflater().inflate(R.menu.menu_place_item, popup.getMenu());
-
-                popup.show();
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item1) {
-                        int id = item1.getItemId();
-                        if(id == R.id.action_edit_place){
-                            MySettings.setCurrentPlace(item);
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                            EditPlaceFragment editPlaceFragment = new EditPlaceFragment();
-                            fragmentTransaction.replace(R.id.fragment_view, editPlaceFragment, "editPlaceFragment");
-                            fragmentTransaction.addToBackStack("editPlaceFragment");
-                            fragmentTransaction.commit();
-                        }else if(id == R.id.action_remove_place){
-                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
-                                    .setTitle(Utils.getString(activity, R.string.remove_place_question))
-                                    .setMessage(Utils.getString(activity, R.string.remove_place_description))
-                                    //set positive button
-                                    .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what would happen when positive button is clicked
-                                            MySettings.removePlace(item);
-                                            places.remove(item);
-                                            placesListener.onPlaceDeleted();
-                                        }
-                                    })
-                                    //set negative button
-                                    .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            //set what should happen when negative button is clicked
-                                        }
-                                    })
-                                    .show();
-                        }
-                        return true;
-                    }
-                });
+                tempViewHolder.advancedOptionsMenuImageView.performClick();
                 return true;
             }
         });

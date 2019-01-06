@@ -437,12 +437,16 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                         Utils.dismissLoading();
 
                         //go to AddPlaceLocationAddressFragment
-                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                        AddPlaceLocationAddressFragment addPlaceLocationAddressFragment = new AddPlaceLocationAddressFragment();
-                        fragmentTransaction.replace(R.id.fragment_view, addPlaceLocationAddressFragment, "addPlaceLocationAddressFragment");
-                        fragmentTransaction.addToBackStack("addPlaceLocationAddressFragment");
-                        fragmentTransaction.commit();
+                        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                            if(getFragmentManager() != null){
+                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                AddPlaceLocationAddressFragment addPlaceLocationAddressFragment = new AddPlaceLocationAddressFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, addPlaceLocationAddressFragment, "addPlaceLocationAddressFragment");
+                                fragmentTransaction.addToBackStack("addPlaceLocationAddressFragment");
+                                fragmentTransaction.commit();
+                            }
+                        }
                     }
 
                     @Override

@@ -2,6 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_place_device_on"
+        android:orderInCategory="100"
+        android:title="@string/place_devices_on" />
+    <item
+        android:id="@+id/action_place_device_off"
+        android:orderInCategory="100"
+        android:title="@string/place_devices_off" />
+    <item
         android:id="@+id/action_edit_place"
         android:orderInCategory="100"
         android:title="@string/edit_place" />

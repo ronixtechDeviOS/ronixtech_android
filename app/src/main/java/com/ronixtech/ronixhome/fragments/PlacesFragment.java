@@ -23,8 +23,10 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.PlacesGridAdapter;
+import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Place;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -142,6 +144,16 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                             }
                         })
                         .show();
+            }
+            @Override
+            public void onPlaceDevicesToggled(Place place, int newState) {
+                if(MySettings.getPlaceDevices(place) != null && MySettings.getPlaceDevices(place).size() >= 1){
+                    List<Device> placeDevices = new ArrayList<>();
+                    placeDevices.addAll(MySettings.getPlaceDevices(place));
+                    for (Device device : placeDevices){
+                        Utils.toggleDevice(place, device, newState);
+                    }
+                }
             }
         });
         placesGridView.setAdapter(placeAdapter);

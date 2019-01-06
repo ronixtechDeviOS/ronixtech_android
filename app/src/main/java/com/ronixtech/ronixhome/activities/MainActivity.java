@@ -20,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,11 +41,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 import com.ronixtech.ronixhome.fragments.AboutFragment;
@@ -60,10 +63,22 @@ import com.ronixtech.ronixhome.fragments.LogViewerFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -92,6 +107,11 @@ public class MainActivity extends AppCompatActivity
     int logCounterMAX = 8;
     int logCounterToast = 3;
     int logCounter;
+
+    //Stuff for remote/MQTT mode
+    MqttAndroidClient mqttAndroidClient;
+
+    List<Device> allDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +172,8 @@ public class MainActivity extends AppCompatActivity
                 MySettings.setCurrentFloor(null);
             }
         }
+
+        allDevices = new ArrayList<>();
 
         /*if (savedInstanceState == null) {
             // only create fragment if activity is started for the first time
@@ -316,13 +338,13 @@ public class MainActivity extends AppCompatActivity
                     Utils.log(TAG, "Currently connected to: " + ssid, true);
                     WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
                     if(wifiNetwork != null){
-                        Utils.log(TAG, "wifinetwork DB id: " + wifiNetwork.getId(), true);
+                        Utils.log(TAG, "WifiNetwork DB id: " + wifiNetwork.getId(), true);
                         long placeID = wifiNetwork.getPlaceID();
-                        Utils.log(TAG, "wifinetwork placeID: " + placeID, true);
+                        Utils.log(TAG, "WifiNetwork placeID: " + placeID, true);
                         if(placeID != -1){
                             Place localPlace = MySettings.getPlace(placeID);
                             if(localPlace != null){
-                                Utils.log(TAG, "wifinetwork DB placeName: " + localPlace.getName(), true);
+                                Utils.log(TAG, "WifiNetwork DB placeName: " + localPlace.getName(), true);
                                 localPlace.setMode(Place.PLACE_MODE_LOCAL);
                                 MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
                                 if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
@@ -332,7 +354,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }else{
                         //Wifi network is NOT associated with any Place
-                        Utils.log(TAG, "Wifi network is NOT associated with any Place", true);
+                        Utils.log(TAG, "WifiNetwork is NOT associated with any Place", true);
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
@@ -356,6 +378,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onConnectionSuccess() {
                 MySettings.setInternetConnectivityState(true);
+                if(MySettings.getAllDevices() != null){
+                    allDevices.addAll(MySettings.getAllDevices());
+                }
+                //start MQTT, when a control is sent from the DeviceAdapter or anywhere else, it will be synced here when the MQTT responds
+                if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
+                    String clientId = MqttClient.generateClientId();
+                    initMqttClient(mInstance, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+                }else{
+                    Utils.log(TAG, "MQTT is already connected", true);
+                }
             }
 
             @Override
@@ -417,6 +449,19 @@ public class MainActivity extends AppCompatActivity
         HttpConnector.getInstance(mInstance).addToRequestQueue(stringRequest);
     }
 
+    public void removeDevice(Device device){
+        if(allDevices != null){
+            allDevices.remove(device);
+        }
+        if(mqttAndroidClient != null){
+            try {
+                unsubscribe(mqttAndroidClient, device);
+            }catch (MqttException e){
+                Utils.log(TAG, "Exception " + e.getMessage(), true);
+            }
+        }
+    }
+
     public void refreshDevicesListFromMemory(){
         if(fragmentManager != null) {
             if(dashboardDevicesFragment == null) {
@@ -462,6 +507,522 @@ public class MainActivity extends AppCompatActivity
         isResumed = false;
         unregisterReceiver(myWifiReceiver);
         super.onPause();
+    }
+
+    @Override
+    public void onStart(){
+        Utils.log(TAG, "onStart", true);
+        super.onStart();
+        checkCellularConnection();
+    }
+
+    @Override
+    public void onDestroy(){
+        Utils.log(TAG, "onDestroy", true);
+        //stop MQTT
+        if(mqttAndroidClient != null){
+            try {
+                mqttAndroidClient.disconnect();
+                mqttAndroidClient.unregisterResources();
+                mqttAndroidClient.close();
+            }catch (MqttException e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }catch (Exception e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }
+        }
+        if(allDevices != null) {
+            for (Device device : allDevices) {
+                device.setDeviceMQTTReachable(false);
+                MySettings.addDevice(device);
+            }
+        }
+        if(DevicesInMemory.getDevices() != null){
+            for (Device device : DevicesInMemory.getDevices()) {
+                device.setDeviceMQTTReachable(false);
+                MySettings.addDevice(device);
+            }
+        }
+        super.onDestroy();
+    }
+
+    public MqttAndroidClient getMainMqttClient(){
+        if(mqttAndroidClient != null){
+            return mqttAndroidClient;
+        }else{
+            return null;
+        }
+    }
+
+    public void refreshMqttClient(){
+        /*//disconnect from MQTT server
+        if(mqttAndroidClient != null){
+            try {
+                mqttAndroidClient.disconnect();
+                mqttAndroidClient.unregisterResources();
+                mqttAndroidClient.close();
+            }catch (MqttException e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }catch (Exception e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }
+        }
+        if(allDevices != null) {
+            for (Device device : allDevices) {
+                device.setDeviceMQTTReachable(false);
+                MySettings.addDevice(device);
+            }
+        }
+        if(DevicesInMemory.getDevices() != null){
+            for (Device device : DevicesInMemory.getDevices()) {
+                device.setDeviceMQTTReachable(false);
+                MySettings.addDevice(device);
+            }
+        }
+        //connect to MQTT server
+        checkCellularConnection();*/
+    }
+
+    public void initMqttClient(Context context, String brokerUrl, String clientId) {
+        mqttAndroidClient = new MqttAndroidClient(context, brokerUrl, clientId);
+        if(mqttAndroidClient != null){
+            mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+                @Override
+                public void connectComplete(boolean b, String s) {
+                    Utils.log(TAG, "MQTT connectComplete on " + s, true);
+                }
+                @Override
+                public void connectionLost(Throwable throwable) {
+                    Utils.log(TAG, "MQTT connectionLost", true);
+                    if(allDevices != null) {
+                        for (Device device : allDevices) {
+                            device.setDeviceMQTTReachable(false);
+                            MySettings.addDevice(device);
+                            DevicesInMemory.updateDevice(device);
+                        }
+                        MainActivity.getInstance().refreshDevicesListFromMemory();
+                    }
+                }
+                @Override
+                public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+                    //setMessageNotification(s, new String(mqttMessage.getPayload()));
+                    Utils.log(TAG, "MQTT messageArrived: 'topic': " + s, true);
+                    Utils.log(TAG, "MQTT messageArrived: 'mqttMessage': " + new String(mqttMessage.getPayload()), true);
+                    //make sure it's the 'status' topic, not the 'control' topic
+                    if(s.contains("status")){
+                        /*if(MySettings.isGetStatusActive()){
+                           return;
+                        }*/
+                        if (MySettings.isControlActive()){
+                            Utils.log(TAG, "Controls active, do nothing", true);
+                            return;
+                        }
+                        MySettings.setGetStatusState(true);
+                        String response = new String(mqttMessage.getPayload());
+                        int index = s.lastIndexOf("/");
+                        Device device = MySettings.getDeviceByChipID2(s.substring(index+1));
+                        if(device != null){
+                            if(response != null && response.length() >= 1 && response.contains("UNIT_STATUS")){
+                                JSONObject jsonObject = new JSONObject(response);
+                                if(jsonObject.has("UNIT_STATUS")){
+                                    //parse received unit status and update relevant device, which has the received chip_id
+                                    JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
+
+                                    if(unitStatus != null && unitStatus.has("U_W_STT")){
+                                        JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+                                        if(wifiStatus != null) {
+                                            if(wifiStatus.has("U_W_UID")) {
+                                                String chipID = wifiStatus.getString("U_W_UID");
+                                            }else{
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
+                                            if(wifiStatus.has("R_M_ALV")){
+                                                String R_M_ALV_string = wifiStatus.getString("R_M_ALV");
+                                                int R_M_ALV = Integer.parseInt(R_M_ALV_string);
+                                                if(R_M_ALV == 1){
+                                                    try {
+                                                        JSONObject jsonObject1 = new JSONObject();
+                                                        jsonObject1.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                                                        jsonObject1.put("R_M_ALV", "0");
+                                                        MqttMessage mqttMessage1 = new MqttMessage();
+                                                        mqttMessage1.setPayload(jsonObject1.toString().getBytes());
+                                                        Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                                                        Utils.log(TAG, "MQTT Publish data: " + mqttMessage1, true);
+                                                        mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage1);
+                                                        device.setDeviceMQTTReachable(true);
+                                                    }catch (JSONException e){
+                                                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                                                    }catch (MqttException e){
+                                                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                                                    }
+                                                }
+                                            }
+                                            if(wifiStatus.has("U_W_FWV")) {
+                                                String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
+                                                if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
+                                                    device.setFirmwareVersion(currentFirmwareVersion);
+                                                    if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                        int currentVersion = Integer.valueOf(currentFirmwareVersion);
+                                                        int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
+                                                        if (onlineVersion != currentVersion) {
+                                                            device.setFirmwareUpdateAvailable(true);
+                                                        }else{
+                                                            device.setFirmwareUpdateAvailable(false);
+                                                        }
+                                                    }
+                                                }else{
+                                                    device.setFirmwareUpdateAvailable(true);
+                                                }
+                                            }else{
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
+                                        }
+                                    }else{
+                                        device.setFirmwareUpdateAvailable(true);
+                                    }
+
+                                    if(device.isDeviceMQTTReachable()){
+                                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                                if(hardwareStatus.has("U_H_FWV")) {
+                                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                                            if (onlineHWVersion != currentHWVersion) {
+                                                                device.setHwFirmwareUpdateAvailable(true);
+                                                            }else{
+                                                                device.setHwFirmwareUpdateAvailable(false);
+                                                            }
+                                                        }
+                                                    }else{
+                                                        device.setHwFirmwareUpdateAvailable(true);
+                                                    }
+                                                }else{
+                                                    device.setHwFirmwareUpdateAvailable(true);
+                                                }
+
+
+                                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                                                String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
+                                                int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
+                                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
+                                                if(line0DimmingValueString.equals(":")){
+                                                    line0DimmingValue = 10;
+                                                }else{
+                                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                                                }
+
+                                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
+                                                if(line1DimmingValueString.equals(":")){
+                                                    line1DimmingValue = 10;
+                                                }else{
+                                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                                                }
+
+                                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
+                                                if(line2DimmingValueString.equals(":")){
+                                                    line2DimmingValue = 10;
+                                                }else{
+                                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                                }
+
+
+                                                String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
+                                                int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
+                                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
+                                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
+                                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
+                                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
+                                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
+                                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
+
+                                                List<Line> lines = device.getLines();
+                                                for (Line line:lines) {
+                                                    if(line.getPosition() == 0){
+                                                        line.setPowerState(line0PowerState);
+                                                        line.setDimmingState(line0DimmingState);
+                                                        line.setDimmingVvalue(line0DimmingValue);
+                                                    }else if(line.getPosition() == 1){
+                                                        line.setPowerState(line1PowerState);
+                                                        line.setDimmingState(line1DimmingState);
+                                                        line.setDimmingVvalue(line1DimmingValue);
+                                                    }else if(line.getPosition() == 2){
+                                                        line.setPowerState(line2PowerState);
+                                                        line.setDimmingState(line2DimmingState);
+                                                        line.setDimmingVvalue(line2DimmingValue);
+                                                    }
+                                                }
+
+                                                String temperatureString, beepString, hwLockString;
+                                                int temperatureValue;
+                                                boolean beep, hwLock;
+                                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                                beepString = hardwareStatus.getString("U_BEEP_");
+                                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                                temperatureValue = Integer.parseInt(temperatureString);
+                                                beep = Boolean.parseBoolean(beepString);
+                                                hwLock = Boolean.parseBoolean(hwLockString);
+
+                                                device.setTemperature(temperatureValue);
+                                                device.setBeep(beep);
+                                                device.setHwLock(hwLock);
+
+                                                device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                                            }else{
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
+                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                                if(hardwareStatus.has("U_H_FWV")) {
+                                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                                            if (onlineHWVersion != currentHWVersion) {
+                                                                device.setHwFirmwareUpdateAvailable(true);
+                                                            }else{
+                                                                device.setHwFirmwareUpdateAvailable(false);
+                                                            }
+                                                        }
+                                                    }else{
+                                                        device.setHwFirmwareUpdateAvailable(true);
+                                                    }
+                                                }else{
+                                                    device.setHwFirmwareUpdateAvailable(true);
+                                                }
+
+
+                                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                line2PowerState = Integer.valueOf(line2PowerStateString);
+
+                                                List<Line> lines = device.getLines();
+                                                for (Line line:lines) {
+                                                    if(line.getPosition() == 0){
+                                                        line.setPowerState(line0PowerState);
+                                                    }else if(line.getPosition() == 1){
+                                                        line.setPowerState(line1PowerState);
+                                                    }else if(line.getPosition() == 2){
+                                                        line.setPowerState(line2PowerState);
+                                                    }
+                                                }
+
+                                                String temperatureString, beepString, hwLockString;
+                                                int temperatureValue;
+                                                boolean beep, hwLock;
+                                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                                beepString = hardwareStatus.getString("U_BEEP_");
+                                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                                temperatureValue = Integer.parseInt(temperatureString);
+                                                beep = Boolean.parseBoolean(beepString);
+                                                hwLock = Boolean.parseBoolean(hwLockString);
+
+                                                device.setTemperature(temperatureValue);
+                                                device.setBeep(beep);
+                                                device.setHwLock(hwLock);
+
+                                                device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                                            }else {
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
+                                        }
+                                    }
+                                }
+                            }else{
+                                device.setFirmwareUpdateAvailable(true);
+                            }
+                            MySettings.addDevice(device);
+                            DevicesInMemory.updateDevice(device);
+                            MainActivity.getInstance().refreshDevicesListFromMemory();
+                        }
+                        MySettings.setGetStatusState(false);
+                    }
+                }
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                    Utils.log(TAG, "MQTT deliveryComplete", true);
+                }
+            });
+            try {
+                IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
+                if(token != null){
+                    token.setActionCallback(new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
+                            Utils.log(TAG, "MQTT connect onSuccess", true);
+                            try {
+                                if(allDevices != null) {
+                                    for (Device device : allDevices) {
+                                        subscribe(mqttAndroidClient, device, 1);
+                                    }
+                                }
+                            }catch (MqttException e){
+                                Utils.log(TAG, "Exception " + e.getMessage(), true);
+                                if(allDevices != null) {
+                                    for (Device device : allDevices) {
+                                        device.setDeviceMQTTReachable(false);
+                                        MySettings.addDevice(device);
+                                        DevicesInMemory.updateDevice(device);
+                                    }
+                                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            Utils.log(TAG, "MQTT connect onFailure: " + exception.toString(), true);
+                            if(allDevices != null) {
+                                for (Device device : allDevices) {
+                                    device.setDeviceMQTTReachable(false);
+                                    MySettings.addDevice(device);
+                                    DevicesInMemory.updateDevice(device);
+                                }
+                                MainActivity.getInstance().refreshDevicesListFromMemory();
+                            }
+                        }
+                    });
+                }
+            } catch (MqttException e) {
+                e.printStackTrace();
+                if(allDevices != null) {
+                    for (Device device : allDevices) {
+                        device.setDeviceMQTTReachable(false);
+                        MySettings.addDevice(device);
+                        DevicesInMemory.updateDevice(device);
+                    }
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                }
+            }
+        }
+    }
+    public void subscribe(@NonNull final MqttAndroidClient client, Device device, int qos) throws MqttException {
+        final IMqttToken token = client.subscribe(String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), qos);
+        if(token != null){
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Utils.log(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), true);
+                    device.setDeviceMQTTReachable(false);
+                    MySettings.addDevice(device);
+                    DevicesInMemory.updateDevice(device);
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.e(TAG, "MQTT subscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                    device.setDeviceMQTTReachable(false);
+                    MySettings.addDevice(device);
+                    DevicesInMemory.updateDevice(device);
+                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                }
+            });
+        }
+
+        final IMqttToken token2 = client.subscribe(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), qos);
+        if(token2 != null){
+            token2.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Utils.log(TAG, "MQTT subscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                        jsonObject.put("R_M_ALV", "1");
+                        MqttMessage mqttMessage = new MqttMessage();
+                        mqttMessage.setPayload(jsonObject.toString().getBytes());
+                        Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                        Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
+                        mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+                    }catch (JSONException e){
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                    }catch (MqttException e){
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                    }
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.e(TAG, "MQTT subscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                }
+            });
+        }
+    }
+    public void unsubscribe(@NonNull final MqttAndroidClient client, Device device) throws MqttException {
+        final IMqttToken token = client.unsubscribe(String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+        if(token != null){
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Utils.log(TAG, "MQTT unsubscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), true);
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.e(TAG, "MQTT unsubscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                }
+            });
+        }
+
+        final IMqttToken token2 = client.unsubscribe(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+        if(token2 != null){
+            token2.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Utils.log(TAG, "MQTT unsubscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.e(TAG, "MQTT unsubscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                }
+            });
+        }
+    }
+    private MqttConnectOptions getMqttConnectionOption() {
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setCleanSession(true);
+        mqttConnectOptions.setAutomaticReconnect(true);
+        //mqttConnectOptions.setWill(Constants.MQTT_URL, "I am going offline".getBytes(), 1, false);
+        mqttConnectOptions.setUserName(Constants.MQTT_USERNAME);
+        mqttConnectOptions.setPassword(Constants.MQTT_PASSWORD.toCharArray());
+        return mqttConnectOptions;
+    }
+    private DisconnectedBufferOptions getDisconnectedBufferOptions() {
+        DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+        disconnectedBufferOptions.setBufferEnabled(true);
+        disconnectedBufferOptions.setBufferSize(100);
+        disconnectedBufferOptions.setPersistBuffer(true);
+        disconnectedBufferOptions.setDeleteOldestMessages(false);
+        return disconnectedBufferOptions;
     }
 
     @Override

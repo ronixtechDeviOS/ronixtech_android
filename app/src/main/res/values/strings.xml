@@ -306,6 +306,8 @@
     <string name="sound_controller_configuration_description">Please select the number of speakers that will be connected to this controller</string>
     <string name="number_of_speakers">Number of speakers:</string>
 
+    <string name="place_devices_on">Turn ON</string>
+    <string name="place_devices_off">Turn OFF</string>
     <string name="room_devices_on">Turn ON</string>
     <string name="room_devices_off">Turn OFF</string>
     <string name="toggle_dimming">Toggle dimming</string>
