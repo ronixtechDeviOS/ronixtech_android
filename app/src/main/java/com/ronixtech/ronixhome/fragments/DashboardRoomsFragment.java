@@ -183,13 +183,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
             @Override
             public void onRoomDevicesToggled(Room room, int newState) {
-                if(MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1){
-                    List<Device> roomDevices = new ArrayList<>();
-                    roomDevices.addAll(MySettings.getRoomDevices(room.getId()));
-                    for (Device device : roomDevices){
-                        Utils.toggleDevice(place, device, newState);
-                    }
-                }
+                int mode = MySettings.getCurrentPlace().getMode();
+                Utils.toggleRoom(room, newState, mode);
             }
         });
         roomsGridView.setAdapter(roomsGridAdapter);
@@ -218,13 +213,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
             @Override
             public void onRoomDevicesToggled(Room room, int newState) {
-                if(MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1){
-                    List<Device> roomDevices = new ArrayList<>();
-                    roomDevices.addAll(MySettings.getRoomDevices(room.getId()));
-                    for (Device device : roomDevices){
-                        Utils.toggleDevice(place, device, newState);
-                    }
-                }
+                int mode = MySettings.getCurrentPlace().getMode();
+                Utils.toggleRoom(room, newState, mode);
             }
         });
         roomsListView.setAdapter(roomsDashboardListAdapter);
@@ -365,23 +355,30 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     Utils.log(TAG, "Currently connected to: " + ssid, true);
                     WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
                     if(wifiNetwork != null){
-                        Utils.log(TAG, "wifinetwork DB id: " + wifiNetwork.getId(), true);
+                        Utils.log(TAG, "WifiNetwork DB id: " + wifiNetwork.getId(), true);
                         long placeID = wifiNetwork.getPlaceID();
-                        Utils.log(TAG, "wifinetwork placeID: " + placeID, true);
+                        Utils.log(TAG, "WifiNetwork placeID: " + placeID, true);
                         if(placeID != -1){
                             Place localPlace = MySettings.getPlace(placeID);
                             if(localPlace != null){
-                                Utils.log(TAG, "wifinetwork DB placeName: " + localPlace.getName(), true);
+                                Utils.log(TAG, "WifiNetwork DB placeName: " + localPlace.getName(), true);
                                 localPlace.setMode(Place.PLACE_MODE_LOCAL);
                                 MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
                                 if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
+                                    Utils.log(TAG, "Updating current place", true);
+                                    if(localPlace.getMode() == Place.PLACE_MODE_LOCAL) {
+                                        Utils.log(TAG, "Updating current place: Setting mode to LOCAL", true);
+                                    }else if(localPlace.getMode() == Place.PLACE_MODE_REMOTE) {
+                                        Utils.log(TAG, "Updating current place: Setting mode to REMOTE", true);
+                                    }
                                     MySettings.setCurrentPlace(localPlace);
+                                    this.place = localPlace;
                                 }
                             }
                         }
                     }else{
                         //Wifi network is NOT associated with any Place
-                        Utils.log(TAG, "Wifi network is NOT associated with any Place", true);
+                        Utils.log(TAG, "WifiNetwork is NOT associated with any Place", true);
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
@@ -595,6 +592,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         super.onStart();
         if(MySettings.getCurrentPlace() != null){
             if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
                 //startTimer in onResume
             }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
                 Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);

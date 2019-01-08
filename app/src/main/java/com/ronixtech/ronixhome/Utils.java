@@ -33,6 +33,7 @@ import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.PIRData;
 import com.ronixtech.ronixhome.entities.Place;
+import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.TimeUnit;
 import com.ronixtech.ronixhome.entities.Type;
 
@@ -1058,91 +1059,126 @@ public class Utils {
         }
     }
 
-    public static void toggleDevice(Place place, Device device, int newState){
-        if(place != null){
-            if(place.getMode() == Place.PLACE_MODE_LOCAL){
-                DeviceToggler deviceToggler = new DeviceToggler(device, newState);
-                deviceToggler.execute();
-            }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
-                //send command usint MQTT
-                MqttAndroidClient mqttAndroidClient = MainActivity.getInstance().getMainMqttClient();
-                if(mqttAndroidClient != null){
-                    try{
-                        JSONObject jsonObject = new JSONObject();
-                        for (Line line : device.getLines()){
-                            int position = line.getPosition();
-                            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                                if(newState == Line.LINE_STATE_ON){
-                                    switch(position){
-                                        case 0:
-                                            jsonObject.put("L_0_DIM", ":");
-                                            break;
-                                        case 1:
-                                            jsonObject.put("L_1_DIM", ":");
-                                            break;
-                                        case 2:
-                                            jsonObject.put("L_2_DIM", ":");
-                                            break;
-                                    }
-                                }else if(newState == Line.LINE_STATE_OFF){
-                                    switch (position){
-                                        case 0:
-                                            jsonObject.put("L_0_DIM", "0");
-                                            break;
-                                        case 1:
-                                            jsonObject.put("L_1_DIM", "0");
-                                            break;
-                                        case 2:
-                                            jsonObject.put("L_2_DIM", "0");
-                                            break;
-                                    }
+    public static void togglePlace(Place place, int newState, int mode){
+        if(mode == Line.LINE_STATE_ON) {
+            Utils.log(TAG, "Toggling place: " + place.getName() + " ON", true);
+        }else if(mode == Line.LINE_STATE_OFF) {
+            Utils.log(TAG, "Toggling place: " + place.getName() + " OFF", true);
+        }
+        if(place != null && MySettings.getPlaceDevices(place) != null && MySettings.getPlaceDevices(place).size() >= 1){
+            List<Device> placeDevices = new ArrayList<>();
+            placeDevices.addAll(MySettings.getPlaceDevices(place));
+            for (Device device : placeDevices){
+                Utils.toggleDevice(device, newState, mode);
+            }
+        }
+    }
+
+    public static void toggleRoom(Room room, int newState, int mode){
+        if(mode == Line.LINE_STATE_ON) {
+            Utils.log(TAG, "Toggling room: " + room.getName() + " ON", true);
+        }else if(mode == Line.LINE_STATE_OFF) {
+            Utils.log(TAG, "Toggling room: " + room.getName() + " OFF", true);
+        }
+        if(room != null && MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1) {
+            List<Device> roomDevices = new ArrayList<>();
+            roomDevices.addAll(MySettings.getRoomDevices(room.getId()));
+            for (Device device : roomDevices) {
+                Utils.toggleDevice(device, newState, mode);
+            }
+        }
+    }
+
+    public static void toggleDevice(Device device, int newState, int mode){
+        if(mode == Line.LINE_STATE_ON){
+            Utils.log(TAG, "Toggling device: " + device.getName() + " ON", true);
+        }else if(mode == Line.LINE_STATE_OFF){
+            Utils.log(TAG, "Toggling device: " + device.getName() + " OFF", true);
+        }
+        if(mode == Place.PLACE_MODE_LOCAL){
+            Utils.log(TAG, "Toggling device: " + device.getName() + " using LOCAL mode.", true);
+            DeviceToggler deviceToggler = new DeviceToggler(device, newState);
+            deviceToggler.execute();
+        }else if(mode == Place.PLACE_MODE_REMOTE){
+            Utils.log(TAG, "Toggling device: " + device.getName() + " using REMOTE mode.", true);
+            //send command usint MQTT
+            MqttAndroidClient mqttAndroidClient = MainActivity.getInstance().getMainMqttClient();
+            if(mqttAndroidClient != null){
+                try{
+                    JSONObject jsonObject = new JSONObject();
+                    for (Line line : device.getLines()){
+                        int position = line.getPosition();
+                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                            if(newState == Line.LINE_STATE_ON){
+                                switch(position){
+                                    case 0:
+                                        jsonObject.put("L_0_DIM", ":");
+                                        break;
+                                    case 1:
+                                        jsonObject.put("L_1_DIM", ":");
+                                        break;
+                                    case 2:
+                                        jsonObject.put("L_2_DIM", ":");
+                                        break;
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                if(newState == Line.LINE_STATE_ON){
-                                    switch(position){
-                                        case 0:
-                                            jsonObject.put("L_0_STT", 1);
-                                            break;
-                                        case 1:
-                                            jsonObject.put("L_1_STT", 1);
-                                            break;
-                                        case 2:
-                                            jsonObject.put("L_2_STT", 1);
-                                            break;
-                                    }
-                                }else if(newState == Line.LINE_STATE_OFF){
-                                    switch(position){
-                                        case 0:
-                                            jsonObject.put("L_0_STT", 0);
-                                            break;
-                                        case 1:
-                                            jsonObject.put("L_1_STT", 0);
-                                            break;
-                                        case 2:
-                                            jsonObject.put("L_2_STT", 0);
-                                            break;
-                                    }
+                            }else if(newState == Line.LINE_STATE_OFF){
+                                switch (position){
+                                    case 0:
+                                        jsonObject.put("L_0_DIM", "0");
+                                        break;
+                                    case 1:
+                                        jsonObject.put("L_1_DIM", "0");
+                                        break;
+                                    case 2:
+                                        jsonObject.put("L_2_DIM", "0");
+                                        break;
+                                }
+                            }
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                            if(newState == Line.LINE_STATE_ON){
+                                switch(position){
+                                    case 0:
+                                        jsonObject.put("L_0_STT", 1);
+                                        break;
+                                    case 1:
+                                        jsonObject.put("L_1_STT", 1);
+                                        break;
+                                    case 2:
+                                        jsonObject.put("L_2_STT", 1);
+                                        break;
+                                }
+                            }else if(newState == Line.LINE_STATE_OFF){
+                                switch(position){
+                                    case 0:
+                                        jsonObject.put("L_0_STT", 0);
+                                        break;
+                                    case 1:
+                                        jsonObject.put("L_1_STT", 0);
+                                        break;
+                                    case 2:
+                                        jsonObject.put("L_2_STT", 0);
+                                        break;
                                 }
                             }
                         }
-                        jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-                        MqttMessage mqttMessage = new MqttMessage();
-                        mqttMessage.setPayload(jsonObject.toString().getBytes());
-                        Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
-                        Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
-                        mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
-                    }catch (JSONException e){
-                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                    }catch (MqttException e){
-                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     }
-                }else{
-                    Utils.log(TAG, "mqttAndroidClient is null", true);
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                    MqttMessage mqttMessage = new MqttMessage();
+                    mqttMessage.setPayload(jsonObject.toString().getBytes());
+                    Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                    Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
+                    mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+                }catch (JSONException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                }catch (MqttException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }
-                MySettings.setControlState(false);
+            }else{
+                Utils.log(TAG, "mqttAndroidClient is null", true);
             }
+            MySettings.setControlState(false);
         }
     }
 

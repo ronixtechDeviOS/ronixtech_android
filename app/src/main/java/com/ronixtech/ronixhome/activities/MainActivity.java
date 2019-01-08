@@ -441,7 +441,7 @@ public class MainActivity extends AppCompatActivity
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Utils.log(TAG, "Volley error: \" + error.getMessage()", true);
+                Utils.log(TAG, "Volley error: " + error.getMessage(), true);
             }
         });
         stringRequest.setShouldCache(false);
