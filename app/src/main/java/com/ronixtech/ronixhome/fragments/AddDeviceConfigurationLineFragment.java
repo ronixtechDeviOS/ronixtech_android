@@ -378,6 +378,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         currentLine.setName(lineNameEditText.getHint().toString());
                     }
                     currentLine.setTypeID(lineType.getId());
+                    currentLine.setLineTypeString(lineType.getName());
                     currentLine.setPowerState(Line.LINE_STATE_OFF);
                     if(lineDimmingCheckBox.isChecked()){
                         currentLine.setDimmingState(Line.DIMMING_STATE_ON);
@@ -569,6 +570,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                     currentLine.setName(lineNameEditText.getHint().toString());
                 }
                 currentLine.setTypeID(lineType.getId());
+                currentLine.setLineTypeString(lineType.getName());
                 currentLine.setPowerState(Line.LINE_STATE_OFF);
                 if(lineDimmingCheckBox.isChecked()){
                     currentLine.setDimmingState(Line.DIMMING_STATE_ON);

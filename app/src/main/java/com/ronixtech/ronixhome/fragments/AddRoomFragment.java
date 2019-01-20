@@ -276,6 +276,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                         room.setName(roomNameEditText.getText().toString());
                         room.setFloorID(selectedFloor.getId());
                         room.setTypeID(selectedRoomType.getId());
+                        room.setTypeName(selectedRoomType.getName());
                         MySettings.addRoom(room);
 
                         MySettings.setCurrentRoom(room);

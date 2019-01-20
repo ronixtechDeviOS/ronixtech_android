@@ -131,17 +131,7 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
             if(device.isDeviceMQTTReachable()){
                 statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_reachable));
                 statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.greenColor));
-                dhcpTextView.setVisibility(View.GONE);
-                dhcpStaticTextView.setVisibility(View.GONE);
-                ipAddressTextView.setVisibility(View.GONE);
-                ipAddressStaticTextView.setVisibility(View.GONE);
-                gatewayStaticTextView.setVisibility(View.GONE);
-                gatewayTextView.setVisibility(View.GONE);
-                subnetmaskStaticTextView.setVisibility(View.GONE);
-                subnetmaskTextView.setVisibility(View.GONE);
-            }else{
-                statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_unreachable));
-                statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+
                 dhcpTextView.setVisibility(View.VISIBLE);
                 dhcpStaticTextView.setVisibility(View.VISIBLE);
                 ipAddressTextView.setVisibility(View.VISIBLE);
@@ -150,6 +140,40 @@ public class DeviceInfoFragment extends android.support.v4.app.Fragment {
                 gatewayTextView.setVisibility(View.VISIBLE);
                 subnetmaskStaticTextView.setVisibility(View.VISIBLE);
                 subnetmaskTextView.setVisibility(View.VISIBLE);
+
+                if(device.isStaticIPAddress()){
+                    dhcpTextView.setText(Utils.getString(getActivity(), R.string.off));
+                }else{
+                    dhcpTextView.setText(Utils.getString(getActivity(), R.string.on));
+                }
+                if(device.getIpAddress().length() >= 1) {
+                    ipAddressTextView.setText("" + device.getIpAddress());
+                }else{
+                    ipAddressTextView.setText("-");
+                }
+                if(device.getGateway().length() >= 1) {
+                    gatewayTextView.setText("" + device.getGateway());
+                }else{
+                    gatewayTextView.setText("-");
+                }
+                if(device.getSubnetMask().length() >= 1) {
+                    subnetmaskTextView.setText("" + device.getSubnetMask());
+                }else{
+                    subnetmaskTextView.setText("-");
+                }
+            }else{
+                statusTextVuew.setText(Utils.getString(getActivity(), R.string.device_mqtt_unreachable));
+                statusTextVuew.setTextColor(getActivity().getResources().getColor(R.color.blackColor));
+
+                dhcpTextView.setVisibility(View.VISIBLE);
+                dhcpStaticTextView.setVisibility(View.VISIBLE);
+                ipAddressTextView.setVisibility(View.VISIBLE);
+                ipAddressStaticTextView.setVisibility(View.VISIBLE);
+                gatewayStaticTextView.setVisibility(View.VISIBLE);
+                gatewayTextView.setVisibility(View.VISIBLE);
+                subnetmaskStaticTextView.setVisibility(View.VISIBLE);
+                subnetmaskTextView.setVisibility(View.VISIBLE);
+
                 if(device.isStaticIPAddress()){
                     dhcpTextView.setText(Utils.getString(getActivity(), R.string.off));
                 }else{

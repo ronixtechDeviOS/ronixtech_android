@@ -15,10 +15,9 @@
             android:id="@+id/rooms_header_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/lightestGrayColor"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp">
-
+            android:background="@color/whiteColor"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
             <ImageView
                 android:id="@+id/gridview_imageview"
                 android:layout_width="24dp"
@@ -27,7 +26,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/grid_blue"/>
-
             <ImageView
                 android:id="@+id/listview_imageview"
                 android:layout_width="24dp"
@@ -38,7 +36,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/list_blue"/>
-
             <ImageView
                 android:id="@+id/sort_imageview"
                 android:layout_width="24dp"
@@ -50,7 +47,6 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/sort_blue"/>
-
         </RelativeLayout>
 
         <GridView
@@ -60,7 +56,7 @@
             android:layout_below="@id/rooms_header_layout"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:paddingBottom="72dp"
+            android:paddingBottom="0dp"
             android:clipToPadding="false"
             android:numColumns="2"
             android:verticalSpacing="4dp"
@@ -76,7 +72,7 @@
             android:layout_below="@id/rooms_header_layout"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:paddingBottom="72dp"
+            android:paddingBottom="0dp"
             android:scrollbars="none"
             tools:listitem="@layout/list_item_room_dashboard"/>
 

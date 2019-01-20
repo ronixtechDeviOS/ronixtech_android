@@ -290,8 +290,8 @@ public class AddDeviceFragmentSendData extends Fragment {
                     PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment);
                     pirAddPairings.execute();
                 }else{
-                    WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
-                    wiFiDataSenderGet.execute();
+                    DHCPToggler dhcpToggler = new DHCPToggler(activity, fragment);
+                    dhcpToggler.execute();
                 }
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
@@ -385,8 +385,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200) {
-                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
-                wiFiDataSenderGet.execute();
+                DHCPToggler dhcpToggler = new DHCPToggler(activity, fragment);
+                dhcpToggler.execute();
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
@@ -584,8 +584,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
-                wiFiDataSenderGet.execute();
+                DHCPToggler dhcpToggler = new DHCPToggler(activity, fragment);
+                dhcpToggler.execute();
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
@@ -645,6 +645,93 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
                     urlConnection.disconnect();
                     Utils.log(TAG, "sendDimmingControls response: " + result.toString(), true);
+                }catch (MalformedURLException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                }catch (JSONException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                }catch (IOException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                }finally {
+                    if(urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    numberOfRetries++;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static class DHCPToggler extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public DHCPToggler(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+            wiFiDataSenderGet.execute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            statusCode = 0;
+            int numberOfRetries = 0;
+            while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                try{
+                    String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
+
+                    URL url = new URL(urlString);
+                    Utils.log(TAG, "DHCPToggler URL: " + url, true);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                    urlConnection.setDoOutput(true);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestMethod("POST");
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+                    jsonObject.put("R_W_DHC", "on");
+
+                    Utils.log(TAG, "DHCPToggler POST data: " + jsonObject.toString(), true);
+
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                    outputStreamWriter.write(jsonObject.toString());
+                    outputStreamWriter.flush();
+                    outputStreamWriter.close();
+
+                    statusCode = urlConnection.getResponseCode();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String dataLine;
+                    while((dataLine = bufferedReader.readLine()) != null) {
+                        result.append(dataLine);
+                    }
+                    urlConnection.disconnect();
+                    Utils.log(TAG, "DHCPToggler response: " + result.toString(), true);
                 }catch (MalformedURLException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){

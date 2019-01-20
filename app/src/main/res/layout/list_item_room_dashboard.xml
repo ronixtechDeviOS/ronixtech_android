@@ -2,9 +2,12 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/whiteColor"
-    android:padding="4dp">
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:paddingStart="4dp"
+    android:paddingLeft="4dp">
 
     <android.support.v7.widget.CardView
         android:id="@+id/room_layout"
@@ -15,7 +18,9 @@
         android:clipToPadding="false">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+            <!--android:minHeight="150dp"-->
             <!--<ImageView
                 android:id="@+id/room_type_imageview"
                 android:layout_width="75dp"
@@ -25,42 +30,106 @@
                 android:background="@drawable/circle_indicator_gray"
                 android:padding="8dp"
                 android:src="@drawable/room_icon"/>-->
-            <ImageView
-                android:id="@+id/room_type_imageview"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:layout_centerVertical="true"
-                android:scaleType="centerCrop"
-                android:padding="8dp"
-                android:src="@drawable/room_icon"/>
+
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/room_type_imageview"
-                android:layout_toRightOf="@id/room_type_imageview"
-                android:padding="8dp">
+                android:layout_height="200dp">
                 <ImageView
-                    android:id="@+id/room_advanced_options_button"
-                    android:layout_width="40dp"
-                    android:layout_height="32dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/overflow_3_dots_gray"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"/>
-                <TextView
-                    android:id="@+id/room_name_textview"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/room_background_imageview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/bedroom_sample_1"
+                    android:scaleType="centerCrop"/>
+                <RelativeLayout
+                    android:id="@+id/room_info_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:textColor="@color/blackColor"
-                    android:textSize="16sp"
-                    android:textAlignment="center"
-                    android:text="RoomName"/>
+                    android:background="@color/black_40_transparent_background"
+                    android:layout_marginTop="12dp">
+                    <ImageView
+                        android:id="@+id/room_type_imageview"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp"
+                        android:visibility="gone"
+                        android:layout_centerVertical="true"
+                        android:scaleType="centerCrop"
+                        android:padding="8dp"
+                        android:src="@drawable/room_icon"/>
+                    <ImageView
+                        android:id="@+id/room_advanced_options_button"
+                        android:layout_width="50dp"
+                        android:layout_height="32dp"
+                        android:layout_centerVertical="true"
+                        android:padding="8dp"
+                        android:src="@drawable/overflow_3_dots_gray"
+                        android:tint="@color/whiteColor"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"/>
+                    <TextView
+                        android:id="@+id/room_name_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@id/room_advanced_options_button"
+                        android:layout_toLeftOf="@id/room_advanced_options_button"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/whiteColor"
+                        android:textSize="16sp"
+                        android:textAlignment="textStart"
+                        android:gravity="start"
+                        android:text="RoomName"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_alignParentBottom="true">
+                    <ImageView
+                        android:id="@+id/scroll_previous_imageview"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_keyboard_arrow_left_gray_24dp"
+                        android:layout_centerVertical="true"/>
+                    <ImageView
+                        android:id="@+id/scroll_next_imageview"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"/>
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/scroll_previous_imageview"
+                        android:layout_toRightOf="@id/scroll_previous_imageview"
+                        android:layout_toStartOf="@id/scroll_next_imageview"
+                        android:layout_toLeftOf="@id/scroll_next_imageview">
+                        <LinearLayout
+                            android:id="@+id/room_devices_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <GridView
+                                android:id="@+id/room_lines_gridview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/black_70_transparent_background"
+                                android:layout_margin="4dp"
+                                android:columnWidth="52dp"
+                                android:gravity="center"
+                                android:numColumns="9"
+                                android:horizontalSpacing="1dp"
+                                android:verticalSpacing="1dp"
+                                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                                android:scrollbarAlwaysDrawVerticalTrack="true"
+                                android:scrollbars="horizontal"
+                                android:stretchMode="none" />
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </RelativeLayout>
             </RelativeLayout>
         </RelativeLayout>
     </android.support.v7.widget.CardView>

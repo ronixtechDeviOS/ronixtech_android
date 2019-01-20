@@ -38,7 +38,6 @@ public class RoomsGridAdapter extends BaseAdapter{
     public interface RoomsListener{
         public void onRoomDeleted();
         public void onRoomNameChanged();
-        public void onRoomDevicesToggled(Room room, int newState);
     }
 
     public RoomsGridAdapter(Activity activity, List<Room> rooms, FragmentManager fragmentManager, RoomsListener roomsListener) {
@@ -103,6 +102,8 @@ public class RoomsGridAdapter extends BaseAdapter{
         vHolder.roomItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MySettings.setCurrentRoom(item);
+
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 DashboardDevicesFragment dashboardDevicesFragment = new DashboardDevicesFragment();
@@ -127,9 +128,11 @@ public class RoomsGridAdapter extends BaseAdapter{
                     public boolean onMenuItemClick(MenuItem item1) {
                         int id = item1.getItemId();
                         if(id == R.id.action_room_device_on){
-                            roomsListener.onRoomDevicesToggled(item, Line.LINE_STATE_ON);
+                            int mode = MySettings.getCurrentPlace().getMode();
+                            Utils.toggleRoom(item, Line.LINE_STATE_ON, mode);
                         }else if(id == R.id.action_room_device_off){
-                            roomsListener.onRoomDevicesToggled(item, Line.LINE_STATE_OFF);
+                            int mode = MySettings.getCurrentPlace().getMode();
+                            Utils.toggleRoom(item, Line.LINE_STATE_OFF, mode);
                         }else if(id == R.id.action_edit_room){
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

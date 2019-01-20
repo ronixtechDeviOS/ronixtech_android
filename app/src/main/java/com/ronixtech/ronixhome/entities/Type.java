@@ -18,22 +18,27 @@ public class Type {
     private int imageResourceID;
     @ColumnInfo(name = "image_resource_name")
     private String imageResourceName;
+    @ColumnInfo(name = "color_hex_code")
+    private String colorHexCode;
 
     public Type(){
+        this.id = 0;
         this.categoryID = 0;
-        this.id = -1;
         this.name = "";
         this.imageUrl = "";
         this.imageResourceID = 0;
         this.imageResourceName = "";
+        this.colorHexCode = "";
     }
 
-    public Type(int categoryID, String typeName, String typeImageUrl, int typeImageResourceID, String imageResourceName){
+    public Type(int categoryID, String typeName, String typeImageUrl, int typeImageResourceID, String imageResourceName, String colorHexCode){
+        this.id = 0;
         this.categoryID = categoryID;
         this.name = typeName;
         this.imageUrl = typeImageUrl;
         this.imageResourceID = typeImageResourceID;
         this.imageResourceName = imageResourceName;
+        this.colorHexCode = colorHexCode;
     }
 
     public long getId() {
@@ -82,5 +87,13 @@ public class Type {
 
     public void setImageResourceName(String imageResourceName) {
         this.imageResourceName = imageResourceName;
+    }
+
+    public String getColorHexCode() {
+        return colorHexCode;
+    }
+
+    public void setColorHexCode(String colorHexCode) {
+        this.colorHexCode = colorHexCode;
     }
 }

@@ -4,11 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +25,7 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -36,6 +40,8 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,7 +61,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     private static final int LIST_VIEW = 0;
     private static final int GRID_VIEW = 2;
-    private static int lastSelectedView = GRID_VIEW;
+    private static int lastSelectedView = LIST_VIEW;
 
     GridView roomsGridView;
     RoomsGridAdapter roomsGridAdapter;
@@ -72,6 +78,15 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     private Floor floor;
 
     private boolean showPlaceArrow = false;
+
+    private boolean isResumed;
+
+    Handler listHandler;
+
+    //Stuff for local mode
+    Timer timer;
+    TimerTask doAsynchronousTask;
+    Handler handler;
 
     private OnFragmentInteractionListener mListener;
 
@@ -105,12 +120,24 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         floor = MySettings.getCurrentFloor();
         if(place != null){
             if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
-                MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+                if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                }
             }else{
                 if(floor != null){
-                    MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName(), getResources().getColor(R.color.whiteColor));
+                    if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                        MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                    }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                        MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                    }
                 }else{
-                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+                    if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                        MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms) + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                    }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                        MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms) + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                    }
                 }
             }
             showPlaceArrow = true;
@@ -138,6 +165,21 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     if(device.getRoomID() == -1){
                         MySettings.removeDevice(device);
                     }
+
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines) {
+                        if(device.getLines() == null || device.getLines().size() != 1){
+                            MySettings.removeDevice(device);
+                        }
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
+                        if(device.getLines() == null || device.getLines().size() != 2){
+                            MySettings.removeDevice(device);
+                        }
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
+                            || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                        if(device.getLines() == null || device.getLines().size() != 3){
+                            MySettings.removeDevice(device);
+                        }
+                    }
                 }
             }
         }
@@ -146,6 +188,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         showAsGrid = view.findViewById(R.id.gridview_imageview);
         showAsList = view.findViewById(R.id.listview_imageview);
         sortImageView = view.findViewById(R.id.sort_imageview);
+
+        listHandler = new Handler();
 
         rooms = new ArrayList<>();
         if(place != null){
@@ -181,11 +225,6 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             public void onRoomNameChanged() {
 
             }
-            @Override
-            public void onRoomDevicesToggled(Room room, int newState) {
-                int mode = MySettings.getCurrentPlace().getMode();
-                Utils.toggleRoom(room, newState, mode);
-            }
         });
         roomsGridView.setAdapter(roomsGridAdapter);
 
@@ -210,11 +249,6 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             @Override
             public void onRoomNameChanged() {
 
-            }
-            @Override
-            public void onRoomDevicesToggled(Room room, int newState) {
-                int mode = MySettings.getCurrentPlace().getMode();
-                Utils.toggleRoom(room, newState, mode);
             }
         });
         roomsListView.setAdapter(roomsDashboardListAdapter);
@@ -310,6 +344,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         showAsGrid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 roomsGridView.setVisibility(View.VISIBLE);
                 roomsListView.setVisibility(View.INVISIBLE);
                 lastSelectedView = GRID_VIEW;
@@ -318,29 +353,21 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         showAsList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 roomsGridView.setVisibility(View.INVISIBLE);
                 roomsListView.setVisibility(View.VISIBLE);
                 lastSelectedView = LIST_VIEW;
             }
         });
 
-        checkWifiConnection();
+        loadDevicesFromDatabase();
+
         checkCellularConnection();
 
         return view;
     }
 
     private void checkWifiConnection(){
-        List<Place> allPlaces = MySettings.getAllPlaces();
-        for (Place place : allPlaces) {
-            place.setMode(Place.PLACE_MODE_REMOTE);
-            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
-        }
-        if(MySettings.getCurrentPlace() != null ){
-            Place currentPlace = MySettings.getCurrentPlace();
-            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
-            MySettings.setCurrentPlace(currentPlace);
-        }
         WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(mWifiManager != null){
             //Wifi is available
@@ -353,32 +380,46 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     Utils.log(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode", true);
                     String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
                     Utils.log(TAG, "Currently connected to: " + ssid, true);
-                    WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
-                    if(wifiNetwork != null){
-                        Utils.log(TAG, "WifiNetwork DB id: " + wifiNetwork.getId(), true);
-                        long placeID = wifiNetwork.getPlaceID();
-                        Utils.log(TAG, "WifiNetwork placeID: " + placeID, true);
-                        if(placeID != -1){
-                            Place localPlace = MySettings.getPlace(placeID);
-                            if(localPlace != null){
-                                Utils.log(TAG, "WifiNetwork DB placeName: " + localPlace.getName(), true);
-                                localPlace.setMode(Place.PLACE_MODE_LOCAL);
-                                MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
-                                if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
-                                    Utils.log(TAG, "Updating current place", true);
-                                    if(localPlace.getMode() == Place.PLACE_MODE_LOCAL) {
-                                        Utils.log(TAG, "Updating current place: Setting mode to LOCAL", true);
-                                    }else if(localPlace.getMode() == Place.PLACE_MODE_REMOTE) {
-                                        Utils.log(TAG, "Updating current place: Setting mode to REMOTE", true);
-                                    }
-                                    MySettings.setCurrentPlace(localPlace);
-                                    this.place = localPlace;
-                                }
-                            }
+                    if(ssid.equalsIgnoreCase("androidwifi") || ssid.equalsIgnoreCase("wiredssid")){
+                        Utils.log(TAG, "Current SSID is known to be an emulator SSID, mode will be set to LOCAL for all palces", true);
+                        List<Place> allPlaces = MySettings.getAllPlaces();
+                        for (Place place : allPlaces) {
+                            place.setMode(Place.PLACE_MODE_LOCAL);
+                            MySettings.updatePlaceMode(place, Place.PLACE_MODE_LOCAL);
+                        }
+                        if(MySettings.getCurrentPlace() != null ){
+                            Place currentPlace = MySettings.getCurrentPlace();
+                            currentPlace.setMode(Place.PLACE_MODE_LOCAL);
+                            MySettings.setCurrentPlace(currentPlace);
                         }
                     }else{
-                        //Wifi network is NOT associated with any Place
-                        Utils.log(TAG, "WifiNetwork is NOT associated with any Place", true);
+                        WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
+                        if(wifiNetwork != null){
+                            Utils.log(TAG, "WifiNetwork DB id: " + wifiNetwork.getId(), true);
+                            long placeID = wifiNetwork.getPlaceID();
+                            Utils.log(TAG, "WifiNetwork placeID: " + placeID, true);
+                            if(placeID != -1){
+                                Place localPlace = MySettings.getPlace(placeID);
+                                if(localPlace != null){
+                                    Utils.log(TAG, "WifiNetwork DB placeName: " + localPlace.getName(), true);
+                                    localPlace.setMode(Place.PLACE_MODE_LOCAL);
+                                    MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
+                                    if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
+                                        Utils.log(TAG, "Updating current place", true);
+                                        if(localPlace.getMode() == Place.PLACE_MODE_LOCAL) {
+                                            Utils.log(TAG, "Updating current place: Setting mode to LOCAL", true);
+                                        }else if(localPlace.getMode() == Place.PLACE_MODE_REMOTE) {
+                                            Utils.log(TAG, "Updating current place: Setting mode to REMOTE", true);
+                                        }
+                                        MySettings.setCurrentPlace(localPlace);
+                                        this.place = localPlace;
+                                    }
+                                }
+                            }
+                        }else{
+                            //Wifi network is NOT associated with any Place
+                            Utils.log(TAG, "WifiNetwork is NOT associated with any Place", true);
+                        }
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
@@ -394,6 +435,16 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     }
 
     private void checkCellularConnection(){
+        List<Place> allPlaces = MySettings.getAllPlaces();
+        for (Place place : allPlaces) {
+            place.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
+        }
+        if(MySettings.getCurrentPlace() != null ){
+            Place currentPlace = MySettings.getCurrentPlace();
+            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.setCurrentPlace(currentPlace);
+        }
         new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
             @Override
             public void onConnectionSuccess() {
@@ -403,6 +454,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             @Override
             public void onConnectionFail(String errorMsg) {
                 MySettings.setInternetConnectivityState(false);
+                checkWifiConnection();
             }
         }).execute();
     }
@@ -482,6 +534,214 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         }
     }
 
+    private void startTimer(){
+        if(timer == null){
+            timer = new Timer();
+            handler = new Handler();
+            doAsynchronousTask = new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            //MySettings.scanDevices();
+                            if(DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1){
+                                boolean allDevicesReachable = true;
+                                for (Device dev : DevicesInMemory.getDevices()) {
+                                    if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
+                                        if(!MySettings.isControlActive()) {
+                                            getDeviceInfo(dev);
+                                        }else{
+                                            Utils.log(TAG, "Controls active, skipping get_status", true);
+                                        }
+                                    }else{
+                                        MySettings.scanNetwork();
+                                        allDevicesReachable = false;
+                                    }
+                                }
+                                if(allDevicesReachable){
+                                    Utils.hideUpdatingNotification();
+                                }
+                            }else{
+                                Utils.log(TAG, "NO DEVICES IN ROOM", true);
+                            }
+                        }
+                    });
+                }
+            };
+            int refreshRate = 2600 + (400 * MySettings.getAllDevices().size());
+            timer.schedule(doAsynchronousTask, 0, refreshRate/*Device.REFRESH_RATE_MS * (DevicesInMemory.getDevices().size()>=1 ? DevicesInMemory.getDevices().size() : 1)*/); //execute in every REFRESH_RATE_MS
+        }
+    }
+
+    private void stopTimer(){
+        if(doAsynchronousTask != null) {
+            doAsynchronousTask.cancel();
+        }
+        if(timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+        timer = null;
+    }
+
+    public void loadDevicesFromDatabase(){
+        if(listHandler != null) {
+            listHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    List<Device> tempDevices = new ArrayList<>();
+                    if(place != null){
+                        if (MySettings.getPlaceDevices(place) != null && MySettings.getPlaceDevices(place).size() >= 1) {
+                            tempDevices.addAll(MySettings.getPlaceDevices(place));
+                        }
+                        DevicesInMemory.setDevices(tempDevices);
+                        DevicesInMemory.setLocalDevices(tempDevices);
+                        putDevicesIntoListView();
+                    }
+                }
+            });
+        }
+    }
+
+    public void loadDevicesFromMemory(){
+        if(listHandler != null) {
+            listHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    putDevicesIntoListView();
+                }
+            });
+        }
+    }
+
+    private void putDevicesIntoListView(){
+        /*if(devices != null) {
+            //devices.clear();
+            if (DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1) {
+                *//*List<Device> tempDevices = new ArrayList<>();
+                tempDevices.addAll(DevicesInMemory.getDevices());
+                for (Device device:tempDevices) {
+                    if(!devices.contains(device)) {
+                        devices.add(device);
+                    }
+                }*//*
+                //devices.addAll(DevicesInMemory.getDevices());
+                setLayoutVisibility();
+            } else {
+                setLayoutVisibility();
+            }
+            *//*if(devices.size() >= 1) {
+                Collections.sort(devices);
+            }*//*
+            roomsDashboardListAdapter.notifyDataSetChanged();
+        }*/
+        roomsDashboardListAdapter.notifyDataSetChanged();
+    }
+
+    public void updateUI(){
+        /*if(isResumed) {
+            if (place != null) {
+                if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                    MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
+                } else if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE) {
+                    MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+                }
+            } else {
+                MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
+            }
+
+            roomsDashboardListAdapter = new RoomsDashboardListAdapter(getActivity(), rooms, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+            devicesListView.setAdapter(deviceAdapter);
+
+            loadDevicesFromMemory();
+
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                //startTimer
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
+                startTimer();
+                *//*if(devices != null) {
+                    for (Device device : devices) {
+                        device.setDeviceMQTTReachable(false);
+                    }
+                }*//*
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                //stopTimer
+                stopTimer();
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
+                //refresh MQTT client
+                if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                    MainActivity.getInstance().refreshMqttClient();
+                }
+            }
+        }*/
+    }
+
+    private void getDeviceInfo(Device device){
+        Utils.log(TAG, "Getting device info...", true);
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                if(currentFirmwareVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
+                    statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }else{
+                    Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
+                    deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }else{
+                Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
+                statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            Utils.ModeGetter modeGetter = new Utils.ModeGetter(device);
+            modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
+            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
+            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        /*//volley request to device to get its status
+        String url = "http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS;
+
+        Log.d(TAG,  "getDeviceStatus URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "getDeviceStatus response: " + response);
+
+                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
+                DataParser dataParser = new DataParser(device, response);
+                dataParser.execute();
+
+                //device.setErrorCount(0);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+
+                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
+
+                *//*MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    MySettings.updateDeviceIP(device, "");
+                    MySettings.updateDeviceErrorCount(device, 0);
+                    MySettings.scanNetwork();
+                }*//*
+            }
+        });
+        request.setTag("getStatusRequest");
+        request.setShouldCache(false);
+        request.setRetryPolicy(new DefaultRetryPolicy(Device.REFRESH_TIMEOUT, Device.REFRESH_NUMBER_OF_RETRIES, 0f));
+        HttpConnectorDeviceStatus.getInstance(MainActivity.getInstance()).addToRequestQueue(request);*/
+    }
+
     @Override
     public void onPlaceSelected(Place selectedPlace){
         if(selectedPlace != null){
@@ -490,9 +750,17 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             this.place = selectedPlace;
             MySettings.setCurrentPlace(place);
             if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
-                MainActivity.setActionBarTitle(place.getName(), getResources().getColor(R.color.whiteColor));
+                if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                }
             }else{
-                MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms), getResources().getColor(R.color.whiteColor));
+                if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms) + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                    MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms) + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                }
             }
 
             rooms.clear();
@@ -504,7 +772,6 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
             setLayoutVisibility();
 
-            checkWifiConnection();
             checkCellularConnection();
         }
     }
@@ -524,7 +791,9 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     @Override
     public void onPause(){
+        Utils.log(TAG, "onPause", true);
         super.onPause();
+        isResumed = false;
         if(MainActivity.getInstance() != null && MainActivity.isResumed){
             Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
             if(toolbar != null){
@@ -538,11 +807,21 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 });
             }
         }
+        if(MySettings.getCurrentPlace() != null){
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
+                stopTimer();
+                //BroadcastServer.stopServer();
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                //stop MQTT in onDestroy
+            }
+        }
     }
 
     @Override
     public void onResume(){
+        Utils.log(TAG, "onResume", true);
         super.onResume();
+        isResumed = true;
         if (MainActivity.getInstance() != null && MainActivity.isResumed) {
             Toolbar toolbar = (Toolbar) MainActivity.getInstance().findViewById(R.id.toolbar);
             if(toolbar != null){
@@ -582,6 +861,21 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         }
                     });
                 }
+            }
+        }
+        loadDevicesFromDatabase();
+        if(MySettings.getCurrentPlace() != null){
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
+                startTimer();
+                //BroadcastServer.startServer();
+            /*if(devices != null) {
+                for (Device device : devices) {
+                    device.setDeviceMQTTReachable(false);
+                }
+            }*/
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                //start MQTT in onStart
             }
         }
     }

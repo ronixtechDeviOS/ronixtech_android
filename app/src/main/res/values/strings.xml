@@ -382,7 +382,7 @@
     <string name="firmware_up_to_date">Controller\'s firmware is up-to-date</string>
 
     <string name="update_device">Update Smart Controller Firmware</string>
-    <string name="update_device_hint_1">Your device has an old firmware and needs to be updated</string>
+    <string name="update_device_hint_1">Your controller has an old firmware and needs to be updated</string>
     <string name="update_device_hint_2">Hold tight, we\'ll do everything for you.</string>
     <string name="update_device_hint_3">Don\'t close the app or turn off the Smart Controller during the update process</string>
     <string name="update_device_hint_4">Press Start to begin the update process</string>
@@ -488,6 +488,12 @@
     <string name="date_linked_account_variable">Addition Date: %s</string>
 
 
+    <string name="logout_title">Are ypu sure you want to log out?</string>
+    <string name="logout_message">Logging out will clear all app data (Places, configured Smart Controllers, saved WiFi networks, etc.\n It is advised that you have a backup first before proceeding</string>
+
+    <string name="data_import_first_time">We have detected that you previously made backups using this account. Do you want to choose one of them to be imported??</string>
+    <string name="restore_data">Restore Data</string>
+
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="done">Done</string>
@@ -501,6 +507,7 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="later">Later</string>
+    <string name="skip">Skip</string>
 
     <string name="seconds">%d seconds</string>
 

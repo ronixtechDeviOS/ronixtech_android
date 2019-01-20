@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
@@ -541,8 +542,9 @@ public class MySettings {
     public static void updatePlaceName(Place place, String newName){
         MySettings.initDB().placeDAO().updatePlaceName(place.getId(), newName);
     }
-    public static void updatePlaceType(Place place, long newTypeID){
-        MySettings.initDB().placeDAO().updatePlaceType(place.getId(), newTypeID);
+    public static void updatePlaceType(Place place, Type newType){
+        MySettings.initDB().placeDAO().updatePlaceType(place.getId(), newType.getId());
+        MySettings.initDB().placeDAO().updatePlaceType(place.getId(), newType.getName());
     }
     public static void updatePlaceLatitude(Place place, double newLatitude){
         MySettings.initDB().placeDAO().updatePlaceLatitude(place.getId(), newLatitude);
@@ -618,8 +620,9 @@ public class MySettings {
     public static void updateRoomName(com.ronixtech.ronixhome.entities.Room room, String newName){
         MySettings.initDB().roomDAO().updateRoomName(room.getId(), newName);
     }
-    public static void updateRoomType(com.ronixtech.ronixhome.entities.Room room, long newType){
-        MySettings.initDB().roomDAO().updateRoomType(room.getId(), newType);
+    public static void updateRoomType(com.ronixtech.ronixhome.entities.Room room, Type newType){
+        MySettings.initDB().roomDAO().updateRoomType(room.getId(), newType.getId());
+        MySettings.initDB().roomDAO().updateRoomType(room.getId(), newType.getName());
     }
     public static void updateRoomFloor(com.ronixtech.ronixhome.entities.Room room, long newFloor){
         MySettings.initDB().roomDAO().updateRoomFloor(room.getId(), newFloor);
@@ -1031,6 +1034,52 @@ public class MySettings {
         }
     }
 
+    public static void clearData(){
+        for (Place place:MySettings.getAllPlaces()) {
+            MySettings.removePlace(place);
+        }
+
+        MySettings.setCurrentPlace(null);
+        MySettings.setCurrentFloor(null);
+        MySettings.setCurrentRoom(null);
+
+        MySettings.setTempPlace(null);
+        MySettings.setTempRoom(null);
+        MySettings.setTempDevice(null);
+
+        for (WifiNetwork network:MySettings.getAllWifiNetworks()) {
+            MySettings.removeWifiNetwork(network);
+        }
+        for (User user:MySettings.getAllLinkedAccounts()) {
+            MySettings.removeUser(user);
+        }
+        MySettings.deleteActiveUser(MySettings.getActiveUser());
+        if(FirebaseAuth.getInstance() != null && FirebaseAuth.getInstance().getCurrentUser() != null){
+            FirebaseAuth.getInstance().signOut();
+        }
+    }
+
+    public static void clearNonUserData(){
+        for (Place place:MySettings.getAllPlaces()) {
+            MySettings.removePlace(place);
+        }
+
+        MySettings.setCurrentPlace(null);
+        MySettings.setCurrentFloor(null);
+        MySettings.setCurrentRoom(null);
+
+        MySettings.setTempPlace(null);
+        MySettings.setTempRoom(null);
+        MySettings.setTempDevice(null);
+
+        for (WifiNetwork network:MySettings.getAllWifiNetworks()) {
+            MySettings.removeWifiNetwork(network);
+        }
+        for (User user:MySettings.getAllLinkedAccounts()) {
+            MySettings.removeUser(user);
+        }
+    }
+
     public static AppDatabase initDB(){
         if(database != null){
             return database;
@@ -1387,6 +1436,32 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_28_29 = new Migration(28, 29) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE type "
+                            + " ADD COLUMN color_hex_code TEXT DEFAULT ''");
+                }
+            };
+
+            Migration MIGRATION_29_30 = new Migration(29, 30) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE place "
+                            + " ADD COLUMN type_name TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE floor "
+                            + " ADD COLUMN type_name TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE room "
+                            + " ADD COLUMN type_name TEXT DEFAULT ''");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
                             .addMigrations(MIGRATION_1_2,
                                     MIGRATION_2_3,
@@ -1414,7 +1489,9 @@ public class MySettings {
                                     MIGRATION_24_25,
                                     MIGRATION_25_26,
                                     MIGRATION_26_27,
-                                    MIGRATION_27_28)
+                                    MIGRATION_27_28,
+                                    MIGRATION_28_29,
+                                    MIGRATION_29_30)
                             .allowMainThreadQueries().
                             build();
             return database;

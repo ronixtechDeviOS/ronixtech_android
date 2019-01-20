@@ -2,16 +2,13 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -44,12 +41,6 @@ import com.ronixtech.ronixhome.fragments.EditDevicePIRFragment;
 import com.ronixtech.ronixhome.fragments.UpdateDeviceIntroFragment;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
@@ -325,12 +316,38 @@ public class DeviceAdapter extends ArrayAdapter {
                         view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                         if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
                             //turn on this line
+                            //tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            //toggleLine(item, 0, Line.LINE_STATE_ON);
                             tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                            toggleLine(item, 0, Line.LINE_STATE_ON);
+                            tempViewHolder.firstLineSeekBar.setProgress(100);
+                            Utils.toggleLine(item, 0, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+                                @Override
+                                public void onToggleFail() {
+                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    tempViewHolder.firstLineSeekBar.setProgress(0);
+                                }
+                            });
                         } else {
                             //turn off this line
+                            //tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            //toggleLine(item, 0, Line.LINE_STATE_OFF);
                             tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                            toggleLine(item, 0, Line.LINE_STATE_OFF);
+                            tempViewHolder.firstLineSeekBar.setProgress(0);
+                            Utils.toggleLine(item, 0, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+                                @Override
+                                public void onToggleFail() {
+                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    tempViewHolder.firstLineSeekBar.setProgress(100);
+                                }
+                            });
                         }
                         if(controlsEnabled){
                             /*view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -375,12 +392,38 @@ public class DeviceAdapter extends ArrayAdapter {
                         view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                         if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
                             //turn on this line
+                            //tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            //toggleLine(item, 1, Line.LINE_STATE_ON);
                             tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                            toggleLine(item, 1, Line.LINE_STATE_ON);
+                            tempViewHolder.secondLineSeekBar.setProgress(100);
+                            Utils.toggleLine(item, 1, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+                                @Override
+                                public void onToggleFail() {
+                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    tempViewHolder.secondLineSeekBar.setProgress(0);
+                                }
+                            });
                         } else {
                             //turn off this line
+                            //tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            //toggleLine(item, 1, Line.LINE_STATE_OFF);
                             tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                            toggleLine(item, 1, Line.LINE_STATE_OFF);
+                            tempViewHolder.secondLineSeekBar.setProgress(0);
+                            Utils.toggleLine(item, 1, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+                                @Override
+                                public void onToggleFail() {
+                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    tempViewHolder.secondLineSeekBar.setProgress(100);
+                                }
+                            });
                         }
                         if(controlsEnabled) {
                             /*view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -427,12 +470,38 @@ public class DeviceAdapter extends ArrayAdapter {
                         view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                         if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
                             //turn on this line
+                            //tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            //toggleLine(item, 2, Line.LINE_STATE_ON);
                             tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
-                            toggleLine(item, 2, Line.LINE_STATE_ON);
+                            tempViewHolder.thirdLineSeekBar.setProgress(100);
+                            Utils.toggleLine(item, 2, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+                                @Override
+                                public void onToggleFail() {
+                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    tempViewHolder.thirdLineSeekBar.setProgress(0);
+                                }
+                            });
                         } else {
                             //turn off this line
+                            //tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            //toggleLine(item, 2, Line.LINE_STATE_OFF);
                             tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
-                            toggleLine(item, 2, Line.LINE_STATE_OFF);
+                            tempViewHolder.thirdLineSeekBar.setProgress(0);
+                            Utils.toggleLine(item, 2, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+                                @Override
+                                public void onToggleFail() {
+                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    tempViewHolder.thirdLineSeekBar.setProgress(100);
+                                }
+                            });
                         }
                         if(controlsEnabled) {
                             /*view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -1802,33 +1871,24 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void toggleLine(Device device, int position, final int state){
-        if(placeMode == Place.PLACE_MODE_LOCAL){
+        Utils.toggleLine(device, position, state, placeMode, new Utils.LineToggler.ToggleCallback() {
+            @Override
+            public void onToggleSuccess() {
+
+            }
+
+            @Override
+            public void onToggleFail() {
+
+            }
+        });
+        /*if(placeMode == Place.PLACE_MODE_LOCAL){
             if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
                 Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
                 if(currentFirmwareVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
                     //old method for controls
                     LineToggler lineToggler = new LineToggler(device, position, state);
                     lineToggler.execute();
-                    //temp hack for deviator demo, will be removed
-                /*Line clickedLine = device.getLines().get(position);
-                if(clickedLine.getMode() == Line.MODE_PRIMARY){
-                    List<Line> secondaryLines = MySettings.getSecondaryLines(device);
-                    if(secondaryLines != null && secondaryLines.size() >= 1){
-                        for (Line secondaryLine:secondaryLines) {
-                            Device secondaryDevice = MySettings.getDeviceByID2(secondaryLine.getDeviceID());
-                            if(secondaryLine.getPosition() == position) {
-                                LineToggler lineToggler1 = new LineToggler(secondaryDevice, secondaryLine.getPosition(), state);
-                                lineToggler1.execute();
-                            }
-                        }
-                    }
-                }else if(clickedLine.getMode() == Line.MODE_SECONDARY){
-                    String mainLineDeviceChipID = clickedLine.getPrimaryDeviceChipID();
-                    int mainLinePosition = clickedLine.getPrimaryLinePosition();
-                    Device mainDevice = MySettings.getDeviceByChipID2(mainLineDeviceChipID);
-                    LineToggler lineToggler1 = new LineToggler(mainDevice, mainLinePosition, state);
-                    lineToggler1.execute();
-                }*/
                 }else{
                     //new method for controls
                     Device localDevice = DevicesInMemory.getLocalDevice(device);
@@ -1848,26 +1908,6 @@ public class DeviceAdapter extends ArrayAdapter {
                     DevicesInMemory.updateLocalDevice(localDevice);
 
                     MySettings.setControlState(false);
-
-                    //temp hack for deviator demo, will be removed
-                /*if(line.getMode() == Line.MODE_PRIMARY){
-                    List<Line> secondaryLines = MySettings.getSecondaryLines(device);
-                    if(secondaryLines != null && secondaryLines.size() >= 1){
-                        for (Line secondaryLine:secondaryLines) {
-                            Device secondaryDevice = MySettings.getDeviceByID2(secondaryLine.getDeviceID());
-                            if(secondaryLine.getPosition() == position) {
-                                LineToggler lineToggler1 = new LineToggler(secondaryDevice, secondaryLine.getPosition(), state);
-                                lineToggler1.execute();
-                            }
-                        }
-                    }
-                }else if(line.getMode() == Line.MODE_SECONDARY){
-                    String mainLineDeviceChipID = line.getPrimaryDeviceChipID();
-                    int mainLinePosition = line.getPrimaryLinePosition();
-                    Device mainDevice = MySettings.getDeviceByChipID2(mainLineDeviceChipID);
-                    LineToggler lineToggler1 = new LineToggler(mainDevice, mainLinePosition, state);
-                    lineToggler1.execute();
-                }*/
                 }
             }else{
                 MySettings.setControlState(false);
@@ -1956,7 +1996,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 Utils.log(TAG, "mqttAndroidClient is null", true);
             }
             MySettings.setControlState(false);
-        }
+        }*/
     }
 
     private void toggleDimming(Device device, int position, int state){
@@ -3024,7 +3064,7 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     public class FactoryResetter extends AsyncTask<Void, Void, Void> {
-        private final String TAG = DeviceAdapter.LineToggler.class.getSimpleName();
+        private final String TAG = DeviceAdapter.FactoryResetter.class.getSimpleName();
 
         Device device;
         int statusCode;
@@ -3147,7 +3187,7 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     public class DeviceRebooterPost extends AsyncTask<Void, Void, Void> {
-        private final String TAG = DeviceAdapter.LineToggler.class.getSimpleName();
+        private final String TAG = DeviceAdapter.DeviceRebooterPost.class.getSimpleName();
 
         Device device;
         int statusCode;
@@ -3266,126 +3306,5 @@ public class DeviceAdapter extends ArrayAdapter {
 
             return null;
         }
-    }
-
-    public void disconnectMQTT(){
-        //stop MQTT
-        if(mqttAndroidClient != null){
-            try {
-                if(mqttAndroidClient.isConnected()) {
-                    mqttAndroidClient.disconnect();
-                    mqttAndroidClient.unregisterResources();
-                    mqttAndroidClient.close();
-                }
-            }catch (MqttException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-            }
-        }
-    }
-
-    private void getMqttClient(Context context, String brokerUrl, String clientId) {
-        mqttAndroidClient = new MqttAndroidClient(context, brokerUrl, clientId);
-        /*mqttAndroidClient.setCallback(new MqttCallback() {
-            @Override
-            public void connectionLost(Throwable throwable) {
-                Log.d(TAG, "Connection lost");
-            }
-
-            @Override
-            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                Log.d(TAG, "Message arrived: " + mqttMessage.toString());
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                Log.d(TAG, "Delivery complete");
-            }
-        });*/
-        if(mqttAndroidClient != null){
-            mqttAndroidClient.setCallback(new MqttCallbackExtended() {
-                @Override
-                public void connectComplete(boolean b, String s) {
-                    Utils.log(TAG, "Connection complete on " + s, true);
-                }
-                @Override
-                public void connectionLost(Throwable throwable) {
-                    Utils.log(TAG, "Connection lost", true);
-                }
-                @Override
-                public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                    //setMessageNotification(s, new String(mqttMessage.getPayload()));
-                    Utils.log(TAG, "Message arrived: 's': " + s, true);
-                    Utils.log(TAG, "Message arrived: 'mqttMessage': " + new String(mqttMessage.getPayload()), true);
-                }
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                    Utils.log(TAG, "Delivery complete", true);
-                }
-            });
-            try {
-                if(!mqttAndroidClient.isConnected()){
-                    IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
-                    if(token != null){
-                        token.setActionCallback(new IMqttActionListener() {
-                            @Override
-                            public void onSuccess(IMqttToken asyncActionToken) {
-                                mqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
-                                Utils.log(TAG, "Success", true);
-                                try {
-                                    for (Device device:devices) {
-                                        subscribe(mqttAndroidClient, String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), 1);
-                                    }
-                                }catch (MqttException e){
-                                    Utils.log(TAG, "Exception " + e.getMessage(), true);
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                                Utils.log(TAG, "Failure " + exception.toString(), true);
-                            }
-                        });
-                    }
-                }
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void subscribe(@NonNull final MqttAndroidClient client,
-                          @NonNull final String topic, int qos) throws MqttException {
-        final IMqttToken token = client.subscribe(topic, qos);
-        if(token != null) {
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken iMqttToken) {
-                    Utils.log(TAG, "Subscribe Successfully on " + topic, true);
-                }
-
-                @Override
-                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
-                    Log.e(TAG, "Subscribe Failed on " + topic);
-                }
-            });
-        }
-    }
-
-    private MqttConnectOptions getMqttConnectionOption() {
-        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-        mqttConnectOptions.setCleanSession(true);
-        mqttConnectOptions.setAutomaticReconnect(true);
-        //mqttConnectOptions.setWill(Constants.MQTT_URL, "I am going offline".getBytes(), 1, false);
-        mqttConnectOptions.setUserName(Constants.MQTT_USERNAME);
-        mqttConnectOptions.setPassword(Constants.MQTT_PASSWORD.toCharArray());
-        return mqttConnectOptions;
-    }
-    private DisconnectedBufferOptions getDisconnectedBufferOptions() {
-        DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
-        disconnectedBufferOptions.setBufferEnabled(true);
-        disconnectedBufferOptions.setBufferSize(100);
-        disconnectedBufferOptions.setPersistBuffer(true);
-        disconnectedBufferOptions.setDeleteOldestMessages(false);
-        return disconnectedBufferOptions;
     }
 }

@@ -304,7 +304,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                                 .playOn(placeNameEditText);
                     }else{
                         MySettings.updatePlaceName(place, placeNameEditText.getText().toString());
-                        MySettings.updatePlaceType(place, selectedPlaceType.getId());
+                        MySettings.updatePlaceType(place, selectedPlaceType);
                         if(placeFloors != null && placeFloors.size() >= 1){
                             for (Floor floor : placeFloors) {
                                 if(floor.getId() == -1){
@@ -355,7 +355,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                                 .playOn(placeNameEditText);
                     }else{
                         MySettings.updatePlaceName(place, placeNameEditText.getText().toString());
-                        MySettings.updatePlaceType(place, selectedPlaceType.getId());
+                        MySettings.updatePlaceType(place, selectedPlaceType);
                         if(placeFloors != null && placeFloors.size() >= 1){
                             for (Floor floor : placeFloors) {
                                 if(floor.getId() == -1){

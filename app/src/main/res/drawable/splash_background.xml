@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+
+    <item android:drawable="@drawable/splash"
+        android:bottom="16dp"
+        android:top="16dp"
+        android:left="16dp"
+        android:right="16dp"
+        android:gravity="center"
+        android:tileMode="repeat">
+    </item>
+
+    <item
+        android:top="400dp"
+        android:bottom="100dp"
+        android:left="100dp"
+        android:right="100dp">
+        <animated-rotate
+            android:drawable="@drawable/logo_white_big"
+
+            android:tileMode="repeat"
+
+            android:duration="500"
+            android:fromDegrees="0"
+            android:toDegrees="1080"
+            android:interpolator="@android:anim/linear_interpolator"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:repeatCount="infinite">
+        </animated-rotate>
+    </item>
+
+</layer-list>

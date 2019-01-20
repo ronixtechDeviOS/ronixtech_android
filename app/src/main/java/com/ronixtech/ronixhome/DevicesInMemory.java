@@ -78,6 +78,32 @@ public class DevicesInMemory {
         return null;
     }
 
+    public static Device getDeviceByID(long deviceID){
+        if(devices != null && devices.size() >= 1){
+            for (Device device:devices) {
+                if(device.getId() == deviceID){
+                    return device;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public static List<Device> getRoomDevices(long roomID){
+        List<Device> roomDevices = new ArrayList<>();
+        if(devices.size() >= 1){
+            for (Device device : devices) {
+                if(device.getRoomID() == roomID){
+                    if(!roomDevices.contains(device)){
+                        roomDevices.add(device);
+                    }
+                }
+            }
+        }
+        return roomDevices;
+    }
+
     public static void removeDevice(Device device){
         devices.remove(device);
         localDevices.remove(device);

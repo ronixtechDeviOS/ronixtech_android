@@ -43,6 +43,9 @@ public abstract class PlaceDAO {
     @Query("UPDATE place SET type_id =:newTypeID WHERE id =:placeID")
     public abstract void updatePlaceType(long placeID, long newTypeID);
 
+    @Query("UPDATE place SET type_name =:newTypeName WHERE id =:placeID")
+    public abstract void updatePlaceType(long placeID, String newTypeName);
+
     @Query("UPDATE place SET latitude =:newLatitude WHERE id =:placeID")
     public abstract void updatePlaceLatitude(long placeID, double newLatitude);
 

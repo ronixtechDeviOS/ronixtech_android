@@ -130,11 +130,15 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/device_type_imageview"
                 android:layout_toRightOf="@id/device_type_imageview"
-                android:padding="8dp">
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingStart="4dp"
+                android:paddingLeft="4dp">
                 <ImageView
                     android:id="@+id/device_advanced_options_button"
-                    android:layout_width="32dp"
-                    android:layout_height="24dp"
+                    android:layout_width="50dp"
+                    android:layout_height="42dp"
+                    android:padding="8dp"
                     android:src="@drawable/overflow_3_dots_gray"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>

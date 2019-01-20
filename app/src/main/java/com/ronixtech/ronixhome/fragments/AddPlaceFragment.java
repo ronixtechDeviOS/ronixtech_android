@@ -251,6 +251,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                         Place tempPlace = new Place();
                         tempPlace.setName(placeNameEditText.getText().toString());
                         tempPlace.setTypeID(selectedPlaceType.getId());
+                        tempPlace.setTypeName(selectedPlaceType.getName());
 
                         List<Floor> floors = new ArrayList<>();
                         for(int x = 1; x <= numberOfFloors; x++){

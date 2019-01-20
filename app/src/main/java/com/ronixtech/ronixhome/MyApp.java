@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.multidex.MultiDexApplication;
 
+import com.ronixtech.ronixhome.entities.Type;
+
 public class MyApp extends MultiDexApplication {
     private static MyApp mInstance;
 
@@ -19,13 +21,32 @@ public class MyApp extends MultiDexApplication {
 
         MySettings.initDB();
 
-        if(MySettings.getAppFirstStart()) {
+        /*if(MySettings.getAppFirstStart()) {
             Utils.generatePlaceTypes();
             Utils.generateFloorTypes();
             Utils.generateRoomTypes();
             Utils.generateLineTypes();
             MySettings.setAppFirstStart(false);
+        }*/
+
+        for (Type type:MySettings.getTypes(Constants.TYPE_PLACE)) {
+            MySettings.initDB().typeDAO().removeType(type.getId());
         }
+        for (Type type:MySettings.getTypes(Constants.TYPE_FLOOR)) {
+            MySettings.initDB().typeDAO().removeType(type.getId());
+        }
+        for (Type type:MySettings.getTypes(Constants.TYPE_ROOM)) {
+            MySettings.initDB().typeDAO().removeType(type.getId());
+        }
+        for (Type type:MySettings.getTypes(Constants.TYPE_LINE)) {
+            MySettings.initDB().typeDAO().removeType(type.getId());
+        }
+
+        Utils.generatePlaceTypes();
+        Utils.generateFloorTypes();
+        Utils.generateRoomTypes();
+        Utils.generateLineTypes();
+
         //MySettings.scanNetwork();
 
 

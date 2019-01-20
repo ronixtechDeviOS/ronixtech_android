@@ -143,6 +143,8 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
                     new Utils.InternetChecker(getActivity(), new Utils.InternetChecker.OnConnectionCallback() {
                         @Override
                         public void onConnectionSuccess() {
+                            MySettings.clearNonUserData();
+
                             downloadingProgressLayout.setVisibility(View.VISIBLE);
                             importingDataLayout.setVisibility(View.GONE);
 

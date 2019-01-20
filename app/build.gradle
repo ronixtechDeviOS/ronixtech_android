@@ -7,8 +7,8 @@ android {
         applicationId "com.ronixtech.ronixhome"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 77
-        versionName "0.77"
+        versionCode 78
+        versionName "0.78"
         multiDexEnabled true
     }
     buildTypes {

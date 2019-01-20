@@ -2,6 +2,7 @@ package com.ronixtech.ronixhome.entities;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import com.ronixtech.ronixhome.MySettings;
@@ -189,11 +190,22 @@ public class Line {
         this.typeID = id;
     }
 
+    @Ignore
+    private Type cachedType;
     public Type getType(){
-        if(typeID != -1) {
-            return MySettings.getType(typeID);
+        if(cachedType != null){
+            return cachedType;
         }else{
-            return MySettings.getTypeByName("LED Lamp");
+            if(lineTypeString != null && lineTypeString.length() >= 1 && MySettings.getTypeByName(lineTypeString) != null){
+                cachedType = MySettings.getTypeByName(lineTypeString);
+                return cachedType;
+            }else if(typeID != -1 && MySettings.getType(typeID) != null){
+                cachedType = MySettings.getType(typeID);
+                return cachedType;
+            }else{
+                cachedType = MySettings.getTypeByName("LED Lamp");
+                return cachedType;
+            }
         }
     }
 

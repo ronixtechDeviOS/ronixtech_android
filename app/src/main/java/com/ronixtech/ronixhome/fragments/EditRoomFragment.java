@@ -276,7 +276,7 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
                         room.setTypeID(selectedRoomType.getId());
 
                         MySettings.updateRoomName(room, roomNameEditText.getText().toString());
-                        MySettings.updateRoomType(room, selectedRoomType.getId());
+                        MySettings.updateRoomType(room, selectedRoomType);
                         MySettings.updateRoomFloor(room, selectedFloor.getId());
 
                         MySettings.setCurrentRoom(room);

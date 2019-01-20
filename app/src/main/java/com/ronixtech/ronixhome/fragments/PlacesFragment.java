@@ -143,11 +143,6 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                         })
                         .show();
             }
-            @Override
-            public void onPlaceDevicesToggled(Place place, int newState) {
-                int mode = place.getMode();
-                Utils.togglePlace(place, newState, mode);
-            }
         });
         placesGridView.setAdapter(placeAdapter);
 

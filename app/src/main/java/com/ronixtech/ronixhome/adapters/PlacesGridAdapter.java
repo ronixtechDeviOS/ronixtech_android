@@ -40,7 +40,6 @@ public class PlacesGridAdapter extends BaseAdapter {
     public interface PlacesListener{
         public void onPlaceDeleted();
         public void onDefaultPlaceRequested();
-        public void onPlaceDevicesToggled(Place place, int newState);
     }
 
     public PlacesGridAdapter(Activity activity, List<Place> places, FragmentManager fragmentManager, PlacesListener listener) {
@@ -137,9 +136,11 @@ public class PlacesGridAdapter extends BaseAdapter {
                     public boolean onMenuItemClick(MenuItem item1) {
                         int id = item1.getItemId();
                         if(id == R.id.action_place_device_on){
-                            placesListener.onPlaceDevicesToggled(item, Line.LINE_STATE_ON);
+                            int mode = item.getMode();
+                            Utils.togglePlace(item, Line.LINE_STATE_ON, mode);
                         }else if(id == R.id.action_place_device_off){
-                            placesListener.onPlaceDevicesToggled(item, Line.LINE_STATE_OFF);
+                            int mode = item.getMode();
+                            Utils.togglePlace(item, Line.LINE_STATE_OFF, mode);
                         }else if(id == R.id.action_edit_place){
                             MySettings.setCurrentPlace(item);
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

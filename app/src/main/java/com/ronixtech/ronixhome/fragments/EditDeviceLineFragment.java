@@ -31,6 +31,7 @@ import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Floor;
 import com.ronixtech.ronixhome.entities.Line;
@@ -412,6 +413,9 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     dimmingSyncer.execute();
                 }else if(placeMode == Place.PLACE_MODE_REMOTE){
                     Utils.showLoading(getActivity());
+                    if(mqttAndroidClient == null) {
+                        mqttAndroidClient = MainActivity.getInstance().getMainMqttClient();
+                    }
                     //send command usint MQTT
                     if(mqttAndroidClient != null){
                         try{
@@ -540,6 +544,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         newLine.setName(lineNameEditText.getHint().toString());
                     }
                     newLine.setTypeID(lineType.getId());
+                    newLine.setLineTypeString(lineType.getName());
                     newLine.setPowerState(Line.LINE_STATE_OFF);
                     newLine.setDeviceID(device.getId());
                     /*if(lineDimmingCheckBox.isChecked()){

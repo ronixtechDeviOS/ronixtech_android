@@ -32,24 +32,32 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Backup;
 import com.ronixtech.ronixhome.entities.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -264,11 +272,10 @@ public class LoginFragment extends Fragment {
                             user.setFirstName(fbUser.getDisplayName());
                             MySettings.setActiveUser(user);
                             Utils.dismissLoading();
-                            if(getActivity() != null) {
-                                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-                                startActivity(mainIntent);
-                                getActivity().finish();
-                            }
+
+                            MySettings.clearNonUserData();
+
+                            getBackupsIfFound();
                         }else{
                             Utils.dismissLoading();
                             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.login_failed), true);
@@ -390,6 +397,53 @@ public class LoginFragment extends Fragment {
             Utils.dismissLoading();
             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.reset_password_failed), true);
         }
+    }
+
+    private void getBackupsIfFound(){
+        Utils.showLoading(getActivity());
+
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("exports").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<Backup> backups = new ArrayList<>();
+
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    Utils.log(TAG, document.getId() + " => " + document.getData(), true);
+                    Backup backup = new Backup();
+                    backup.setName((String)document.getData().get("name"));
+                    backup.setTimestamp((long)document.getData().get("timestamp"));
+                    if(document.getData().get("db_version") != null){
+                        backup.setDbVersion((long)document.getData().get("db_version"));
+                    }
+                    backups.add(backup);
+                }
+
+                Utils.dismissLoading();
+
+                if(backups.size() >= 1){
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    ImportDataFirstTimeFragment importDataFirstTimeFragment = new ImportDataFirstTimeFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, importDataFirstTimeFragment, "importDataFirstTimeFragment");
+                    //fragmentTransaction.addToBackStack("importDataFirstTimeFragment");
+                    fragmentTransaction.commit();
+                }else{
+                    Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(mainIntent);
+                    getActivity().finish();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                startActivity(mainIntent);
+                getActivity().finish();
+            }
+        });
     }
 
     private void loginFacebook(final String accessToken){

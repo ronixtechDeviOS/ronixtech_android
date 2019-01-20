@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ronixtech.ronixhome.MySettings;
@@ -36,6 +37,8 @@ public class UpdateDeviceIntroFragment extends Fragment {
 
     CheckBox updateWifiCheckBox, updateHWCheckbox;
     TextView updateTypeInstructionsTextView;
+    RelativeLayout updateInstructionsLayout;
+    TextView uptoDateTextView;
     Button startButton;
 
     Device device;
@@ -71,8 +74,11 @@ public class UpdateDeviceIntroFragment extends Fragment {
         setHasOptionsMenu(true);
 
         updateTypeInstructionsTextView = view.findViewById(R.id.instructions_5_textview);
+        updateInstructionsLayout = view.findViewById(R.id.update_instructions_layout);
+        uptoDateTextView = view.findViewById(R.id.up_to_date_textview);
         updateWifiCheckBox = view.findViewById(R.id.update_wifi_checkbox);
         updateHWCheckbox = view.findViewById(R.id.update_hw_checkbox);
+        startButton = view.findViewById(R.id.start_button);
 
         device = MySettings.getTempDevice();
         if(device != null){
@@ -81,21 +87,48 @@ public class UpdateDeviceIntroFragment extends Fragment {
                 updateTypeInstructionsTextView.setVisibility(View.GONE);
                 updateHWCheckbox.setVisibility(View.GONE);
                 updateWifiCheckBox.setVisibility(View.GONE);
+
+                if(device.isFirmwareUpdateAvailable()){
+                    updateInstructionsLayout.setVisibility(View.VISIBLE);
+                    uptoDateTextView.setVisibility(View.GONE);
+                }else{
+                    updateInstructionsLayout.setVisibility(View.GONE);
+                    uptoDateTextView.setVisibility(View.VISIBLE);
+
+                    startButton.setEnabled(false);
+                    startButton.setBackground(getActivity().getResources().getDrawable(R.drawable.button_background_round_gray));
+                }
             }else{
-                //TODO add this later when HW upgrading works as expected
                 updateTypeInstructionsTextView.setVisibility(View.VISIBLE);
                 updateHWCheckbox.setVisibility(View.VISIBLE);
                 updateWifiCheckBox.setVisibility(View.VISIBLE);
 
-                updateHWCheckbox.setChecked(device.isHwFirmwareUpdateAvailable());
-                updateWifiCheckBox.setChecked(device.isFirmwareUpdateAvailable());
+                if(device.isHwFirmwareUpdateAvailable()){
+                    updateHWCheckbox.setChecked(true);
+                    updateHWCheckbox.setEnabled(true);
+                }else{
+                    updateHWCheckbox.setChecked(false);
+                    updateHWCheckbox.setEnabled(false);
+                }
 
-                /*updateTypeInstructionsTextView.setVisibility(View.GONE);
-                updateHWCheckbox.setVisibility(View.GONE);
-                updateWifiCheckBox.setVisibility(View.GONE);
+                if(device.isFirmwareUpdateAvailable()){
+                    updateWifiCheckBox.setChecked(true);
+                    updateWifiCheckBox.setEnabled(true);
+                }else{
+                    updateWifiCheckBox.setChecked(false);
+                    updateWifiCheckBox.setEnabled(false);
+                }
 
-                updateHWCheckbox.setChecked(false);
-                updateWifiCheckBox.setChecked(device.isFirmwareUpdateAvailable());*/
+                if(device.isFirmwareUpdateAvailable() || device.isHwFirmwareUpdateAvailable()){
+                    updateInstructionsLayout.setVisibility(View.VISIBLE);
+                    uptoDateTextView.setVisibility(View.GONE);
+                }else{
+                    updateInstructionsLayout.setVisibility(View.GONE);
+                    uptoDateTextView.setVisibility(View.VISIBLE);
+
+                    startButton.setEnabled(false);
+                    startButton.setBackground(getActivity().getResources().getDrawable(R.drawable.button_background_round_gray));
+                }
             }
         }else{
             startButton.setEnabled(false);
@@ -115,7 +148,7 @@ public class UpdateDeviceIntroFragment extends Fragment {
             }
         });
 
-        startButton = view.findViewById(R.id.start_button);
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

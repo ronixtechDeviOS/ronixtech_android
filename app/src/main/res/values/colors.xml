@@ -28,6 +28,10 @@
 
     <color name="black_20_transparent_background">#33000000</color>
     <color name="black_40_transparent_background">#66000000</color>
+    <color name="black_50_transparent_background">#80000000</color>
+    <color name="black_60_transparent_background">#99000000</color>
+    <color name="black_70_transparent_background">#b3000000</color>
+    <color name="black_75_transparent_background">#bf000000</color>
 
     <color name="transparentColor">#00000000</color>
 </resources>

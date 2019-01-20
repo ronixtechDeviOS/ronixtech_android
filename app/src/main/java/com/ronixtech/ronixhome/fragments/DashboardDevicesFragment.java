@@ -1,16 +1,12 @@
 package com.ronixtech.ronixhome.fragments;
 
-import android.content.Context;
-import android.net.DhcpInfo;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +21,6 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -33,29 +28,10 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.DeviceAdapter;
 import com.ronixtech.ronixhome.entities.Device;
-import com.ronixtech.ronixhome.entities.Line;
-import com.ronixtech.ronixhome.entities.PIRData;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
-import com.ronixtech.ronixhome.entities.SoundDeviceData;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -122,10 +98,12 @@ public class DashboardDevicesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard_devices, container, false);
         if(room != null){
-            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-                MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
-            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-                MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+            if(MySettings.getCurrentPlace() != null){
+                if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                    MainActivity.setActionBarTitle(room.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                    MainActivity.setActionBarTitle(room.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                }
             }
         }else{
             MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
@@ -145,7 +123,12 @@ public class DashboardDevicesFragment extends Fragment {
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = DevicesInMemory.getDevices();
-        deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+        if(MySettings.getCurrentPlace() != null){
+            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+        }else{
+            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL);
+        }
+
         devicesListView.setAdapter(deviceAdapter);
 
         loadDevicesFromDatabase();
@@ -224,36 +207,46 @@ public class DashboardDevicesFragment extends Fragment {
     public void updateUI(){
         if(isResumed) {
             if (room != null) {
-                if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-                    MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
-                } else if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE) {
-                    MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+                if(MySettings.getCurrentPlace() != null) {
+                    if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                        MainActivity.setActionBarTitle(room.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                    } else if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE) {
+                        MainActivity.setActionBarTitle(room.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                    }
                 }
             } else {
                 MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
             }
 
-            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+            if(MySettings.getCurrentPlace() != null) {
+                deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+            }else{
+                deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL);
+            }
             devicesListView.setAdapter(deviceAdapter);
 
             loadDevicesFromMemory();
 
-            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-                //startTimer
-                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
-                startTimer();
+            if(MySettings.getCurrentPlace() != null){
+                if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                    //startTimer
+                    Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to OFFLINE mode", true);
+                    startTimer();
+                    //BroadcastServer.startServer();
                 /*if(devices != null) {
                     for (Device device : devices) {
                         device.setDeviceMQTTReachable(false);
                     }
                 }*/
-            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-                //stopTimer
-                stopTimer();
-                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
-                //refresh MQTT client
-                if(MainActivity.getInstance() != null && MainActivity.isResumed) {
-                    MainActivity.getInstance().refreshMqttClient();
+                }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                    //stopTimer
+                    stopTimer();
+                    //BroadcastServer.stopServer();
+                    Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to ONLINE mode, using MQTT", true);
+                    //refresh MQTT client
+                    if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                        MainActivity.getInstance().refreshMqttClient();
+                    }
                 }
             }
         }
@@ -291,7 +284,12 @@ public class DashboardDevicesFragment extends Fragment {
                     });
                 }
             };
-            timer.schedule(doAsynchronousTask, 0, Device.REFRESH_RATE_MS /** (DevicesInMemory.getDevices().size()>=1 ? DevicesInMemory.getDevices().size() : 1)*/); //execute in every REFRESH_RATE_MS
+            int refreshRate = Device.REFRESH_RATE_MS;
+            if(room != null && MySettings.getRoomDevices(room.getId()) != null && MySettings.getRoomDevices(room.getId()).size() >= 1){
+                //refreshRate = 750 + (250 * MySettings.getRoomDevices(room.getId()).size());
+                refreshRate = 2600 + (400 * MySettings.getRoomDevices(room.getId()).size());
+            }
+            timer.schedule(doAsynchronousTask, 0, refreshRate /** (DevicesInMemory.getDevices().size()>=1 ? DevicesInMemory.getDevices().size() : 1)*/); //execute in every REFRESH_RATE_MS
         }
     }
 
@@ -398,24 +396,24 @@ public class DashboardDevicesFragment extends Fragment {
             if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
                 Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
                 if(currentFirmwareVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                    StatusGetter statusGetter = new StatusGetter(device);
+                    Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
                     statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }else{
-                    DeviceSyncer deviceSyncer = new DeviceSyncer(device);
+                    Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
                     deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }else{
-                StatusGetter statusGetter = new StatusGetter(device);
+                Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
                 statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-            ModeGetter modeGetter = new ModeGetter(device);
+            Utils.ModeGetter modeGetter = new Utils.ModeGetter(device);
             modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-            DeviceSyncer deviceSyncer = new DeviceSyncer(device);
+            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
             deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-            DeviceSyncer deviceSyncer = new DeviceSyncer(device);
+            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
             deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -462,16 +460,19 @@ public class DashboardDevicesFragment extends Fragment {
         super.onResume();
         isResumed = true;
         loadDevicesFromDatabase();
-        if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-            Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
-            startTimer();
+        if(MySettings.getCurrentPlace() != null){
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
+                startTimer();
+                //BroadcastServer.startServer();
             /*if(devices != null) {
                 for (Device device : devices) {
                     device.setDeviceMQTTReachable(false);
                 }
             }*/
-        }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            //start MQTT in onStart
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                //start MQTT in onStart
+            }
         }
     }
 
@@ -479,10 +480,13 @@ public class DashboardDevicesFragment extends Fragment {
     public void onPause(){
         Utils.log(TAG, "onPause", true);
         isResumed = false;
-        if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
-            stopTimer();
-        }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            //stop MQTT in onDestroy
+        if(MySettings.getCurrentPlace() != null){
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
+                stopTimer();
+                //BroadcastServer.stopServer();
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                //stop MQTT in onDestroy
+            }
         }
 
         super.onPause();
@@ -500,14 +504,16 @@ public class DashboardDevicesFragment extends Fragment {
     public void onStart(){
         Utils.log(TAG, "onStart", true);
         super.onStart();
-        if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-            //startTimer in onResume
-        }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
-            Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
-            //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
-            //refresh MQTT client
-            if(MainActivity.getInstance() != null && MainActivity.isResumed) {
-                MainActivity.getInstance().refreshMqttClient();
+        if(MySettings.getCurrentPlace() != null){
+            if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
+                //startTimer in onResume
+            }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
+                Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to ONLINE mode, using MQTT", true);
+                //start MQTT, when a control is sent from the DeviceAdapter, it will be synced here when the MQTT responds
+                //refresh MQTT client
+                if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                    MainActivity.getInstance().refreshMqttClient();
+                }
             }
         }
     }
@@ -615,1260 +621,6 @@ public class DashboardDevicesFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
-    }
-
-    public static class StatusGetter extends AsyncTask<Void, Void, Void>{
-        private final String TAG = DashboardDevicesFragment.StatusGetter.class.getSimpleName();
-
-        Device device;
-
-        int statusCode;
-        boolean ronixUnit = true;
-
-        public StatusGetter(Device device) {
-            try{
-                this.device = device;
-            }catch (Exception e){
-                Utils.log(TAG, "Json exception " + e.getMessage(), true);
-            }
-        }
-
-        @Override
-        protected void onPreExecute(){
-            Utils.log(TAG, "Enabling getStatus flag...", true);
-            MySettings.setGetStatusState(true);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            if(statusCode != 200) {
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }
-            if (MainActivity.getInstance() != null) {
-                MainActivity.getInstance().refreshDevicesListFromMemory();
-            }
-            MySettings.setGetStatusState(false);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            HttpURLConnection urlConnection = null;
-            statusCode = 0;
-            try{
-                URL url = new URL("http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS);
-                Utils.log(TAG, "statusGetter URL: " + url, true);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
-                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
-                statusCode = urlConnection.getResponseCode();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                StringBuilder result = new StringBuilder();
-                String dataLine;
-                while((dataLine = bufferedReader.readLine()) != null) {
-                    result.append(dataLine);
-                }
-                urlConnection.disconnect();
-                Utils.log(TAG, "statusGetter response: " + result.toString(), true);
-                if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
-                    ronixUnit = true;
-                }else{
-                    ronixUnit = false;
-                }
-                if(result.length() >= 10){
-                    JSONObject jsonObject = new JSONObject(result.toString());
-                    if(jsonObject != null){
-                        JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
-
-                        if(unitStatus != null && unitStatus.has("U_W_STT")){
-                            JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
-                            if(wifiStatus != null) {
-                                if(wifiStatus.has("U_W_UID")) {
-                                    String chipID = wifiStatus.getString("U_W_UID");
-                                    if (device.getChipID().length() >= 1) {
-                                        if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
-                                            MySettings.updateDeviceIP(device, "");
-                                            MySettings.updateDeviceErrorCount(device, 0);
-                                            MySettings.scanNetwork();
-                                            MainActivity.getInstance().refreshDeviceListFromDatabase();
-                                            return null;
-                                        }
-                                    }
-                                }else{
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-                                if(wifiStatus.has("U_W_FWV")) {
-                                    String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
-                                    if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
-                                        device.setFirmwareVersion(currentFirmwareVersion);
-                                        if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineVersion != currentVersion) {
-                                                device.setFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-
-                                if(wifiStatus.has("U_W_HWV")){
-                                    String wifiVersionString = wifiStatus.getString("U_W_HWV");
-                                    if(wifiVersionString != null && wifiVersionString.length() >= 1){
-                                        int wifiVersion = Integer.parseInt(wifiVersionString);
-                                        device.setWifiVersion(""+wifiVersion);
-                                    }
-                                }
-                            }
-                        }else{
-                            device.setFirmwareUpdateAvailable(true);
-                        }
-
-                        if(unitStatus != null && unitStatus.has("U_H_STT")){
-                            JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                            if(hardwareStatus.has("U_H_FWV")) {
-                                String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                    device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                    if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                        int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                        int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                        if (onlineHWVersion != currentHWVersion) {
-                                            device.setHwFirmwareUpdateAvailable(true);
-                                        }else{
-                                            device.setHwFirmwareUpdateAvailable(false);
-                                        }
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-                            }else{
-                                device.setHwFirmwareUpdateAvailable(true);
-                            }
-
-                            if(hardwareStatus.has("U_H_HWV")){
-                                String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                if(hwVersionString != null && hwVersionString.length() >= 1){
-                                    int hwVersion = Integer.parseInt(hwVersionString);
-                                    device.setHwVersion(""+hwVersion);
-                                }
-                            }
-
-
-                            String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                            int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                            if(hardwareStatus.has("L_0_STT")){
-                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                line0PowerState = Integer.valueOf(line0PowerStateString);
-                            }
-                            if(hardwareStatus.has("L_1_STT")){
-                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                line1PowerState = Integer.valueOf(line1PowerStateString);
-                            }
-                            if(hardwareStatus.has("L_2_STT")){
-                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                line2PowerState = Integer.valueOf(line2PowerStateString);
-                            }
-
-
-                            String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
-                            int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                            if(hardwareStatus.has("L_0_DIM")){
-                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                                if(line0DimmingValueString.equals(":")){
-                                    line0DimmingValue = 10;
-                                }else{
-                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
-                                }
-                            }
-                            if(hardwareStatus.has("L_1_DIM")){
-                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                                if(line1DimmingValueString.equals(":")){
-                                    line1DimmingValue = 10;
-                                }else{
-                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
-                                }
-                            }
-                            if(hardwareStatus.has("L_2_DIM")){
-                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                                if(line2DimmingValueString.equals(":")){
-                                    line2DimmingValue = 10;
-                                }else{
-                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
-                                }
-                            }
-
-
-                            String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
-                            int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                            if(hardwareStatus.has("L_0_D_S")){
-                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                            }
-                            if(hardwareStatus.has("L_1_D_S")){
-                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                            }
-                            if(hardwareStatus.has("L_2_D_S")){
-                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
-                            }
-
-
-                            List<Line> lines = device.getLines();
-                            for (Line line:lines) {
-                                if(line.getPosition() == 0){
-                                    line.setPowerState(line0PowerState);
-                                    line.setDimmingState(line0DimmingState);
-                                    line.setDimmingVvalue(line0DimmingValue);
-                                }else if(line.getPosition() == 1){
-                                    line.setPowerState(line1PowerState);
-                                    line.setDimmingState(line1DimmingState);
-                                    line.setDimmingVvalue(line1DimmingValue);
-                                }else if(line.getPosition() == 2){
-                                    line.setPowerState(line2PowerState);
-                                    line.setDimmingState(line2DimmingState);
-                                    line.setDimmingVvalue(line2DimmingValue);
-                                }
-                            }
-
-                            String temperatureString, beepString, hwLockString;
-                            int temperatureValue;
-                            boolean beep, hwLock;
-                            if(hardwareStatus.has("U_H_TMP")){
-                                temperatureString = hardwareStatus.getString("U_H_TMP");
-                                temperatureValue = Integer.parseInt(temperatureString);
-                                device.setTemperature(temperatureValue);
-                            }
-                            if(hardwareStatus.has("U_BEEP_")){
-                                beepString = hardwareStatus.getString("U_BEEP_");
-                                if(beepString != null && beepString.length() >= 1){
-                                    if(Integer.parseInt(beepString) == 1){
-                                        beep = true;
-                                        device.setBeep(beep);
-                                    }else{
-                                        beep = false;
-                                        device.setBeep(beep);
-                                    }
-                                }
-                            }
-                            if(hardwareStatus.has("U_H_LCK")){
-                                hwLockString = hardwareStatus.getString("U_H_LCK");
-                                if(hwLockString != null && hwLockString.length() >= 1){
-                                    if(Integer.parseInt(hwLockString) == 1){
-                                        hwLock = true;
-                                        device.setHwLock(hwLock);
-                                    }else{
-                                        hwLock = false;
-                                        device.setHwLock(hwLock);
-                                    }
-                                }
-                            }
-
-                            if(statusCode == 200) {
-                                device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                device.setErrorCount(0);
-                                DevicesInMemory.updateDevice(device);
-                            }
-                            //MySettings.addDevice(device);
-                        }
-                    }
-                }
-            }catch (MalformedURLException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }catch (IOException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }catch (JSONException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                if(!ronixUnit){
-                    device.setErrorCount(device.getErrorCount() + 1);
-                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                    if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                        device.setErrorCount(0);
-                        device.setIpAddress("");
-                        DevicesInMemory.updateDevice(device);
-                        MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
-                        //MySettings.scanNetwork();
-                    }
-                }else{
-                    device.setFirmwareUpdateAvailable(true);
-                    DevicesInMemory.updateDevice(device);
-                }
-            }finally {
-                if(urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                Utils.log(TAG, "Disabling getStatus flag...", true);
-                MySettings.setGetStatusState(false);
-            }
-
-            return null;
-        }
-    }
-
-    public static class DeviceSyncer extends AsyncTask<Void, Void, Void>{
-        private final String TAG = DashboardDevicesFragment.DeviceSyncer.class.getSimpleName();
-
-        Device device;
-
-        int statusCode;
-        boolean ronixUnit = true;
-
-        public DeviceSyncer(Device device) {
-            this.device = device;
-        }
-
-        @Override
-        protected void onPreExecute(){
-            Utils.log(TAG, "Enabling getStatus flag...", true);
-            MySettings.setGetStatusState(true);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            if(statusCode != 200) {
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }
-            if (MainActivity.getInstance() != null) {
-                MainActivity.getInstance().refreshDevicesListFromMemory();
-            }
-            MySettings.setGetStatusState(false);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            HttpURLConnection urlConnection = null;
-            statusCode = 0;
-            try{
-                String urlString = "http://" + device.getIpAddress() + Constants.DEVICE_STATUS_CONTROL_URL;
-
-                //urlString = urlString.concat("?json_0").concat("=").concat(jObject.toString());
-
-                Utils.log(TAG, "statusGetter URL: " + urlString, true);
-
-                URL url = new URL(urlString);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setDoInput(true);
-                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
-                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
-                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                urlConnection.setRequestProperty("Accept", "application/json");
-                urlConnection.setRequestMethod("POST");
-
-                JSONObject jObject = new JSONObject();
-                Device localDevice = DevicesInMemory.getLocalDevice(device);
-                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    for (Line line : device.getLines()) {
-                        switch (line.getPosition()){
-                            case 0:
-                                if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
-                                    //jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
-                                    if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
-                                        jObject.put("L_0_DIM", ":");
-                                    }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
-                                        jObject.put("L_0_DIM", "0");
-                                    }
-                                }
-                                if(line.getDimmingState() != localDevice.getLines().get(0).getDimmingState()) {
-                                    jObject.put("L_0_D_S", "" + localDevice.getLines().get(0).getDimmingState());
-                                }
-                                if(line.getDimmingVvalue() != localDevice.getLines().get(0).getDimmingVvalue()){
-                                    if(localDevice.getLines().get(0).getDimmingVvalue() == 10){
-                                        jObject.put("L_0_DIM", ":");
-                                    }else{
-                                        jObject.put("L_0_DIM", ""+localDevice.getLines().get(0).getDimmingVvalue());
-                                    }
-                                }
-                                break;
-                            case 1:
-                                if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
-                                    //jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
-                                    if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
-                                        jObject.put("L_1_DIM", ":");
-                                    }else if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
-                                        jObject.put("L_1_DIM", "0");
-                                    }
-                                }
-                                if(line.getDimmingState() != localDevice.getLines().get(1).getDimmingState()) {
-                                    jObject.put("L_1_D_S", "" + localDevice.getLines().get(1).getDimmingState());
-                                }
-                                if(line.getDimmingVvalue() != localDevice.getLines().get(1).getDimmingVvalue()){
-                                    if(localDevice.getLines().get(1).getDimmingVvalue() == 10){
-                                        jObject.put("L_1_DIM", ":");
-                                    }else{
-                                        jObject.put("L_1_DIM", ""+localDevice.getLines().get(1).getDimmingVvalue());
-                                    }
-                                }
-                                break;
-                            case 2:
-                                if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
-                                    //jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
-                                    if(localDevice.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
-                                        jObject.put("L_2_DIM", ":");
-                                    }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
-                                        jObject.put("L_2_DIM", "0");
-                                    }
-                                }
-                                if(line.getDimmingState() != localDevice.getLines().get(2).getDimmingState()) {
-                                    jObject.put("L_2_D_S", "" + localDevice.getLines().get(2).getDimmingState());
-                                }
-                                if(line.getDimmingVvalue() != localDevice.getLines().get(2).getDimmingVvalue()){
-                                    if(localDevice.getLines().get(2).getDimmingVvalue() == 10){
-                                        jObject.put("L_2_DIM", ":");
-                                    }else{
-                                        jObject.put("L_2_DIM", ""+localDevice.getLines().get(2).getDimmingVvalue());
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                    for (Line line : device.getLines()) {
-                        switch (line.getPosition()){
-                            case 0:
-                                if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
-                                    jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
-                                }
-                                break;
-                            case 1:
-                                if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
-                                    jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
-                                }
-                                break;
-                            case 2:
-                                if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
-                                    jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
-                                }
-                                break;
-                        }
-                    }
-                }
-
-                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-
-                if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
-                    int currentFirmwareVersion = Integer.parseInt(device.getFirmwareVersion());
-                    if(currentFirmwareVersion >= Device.DEVICE_FIRMWARE_DHCP_FIRMWARE){
-                        if(device.isStaticIPAddress() && !device.isStaticIPSyncedState()){
-                            WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                            DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
-                            jObject.put("R_W_DHC", "off");
-                            jObject.put("R_W_IP_", device.getIpAddress());
-                            jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
-                            if(Utils.intToIp(dhcpInfo.netmask) == null || Utils.intToIp(dhcpInfo.netmask).length() < 1 || Utils.intToIp(dhcpInfo.netmask).equalsIgnoreCase("0.0.0.0")){
-                                try {
-                                    InetAddress inetAddress = Utils.intToInet(dhcpInfo.ipAddress);
-                                    NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
-                                    if(networkInterface != null){
-                                        for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
-                                            String submask = Utils.prefixToSubmask(address.getNetworkPrefixLength());
-                                            Utils.log(TAG, address.toString(), true);
-                                            jObject.put("R_W_NMK", submask);
-                                        }
-                                    }else{
-                                        jObject.put("R_W_NMK", "255.255.255.0");
-                                    }
-
-                                } catch (IOException e) {
-                                    Log.e(TAG, "Exception: " + e.getMessage());
-                                    jObject.put("R_W_NMK", "255.255.255.0");
-                                }
-                            }else{
-                                jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
-                            }
-                        }
-                    }
-                }
-
-                Utils.log(TAG, "statusGetter POST data: " + jObject.toString(), true);
-
-
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
-                outputStreamWriter.write(jObject.toString());
-                outputStreamWriter.flush();
-
-                statusCode = urlConnection.getResponseCode();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                StringBuilder result = new StringBuilder();
-                String dataLine;
-                while((dataLine = bufferedReader.readLine()) != null) {
-                    result.append(dataLine);
-                }
-                urlConnection.disconnect();
-                Utils.log(TAG, "statusGetter response: " + result.toString(), true);
-                if(result.toString().contains("UNIT_STATUS") || (result.toString().startsWith("#") && result.toString().endsWith("&"))){
-                    ronixUnit = true;
-                }else{
-                    ronixUnit = false;
-                }
-                if(result.length() >= 10){
-                    JSONObject jsonObject = new JSONObject(result.toString());
-                    if(jsonObject != null){
-                        JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
-
-                        if(unitStatus != null && unitStatus.has("U_W_STT")){
-                            JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
-                            if(wifiStatus != null) {
-                                if(wifiStatus.has("U_W_UID")) {
-                                    String chipID = wifiStatus.getString("U_W_UID");
-                                    if (device.getChipID().length() >= 1) {
-                                        if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
-                                            MySettings.updateDeviceIP(device, "");
-                                            MySettings.updateDeviceErrorCount(device, 0);
-                                            MySettings.scanNetwork();
-                                            MainActivity.getInstance().refreshDeviceListFromDatabase();
-                                            return null;
-                                        }
-                                    }
-                                }else{
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-                                if(wifiStatus.has("U_W_FWV")) {
-                                    String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
-                                    if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){
-                                        device.setFirmwareVersion(currentFirmwareVersion);
-                                        if(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentVersion = Integer.valueOf(currentFirmwareVersion);
-                                            int onlineVersion = Integer.valueOf(MySettings.getDeviceLatestWiFiFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineVersion != currentVersion) {
-                                                device.setFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-
-                                if(wifiStatus.has("U_W_HWV")){
-                                    String wifiVersionString = wifiStatus.getString("U_W_HWV");
-                                    if(wifiVersionString != null && wifiVersionString.length() >= 1){
-                                        int wifiVersion = Integer.parseInt(wifiVersionString);
-                                        device.setWifiVersion(""+wifiVersion);
-                                    }
-                                }
-
-                                if(wifiStatus.has("R_W_DHC")){
-                                    String dhcpStatus = wifiStatus.getString("R_W_DHC");
-                                    if(dhcpStatus.equalsIgnoreCase("on") && !device.isStaticIPAddress()){
-                                        device.setStaticIPSyncedState(true);
-                                    }else if(dhcpStatus.equalsIgnoreCase("off") && device.isStaticIPAddress()){
-                                        device.setStaticIPSyncedState(true);
-                                    }else{
-                                        device.setStaticIPSyncedState(false);
-                                    }
-                                }else{
-                                    device.setStaticIPSyncedState(false);
-                                }
-
-                                if(wifiStatus.has("R_W_IP_")){
-                                    String ipAddress = wifiStatus.getString("R_W_IP_");
-                                    if(ipAddress != null && ipAddress.length() >= 1){
-                                        device.setIpAddress(ipAddress);
-                                    }
-                                }
-
-                                if(wifiStatus.has("R_W_GWY")){
-                                    String getway = wifiStatus.getString("R_W_GWY");
-                                    if(getway != null && getway.length() >= 1){
-                                        device.setGateway(getway);
-                                    }
-                                }
-
-                                if(wifiStatus.has("R_W_NMK")){
-                                    String subnetmask = wifiStatus.getString("R_W_NMK");
-                                    if(subnetmask != null && subnetmask.length() >= 1){
-                                        device.setSubnetMask(subnetmask);
-                                    }
-                                }
-                            }
-                        }else{
-                            device.setFirmwareUpdateAvailable(true);
-                        }
-
-                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                            if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }
-
-                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                if(hardwareStatus.has("L_0_STT")){
-                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                    line0PowerState = Integer.valueOf(line0PowerStateString);
-                                }
-                                if(hardwareStatus.has("L_1_STT")){
-                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                    line1PowerState = Integer.valueOf(line1PowerStateString);
-                                }
-                                if(hardwareStatus.has("L_2_STT")){
-                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                    line2PowerState = Integer.valueOf(line2PowerStateString);
-                                }
-
-
-                                String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
-                                int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                                if(hardwareStatus.has("L_0_DIM")){
-                                    line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                                    if(line0DimmingValueString.equals(":")){
-                                        line0DimmingValue = 10;
-                                    }else{
-                                        line0DimmingValue = Integer.valueOf(line0DimmingValueString);
-                                    }
-                                }
-                                if(hardwareStatus.has("L_1_DIM")){
-                                    line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                                    if(line1DimmingValueString.equals(":")){
-                                        line1DimmingValue = 10;
-                                    }else{
-                                        line1DimmingValue = Integer.valueOf(line1DimmingValueString);
-                                    }
-                                }
-                                if(hardwareStatus.has("L_2_DIM")){
-                                    line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                                    if(line2DimmingValueString.equals(":")){
-                                        line2DimmingValue = 10;
-                                    }else{
-                                        line2DimmingValue = Integer.valueOf(line2DimmingValueString);
-                                    }
-                                }
-
-
-                                String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
-                                int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                                if(hardwareStatus.has("L_0_D_S")){
-                                    line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                                    line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                                }
-                                if(hardwareStatus.has("L_1_D_S")){
-                                    line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                                    line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                                }
-                                if(hardwareStatus.has("L_2_D_S")){
-                                    line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                                    line2DimmingState = Integer.valueOf(line2DimmingStateString);
-                                }
-
-                                List<Line> lines = device.getLines();
-                                List<Line> localLines = localDevice.getLines();
-                                for (Line line:lines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                        line.setDimmingState(line0DimmingState);
-                                        line.setDimmingVvalue(line0DimmingValue);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                        line.setDimmingState(line1DimmingState);
-                                        line.setDimmingVvalue(line1DimmingValue);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                        line.setDimmingState(line2DimmingState);
-                                        line.setDimmingVvalue(line2DimmingValue);
-                                    }
-                                }
-                                for (Line line:localLines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                        line.setDimmingState(line0DimmingState);
-                                        line.setDimmingVvalue(line0DimmingValue);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                        line.setDimmingState(line1DimmingState);
-                                        line.setDimmingVvalue(line1DimmingValue);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                        line.setDimmingState(line2DimmingState);
-                                        line.setDimmingVvalue(line2DimmingValue);
-                                    }
-                                }
-
-                                String temperatureString, beepString, hwLockString;
-                                int temperatureValue;
-                                boolean beep, hwLock;
-                                if(hardwareStatus.has("U_H_TMP")){
-                                    temperatureString = hardwareStatus.getString("U_H_TMP");
-                                    temperatureValue = Integer.parseInt(temperatureString);
-                                    device.setTemperature(temperatureValue);
-                                }
-                                if(hardwareStatus.has("U_BEEP_")){
-                                    beepString = hardwareStatus.getString("U_BEEP_");
-                                    if(beepString != null && beepString.length() >= 1){
-                                        if(Integer.parseInt(beepString) == 1){
-                                            beep = true;
-                                            device.setBeep(beep);
-                                        }else{
-                                            beep = false;
-                                            device.setBeep(beep);
-                                        }
-                                    }
-                                }
-                                if(hardwareStatus.has("U_H_LCK")){
-                                    hwLockString = hardwareStatus.getString("U_H_LCK");
-                                    if(hwLockString != null && hwLockString.length() >= 1){
-                                        if(Integer.parseInt(hwLockString) == 1){
-                                            hwLock = true;
-                                            device.setHwLock(hwLock);
-                                        }else{
-                                            hwLock = false;
-                                            device.setHwLock(hwLock);
-                                        }
-                                    }
-                                }
-
-                                if(statusCode == 200) {
-                                    device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                    device.setErrorCount(0);
-                                    DevicesInMemory.updateDevice(device);
-                                    DevicesInMemory.updateLocalDevice(localDevice);
-                                }
-                            }else{
-                                device.setFirmwareUpdateAvailable(true);
-                            }
-                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                            if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                if(hardwareStatus.has("L_0_STT")){
-                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                    line0PowerState = Integer.valueOf(line0PowerStateString);
-                                }
-                                if(hardwareStatus.has("L_1_STT")){
-                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                    line1PowerState = Integer.valueOf(line1PowerStateString);
-                                }
-                                if(hardwareStatus.has("L_2_STT")){
-                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                    line2PowerState = Integer.valueOf(line2PowerStateString);
-                                }
-
-                                List<Line> lines = device.getLines();
-                                List<Line> localLines = localDevice.getLines();
-                                for (Line line:lines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                    }
-                                }
-                                for (Line line:localLines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                    }
-                                }
-
-                                String temperatureString, beepString, hwLockString;
-                                int temperatureValue;
-                                boolean beep, hwLock;
-                                if(hardwareStatus.has("U_H_TMP")){
-                                    temperatureString = hardwareStatus.getString("U_H_TMP");
-                                    temperatureValue = Integer.parseInt(temperatureString);
-                                    device.setTemperature(temperatureValue);
-                                }
-                                if(hardwareStatus.has("U_BEEP_")){
-                                    beepString = hardwareStatus.getString("U_BEEP_");
-                                    if(beepString != null && beepString.length() >= 1){
-                                        if(Integer.parseInt(beepString) == 1){
-                                            beep = true;
-                                            device.setBeep(beep);
-                                        }else{
-                                            beep = false;
-                                            device.setBeep(beep);
-                                        }
-                                    }
-                                }
-                                if(hardwareStatus.has("U_H_LCK")){
-                                    hwLockString = hardwareStatus.getString("U_H_LCK");
-                                    if(hwLockString != null && hwLockString.length() >= 1){
-                                        if(Integer.parseInt(hwLockString) == 1){
-                                            hwLock = true;
-                                            device.setHwLock(hwLock);
-                                        }else{
-                                            hwLock = false;
-                                            device.setHwLock(hwLock);
-                                        }
-                                    }
-                                }
-
-                                if(statusCode == 200) {
-                                    device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                    device.setErrorCount(0);
-                                    DevicesInMemory.updateDevice(device);
-                                    DevicesInMemory.updateLocalDevice(localDevice);
-                                }
-                                //MySettings.addDevice(device);
-                            }else {
-                                device.setFirmwareUpdateAvailable(true);
-                            }
-                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                            if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                String pirStateString;
-                                int pirState = 0;
-                                if(hardwareStatus.has("L_0_STT")){
-                                    pirStateString = hardwareStatus.getString("L_0_STT");
-                                    pirState = Integer.valueOf(pirStateString);
-                                }
-
-                                PIRData pirData = device.getPIRData();
-                                pirData.setState(pirState);
-
-                                device.setPIRData(pirData);
-
-                                if(statusCode == 200) {
-                                    device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                    device.setErrorCount(0);
-                                    DevicesInMemory.updateDevice(device);
-                                }
-                                //MySettings.addDevice(device);
-                            }else {
-                                device.setFirmwareUpdateAvailable(true);
-                            }
-                        }
-                    }
-                }
-            }catch (MalformedURLException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }catch (IOException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }catch (JSONException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                if(!ronixUnit){
-                    device.setErrorCount(device.getErrorCount() + 1);
-                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                    if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                        device.setErrorCount(0);
-                        device.setIpAddress("");
-                        DevicesInMemory.updateDevice(device);
-                        MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
-                        //MySettings.scanNetwork();
-                    }
-                }else {
-                    device.setFirmwareUpdateAvailable(true);
-                    DevicesInMemory.updateDevice(device);
-                }
-            }finally {
-                if(urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                Utils.log(TAG, "Disabling getStatus flag...", true);
-                MySettings.setGetStatusState(false);
-            }
-
-            return null;
-        }
-    }
-
-    public static class ModeGetter extends AsyncTask<Void, Void, Void>{
-        private final String TAG = DashboardDevicesFragment.ModeGetter.class.getSimpleName();
-
-        Device device;
-
-        int statusCode;
-
-        public ModeGetter(Device device) {
-            this.device = device;
-        }
-
-        @Override
-        protected void onPreExecute(){
-            Utils.log(TAG, "Enabling getStatus flag...", true);
-            MySettings.setGetStatusState(true);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            if(statusCode != 200) {
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }
-            if (MainActivity.getInstance() != null) {
-                MainActivity.getInstance().refreshDevicesListFromMemory();
-            }
-            MySettings.setGetStatusState(false);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            HttpURLConnection urlConnection = null;
-            statusCode = 0;
-            try{
-                URL url = new URL("http://" + device.getIpAddress() + Constants.CONTROL_SOUND_DEVICE_CHANGE_MODE_URL);
-                Utils.log(TAG, "modeGetter URL: " + url, true);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setDoInput(true);
-                urlConnection.setConnectTimeout(Device.REFRESH_TIMEOUT);
-                urlConnection.setReadTimeout(Device.REFRESH_TIMEOUT);
-                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                urlConnection.setRequestProperty("Accept", "application/json");
-                urlConnection.setRequestMethod("POST");
-
-                JSONObject jObject = new JSONObject();
-                jObject.put(Constants.PARAMETER_SOUND_CONTROLLER_MODE, "");
-                jObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-
-                if(device.isStaticIPAddress() && !device.isStaticIPSyncedState()){
-                    WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
-                    jObject.put("R_W_DHC", "off");
-                    jObject.put("R_W_IP_", device.getIpAddress());
-                    jObject.put("R_W_GWY", Utils.intToIp(dhcpInfo.gateway));
-                    if(Utils.intToIp(dhcpInfo.netmask) == null || Utils.intToIp(dhcpInfo.netmask).length() < 1 || Utils.intToIp(dhcpInfo.netmask).equalsIgnoreCase("0.0.0.0")){
-                        try {
-                            InetAddress inetAddress = Utils.intToInet(dhcpInfo.ipAddress);
-                            NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
-                            if(networkInterface != null){
-                                for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
-                                    String submask = Utils.prefixToSubmask(address.getNetworkPrefixLength());
-                                    Utils.log(TAG, address.toString(), true);
-                                    jObject.put("R_W_NMK", submask);
-                                }
-                            }else{
-                                jObject.put("R_W_NMK", "255.255.255.0");
-                            }
-
-                        } catch (IOException e) {
-                            Log.e(TAG, "Exception: " + e.getMessage());
-                            jObject.put("R_W_NMK", "255.255.255.0");
-                        }
-                    }else{
-                        jObject.put("R_W_NMK", Utils.intToIp(dhcpInfo.netmask));
-                    }
-                }
-
-                Utils.log(TAG, "modeGetter POST data: " + jObject.toString(), true);
-
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
-                outputStreamWriter.write(jObject.toString());
-                outputStreamWriter.flush();
-
-                statusCode = urlConnection.getResponseCode();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                StringBuilder result = new StringBuilder();
-                String dataLine;
-                while((dataLine = bufferedReader.readLine()) != null) {
-                    result.append(dataLine);
-                }
-                urlConnection.disconnect();
-                Utils.log(TAG, "modeGetter response: " + result.toString(), true);
-                if(result.length() >= 3){
-                    JSONObject jsonObject = new JSONObject(result.toString());
-                    if(jsonObject != null){
-                        String modeString = jsonObject.getString("mode");
-
-                        int mode = SoundDeviceData.MODE_LINE_IN;
-
-                        if(modeString != null && modeString.length() >= 1){
-                            if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN)){
-                                mode = SoundDeviceData.MODE_LINE_IN;
-                            }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_LINE_IN_2)){
-                                mode = SoundDeviceData.MODE_LINE_IN_2;
-                            }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_UPNP)){
-                                mode = SoundDeviceData.MODE_UPNP;
-                            }else if(modeString.equals(Constants.PARAMETER_SOUND_CONTROLLER_MODE_USB)){
-                                mode = SoundDeviceData.MODE_USB;
-                            }
-                        }
-
-                        device.getSoundDeviceData().setMode(mode);
-
-                        if(jsonObject.has("R_W_DHC")){
-                            String dhcpStatus = jsonObject.getString("R_W_DHC");
-                            if(dhcpStatus.equalsIgnoreCase("on") && !device.isStaticIPAddress()){
-                                device.setStaticIPSyncedState(true);
-                            }else if(dhcpStatus.equalsIgnoreCase("off") && device.isStaticIPAddress()){
-                                device.setStaticIPSyncedState(true);
-                            }else{
-                                device.setStaticIPSyncedState(false);
-                            }
-                        }else{
-                            device.setStaticIPSyncedState(false);
-                        }
-
-                        if(jsonObject.has("R_W_IP_")){
-                            String ipAddress = jsonObject.getString("R_W_IP_");
-                            if(ipAddress != null && ipAddress.length() >= 1){
-                                device.setIpAddress(ipAddress);
-                            }
-                        }
-
-                        if(jsonObject.has("R_W_GWY")){
-                            String getway = jsonObject.getString("R_W_GWY");
-                            if(getway != null && getway.length() >= 1){
-                                device.setGateway(getway);
-                            }
-                        }
-
-                        if(jsonObject.has("R_W_NMK")){
-                            String subnetmask = jsonObject.getString("R_W_NMK");
-                            if(subnetmask != null && subnetmask.length() >= 1){
-                                device.setSubnetMask(subnetmask);
-                            }
-                        }
-
-                        if(statusCode == 200) {
-                            device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                            device.setErrorCount(0);
-                            DevicesInMemory.updateDevice(device);
-                        }
-                        //MySettings.addDevice(device);
-                    }
-                }
-            }catch (MalformedURLException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }catch (IOException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }catch (JSONException e){
-                Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                DevicesInMemory.updateDevice(device);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    device.setErrorCount(0);
-                    device.setIpAddress("");
-                    DevicesInMemory.updateDevice(device);
-                    MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
-                    //MySettings.scanNetwork();
-                }
-            }finally {
-                if(urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                Utils.log(TAG, "Disabling getStatus flag...", true);
-                MySettings.setGetStatusState(false);
-            }
-
-            return null;
-        }
     }
 
 }

@@ -29,10 +29,9 @@
 
     <ImageView
         android:id="@+id/room_item_advanced_options_button"
-        android:layout_width="40dp"
-        android:layout_height="32dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
+        android:layout_width="50dp"
+        android:layout_height="42dp"
+        android:padding="8dp"
         android:src="@drawable/overflow_3_dots_gray"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"

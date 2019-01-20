@@ -137,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }else{
             Utils.showToast(this, "Google Play Services not available, app won't start", true);
+            finish();
         }
     }
 

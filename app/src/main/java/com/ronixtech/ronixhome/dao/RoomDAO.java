@@ -43,6 +43,9 @@ public abstract class RoomDAO {
     @Query("UPDATE room SET type_id =:newType WHERE id =:roomID")
     public abstract void updateRoomType(long roomID, long newType);
 
+    @Query("UPDATE room SET type_name =:newType WHERE id =:roomID")
+    public abstract void updateRoomType(long roomID, String newType);
+
     @Query("UPDATE room SET floor_id =:newFloor WHERE id =:roomID")
     public abstract void updateRoomFloor(long roomID, long newFloor);
 

@@ -26,6 +26,8 @@ public class Room {
     Floor floor;*/
     @ColumnInfo(name = "type_id")
     public long typeID;
+    @ColumnInfo(name = "type_name")
+    public String typeName;
 
     public Room(){
         this.id = 0;
@@ -34,6 +36,7 @@ public class Room {
         this.floorID = -1;
         //this.floor = new Floor();
         this.typeID = -1;
+        this.typeName = "";
     }
 
     public long getId() {
@@ -102,11 +105,30 @@ public class Room {
         this.typeID = id;
     }
 
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    @Ignore
+    private Type cachedType;
     public Type getType(){
-        if(typeID != -1) {
-            return MySettings.getType(typeID);
+        if(cachedType != null){
+            return cachedType;
         }else{
-            return MySettings.getTypeByName("Living Room");
+            if(typeName != null && typeName.length() >= 1 && MySettings.getTypeByName(typeName) != null){
+                cachedType = MySettings.getTypeByName(typeName);
+                return cachedType;
+            }else if(typeID != -1 && MySettings.getType(typeID) != null){
+                cachedType = MySettings.getType(typeID);
+                return cachedType;
+            }else{
+                cachedType = MySettings.getTypeByName("Living Room");
+                return cachedType;
+            }
         }
     }
 }

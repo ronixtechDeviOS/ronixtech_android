@@ -2,6 +2,7 @@ package com.ronixtech.ronixhome.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity
 
     FragmentManager fragmentManager;
     DashboardDevicesFragment dashboardDevicesFragment;
+    DashboardRoomsFragment dashboardRoomsFragment;
     Toolbar toolbar;
     private static TextView mTitle;
 
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         mInstance = this;
         setContentView(R.layout.activity_main);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -195,13 +198,16 @@ public class MainActivity extends AppCompatActivity
         }*/
 
         fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
         if(MySettings.getCurrentPlace() != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
             fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentTransaction.commit();
         }else {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             PlacesFragment placesFragment = new PlacesFragment();
             fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -277,7 +283,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
-                    checkWifiConnection();
+                    if(!checkingCellularConnection) {
+                        Utils.log(TAG, "WIFI_STATE_CHANGED_ACTION calling checkCellularConnection", true);
+                        checkCellularConnection();
+                    }
                     /*ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 
@@ -287,7 +296,10 @@ public class MainActivity extends AppCompatActivity
 
                     }*/
                 }else if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)){
-                    checkWifiConnection();
+                    if(!checkingCellularConnection) {
+                        Utils.log(TAG, "CONNECTIVITY_ACTION calling checkCellularConnection", true);
+                        checkCellularConnection();
+                    }
                 }
                 /*SupplicantState newState = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
 
@@ -310,20 +322,20 @@ public class MainActivity extends AppCompatActivity
 
         //getLatestAppVersion();
 
-        getLatestFirmwareVersion();
+        //getLatestFirmwareVersion();
+
+        if(getIntent() != null && getIntent().getStringExtra("action") != null && getIntent().getStringExtra("action").equals("import_data")){
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            ImportDataFragment importDataFragment = new ImportDataFragment();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction.replace(R.id.fragment_view, importDataFragment, "importDataFragment");
+            fragmentTransaction.addToBackStack("importDataFragment");
+            fragmentTransaction.commit();
+        }
     }
 
     private void checkWifiConnection(){
-        List<Place> allPlaces = MySettings.getAllPlaces();
-        for (Place place : allPlaces) {
-            place.setMode(Place.PLACE_MODE_REMOTE);
-            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
-        }
-        if(MySettings.getCurrentPlace() != null ){
-            Place currentPlace = MySettings.getCurrentPlace();
-            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
-            MySettings.setCurrentPlace(currentPlace);
-        }
         WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(mWifiManager != null){
             //Wifi is available
@@ -336,25 +348,39 @@ public class MainActivity extends AppCompatActivity
                     Utils.log(TAG, "Wifi is ON and connected to network, check which Place (if any) is associated with this SSID and set its mode to Local mode", true);
                     String ssid = mWifiManager.getConnectionInfo().getSSID().replace("\"", "");
                     Utils.log(TAG, "Currently connected to: " + ssid, true);
-                    WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
-                    if(wifiNetwork != null){
-                        Utils.log(TAG, "WifiNetwork DB id: " + wifiNetwork.getId(), true);
-                        long placeID = wifiNetwork.getPlaceID();
-                        Utils.log(TAG, "WifiNetwork placeID: " + placeID, true);
-                        if(placeID != -1){
-                            Place localPlace = MySettings.getPlace(placeID);
-                            if(localPlace != null){
-                                Utils.log(TAG, "WifiNetwork DB placeName: " + localPlace.getName(), true);
-                                localPlace.setMode(Place.PLACE_MODE_LOCAL);
-                                MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
-                                if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
-                                    MySettings.setCurrentPlace(localPlace);
-                                }
-                            }
+                    if(ssid.equalsIgnoreCase("androidwifi") || ssid.equalsIgnoreCase("wiredssid")){
+                        Utils.log(TAG, "Current SSID is known to be an emulator SSID, mode will be set to LOCAL for all palces", true);
+                        List<Place> allPlaces = MySettings.getAllPlaces();
+                        for (Place place : allPlaces) {
+                            place.setMode(Place.PLACE_MODE_LOCAL);
+                            MySettings.updatePlaceMode(place, Place.PLACE_MODE_LOCAL);
+                        }
+                        if(MySettings.getCurrentPlace() != null ){
+                            Place currentPlace = MySettings.getCurrentPlace();
+                            currentPlace.setMode(Place.PLACE_MODE_LOCAL);
+                            MySettings.setCurrentPlace(currentPlace);
                         }
                     }else{
-                        //Wifi network is NOT associated with any Place
-                        Utils.log(TAG, "WifiNetwork is NOT associated with any Place", true);
+                        WifiNetwork wifiNetwork = MySettings.getWifiNetworkBySSID(ssid);
+                        if(wifiNetwork != null){
+                            Utils.log(TAG, "WifiNetwork DB id: " + wifiNetwork.getId(), true);
+                            long placeID = wifiNetwork.getPlaceID();
+                            Utils.log(TAG, "WifiNetwork placeID: " + placeID, true);
+                            if(placeID != -1){
+                                Place localPlace = MySettings.getPlace(placeID);
+                                if(localPlace != null){
+                                    Utils.log(TAG, "WifiNetwork DB placeName: " + localPlace.getName(), true);
+                                    localPlace.setMode(Place.PLACE_MODE_LOCAL);
+                                    MySettings.updatePlaceMode(localPlace, Place.PLACE_MODE_LOCAL);
+                                    if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getId() == localPlace.getId()){
+                                        MySettings.setCurrentPlace(localPlace);
+                                    }
+                                }
+                            }
+                        }else{
+                            //Wifi network is NOT associated with any Place
+                            Utils.log(TAG, "WifiNetwork is NOT associated with any Place", true);
+                        }
                     }
                 }else{
                     //Wifi is ON but not connected to any ssid
@@ -367,13 +393,30 @@ public class MainActivity extends AppCompatActivity
         }else {
             //Wifi is not available
         }
-        DashboardDevicesFragment fragment = (DashboardDevicesFragment) getSupportFragmentManager().findFragmentByTag("dashboardDevicesFragment");
-        if(fragment != null){
-            fragment.updateUI();
+        dashboardDevicesFragment = (DashboardDevicesFragment) getSupportFragmentManager().findFragmentByTag("dashboardDevicesFragment");
+        if(dashboardDevicesFragment != null){
+            dashboardDevicesFragment.updateUI();
+        }
+
+        dashboardRoomsFragment = (DashboardRoomsFragment) getSupportFragmentManager().findFragmentByTag("dashboardRoomsFragment");
+        if(dashboardRoomsFragment != null){
+            dashboardRoomsFragment.updateUI();
         }
     }
 
+    private boolean checkingCellularConnection = false;
     private void checkCellularConnection(){
+        checkingCellularConnection = true;
+        List<Place> allPlaces = MySettings.getAllPlaces();
+        for (Place place : allPlaces) {
+            place.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
+        }
+        if(MySettings.getCurrentPlace() != null ){
+            Place currentPlace = MySettings.getCurrentPlace();
+            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.setCurrentPlace(currentPlace);
+        }
         new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
             @Override
             public void onConnectionSuccess() {
@@ -387,12 +430,15 @@ public class MainActivity extends AppCompatActivity
                     initMqttClient(mInstance, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
                 }else{
                     Utils.log(TAG, "MQTT is already connected", true);
+                    checkingCellularConnection = false;
                 }
             }
 
             @Override
             public void onConnectionFail(String errorMsg) {
                 MySettings.setInternetConnectivityState(false);
+                checkWifiConnection();
+                checkingCellularConnection = false;
             }
         }).execute();
     }
@@ -467,9 +513,15 @@ public class MainActivity extends AppCompatActivity
             if(dashboardDevicesFragment == null) {
                 dashboardDevicesFragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
             }
-
             if(dashboardDevicesFragment != null) {
                 dashboardDevicesFragment.loadDevicesFromMemory();
+            }
+
+            if(dashboardRoomsFragment == null) {
+                dashboardRoomsFragment = (DashboardRoomsFragment) fragmentManager.findFragmentByTag("dashboardRoomsFragment");
+            }
+            if(dashboardRoomsFragment != null) {
+                dashboardRoomsFragment.loadDevicesFromMemory();
             }
         }
     }
@@ -479,9 +531,15 @@ public class MainActivity extends AppCompatActivity
             if(dashboardDevicesFragment == null) {
                 dashboardDevicesFragment = (DashboardDevicesFragment) fragmentManager.findFragmentByTag("dashboardDevicesFragment");
             }
-
             if (dashboardDevicesFragment != null) {
                 dashboardDevicesFragment.loadDevicesFromDatabase();
+            }
+
+            if(dashboardRoomsFragment == null) {
+                dashboardRoomsFragment = (DashboardRoomsFragment) fragmentManager.findFragmentByTag("dashboardRoomsFragment");
+            }
+            if (dashboardRoomsFragment != null) {
+                dashboardRoomsFragment.loadDevicesFromDatabase();
             }
         }
     }
@@ -513,7 +571,10 @@ public class MainActivity extends AppCompatActivity
     public void onStart(){
         Utils.log(TAG, "onStart", true);
         super.onStart();
-        checkCellularConnection();
+        if(!checkingCellularConnection) {
+            Utils.log(TAG, "onStart calling checkCellularConnection", true);
+            checkCellularConnection();
+        }
     }
 
     @Override
@@ -613,10 +674,10 @@ public class MainActivity extends AppCompatActivity
                         /*if(MySettings.isGetStatusActive()){
                            return;
                         }*/
-                        if (MySettings.isControlActive()){
+                        /*if (MySettings.isControlActive()){
                             Utils.log(TAG, "Controls active, do nothing", true);
                             return;
-                        }
+                        }*/
                         MySettings.setGetStatusState(true);
                         String response = new String(mqttMessage.getPayload());
                         int index = s.lastIndexOf("/");
@@ -711,45 +772,61 @@ public class MainActivity extends AppCompatActivity
 
                                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                                line0PowerState = Integer.valueOf(line0PowerStateString);
-                                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                                line1PowerState = Integer.valueOf(line1PowerStateString);
-                                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                                line2PowerState = Integer.valueOf(line2PowerStateString);
+                                                if(hardwareStatus.has("L_0_STT")){
+                                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                    line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                }
+                                                if(hardwareStatus.has("L_1_STT")){
+                                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                    line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                }
+                                                if(hardwareStatus.has("L_2_STT")){
+                                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                    line2PowerState = Integer.valueOf(line2PowerStateString);
+                                                }
 
                                                 String line0DimmingValueString, line1DimmingValueString, line2DimmingValueString;
                                                 int line0DimmingValue = 0, line1DimmingValue = 0, line2DimmingValue = 0;
-                                                line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
-                                                if(line0DimmingValueString.equals(":")){
-                                                    line0DimmingValue = 10;
-                                                }else{
-                                                    line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                                                if(hardwareStatus.has("L_0_DIM")){
+                                                    line0DimmingValueString = hardwareStatus.getString("L_0_DIM");
+                                                    if(line0DimmingValueString.equals(":")){
+                                                        line0DimmingValue = 10;
+                                                    }else{
+                                                        line0DimmingValue = Integer.valueOf(line0DimmingValueString);
+                                                    }
                                                 }
-
-                                                line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
-                                                if(line1DimmingValueString.equals(":")){
-                                                    line1DimmingValue = 10;
-                                                }else{
-                                                    line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                                                if(hardwareStatus.has("L_1_DIM")){
+                                                    line1DimmingValueString = hardwareStatus.getString("L_1_DIM");
+                                                    if(line1DimmingValueString.equals(":")){
+                                                        line1DimmingValue = 10;
+                                                    }else{
+                                                        line1DimmingValue = Integer.valueOf(line1DimmingValueString);
+                                                    }
                                                 }
-
-                                                line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
-                                                if(line2DimmingValueString.equals(":")){
-                                                    line2DimmingValue = 10;
-                                                }else{
-                                                    line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                                if(hardwareStatus.has("L_2_DIM")){
+                                                    line2DimmingValueString = hardwareStatus.getString("L_2_DIM");
+                                                    if(line2DimmingValueString.equals(":")){
+                                                        line2DimmingValue = 10;
+                                                    }else{
+                                                        line2DimmingValue = Integer.valueOf(line2DimmingValueString);
+                                                    }
                                                 }
-
 
                                                 String line0DimmingStateString, line1DimmingStateString, line2DimmingStateString;
                                                 int line0DimmingState = 0, line1DimmingState = 0, line2DimmingState = 0;
-                                                line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
-                                                line0DimmingState = Integer.valueOf(line0DimmingStateString);
-                                                line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
-                                                line1DimmingState = Integer.valueOf(line1DimmingStateString);
-                                                line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
-                                                line2DimmingState = Integer.valueOf(line2DimmingStateString);
+                                                if(hardwareStatus.has("L_0_D_S")){
+                                                    line0DimmingStateString = hardwareStatus.getString("L_0_D_S");
+                                                    line0DimmingState = Integer.valueOf(line0DimmingStateString);
+                                                }
+                                                if(hardwareStatus.has("L_1_D_S")){
+                                                    line1DimmingStateString = hardwareStatus.getString("L_1_D_S");
+                                                    line1DimmingState = Integer.valueOf(line1DimmingStateString);
+                                                }
+                                                if(hardwareStatus.has("L_2_D_S")){
+                                                    line2DimmingStateString = hardwareStatus.getString("L_2_D_S");
+                                                    line2DimmingState = Integer.valueOf(line2DimmingStateString);
+                                                }
+
 
                                                 List<Line> lines = device.getLines();
                                                 for (Line line:lines) {
@@ -771,17 +848,22 @@ public class MainActivity extends AppCompatActivity
                                                 String temperatureString, beepString, hwLockString;
                                                 int temperatureValue;
                                                 boolean beep, hwLock;
-                                                temperatureString = hardwareStatus.getString("U_H_TMP");
-                                                beepString = hardwareStatus.getString("U_BEEP_");
-                                                hwLockString = hardwareStatus.getString("U_H_LCK");
+                                                if(hardwareStatus.has("U_H_TMP")){
+                                                    temperatureString = hardwareStatus.getString("U_H_TMP");
+                                                    temperatureValue = Integer.parseInt(temperatureString);
+                                                    device.setTemperature(temperatureValue);
+                                                }
+                                                if(hardwareStatus.has("U_BEEP_")){
+                                                    beepString = hardwareStatus.getString("U_BEEP_");
+                                                    beep = Boolean.parseBoolean(beepString);
+                                                    device.setBeep(beep);
+                                                }
+                                                if(hardwareStatus.has("U_H_LCK")){
+                                                    hwLockString = hardwareStatus.getString("U_H_LCK");
+                                                    hwLock = Boolean.parseBoolean(hwLockString);
+                                                    device.setHwLock(hwLock);
+                                                }
 
-                                                temperatureValue = Integer.parseInt(temperatureString);
-                                                beep = Boolean.parseBoolean(beepString);
-                                                hwLock = Boolean.parseBoolean(hwLockString);
-
-                                                device.setTemperature(temperatureValue);
-                                                device.setBeep(beep);
-                                                device.setHwLock(hwLock);
 
                                                 device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                             }else{
@@ -814,12 +896,18 @@ public class MainActivity extends AppCompatActivity
 
                                                 String line0PowerStateString, line1PowerStateString, line2PowerStateString;
                                                 int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-                                                line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                                line0PowerState = Integer.valueOf(line0PowerStateString);
-                                                line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                                line1PowerState = Integer.valueOf(line1PowerStateString);
-                                                line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                                line2PowerState = Integer.valueOf(line2PowerStateString);
+                                                if(hardwareStatus.has("L_0_STT")){
+                                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                    line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                }
+                                                if(hardwareStatus.has("L_1_STT")){
+                                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                    line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                }
+                                                if(hardwareStatus.has("L_2_STT")){
+                                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                    line2PowerState = Integer.valueOf(line2PowerStateString);
+                                                }
 
                                                 List<Line> lines = device.getLines();
                                                 for (Line line:lines) {
@@ -859,6 +947,10 @@ public class MainActivity extends AppCompatActivity
                             }
                             MySettings.addDevice(device);
                             DevicesInMemory.updateDevice(device);
+                            Device localDevice = DevicesInMemory.getLocalDevice(device);
+                            if(localDevice != null){
+                                DevicesInMemory.updateLocalDevice(localDevice);
+                            }
                             MainActivity.getInstance().refreshDevicesListFromMemory();
                         }
                         MySettings.setGetStatusState(false);
@@ -894,6 +986,7 @@ public class MainActivity extends AppCompatActivity
                                     MainActivity.getInstance().refreshDevicesListFromMemory();
                                 }
                             }
+                            checkingCellularConnection = false;
                         }
 
                         @Override
@@ -907,8 +1000,11 @@ public class MainActivity extends AppCompatActivity
                                 }
                                 MainActivity.getInstance().refreshDevicesListFromMemory();
                             }
+                            checkingCellularConnection = false;
                         }
                     });
+                }else{
+                    checkingCellularConnection = false;
                 }
             } catch (MqttException e) {
                 e.printStackTrace();
@@ -920,7 +1016,10 @@ public class MainActivity extends AppCompatActivity
                     }
                     MainActivity.getInstance().refreshDevicesListFromMemory();
                 }
+                checkingCellularConnection = false;
             }
+        }else{
+            checkingCellularConnection = false;
         }
     }
     public void subscribe(@NonNull final MqttAndroidClient client, Device device, int qos) throws MqttException {
@@ -1154,15 +1253,32 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.addToBackStack("linkedAccountsFragment");
             fragmentTransaction.commit();
         } else if( id == R.id.log_out){
-            if(MySettings.getActiveUser() != null) {
-                MySettings.deleteActiveUser(MySettings.getActiveUser());
-                if(FirebaseAuth.getInstance() != null && FirebaseAuth.getInstance().getCurrentUser() != null){
-                    FirebaseAuth.getInstance().signOut();
-                }
-                Intent loginIntent = new Intent(mInstance, LoginActivity.class);
-                startActivity(loginIntent);
-                finish();
-            }
+            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(mInstance)
+                    //set icon
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    //set title
+                    .setTitle(Utils.getString(mInstance, R.string.logout_title))
+                    //set message
+                    .setMessage(Utils.getString(mInstance, R.string.logout_message))
+                    //set positive button
+                    .setPositiveButton(Utils.getString(mInstance, R.string.logout), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //set what would happen when positive button is clicked
+                            MySettings.clearData();
+                            Intent loginIntent = new Intent(mInstance, LoginActivity.class);
+                            startActivity(loginIntent);
+                            finish();
+                        }
+                    })
+                    //set negative button
+                    .setNegativeButton(Utils.getString(mInstance, R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //set what should happen when negative button is clicked
+                        }
+                    })
+                    .show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
