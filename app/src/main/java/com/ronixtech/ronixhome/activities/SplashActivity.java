@@ -12,6 +12,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
+import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 
 import org.json.JSONArray;
@@ -54,7 +55,18 @@ public class SplashActivity extends AppCompatActivity {
             }
         }, SPLASH_DISPLAY_LENGTH);*/
 
-        getLatestFirmwareVersion();
+        new Utils.InternetChecker(this, new Utils.InternetChecker.OnConnectionCallback() {
+            @Override
+            public void onConnectionSuccess() {
+                getLatestFirmwareVersion();
+            }
+
+            @Override
+            public void onConnectionFail(String errorMsg) {
+                Utils.showToast(SplashActivity.this, Utils.getString(SplashActivity.this, R.string.no_internet_connection), true);
+                goToMainActivity();
+            }
+        }).execute();
     }
 
     private void goToMainActivity(){

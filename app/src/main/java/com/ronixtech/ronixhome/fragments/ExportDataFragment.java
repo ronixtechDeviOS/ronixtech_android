@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +34,7 @@ import com.google.firebase.storage.UploadTask;
 import com.ronixtech.ronixhome.AppDatabase;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.ExportImportDB;
+import com.ronixtech.ronixhome.MyApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -164,7 +164,7 @@ public class ExportDataFragment extends android.support.v4.app.Fragment {
         //create new reference for current backup file
         StorageReference dbFile1Reference = backupReference.child(fileName);
 
-        UploadTask uploadTask = dbFile1Reference.putFile(Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/" + fileName)));
+        UploadTask uploadTask = dbFile1Reference.putFile(Uri.fromFile(new File(MyApp.getInstance().getFilesDir() + "/RonixHome/" + "Databases/" + fileName)));
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

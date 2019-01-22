@@ -10,6 +10,10 @@
         android:orderInCategory="100"
         android:title="@string/room_devices_off" />
     <item
+        android:id="@+id/action_edit_room_image"
+        android:orderInCategory="100"
+        android:title="@string/edit_room_image" />
+    <item
         android:id="@+id/action_edit_room"
         android:orderInCategory="100"
         android:title="@string/edit_room" />

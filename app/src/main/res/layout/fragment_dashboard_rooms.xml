@@ -56,7 +56,7 @@
             android:layout_below="@id/rooms_header_layout"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:paddingBottom="0dp"
+            android:paddingBottom="72dp"
             android:clipToPadding="false"
             android:numColumns="2"
             android:verticalSpacing="4dp"

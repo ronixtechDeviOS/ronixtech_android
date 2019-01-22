@@ -34,3 +34,7 @@
 
 # Ignore JSR 305 annotations for embedding nullability information.
 -dontwarn javax.annotation.**
+
+#-dontwarn com.yalantis.ucrop**
+#-keep class com.yalantis.ucrop** { *; }
+#-keep interface com.yalantis.ucrop** { *; }

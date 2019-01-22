@@ -196,6 +196,13 @@
     <string name="edit_room">Edit Room</string>
     <string name="edit_room_description">Edit the name and type of the room then click Save</string>
 
+
+    <string name="image_source_title">Pick Image</string>
+    <string name="image_source_gallery">Gallery</string>
+    <string name="image_source_camera">Camera</string>
+    <string name="room_image">Room Image</string>
+    <string name="edit_room_image">Edit Room Image</string>
+
     <string name="room_long_press_hint">Long press on any Room for more options</string>
     <string name="remove_room_question">Are you sure you want to remove the selected room?</string>
     <string name="remove_room_description">Removing the room will also remove all associated devices</string>

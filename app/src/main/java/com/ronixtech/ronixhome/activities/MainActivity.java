@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -1122,6 +1123,19 @@ public class MainActivity extends AppCompatActivity
         disconnectedBufferOptions.setPersistBuffer(true);
         disconnectedBufferOptions.setDeleteOldestMessages(false);
         return disconnectedBufferOptions;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment f : fragments) {
+                if (f instanceof DashboardRoomsFragment) {
+                    f.onActivityResult(requestCode, resultCode, data);
+                }
+            }
+        }
     }
 
     @Override

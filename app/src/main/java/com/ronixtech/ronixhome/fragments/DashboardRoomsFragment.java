@@ -1,31 +1,41 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Space;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.myhexaville.smartimagepicker.ImagePicker;
+import com.myhexaville.smartimagepicker.OnImagePickedListener;
 import com.ronixtech.ronixhome.DevicesInMemory;
+import com.ronixtech.ronixhome.MyApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -38,6 +48,9 @@ import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -87,6 +100,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     Timer timer;
     TimerTask doAsynchronousTask;
     Handler handler;
+
+    ImagePicker imagePicker;
 
     private OnFragmentInteractionListener mListener;
 
@@ -191,6 +206,10 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
         listHandler = new Handler();
 
+        int padddingHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics());
+        Space footerView = new Space(getActivity());
+        footerView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, padddingHeight));
+
         rooms = new ArrayList<>();
         if(place != null){
             if(floor != null){
@@ -250,8 +269,73 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             public void onRoomNameChanged() {
 
             }
+            @Override
+            public void onRoomImageChangeRequested(Room room) {
+                imagePicker = new ImagePicker(getActivity(), DashboardRoomsFragment.this, new OnImagePickedListener() {
+                    @Override
+                    public void onImagePicked(Uri imageUri) {
+                        //Utils.showToast(getActivity(), "picked image uri: " + imageUri.toString(), false);
+                        Utils.showLoading(getActivity());
+
+                        new Runnable() {
+                            public void run() {
+                                try{
+                                    //creating a new folder for the images to be saved to
+                                    File ronixDirectory = new File(MyApp.getInstance().getFilesDir() + "/RonixHome/");
+                                    if(!ronixDirectory.exists()) {
+                                        if(ronixDirectory.mkdir()) {
+                                            //directory is created;
+                                        }
+                                    }
+                                    Utils.log(TAG, "Created directory: " + ronixDirectory.getAbsolutePath(), true);
+                                    File imagesDirectory = new File(MyApp.getInstance().getFilesDir() + "/RonixHome/" + "RoomImages/");
+                                    if(!imagesDirectory.exists()) {
+                                        if(imagesDirectory.mkdir()) {
+                                            //directory is created;
+                                        }
+                                    }
+
+                                    Bitmap pickedBitmap = BitmapFactory.decodeFile(imagePicker.getImageFile().getAbsolutePath());
+
+                                    File outputFile = new File(getActivity().getFilesDir()  + "/RonixHome/" + "RoomImages/" + "room_" + room.getId() + ".jpg");
+                                    FileOutputStream out = new FileOutputStream(outputFile, false);
+
+                                    pickedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
+
+                                    //Bitmap compressedBitmap = BitmapFactory.decodeStream(new FileInputStream(out.toString()));
+
+
+                                    /*File imageFile = imagePicker.getImageFile();
+
+                                    FileChannel src = new FileInputStream(imageFile).getChannel();
+                                    FileChannel dst = new FileOutputStream(outputFile).getChannel();
+                                    dst.transferFrom(src, 0, src.size());
+                                    src.close();
+                                    dst.close();*/
+                                }catch (IOException e){
+                                    Utils.showToast(MainActivity.getInstance(), e.toString(), true);
+                                }finally {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            roomsDashboardListAdapter.notifyDataSetChanged();
+                                            Utils.dismissLoading();
+                                        }
+                                    });
+                                }
+                            }
+                        }.run();
+                        /*UCrop.of(imageUri, imageUri)
+                                                    .withAspectRatio(2, 1)
+                                                    *//*.withMaxResultSize(500, 400)*//*
+                                                    .start(getActivity());*/
+                    }
+                }).setWithImageCrop(16,9);
+                imagePicker.choosePicture(true);
+            }
         });
         roomsListView.setAdapter(roomsDashboardListAdapter);
+        roomsListView.addFooterView(footerView);
 
         setLayoutVisibility();
 
@@ -902,6 +986,26 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     public void onDestroy(){
         Utils.log(TAG, "onDestroy", true);
         super.onDestroy();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(imagePicker != null) {
+            imagePicker.handleActivityResult(resultCode, requestCode, data);
+        }
+
+        /*if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            Utils.showToast(getActivity(), "cropped image uri: " + resultUri.toString(), false);
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            final Throwable cropError = UCrop.getError(data);
+        }*/
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        imagePicker.handlePermission(requestCode, grantResults);
     }
 
     /*@Override

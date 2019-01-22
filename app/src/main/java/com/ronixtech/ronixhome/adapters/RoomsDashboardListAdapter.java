@@ -2,11 +2,12 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.graphics.Color;
+import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
+import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -14,11 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.GlideApp;
@@ -31,6 +33,7 @@ import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.EditRoomFragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +52,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
     public interface RoomsListener{
         public void onRoomDeleted();
         public void onRoomNameChanged();
+        public void onRoomImageChangeRequested(Room room);
     }
 
     public RoomsDashboardListAdapter(Activity activity, List rooms, FragmentManager fragmentManager, RoomsListener roomsListener){
@@ -93,6 +97,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
             vHolder.roomLayout = rowView.findViewById(R.id.room_layout);
             vHolder.roomDevicesLayout = rowView.findViewById(R.id.room_devices_layout);
             vHolder.roomLinesGridView = rowView.findViewById(R.id.room_lines_gridview);
+            vHolder.roomLinesHorizontalScrollView = rowView.findViewById(R.id.room_lines_horizontal_scrollview);
             vHolder.backgroundImageView = rowView.findViewById(R.id.room_background_imageview);
             vHolder.roomInfoLayout = rowView.findViewById(R.id.room_info_layout);
             vHolder.scrollPreviousImageView = rowView.findViewById(R.id.scroll_previous_imageview);
@@ -119,31 +124,63 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
             }
         }
 
-        //TODO remvoe this and replace with actual images from Fahad, depending on room type
-        if(position == 0){
-            vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
-        }else if(position == 1){
-            vHolder.backgroundImageView.setImageResource(R.drawable.kitchen_sample_1);
-        }else if(position == 2){
-            vHolder.backgroundImageView.setImageResource(R.drawable.workspace_sample);
-        }else if(position == 3){
-            vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+        //first check room imageFile to check if the user has a custom image for this room or not
+        Uri uri = Uri.parse(activity.getFilesDir() + "/RonixHome/" + "RoomImages/" + "room_" + item.getId() + ".jpg");
+        Utils.log("AAAA", "Room id:" + item.getId() + " might have URI: " + uri, false);
+        if(uri != null && uri.toString().length() >= 1){
+            File tempFile = new File(uri.toString());
+            if(tempFile.exists()){
+                Utils.log("AAAA", "Room URI: " + uri, false);
+                ViewHolder tempViewHolder1 = vHolder;
+                GlideApp.with(activity)
+                        .load(tempFile)
+                        .placeholder(activity.getResources().getDrawable(R.drawable.room_icon)) //TODO remove this and replace with actual images from Fahad, depending on room type
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        /*.skipMemoryCache(true)*/
+                        .into(tempViewHolder1.backgroundImageView);
+            }else{
+                //TODO remove this and replace with actual images from Fahad, depending on room type
+                if(position == 0){
+                    vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+                }else if(position == 1){
+                    vHolder.backgroundImageView.setImageResource(R.drawable.kitchen_sample_1);
+                }else if(position == 2){
+                    vHolder.backgroundImageView.setImageResource(R.drawable.workspace_sample);
+                }else if(position == 3){
+                    vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+                }else if(position == 4){
+                    vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+                }
+            }
+        }else{
+            //TODO remove this and replace with actual images from Fahad, depending on room type
+            if(position == 0){
+                vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+            }else if(position == 1){
+                vHolder.backgroundImageView.setImageResource(R.drawable.kitchen_sample_1);
+            }else if(position == 2){
+                vHolder.backgroundImageView.setImageResource(R.drawable.workspace_sample);
+            }else if(position == 3){
+                vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+            }else if(position == 4){
+                vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+            }
         }
 
-        if(item.getType().getColorHexCode().length() == 6){
+        /*if(item.getType().getColorHexCode().length() == 6){
             vHolder.roomInfoLayout.setBackgroundColor(Color.parseColor(Utils.getColorHex(item.getType().getColorHexCode(), 20)));
         }else{
             vHolder.roomInfoLayout.setBackgroundColor(Color.parseColor(Utils.getColorHex("000000", 20)));
-        }
+        }*/
 
+
+        List<Line> roomLines = new ArrayList<>();
 
         if(DevicesInMemory.getRoomDevices(item.getId()) != null && DevicesInMemory.getRoomDevices(item.getId()).size() >= 1/*MySettings.getRoomDevices(item.getId()) != null && MySettings.getRoomDevices(item.getId()).size() >= 1*/){
             List<Device> roomDevices = DevicesInMemory.getRoomDevices(item.getId());
             Utils.log(TAG, "Room " + item.getName() + " has " + roomDevices.size() + " devices", true);
 
-            List<Line> roomLines = new ArrayList<>();
 
-            //vHolder.roomDevicesLayout.removeAllViews();
             for (Device device : roomDevices) {
                 Utils.log(TAG, "Adding device " + device.getName() + " to room list item", true);
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
@@ -159,83 +196,109 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                     }
                 }
             }
+        }
 
-            if(roomLines.size() < 1) {
-                Utils.log(TAG, "Room " + item.getName() + " has no lines", true);
-                //vHolder.nameTextView.append(" - " + " No devices");
-                /*RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) vHolder.nameTextView.getLayoutParams();
-                lp.addRule(RelativeLayout.CENTER_VERTICAL);
-                vHolder.nameTextView.setLayoutParams(lp);*/
-            }else{
-                Utils.log(TAG, "Room " + item.getName() + " has " + roomLines.size() + " lines", true);
-                //vHolder.nameTextView.append(" - " + roomLines.size() + " devices");
+        if(roomLines.size() < 1) {
+            Utils.log(TAG, "Room " + item.getName() + " has no lines", true);
+            //vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_gray_24dp);
+            //vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
+            vHolder.roomLinesGridView.setAdapter(null);
+            vHolder.roomDevicesLayout.setVisibility(View.GONE);
+        }else{
+            Utils.log(TAG, "Room " + item.getName() + " has " + roomLines.size() + " lines", true);
+            //vHolder.nameTextView.append(" - " + roomLines.size() + " devices");
                 /*RoomsDashboardLinesGridAdapter adapter = (RoomsDashboardLinesGridAdapter) linesAdaptersMap.get(item.getId());
                 if(adapter == null) {
                     adapter = new RoomsDashboardLinesGridAdapter(activity, roomLines);
                     linesAdaptersMap.put(item.getId(), adapter);
                 }*/
-                RoomsDashboardLinesGridAdapter adapter = new RoomsDashboardLinesGridAdapter(activity, roomLines);
-                vHolder.roomLinesGridView.setAdapter(adapter);
+            vHolder.roomDevicesLayout.setVisibility(View.VISIBLE);
 
-                Utils.setGridViewWidthBasedOnChildren(vHolder.roomLinesGridView);
+            RoomsDashboardLinesGridAdapter adapter = new RoomsDashboardLinesGridAdapter(activity, roomLines);
+            vHolder.roomLinesGridView.setAdapter(adapter);
+            vHolder.roomLinesGridView.setNumColumns(adapter.getCount());
 
-                final ViewHolder tempViewHolder = vHolder;
-                int numberOfVisibleItems = tempViewHolder.roomLinesGridView.getLastVisiblePosition() - tempViewHolder.roomLinesGridView.getFirstVisiblePosition();
-                Utils.log(TAG, "firstVisiblePosition: " + tempViewHolder.roomLinesGridView.getFirstVisiblePosition(), false);
-                Utils.log(TAG, "lastVisiblePosition: " + tempViewHolder.roomLinesGridView.getLastVisiblePosition(), false);
-                Utils.log(TAG, "numberOfVisibleItems: " + numberOfVisibleItems, false);
-                Utils.log(TAG, "getCount: " + tempViewHolder.roomLinesGridView.getCount(), false);
+            Utils.setGridViewWidthBasedOnChildren(vHolder.roomLinesGridView);
 
-                if(numberOfVisibleItems > 0 && tempViewHolder.roomLinesGridView.getCount() > numberOfVisibleItems){
-                    //enable arrows
-                    tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_blue_24dp);
-                    tempViewHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_blue_24dp);
-                    if(tempViewHolder.roomLinesGridView.getFirstVisiblePosition() == 0){
-                        tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
-                    }
-                    tempViewHolder.scrollNextImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            tempViewHolder.roomLinesGridView.smoothScrollToPosition(tempViewHolder.roomLinesGridView.getCount() - 1);
-                            Utils.showToast(activity, "scrolling to position: " + (tempViewHolder.roomLinesGridView.getCount() - 1), true);
-                        }
-                    });
-                    tempViewHolder.scrollPreviousImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            tempViewHolder.roomLinesGridView.smoothScrollToPosition(0);
-                            Utils.showToast(activity, "scrolling to position: " + (0), true);
-                        }
-                    });
-                }else{
-                    //disable arrows
-                    tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
-                    tempViewHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_gray_24dp);
+            //vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_white_24dp);
+            //vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_white_24dp);
 
-                    tempViewHolder.scrollNextImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        }
-                    });
-                    tempViewHolder.scrollPreviousImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        }
-                    });
-                }
 
-                /*if (Build.VERSION.SDK_INT >= 17) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) vHolder.nameTextView.getLayoutParams();
-                    lp.removeRule(RelativeLayout.CENTER_VERTICAL);
-                    vHolder.nameTextView.setLayoutParams(lp);
-                }*/
-            }
+            /*Utils.log(TAG, "ScrollView getWidth: " + vHolder.roomLinesHorizontalScrollView.getWidth(), false);
+            Utils.log(TAG, "ScrollView getHeight: " + vHolder.roomLinesHorizontalScrollView.getHeight(), false);
+            Utils.log(TAG, "GridView getWidth: " + vHolder.roomLinesGridView.getWidth(), false);
+            Utils.log(TAG, "GridView getHeight: " + vHolder.roomLinesGridView.getHeight(), false);
+
+            if(vHolder.roomLinesGridView.getWidth() > vHolder.roomLinesHorizontalScrollView.getWidth()){
+                //enable arrows
+                Utils.log(TAG, "GridView more items than screen size", false);
+                //vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_white_24dp);
+                //vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_white_24dp);
+            }else{
+                //disable arrows
+                Utils.log(TAG, "GridView items fit inside screen size", false);
+                //vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_gray_24dp);
+                //vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
+            }*/
         }
 
+        final ViewHolder tempViewHolder = vHolder;
+
+        int scrollingDistance = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56 /*52 for item + 4 for margin*/, activity.getResources().getDisplayMetrics());
+        vHolder.scrollNextImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                //tempViewHolder.roomLinesGridView.setSmoothScrollbarEnabled(true);
+                //tempViewHolder.roomLinesGridView.smoothScrollToPosition(tempViewHolder.roomLinesGridView.getCount() - 1);
+                //tempViewHolder.roomLinesHorizontalScrollView.fullScroll(View.FOCUS_RIGHT);
+                tempViewHolder.roomLinesHorizontalScrollView.smoothScrollBy(3 * scrollingDistance, 0);
+                //Utils.showToast(activity, "scrolling to RIGHT: " + (tempViewHolder.roomLinesGridView.getCount() - 1), true);
+                        /*if(tempViewHolder.roomLinesGridView.getFirstVisiblePosition() == 0){
+                            Utils.log(TAG, "GridView first item is visible", false);
+                            tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
+                        }else{
+                            Utils.log(TAG, "GridView first item is not visible, position: " + tempViewHolder.roomLinesGridView.getFirstVisiblePosition(), false);
+                            tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_blue_24dp);
+                        }*/
+                    /*if(vHolder.roomLinesGridView.getWidth() > vHolder.roomLinesHorizontalScrollView.getWidth()){
+                        Utils.log(TAG, "GridView more items than screen size", false);
+                        vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_blue_24dp);
+                        vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_blue_24dp);
+                    }else{
+                        Utils.log(TAG, "GridView items fit inside screen size", false);
+                        vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_gray_24dp);
+                        vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
+                    }*/
+            }
+        });
+        vHolder.scrollPreviousImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                //tempViewHolder.roomLinesGridView.smoothScrollToPosition(0);
+                //tempViewHolder.roomLinesHorizontalScrollView.fullScroll(View.FOCUS_LEFT);
+                //tempViewHolder.roomLinesHorizontalScrollView.arrowScroll(View.FOCUS_LEFT);
+                tempViewHolder.roomLinesHorizontalScrollView.smoothScrollBy(-3 * scrollingDistance, 0);
+                //Utils.showToast(activity, "scrolling to LEFT: " + (0), true);
+                        /*if(tempViewHolder.roomLinesGridView.getFirstVisiblePosition() == 0){
+                            Utils.log(TAG, "GridView first item is visible", false);
+                            tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
+                        }else{
+                            Utils.log(TAG, "GridView first item is not visible, position: " + tempViewHolder.roomLinesGridView.getFirstVisiblePosition(), false);
+                            tempViewHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_blue_24dp);
+                        }*/
+                    /*if(vHolder.roomLinesGridView.getWidth() > vHolder.roomLinesHorizontalScrollView.getWidth()){
+                        Utils.log(TAG, "GridView more items than screen size", false);
+                        vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_blue_24dp);
+                        vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_blue_24dp);
+                    }else{
+                        Utils.log(TAG, "GridView items fit inside screen size", false);
+                        vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_gray_24dp);
+                        vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_gray_24dp);
+                    }*/
+            }
+        });
         vHolder.roomLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -250,8 +313,6 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                 fragmentTransaction.commit();
             }
         });
-
-        final ViewHolder tempViewHolder = vHolder;
         vHolder.advancedOptionsMenuImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,6 +331,9 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                         }else if(id == R.id.action_room_device_off){
                             int mode = MySettings.getCurrentPlace().getMode();
                             Utils.toggleRoom(item, Line.LINE_STATE_OFF, mode);
+                        }else if(id == R.id.action_edit_room_image){
+                            //send room to fragment using a listener so that in onActivityResult knows which  room the image should be assigned to
+                            roomsListener.onRoomImageChangeRequested(item);
                         }else if(id == R.id.action_edit_room){
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -321,9 +385,10 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
         TextView nameTextView;
         ImageView typeImageView, advancedOptionsMenuImageView, backgroundImageView;
         CardView roomLayout;
-        LinearLayout roomDevicesLayout;
+        RelativeLayout roomDevicesLayout;
         GridView roomLinesGridView;
         RelativeLayout roomInfoLayout;
         ImageView scrollPreviousImageView, scrollNextImageView;
+        HorizontalScrollView roomLinesHorizontalScrollView;
     }
 }

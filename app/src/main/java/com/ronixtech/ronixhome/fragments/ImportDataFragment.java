@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,6 +35,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.ExportImportDB;
+import com.ronixtech.ronixhome.MyApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -150,14 +150,14 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
 
                             try{
                                 //creating a new folder for the database to be backuped from
-                                File ronixDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/");
+                                File ronixDirectory = new File(MyApp.getInstance().getFilesDir() + "/RonixHome/");
                                 if(!ronixDirectory.exists()) {
                                     if(ronixDirectory.mkdir()) {
                                         //directory is created;
                                     }
                                 }
                                 Utils.log(TAG, "Created directory: " + ronixDirectory.getAbsolutePath(), true);
-                                File databaseDirectory = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/");
+                                File databaseDirectory = new File(MyApp.getInstance().getFilesDir() + "/RonixHome/" + "Databases/");
                                 if(!databaseDirectory.exists()) {
                                     if(databaseDirectory.mkdir()) {
                                         //directory is created;
@@ -263,7 +263,7 @@ public class ImportDataFragment extends android.support.v4.app.Fragment implemen
         StorageReference fileRef = exportRef.child(fileName);
 
 
-        File file = new File(Environment.getExternalStorageDirectory() + "/RonixHome/" + "Databases/" + fileName);
+        File file = new File(MyApp.getInstance().getFilesDir() + "/RonixHome/" + "Databases/" + fileName);
 
         fileRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
