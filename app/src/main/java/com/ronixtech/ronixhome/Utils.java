@@ -1256,6 +1256,22 @@ public class Utils {
                         Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
                         Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+
+
+                        for(Line line:device.getLines()){
+                            line.setPowerState(newState);
+                        }
+                        DevicesInMemory.updateDevice(device);
+
+                        Device localDevice = DevicesInMemory.getLocalDevice(device);
+                        if(localDevice != null){
+                            for(Line line:localDevice.getLines()){
+                                line.setPowerState(newState);
+                            }
+                            DevicesInMemory.updateLocalDevice(localDevice);
+                        }
+
+                        MainActivity.getInstance().refreshDevicesListFromMemory();
                     }catch (JSONException e){
                         Utils.log(TAG, "Exception: " + e.getMessage(), true);
                         MySettings.setControlState(false);
@@ -1714,8 +1730,26 @@ public class Utils {
                                         line2DimmingState = Integer.valueOf(line2DimmingStateString);
                                     }
 
+                                    Device localDevice = DevicesInMemory.getLocalDevice(device);
+
                                     List<Line> lines = device.getLines();
+                                    List<Line> localLines = localDevice.getLines();
                                     for (Line line:lines) {
+                                        if(line.getPosition() == 0){
+                                            line.setPowerState(line0PowerState);
+                                            line.setDimmingState(line0DimmingState);
+                                            line.setDimmingVvalue(line0DimmingValue);
+                                        }else if(line.getPosition() == 1){
+                                            line.setPowerState(line1PowerState);
+                                            line.setDimmingState(line1DimmingState);
+                                            line.setDimmingVvalue(line1DimmingValue);
+                                        }else if(line.getPosition() == 2){
+                                            line.setPowerState(line2PowerState);
+                                            line.setDimmingState(line2DimmingState);
+                                            line.setDimmingVvalue(line2DimmingValue);
+                                        }
+                                    }
+                                    for (Line line:localLines) {
                                         if(line.getPosition() == 0){
                                             line.setPowerState(line0PowerState);
                                             line.setDimmingState(line0DimmingState);
@@ -1768,6 +1802,8 @@ public class Utils {
                                         device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                         device.setErrorCount(0);
                                         DevicesInMemory.updateDevice(device);
+                                        DevicesInMemory.updateLocalDevice(localDevice);
+                                        MainActivity.getInstance().refreshDevicesListFromMemory();
                                     }
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
@@ -1821,8 +1857,20 @@ public class Utils {
                                         line2PowerState = Integer.valueOf(line2PowerStateString);
                                     }
 
+                                    Device localDevice = DevicesInMemory.getLocalDevice(device);
+
                                     List<Line> lines = device.getLines();
+                                    List<Line> localLines = localDevice.getLines();
                                     for (Line line:lines) {
+                                        if(line.getPosition() == 0){
+                                            line.setPowerState(line0PowerState);
+                                        }else if(line.getPosition() == 1){
+                                            line.setPowerState(line1PowerState);
+                                        }else if(line.getPosition() == 2){
+                                            line.setPowerState(line2PowerState);
+                                        }
+                                    }
+                                    for (Line line:localLines) {
                                         if(line.getPosition() == 0){
                                             line.setPowerState(line0PowerState);
                                         }else if(line.getPosition() == 1){
@@ -1869,6 +1917,8 @@ public class Utils {
                                         device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                         device.setErrorCount(0);
                                         DevicesInMemory.updateDevice(device);
+                                        DevicesInMemory.updateLocalDevice(localDevice);
+                                        MainActivity.getInstance().refreshDevicesListFromMemory();
                                     }
                                     //MySettings.addDevice(device);
                                 }else {

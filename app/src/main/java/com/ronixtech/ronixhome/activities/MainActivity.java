@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity
                 if(intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
                     if(!checkingCellularConnection) {
                         Utils.log(TAG, "WIFI_STATE_CHANGED_ACTION calling checkCellularConnection", true);
+                        checkWifiConnection();
                         checkCellularConnection();
                     }
                     /*ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -299,6 +300,7 @@ public class MainActivity extends AppCompatActivity
                 }else if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)){
                     if(!checkingCellularConnection) {
                         Utils.log(TAG, "CONNECTIVITY_ACTION calling checkCellularConnection", true);
+                        checkWifiConnection();
                         checkCellularConnection();
                     }
                 }
@@ -337,6 +339,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void checkWifiConnection(){
+        List<Place> places = MySettings.getAllPlaces();
+        for (Place place : places) {
+            place.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
+        }
+        if(MySettings.getCurrentPlace() != null ){
+            Place currentPlace = MySettings.getCurrentPlace();
+            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.setCurrentPlace(currentPlace);
+        }
         WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(mWifiManager != null){
             //Wifi is available
@@ -394,6 +406,7 @@ public class MainActivity extends AppCompatActivity
         }else {
             //Wifi is not available
         }
+
         dashboardDevicesFragment = (DashboardDevicesFragment) getSupportFragmentManager().findFragmentByTag("dashboardDevicesFragment");
         if(dashboardDevicesFragment != null){
             dashboardDevicesFragment.updateUI();
@@ -408,7 +421,7 @@ public class MainActivity extends AppCompatActivity
     private boolean checkingCellularConnection = false;
     private void checkCellularConnection(){
         checkingCellularConnection = true;
-        List<Place> allPlaces = MySettings.getAllPlaces();
+        /*List<Place> allPlaces = MySettings.getAllPlaces();
         for (Place place : allPlaces) {
             place.setMode(Place.PLACE_MODE_REMOTE);
             MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
@@ -417,7 +430,7 @@ public class MainActivity extends AppCompatActivity
             Place currentPlace = MySettings.getCurrentPlace();
             currentPlace.setMode(Place.PLACE_MODE_REMOTE);
             MySettings.setCurrentPlace(currentPlace);
-        }
+        }*/
         new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
             @Override
             public void onConnectionSuccess() {
@@ -426,19 +439,23 @@ public class MainActivity extends AppCompatActivity
                     allDevices.addAll(MySettings.getAllDevices());
                 }
                 //start MQTT, when a control is sent from the DeviceAdapter or anywhere else, it will be synced here when the MQTT responds
-                if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
-                    String clientId = MqttClient.generateClientId();
-                    initMqttClient(mInstance, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+                if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
+                    //don't start MQTT
                 }else{
-                    Utils.log(TAG, "MQTT is already connected", true);
-                    checkingCellularConnection = false;
+                    if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
+                        String clientId = MqttClient.generateClientId();
+                        initMqttClient(mInstance, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+                    }else{
+                        Utils.log(TAG, "MQTT is already connected", true);
+                        checkingCellularConnection = false;
+                    }
                 }
             }
 
             @Override
             public void onConnectionFail(String errorMsg) {
                 MySettings.setInternetConnectivityState(false);
-                checkWifiConnection();
+                //checkWifiConnection();
                 checkingCellularConnection = false;
             }
         }).execute();
@@ -576,6 +593,7 @@ public class MainActivity extends AppCompatActivity
             Utils.log(TAG, "onStart calling checkCellularConnection", true);
             checkCellularConnection();
         }
+        checkWifiConnection();
     }
 
     @Override

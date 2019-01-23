@@ -142,7 +142,7 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                     Utils.toggleLine(device, item.getPosition(), Line.LINE_STATE_OFF, mode, new Utils.LineToggler.ToggleCallback() {
                         @Override
                         public void onToggleSuccess() {
-                            //item.setPowerState(Line.LINE_STATE_OFF);
+                            item.setPowerState(Line.LINE_STATE_OFF);
                         }
                         @Override
                         public void onToggleFail() {
@@ -155,7 +155,7 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                     Utils.toggleLine(device, item.getPosition(), Line.LINE_STATE_ON, mode, new Utils.LineToggler.ToggleCallback() {
                         @Override
                         public void onToggleSuccess() {
-                            //item.setPowerState(Line.LINE_STATE_ON);
+                            item.setPowerState(Line.LINE_STATE_ON);
                         }
                         @Override
                         public void onToggleFail() {

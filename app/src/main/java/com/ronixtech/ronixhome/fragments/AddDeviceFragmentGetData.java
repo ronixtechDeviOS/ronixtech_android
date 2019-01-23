@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -639,7 +640,16 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         //set what would happen when positive button is clicked
-                                        MySettings.removeDevice(MySettings.getDeviceByChipID2(mChipID));
+                                        Device dbDevice = MySettings.getDeviceByChipID2(mChipID);
+                                        if(dbDevice != null){
+                                            MySettings.removeDevice(dbDevice);
+                                            MainActivity.getInstance().removeDevice(dbDevice);
+                                        }
+                                        Device memoryDevice = DevicesInMemory.getDeviceByChipID(mChipID);
+                                        if(memoryDevice != null){
+                                            DevicesInMemory.removeDevice(memoryDevice);
+                                            MainActivity.getInstance().removeDevice(memoryDevice);
+                                        }
                                         Device device = MySettings.getTempDevice();
                                         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
                                             fragment.goToPIRConfigurationFragment();

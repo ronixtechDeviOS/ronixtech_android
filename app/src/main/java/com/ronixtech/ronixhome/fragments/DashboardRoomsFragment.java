@@ -74,7 +74,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     private static final int LIST_VIEW = 0;
     private static final int GRID_VIEW = 2;
-    private static int lastSelectedView = LIST_VIEW;
+    private static int lastSelectedView = GRID_VIEW;
 
     GridView roomsGridView;
     RoomsGridAdapter roomsGridAdapter;
@@ -446,12 +446,23 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
         loadDevicesFromDatabase();
 
+        checkWifiConnection();
         checkCellularConnection();
 
         return view;
     }
 
     private void checkWifiConnection(){
+        List<Place> places = MySettings.getAllPlaces();
+        for (Place place : places) {
+            place.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
+        }
+        if(MySettings.getCurrentPlace() != null ){
+            Place currentPlace = MySettings.getCurrentPlace();
+            currentPlace.setMode(Place.PLACE_MODE_REMOTE);
+            MySettings.setCurrentPlace(currentPlace);
+        }
         WifiManager mWifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(mWifiManager != null){
             //Wifi is available
@@ -519,7 +530,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     }
 
     private void checkCellularConnection(){
-        List<Place> allPlaces = MySettings.getAllPlaces();
+        /*List<Place> allPlaces = MySettings.getAllPlaces();
         for (Place place : allPlaces) {
             place.setMode(Place.PLACE_MODE_REMOTE);
             MySettings.updatePlaceMode(place, Place.PLACE_MODE_REMOTE);
@@ -528,7 +539,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             Place currentPlace = MySettings.getCurrentPlace();
             currentPlace.setMode(Place.PLACE_MODE_REMOTE);
             MySettings.setCurrentPlace(currentPlace);
-        }
+        }*/
         new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
             @Override
             public void onConnectionSuccess() {
@@ -538,7 +549,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             @Override
             public void onConnectionFail(String errorMsg) {
                 MySettings.setInternetConnectivityState(false);
-                checkWifiConnection();
+                //checkWifiConnection();
             }
         }).execute();
     }
@@ -606,7 +617,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             //roomsGridViewLongPressHint.setVisibility(View.VISIBLE);
             roomsGridViewLongPressHint.setVisibility(View.GONE);
 
-            roomsHeaderLayout.setVisibility(View.VISIBLE);
+            //roomsHeaderLayout.setVisibility(View.VISIBLE);
+            roomsHeaderLayout.setVisibility(View.GONE);
             if(lastSelectedView == GRID_VIEW){
                 roomsGridView.setVisibility(View.VISIBLE);
                 roomsListView.setVisibility(View.INVISIBLE);
@@ -723,19 +735,35 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     }
 
     public void updateUI(){
-        /*if(isResumed) {
-            if (place != null) {
-                if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
-                    MainActivity.setActionBarTitle(room.getName() + " - " + "Local", getResources().getColor(R.color.whiteColor));
-                } else if (MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE) {
-                    MainActivity.setActionBarTitle(room.getName() + " - " + "Remote", getResources().getColor(R.color.whiteColor));
+        if(isResumed) {
+            if(place != null){
+                if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
+                    if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                        MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                    }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                        MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                    }
+                }else{
+                    if(floor != null){
+                        if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                            MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                        }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                            MainActivity.setActionBarTitle(place.getName() + " - " + floor.getName() + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                        }
+                    }else{
+                        if(place.getMode() == Place.PLACE_MODE_LOCAL){
+                            MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms) + " - " + Utils.getString(getActivity(), R.string.device_mqtt_unreachable), getResources().getColor(R.color.whiteColor));
+                        }else if(place.getMode() == Place.PLACE_MODE_REMOTE){
+                            MainActivity.setActionBarTitle(place.getName() + " - " + Utils.getString(getActivity(), R.string.all_rooms) + " - " + Utils.getString(getActivity(), R.string.device_mqtt_reachable), getResources().getColor(R.color.whiteColor));
+                        }
+                    }
                 }
-            } else {
+            }else{
                 MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
             }
 
-            roomsDashboardListAdapter = new RoomsDashboardListAdapter(getActivity(), rooms, getFragmentManager(), MySettings.getCurrentPlace().getMode());
-            devicesListView.setAdapter(deviceAdapter);
+            /*roomsDashboardListAdapter = new RoomsDashboardListAdapter(getActivity(), rooms, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+            roomsListView.setAdapter(roomsDashboardListAdapter);
 
             loadDevicesFromMemory();
 
@@ -743,11 +771,11 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 //startTimer
                 Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
                 startTimer();
-                *//*if(devices != null) {
+                if(devices != null) {
                     for (Device device : devices) {
                         device.setDeviceMQTTReachable(false);
                     }
-                }*//*
+                }
             }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
                 //stopTimer
                 stopTimer();
@@ -756,8 +784,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     MainActivity.getInstance().refreshMqttClient();
                 }
-            }
-        }*/
+            }*/
+        }
     }
 
     private void getDeviceInfo(Device device){
@@ -856,6 +884,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
             setLayoutVisibility();
 
+            checkWifiConnection();
             checkCellularConnection();
         }
     }

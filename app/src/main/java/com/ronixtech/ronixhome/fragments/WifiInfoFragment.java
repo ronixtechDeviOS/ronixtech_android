@@ -305,15 +305,23 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                 if(callback != null) {
                     callback.onNetworkAdded(wifiNetwork);
                 }
-                getFragmentManager().popBackStack();
+                if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                    if(getFragmentManager() != null){
+                        getFragmentManager().popBackStack();
+                    }
+                }
             }else if(source == Constants.SOURCE_NEW_DEVICE){
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
-                fragmentTransaction.commit();
+                if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                    if(getFragmentManager() != null){
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                        fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                        fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                        fragmentTransaction.commit();
+                    }
+                }
             }else if(source == Constants.SOURCE_NEW_PLACE){
                 if(callback != null) {
                     Utils.log(TAG, "WifiInfoFragment onNetworkSelected CALLBACK IS NOT NULL", true);
@@ -321,16 +329,24 @@ public class WifiInfoFragment extends Fragment implements WifiListFragment.OnNet
                 }else{
                     Utils.log(TAG, "WifiInfoFragment onNetworkSelected CALLBACK IS NULL", true);
                 }
-                getFragmentManager().popBackStack();
+                if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                    if(getFragmentManager() != null){
+                        getFragmentManager().popBackStack();
+                    }
+                }
             }
         }else{
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
-            DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
-            fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentTransaction.commitAllowingStateLoss();
+            if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                if(getFragmentManager() != null){
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    fragmentTransaction.commitAllowingStateLoss();
+                }
+            }
         }
     }
 

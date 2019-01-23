@@ -323,7 +323,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             Utils.toggleLine(item, 0, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
                                 public void onToggleSuccess() {
-
+                                    item.getLines().get(0).setPowerState(Line.LINE_STATE_ON);
                                 }
                                 @Override
                                 public void onToggleFail() {
@@ -340,7 +340,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             Utils.toggleLine(item, 0, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
                                 public void onToggleSuccess() {
-
+                                    item.getLines().get(0).setPowerState(Line.LINE_STATE_OFF);
                                 }
                                 @Override
                                 public void onToggleFail() {
@@ -399,7 +399,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             Utils.toggleLine(item, 1, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
                                 public void onToggleSuccess() {
-
+                                    item.getLines().get(1).setPowerState(Line.LINE_STATE_ON);
                                 }
                                 @Override
                                 public void onToggleFail() {
@@ -416,7 +416,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             Utils.toggleLine(item, 1, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
                                 public void onToggleSuccess() {
-
+                                    item.getLines().get(1).setPowerState(Line.LINE_STATE_OFF);
                                 }
                                 @Override
                                 public void onToggleFail() {
@@ -477,7 +477,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             Utils.toggleLine(item, 2, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
                                 public void onToggleSuccess() {
-
+                                    item.getLines().get(2).setPowerState(Line.LINE_STATE_ON);
                                 }
                                 @Override
                                 public void onToggleFail() {
@@ -494,7 +494,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             Utils.toggleLine(item, 2, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
                                 public void onToggleSuccess() {
-
+                                    item.getLines().get(2).setPowerState(Line.LINE_STATE_OFF);
                                 }
                                 @Override
                                 public void onToggleFail() {

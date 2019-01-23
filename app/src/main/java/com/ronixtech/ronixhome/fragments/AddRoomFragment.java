@@ -341,9 +341,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                 }
             }
 
-            if(roomNameEditText.getText().toString().length() < 1){
-                roomNameEditText.setText(selectedRoomType.getName());
-            }
+            roomNameEditText.setText(selectedRoomType.getName());
 
             if(validateInputs()){
                 Utils.setButtonEnabled(continueButton, true);

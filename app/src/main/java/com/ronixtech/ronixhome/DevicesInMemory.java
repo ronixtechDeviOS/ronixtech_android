@@ -69,7 +69,7 @@ public class DevicesInMemory {
     public static Device getDeviceByChipID(String chipID){
         if(devices != null && devices.size() >= 1){
             for (Device device:devices) {
-                if(device.getChipID().equals(chipID)){
+                if(device.getChipID().equalsIgnoreCase(chipID)){
                     return device;
                 }
             }

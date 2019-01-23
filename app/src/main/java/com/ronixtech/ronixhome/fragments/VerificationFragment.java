@@ -38,7 +38,7 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
     private OnFragmentInteractionListener mListener;
 
     TextView verificationMessageTextView;
-    Button resendEmailButton, cancelButton;
+    Button resendEmailButton, cancelButton, wrongEmaiButton;
 
     FirebaseAuth mAuth;
 
@@ -73,6 +73,7 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
         verificationMessageTextView = view.findViewById(R.id.verification_message_hint_textview);
         resendEmailButton = view.findViewById(R.id.resend_email_button);
         cancelButton = view.findViewById(R.id.cancel_button);
+        wrongEmaiButton = view.findViewById(R.id.wrong_email_button);
 
         if(MySettings.getActiveUser() != null) {
             verificationMessageTextView.setText(Utils.getStringExtraText(getActivity(), R.string.verification_message_hint, MySettings.getActiveUser().getEmail()));
@@ -94,6 +95,15 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
                 if(MySettings.getActiveUser() != null) {
                     sendVerificationEmail();
                 }
+            }
+        });
+
+        wrongEmaiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(loginIntent);
+                getActivity().finish();
             }
         });
 

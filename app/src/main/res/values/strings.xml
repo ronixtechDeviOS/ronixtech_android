@@ -15,6 +15,7 @@
     <string name="verification_message_hint">A verification email has been sent to %s. Please check your inbox and follow the instructions in the email to verify your account</string>
     <string name="verification_message_resend">If you haven\'nt received a verification email, please click on \'Resend Email\' and re-check your inbox.</string>
     <string name="verification_resend">Resend Email</string>
+    <string name="verification_wrong_mail">Use another email</string>
 
     <string name="name">Name</string>
     <string name="first_name">First Name</string>

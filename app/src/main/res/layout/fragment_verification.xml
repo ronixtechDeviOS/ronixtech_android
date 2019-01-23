@@ -93,6 +93,22 @@
                 android:textAllCaps="false"
                 android:textColor="@color/blueColor"
                 android:text="@string/cancel"/>
+
+            <Button
+                android:id="@+id/wrong_email_button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/cancel_button"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/button_background_round_border_blue"
+                android:textAllCaps="false"
+                android:textColor="@color/blueColor"
+                android:text="@string/verification_wrong_mail"/>
         </RelativeLayout>
 
     </FrameLayout>
