@@ -1436,6 +1436,8 @@ public class Utils {
                         line.setDimmingVvalue(value);
                         if(line.getDimmingVvalue() != 0){
                             line.setPowerState(Line.LINE_STATE_ON);
+                        }else{
+                            line.setPowerState(Line.LINE_STATE_OFF);
                         }
 
                         lines.remove(line);
