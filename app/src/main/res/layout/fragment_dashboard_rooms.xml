@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_1">
+        android:background="@drawable/background_latest">
 
         <RelativeLayout
             android:id="@+id/rooms_header_layout"
@@ -71,10 +71,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/rooms_header_layout"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
             android:paddingBottom="0dp"
             android:scrollbars="none"
+            android:dividerHeight="6dp"
+            android:divider="@color/transparentColor"
             tools:listitem="@layout/list_item_room_dashboard"/>
 
         <TextView

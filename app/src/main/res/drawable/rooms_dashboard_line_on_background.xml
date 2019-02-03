@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape
+            android:shape="ring"
+            android:innerRadius="0dp"
+            android:thicknessRatio="2"
+            android:useLevel="false">
+            <stroke
+                android:width="8dp"
+                android:color="@color/greenColor"/>
+        </shape>
+    </item>
+
+    <item
+        android:left="1dp"
+        android:right="1dp"
+        android:top="1dp"
+        android:bottom="1dp"
+        android:drawable="@drawable/background_blue">
+    </item>
+
+</layer-list>

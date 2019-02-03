@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.DhcpInfo;
@@ -14,6 +15,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -29,7 +31,11 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
@@ -65,8 +71,10 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -158,6 +166,25 @@ public class Utils {
         ViewGroup.LayoutParams params = gridView.getLayoutParams();
         params.width = totalWidth;
         gridView.setLayoutParams(params);
+    }
+
+    public static Rect locateView(View v) {
+        int[] loc_int = new int[2];
+        if (v == null) return null;
+        try
+        {
+            v.getLocationOnScreen(loc_int);
+        } catch (NullPointerException npe)
+        {
+            //Happens when the view doesn't exist on screen anymore.
+            return null;
+        }
+        Rect location = new Rect();
+        location.left = loc_int[0];
+        location.top = loc_int[1];
+        location.right = location.left + v.getWidth();
+        location.bottom = location.top + v.getHeight();
+        return location;
     }
 
     public static String getDateString(long timestamp){
@@ -513,7 +540,7 @@ public class Utils {
     public static void generateLineTypes(){
         List<Type> lineTypes = new ArrayList<>();
 
-        Type type = new Type(Constants.TYPE_LINE, "Air Conditioner", "", R.drawable.line_type_air_conditioner, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_air_conditioner), "");
+        /*Type type = new Type(Constants.TYPE_LINE, "Air Conditioner", "", R.drawable.line_type_air_conditioner, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_air_conditioner), "");
         lineTypes.add(type);
         type = new Type(Constants.TYPE_LINE, "Appliance Plug", "", R.drawable.line_type_appliance_plug, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_appliance_plug), "");
         lineTypes.add(type);
@@ -572,6 +599,13 @@ public class Utils {
         type = new Type(Constants.TYPE_LINE, "Refrigerator", "", R.drawable.line_type_refrigerator, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_refrigerator), "");
         lineTypes.add(type);
         type = new Type(Constants.TYPE_LINE, "Window", "", R.drawable.line_type_window, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_window), "");
+        lineTypes.add(type);*/
+
+        Type type = new Type(Constants.TYPE_LINE, "Lamp", "", R.drawable.line_type_lamp, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_lamp), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Ceiling Light", "", R.drawable.line_type_cieling_light, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_cieling_light), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Table Light", "", R.drawable.line_type_table_light, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_table_light), "");
         lineTypes.add(type);
 
         for (Type ty: lineTypes) {
@@ -3339,6 +3373,72 @@ public class Utils {
         }
     }
 
+    public static void getDeviceInfo(Device device){
+        Utils.log(TAG, "Getting device info...", true);
+        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
+                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
+                if(currentFirmwareVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                    Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
+                    statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }else{
+                    Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
+                    deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }else{
+                Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
+                statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            Utils.ModeGetter modeGetter = new Utils.ModeGetter(device);
+            modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
+            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
+            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        /*//volley request to device to get its status
+        String url = "http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS;
+
+        Log.d(TAG,  "getDeviceStatus URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "getDeviceStatus response: " + response);
+
+                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
+                DataParser dataParser = new DataParser(device, response);
+                dataParser.execute();
+
+                //device.setErrorCount(0);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+
+                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
+
+                *//*MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
+                    MySettings.updateDeviceIP(device, "");
+                    MySettings.updateDeviceErrorCount(device, 0);
+                    MySettings.scanNetwork();
+                }*//*
+            }
+        });
+        request.setTag("getStatusRequest");
+        request.setShouldCache(false);
+        request.setRetryPolicy(new DefaultRetryPolicy(Device.REFRESH_TIMEOUT, Device.REFRESH_NUMBER_OF_RETRIES, 0f));
+        HttpConnectorDeviceStatus.getInstance(MainActivity.getInstance()).addToRequestQueue(request);*/
+    }
+
     public static class DeviceSyncer extends AsyncTask<Void, Void, Void>{
         private final String TAG = DeviceSyncer.class.getSimpleName();
 
@@ -3406,91 +3506,93 @@ public class Utils {
 
                 JSONObject jObject = new JSONObject();
                 Device localDevice = DevicesInMemory.getLocalDevice(device);
-                if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                    for (Line line : device.getLines()) {
-                        switch (line.getPosition()){
-                            case 0:
-                                if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
-                                    //jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
-                                    if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
-                                        jObject.put("L_0_DIM", ":");
-                                    }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
-                                        jObject.put("L_0_DIM", "0");
+                if(localDevice != null){
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                        for (Line line : device.getLines()) {
+                            switch (line.getPosition()){
+                                case 0:
+                                    if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
+                                        //jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
+                                        if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_ON){
+                                            jObject.put("L_0_DIM", ":");
+                                        }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
+                                            jObject.put("L_0_DIM", "0");
+                                        }
                                     }
-                                }
-                                if(line.getDimmingState() != localDevice.getLines().get(0).getDimmingState()) {
-                                    jObject.put("L_0_D_S", "" + localDevice.getLines().get(0).getDimmingState());
-                                }
-                                if(line.getDimmingVvalue() != localDevice.getLines().get(0).getDimmingVvalue()){
-                                    if(localDevice.getLines().get(0).getDimmingVvalue() == 10){
-                                        jObject.put("L_0_DIM", ":");
-                                    }else{
-                                        jObject.put("L_0_DIM", ""+localDevice.getLines().get(0).getDimmingVvalue());
+                                    if(line.getDimmingState() != localDevice.getLines().get(0).getDimmingState()) {
+                                        jObject.put("L_0_D_S", "" + localDevice.getLines().get(0).getDimmingState());
                                     }
-                                }
-                                break;
-                            case 1:
-                                if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
-                                    //jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
-                                    if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
-                                        jObject.put("L_1_DIM", ":");
-                                    }else if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
-                                        jObject.put("L_1_DIM", "0");
+                                    if(line.getDimmingVvalue() != localDevice.getLines().get(0).getDimmingVvalue()){
+                                        if(localDevice.getLines().get(0).getDimmingVvalue() == 10){
+                                            jObject.put("L_0_DIM", ":");
+                                        }else{
+                                            jObject.put("L_0_DIM", ""+localDevice.getLines().get(0).getDimmingVvalue());
+                                        }
                                     }
-                                }
-                                if(line.getDimmingState() != localDevice.getLines().get(1).getDimmingState()) {
-                                    jObject.put("L_1_D_S", "" + localDevice.getLines().get(1).getDimmingState());
-                                }
-                                if(line.getDimmingVvalue() != localDevice.getLines().get(1).getDimmingVvalue()){
-                                    if(localDevice.getLines().get(1).getDimmingVvalue() == 10){
-                                        jObject.put("L_1_DIM", ":");
-                                    }else{
-                                        jObject.put("L_1_DIM", ""+localDevice.getLines().get(1).getDimmingVvalue());
+                                    break;
+                                case 1:
+                                    if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
+                                        //jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
+                                        if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_ON){
+                                            jObject.put("L_1_DIM", ":");
+                                        }else if(localDevice.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF){
+                                            jObject.put("L_1_DIM", "0");
+                                        }
                                     }
-                                }
-                                break;
-                            case 2:
-                                if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
-                                    //jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
-                                    if(localDevice.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
-                                        jObject.put("L_2_DIM", ":");
-                                    }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
-                                        jObject.put("L_2_DIM", "0");
+                                    if(line.getDimmingState() != localDevice.getLines().get(1).getDimmingState()) {
+                                        jObject.put("L_1_D_S", "" + localDevice.getLines().get(1).getDimmingState());
                                     }
-                                }
-                                if(line.getDimmingState() != localDevice.getLines().get(2).getDimmingState()) {
-                                    jObject.put("L_2_D_S", "" + localDevice.getLines().get(2).getDimmingState());
-                                }
-                                if(line.getDimmingVvalue() != localDevice.getLines().get(2).getDimmingVvalue()){
-                                    if(localDevice.getLines().get(2).getDimmingVvalue() == 10){
-                                        jObject.put("L_2_DIM", ":");
-                                    }else{
-                                        jObject.put("L_2_DIM", ""+localDevice.getLines().get(2).getDimmingVvalue());
+                                    if(line.getDimmingVvalue() != localDevice.getLines().get(1).getDimmingVvalue()){
+                                        if(localDevice.getLines().get(1).getDimmingVvalue() == 10){
+                                            jObject.put("L_1_DIM", ":");
+                                        }else{
+                                            jObject.put("L_1_DIM", ""+localDevice.getLines().get(1).getDimmingVvalue());
+                                        }
                                     }
-                                }
-                                break;
+                                    break;
+                                case 2:
+                                    if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
+                                        //jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
+                                        if(localDevice.getLines().get(2).getPowerState() == Line.LINE_STATE_ON){
+                                            jObject.put("L_2_DIM", ":");
+                                        }else if(localDevice.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF){
+                                            jObject.put("L_2_DIM", "0");
+                                        }
+                                    }
+                                    if(line.getDimmingState() != localDevice.getLines().get(2).getDimmingState()) {
+                                        jObject.put("L_2_D_S", "" + localDevice.getLines().get(2).getDimmingState());
+                                    }
+                                    if(line.getDimmingVvalue() != localDevice.getLines().get(2).getDimmingVvalue()){
+                                        if(localDevice.getLines().get(2).getDimmingVvalue() == 10){
+                                            jObject.put("L_2_DIM", ":");
+                                        }else{
+                                            jObject.put("L_2_DIM", ""+localDevice.getLines().get(2).getDimmingVvalue());
+                                        }
+                                    }
+                                    break;
+                            }
                         }
-                    }
-                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                    for (Line line : device.getLines()) {
-                        switch (line.getPosition()){
-                            case 0:
-                                if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
-                                    jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
-                                }
-                                break;
-                            case 1:
-                                if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
-                                    jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
-                                }
-                                break;
-                            case 2:
-                                if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
-                                    jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
-                                }
-                                break;
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        for (Line line : device.getLines()) {
+                            switch (line.getPosition()){
+                                case 0:
+                                    if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
+                                        jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
+                                    }
+                                    break;
+                                case 1:
+                                    if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
+                                        jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
+                                    }
+                                    break;
+                                case 2:
+                                    if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
+                                        jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -3736,7 +3838,6 @@ public class Utils {
                                 }
 
                                 List<Line> lines = device.getLines();
-                                List<Line> localLines = localDevice.getLines();
                                 for (Line line:lines) {
                                     if(line.getPosition() == 0){
                                         line.setPowerState(line0PowerState);
@@ -3752,19 +3853,22 @@ public class Utils {
                                         line.setDimmingVvalue(line2DimmingValue);
                                     }
                                 }
-                                for (Line line:localLines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                        line.setDimmingState(line0DimmingState);
-                                        line.setDimmingVvalue(line0DimmingValue);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                        line.setDimmingState(line1DimmingState);
-                                        line.setDimmingVvalue(line1DimmingValue);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                        line.setDimmingState(line2DimmingState);
-                                        line.setDimmingVvalue(line2DimmingValue);
+                                if(localDevice != null){
+                                    List<Line> localLines = localDevice.getLines();
+                                    for (Line line:localLines) {
+                                        if(line.getPosition() == 0){
+                                            line.setPowerState(line0PowerState);
+                                            line.setDimmingState(line0DimmingState);
+                                            line.setDimmingVvalue(line0DimmingValue);
+                                        }else if(line.getPosition() == 1){
+                                            line.setPowerState(line1PowerState);
+                                            line.setDimmingState(line1DimmingState);
+                                            line.setDimmingVvalue(line1DimmingValue);
+                                        }else if(line.getPosition() == 2){
+                                            line.setPowerState(line2PowerState);
+                                            line.setDimmingState(line2DimmingState);
+                                            line.setDimmingVvalue(line2DimmingValue);
+                                        }
                                     }
                                 }
 
@@ -3805,7 +3909,9 @@ public class Utils {
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                     device.setErrorCount(0);
                                     DevicesInMemory.updateDevice(device);
-                                    DevicesInMemory.updateLocalDevice(localDevice);
+                                    if(localDevice != null) {
+                                        DevicesInMemory.updateLocalDevice(localDevice);
+                                    }
                                 }
                             }else{
                                 device.setFirmwareUpdateAvailable(true);
@@ -3860,7 +3966,6 @@ public class Utils {
                                 }
 
                                 List<Line> lines = device.getLines();
-                                List<Line> localLines = localDevice.getLines();
                                 for (Line line:lines) {
                                     if(line.getPosition() == 0){
                                         line.setPowerState(line0PowerState);
@@ -3870,13 +3975,16 @@ public class Utils {
                                         line.setPowerState(line2PowerState);
                                     }
                                 }
-                                for (Line line:localLines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
+                                if(localDevice != null){
+                                    List<Line> localLines = localDevice.getLines();
+                                    for (Line line:localLines) {
+                                        if(line.getPosition() == 0){
+                                            line.setPowerState(line0PowerState);
+                                        }else if(line.getPosition() == 1){
+                                            line.setPowerState(line1PowerState);
+                                        }else if(line.getPosition() == 2){
+                                            line.setPowerState(line2PowerState);
+                                        }
                                     }
                                 }
 
@@ -3917,7 +4025,9 @@ public class Utils {
                                     device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
                                     device.setErrorCount(0);
                                     DevicesInMemory.updateDevice(device);
-                                    DevicesInMemory.updateLocalDevice(localDevice);
+                                    if(localDevice != null) {
+                                        DevicesInMemory.updateLocalDevice(localDevice);
+                                    }
                                 }
                                 //MySettings.addDevice(device);
                             }else {
@@ -4591,5 +4701,79 @@ public class Utils {
 
             return null;
         }
+    }
+
+    public static void addPlace(Place place){
+        //add place to cloud firestore
+
+        //upload place to firebase-db/email/places/place_id
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", place.getId());
+        map.put("name", place.getName());
+        map.put("wifi_networks", place.getWifiNetworks());
+        //TODO put rest of info
+        map.put("db_version", AppDatabase.version);
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("places").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utils.showToast(MyApp.getInstance(), Utils.getString(MyApp.getInstance(), R.string.server_connection_error), true);
+            }
+        });
+    }
+
+    public static void addRoom(long placeID, Room room){
+        //add room to place in cloud firestore
+
+        //upload room to firebase-db/email/places/place_id/rooms/room_id
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", room.getId());
+        map.put("name", room.getName());
+        //TODO put rest of info
+        map.put("db_version", AppDatabase.version);
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("places").document(""+placeID).collection("rooms").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utils.showToast(MyApp.getInstance(), Utils.getString(MyApp.getInstance(), R.string.server_connection_error), true);
+            }
+        });
+    }
+
+    public static void addDevice(long placeID, long roomID, Device device){
+        //add device to room in cloud firestore
+
+        //upload device to firebase-db/email/places/place_id/rooms/room_id/devices/device_chip_id
+        // Access a Cloud Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", device.getId());
+        map.put("name", device.getName());
+        map.put("lines", device.getLines());
+        //TODO put rest of info
+        map.put("db_version", AppDatabase.version);
+        db.collection("users").document(MySettings.getActiveUser().getEmail()).collection("places").document(""+placeID).collection("rooms").document(""+roomID).collection("devices").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utils.showToast(MyApp.getInstance(), Utils.getString(MyApp.getInstance(), R.string.server_connection_error), true);
+            }
+        });
     }
 }

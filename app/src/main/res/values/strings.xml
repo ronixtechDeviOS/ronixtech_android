@@ -268,6 +268,7 @@
     <string name="line_dimming_hint">Tap here to toggle dimming</string>
     <string name="line_dimming_on">This device supports dimming</string>
     <string name="line_dimming_off">This device doesn\'nt support dimming</string>
+    <string name="line_dimming_disabled">Enable dimming first for this device</string>
 
     <string name="unit_name_edit">Pick a name for your RonixTech Smart Controller</string>
     <string name="edit_lines_title">Edit the devices of this controller</string>

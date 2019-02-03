@@ -457,7 +457,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
 
 
                                     //init device lines then insert it into DB
-                                    Type lineType = MySettings.getTypeByName("Fluorescent Lamp");
+                                    Type lineType = MySettings.getTypeByName("Lamp");
                                     int lineMode = Line.MODE_PRIMARY;
 
                                     //create the lines then device.setLines/line.setDeviceID then MySettings.addDevice()

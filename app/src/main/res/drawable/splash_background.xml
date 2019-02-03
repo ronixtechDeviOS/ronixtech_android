@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-
-
 
     <item android:drawable="@drawable/splash"
         android:bottom="16dp"
@@ -31,6 +29,14 @@
             android:pivotY="50%"
             android:repeatCount="infinite">
         </animated-rotate>
+    </item>
+
+</layer-list>-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@drawable/splash_latest"
+        android:tileMode="repeat">
     </item>
 
 </layer-list>

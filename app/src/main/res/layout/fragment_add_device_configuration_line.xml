@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.AddDeviceConfigurationLineFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -27,21 +27,28 @@
                 android:layout_marginTop="8dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/line_center"/>
-            <EditText
-                android:id="@+id/line_name_edittxt"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/line_name_edittxt_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:counterEnabled="true"
+                app:counterMaxLength="10"
                 android:layout_below="@id/line_gif_imageview"
-                android:layout_marginTop="8dp"
-                android:inputType="textCapWords"
-                android:imeOptions="actionDone"
-                android:textAlignment="center"
-                android:hint="LineName"/>
+                android:layout_marginTop="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/line_name_edittxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:imeOptions="actionDone"
+                    android:textAlignment="center"
+                    android:hint="LineName"/>
+            </android.support.design.widget.TextInputLayout>
             <RadioGroup
                 android:id="@+id/line_mode_radiogroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/line_name_edittxt"
+                android:layout_below="@id/line_name_edittxt_layout"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"

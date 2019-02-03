@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome;
 
 import com.ronixtech.ronixhome.entities.Device;
+import com.ronixtech.ronixhome.entities.Line;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,17 @@ public class DevicesInMemory {
         int index = devices.indexOf(device);
         if(index != -1 && index < devices.size()){
             devices.set(index, device);
+        }
+    }
+
+    public static void updateLine(Line line){
+        for (Device device:devices) {
+            if(device.getLines() != null && device.getLines().size() >= 1){
+                int index = device.getLines().indexOf(line);
+                if(index != -1 && index < device.getLines().size()){
+                    device.getLines().set(index, line);
+                }
+            }
         }
     }
 

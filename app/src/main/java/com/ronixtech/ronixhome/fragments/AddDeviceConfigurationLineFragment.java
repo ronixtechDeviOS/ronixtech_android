@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -53,7 +52,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
     private OnFragmentInteractionListener mListener;
 
     RelativeLayout lineLayout;
-    EditText lineNameEditText;
+    android.support.design.widget.TextInputEditText lineNameEditText;
     RadioGroup lineModeRadioGroup;
     RelativeLayout lineTypeSelectionLayout;
     RelativeLayout lineTypeLayout;
@@ -199,10 +198,10 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
 
         if(lineType == null) {
             if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                lineType = MySettings.getTypeByName("Appliance Plug");
+                lineType = MySettings.getTypeByName("Lamp");
                 lineModeRadioGroup.setVisibility(View.GONE);
             } else {
-                lineType = MySettings.getTypeByName("Fluorescent Lamp");
+                lineType = MySettings.getTypeByName("Lamp");
                 lineModeRadioGroup.setVisibility(View.VISIBLE);
             }
         }

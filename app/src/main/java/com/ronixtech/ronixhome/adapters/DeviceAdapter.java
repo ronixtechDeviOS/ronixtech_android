@@ -303,7 +303,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                         if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
                             //turn on this line
-                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                             tempViewHolder.firstLineSeekBar.setProgress(100);
                             Utils.toggleLine(item, 0, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
@@ -312,13 +312,13 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                                 @Override
                                 public void onToggleFail() {
-                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                                     tempViewHolder.firstLineSeekBar.setProgress(0);
                                 }
                             });
                         } else {
                             //turn off this line
-                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                             tempViewHolder.firstLineSeekBar.setProgress(0);
                             Utils.toggleLine(item, 0, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
@@ -327,7 +327,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                                 @Override
                                 public void onToggleFail() {
-                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                                     tempViewHolder.firstLineSeekBar.setProgress(100);
                                 }
                             });
@@ -352,7 +352,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                         if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
                             //turn on this line
-                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                             tempViewHolder.secondLineSeekBar.setProgress(100);
                             Utils.toggleLine(item, 1, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
@@ -361,13 +361,13 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                                 @Override
                                 public void onToggleFail() {
-                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                                     tempViewHolder.secondLineSeekBar.setProgress(0);
                                 }
                             });
                         } else {
                             //turn off this line
-                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                             tempViewHolder.secondLineSeekBar.setProgress(0);
                             Utils.toggleLine(item, 1, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
@@ -376,7 +376,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                                 @Override
                                 public void onToggleFail() {
-                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                                     tempViewHolder.secondLineSeekBar.setProgress(100);
                                 }
                             });
@@ -403,7 +403,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
                         if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
                             //turn on this line
-                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                             tempViewHolder.thirdLineSeekBar.setProgress(100);
                             Utils.toggleLine(item, 2, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
@@ -412,13 +412,13 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                                 @Override
                                 public void onToggleFail() {
-                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                                     tempViewHolder.thirdLineSeekBar.setProgress(0);
                                 }
                             });
                         } else {
                             //turn off this line
-                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                             tempViewHolder.thirdLineSeekBar.setProgress(0);
                             Utils.toggleLine(item, 2, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
                                 @Override
@@ -427,7 +427,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }
                                 @Override
                                 public void onToggleFail() {
-                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                                     tempViewHolder.thirdLineSeekBar.setProgress(100);
                                 }
                             });
@@ -1394,12 +1394,12 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                     if(Utils.difference(line.getDimmingVvalue() * 10, vHolder.firstLineSeekBar.getProgress()) > 10){
                         vHolder.firstLineSeekBar.setProgress(line.getDimmingVvalue() * 10);
                     }
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                     vHolder.firstLineSeekBar.setProgress(0);
                 }
                 if(line.getDimmingState() == Line.DIMMING_STATE_ON){
@@ -1424,12 +1424,12 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                     if(Utils.difference(line.getDimmingVvalue() * 10, vHolder.secondLineSeekBar.getProgress()) > 10){
                         vHolder.secondLineSeekBar.setProgress(line.getDimmingVvalue() * 10);
                     }
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                     vHolder.secondLineSeekBar.setProgress(0);
                 }
                 if(line.getDimmingState() == Line.DIMMING_STATE_ON){
@@ -1454,12 +1454,12 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                     if(Utils.difference(line.getDimmingVvalue() * 10, vHolder.thirdLineSeekBar.getProgress()) > 10){
                         vHolder.thirdLineSeekBar.setProgress(line.getDimmingVvalue() * 10);
                     }
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                     vHolder.thirdLineSeekBar.setProgress(0);
                 }
                 if(line.getDimmingState() == Line.DIMMING_STATE_ON){
@@ -1496,9 +1496,9 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                    vHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                 }
                 vHolder.firstLineSeekBar.setVisibility(View.GONE);
             }else if(line.getPosition() == 1){
@@ -1516,9 +1516,9 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                    vHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                 }
                 vHolder.secondLineSeekBar.setVisibility(View.GONE);
             }else if(line.getPosition() == 2){
@@ -1536,9 +1536,9 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 }
                 if(line.getPowerState() == Line.LINE_STATE_ON){
-                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                 }else if(line.getPowerState() == Line.LINE_STATE_OFF){
-                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+                    vHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                 }
                 vHolder.thirdLineSeekBar.setVisibility(View.GONE);
             }
@@ -1655,9 +1655,9 @@ public class DeviceAdapter extends ArrayAdapter {
         }*/
         vHolder.pirTypeImageView.setImageResource(R.drawable.motion_sensor_icon);
         if(item.getPIRData().getState() == Line.LINE_STATE_ON){
-            vHolder.pirTypeImageView.setBackgroundResource(R.drawable.circle_indicator_green);
+            vHolder.pirTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
         }else if(item.getPIRData().getState() == Line.LINE_STATE_OFF){
-            vHolder.pirTypeImageView.setBackgroundResource(R.drawable.circle_indicator_gray);
+            vHolder.pirTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
         }
 
         /*if(line.getPowerState() == Line.LINE_STATE_ON){

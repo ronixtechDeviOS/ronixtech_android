@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/line_layout"
+<LinearLayout android:id="@+id/line_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="52dp"
-    android:layout_height="52dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="56dp"
+    android:layout_height="56dp"
+    android:padding="4dp"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/line_type_imageview"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:scaleType="centerCrop"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginTop="4dp" />
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:padding="6dp"
+        android:background="@drawable/rooms_dashboard_line_off_background"/>
 
-    <TextView
+    <!--<TextView
         android:id="@+id/line_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,6 +30,19 @@
         android:singleLine="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:textColor="@color/whiteColor"/>
+        android:textColor="@color/whiteColor"
+        android:textSize="10sp"/>-->
+
+    <TextView
+        android:id="@+id/line_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:singleLine="true"
+        android:textColor="@color/whiteColor"
+        android:textSize="12sp"
+        android:text="LineName"/>
 
 </LinearLayout>

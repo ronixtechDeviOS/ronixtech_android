@@ -214,7 +214,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                 }*/
             vHolder.roomDevicesLayout.setVisibility(View.VISIBLE);
 
-            RoomsDashboardLinesGridAdapter adapter = new RoomsDashboardLinesGridAdapter(activity, roomLines);
+            RoomsDashboardLinesGridAdapter adapter = new RoomsDashboardLinesGridAdapter(activity, roomLines, fragmentManager);
             vHolder.roomLinesGridView.setAdapter(adapter);
             vHolder.roomLinesGridView.setNumColumns(adapter.getCount());
 
@@ -244,7 +244,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
 
         final ViewHolder tempViewHolder = vHolder;
 
-        int scrollingDistance = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56 /*52 for item + 4 for margin*/, activity.getResources().getDisplayMetrics());
+        int scrollingDistance = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56 /*56 for item + 0 for margin*/, activity.getResources().getDisplayMetrics());
         vHolder.scrollNextImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

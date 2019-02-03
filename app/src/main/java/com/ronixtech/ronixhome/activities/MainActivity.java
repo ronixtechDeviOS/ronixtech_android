@@ -441,6 +441,7 @@ public class MainActivity extends AppCompatActivity
                 //start MQTT, when a control is sent from the DeviceAdapter or anywhere else, it will be synced here when the MQTT responds
                 if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
                     //don't start MQTT
+                    checkingCellularConnection = false;
                 }else{
                     if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
                         String clientId = MqttClient.generateClientId();
@@ -1214,11 +1215,46 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.commit();
         } else if(id == R.id.nav_refresh_devices){
             Utils.showToast(mInstance, "Refreshing devices", true);
-            for (Device device: MySettings.getAllDevices()) {
-                device.setIpAddress("");
-                MySettings.updateDeviceIP(device, "");
+            if(allDevices != null){
+                for (Device dev : allDevices) {
+                    if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
+                        Utils.getDeviceInfo(dev);
+                    }else{
+                        MySettings.scanNetwork();
+                    }
+                }
+
+                new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
+                    @Override
+                    public void onConnectionSuccess() {
+                        MySettings.setInternetConnectivityState(true);
+                        //subscribe on MQTT for ALL units
+                        if(mqttAndroidClient != null && mqttAndroidClient.isConnected()){
+                            try {
+                                for (Device device : allDevices) {
+                                    subscribe(mqttAndroidClient, device, 1);
+                                }
+                            }catch (MqttException e){
+                                Utils.log(TAG, "Exception " + e.getMessage(), true);
+                                for (Device device : allDevices) {
+                                    device.setDeviceMQTTReachable(false);
+                                    MySettings.addDevice(device);
+                                    DevicesInMemory.updateDevice(device);
+                                }
+                                MainActivity.getInstance().refreshDevicesListFromMemory();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onConnectionFail(String errorMsg) {
+                        MySettings.setInternetConnectivityState(false);
+                        Utils.showToast(mInstance, Utils.getString(mInstance, R.string.no_internet_connection), true);
+                    }
+                }).execute();
+            }else{
+                //no devices available to refresh
             }
-            MySettings.scanNetwork();
         } else if (id == R.id.nav_places) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

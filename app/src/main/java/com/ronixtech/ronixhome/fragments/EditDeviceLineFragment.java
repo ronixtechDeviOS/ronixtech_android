@@ -18,7 +18,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -71,7 +71,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
     private OnFragmentInteractionListener mListener;
 
     RelativeLayout lineLayout;
-    EditText lineNameEditText;
+    android.support.design.widget.TextInputEditText lineNameEditText;
     RadioGroup lineModeRadioGroup;
     RelativeLayout lineTypeSelectionLayout;
     RelativeLayout lineTypeLayout;
@@ -215,6 +215,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 currentLine = line;
             }
         }
+
         if(currentLine != null && currentLine.getPosition() != -1){
             lineNameEditText.setText(currentLine.getName());
 
@@ -233,72 +234,70 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         lineTypeImageView.setImageResource(lineType.getImageResourceID());
                     }
                 }
+            }
 
+            if(currentLine.getMode() == Line.MODE_PRIMARY){
+                lineMode = Line.MODE_PRIMARY;
+                lineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+                lineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+            }else if(currentLine.getMode() == Line.MODE_SECONDARY){
+                lineMode = Line.MODE_SECONDARY;
+                lineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
+                lineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
+            }
 
-                if(currentLine.getMode() == Line.MODE_PRIMARY){
-                    lineMode = Line.MODE_PRIMARY;
-                    lineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
-                    lineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
-                }else if(currentLine.getMode() == Line.MODE_SECONDARY){
-                    lineMode = Line.MODE_SECONDARY;
-                    lineTypeLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.lightestGrayColor));
-                    lineSelectedLineLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.whiteColor));
-                }
+            if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
+                lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
+                lineDimmingCheckBox.setChecked(true);
+            }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
+                lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
+                lineDimmingCheckBox.setChecked(false);
+            }
 
-                if(currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
-                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
-                    lineDimmingCheckBox.setChecked(true);
-                }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
-                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
-                    lineDimmingCheckBox.setChecked(false);
-                }
-
-                if(currentLine.getMode() == Line.MODE_SECONDARY){
-                    String primaryDeviceChipID = currentLine.getPrimaryDeviceChipID();
-                    Device primaryDevice = MySettings.getDeviceByChipID2(primaryDeviceChipID);
-                    if(primaryDevice != null){
-                        int indexOfPrimaryLine = -1;
-                        for (Line line : primaryDevice.getLines()) {
-                            if(line.getPosition() == currentLine.getPrimaryLinePosition()){
-                                indexOfPrimaryLine = primaryDevice.getLines().indexOf(line);
-                            }
+            if(currentLine.getMode() == Line.MODE_SECONDARY){
+                String primaryDeviceChipID = currentLine.getPrimaryDeviceChipID();
+                Device primaryDevice = MySettings.getDeviceByChipID2(primaryDeviceChipID);
+                if(primaryDevice != null){
+                    int indexOfPrimaryLine = -1;
+                    for (Line line : primaryDevice.getLines()) {
+                        if(line.getPosition() == currentLine.getPrimaryLinePosition()){
+                            indexOfPrimaryLine = primaryDevice.getLines().indexOf(line);
                         }
-                        if(indexOfPrimaryLine != -1){
-                            lineSelectedLine = primaryDevice.getLines().get(indexOfPrimaryLine);
+                    }
+                    if(indexOfPrimaryLine != -1){
+                        lineSelectedLine = primaryDevice.getLines().get(indexOfPrimaryLine);
 
-                            Room room;
-                            Floor floor;
-                            room = MySettings.getRoom(primaryDevice.getRoomID());
-                            floor = MySettings.getFloor(room.getFloorID());
+                        Room room;
+                        Floor floor;
+                        room = MySettings.getRoom(primaryDevice.getRoomID());
+                        floor = MySettings.getFloor(room.getFloorID());
 
-                            lineSelectedLineNameTextView.setText(primaryDevice.getName() + ":" + lineSelectedLine.getName());
-                            lineSelectedLineLocationTextView.setText(floor.getPlaceName() + ":" + room.getName());
-                            if(lineSelectedLine.getType().getImageUrl() != null && lineSelectedLine.getType().getImageUrl().length() >= 1){
-                                GlideApp.with(getActivity())
-                                        .load(lineSelectedLine.getType().getImageUrl())
-                                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
-                                        .into(lineSelectedLineImageView);
-                            }else {
-                                if(lineSelectedLine.getType().getImageResourceName() != null && lineSelectedLine.getType().getImageResourceName().length() >= 1) {
-                                    lineSelectedLineImageView.setImageResource(getActivity().getResources().getIdentifier(lineSelectedLine.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
-                                }else{
-                                    lineSelectedLineImageView.setImageResource(lineSelectedLine.getType().getImageResourceID());
-                                }
+                        lineSelectedLineNameTextView.setText(primaryDevice.getName() + ":" + lineSelectedLine.getName());
+                        lineSelectedLineLocationTextView.setText(floor.getPlaceName() + ":" + room.getName());
+                        if(lineSelectedLine.getType().getImageUrl() != null && lineSelectedLine.getType().getImageUrl().length() >= 1){
+                            GlideApp.with(getActivity())
+                                    .load(lineSelectedLine.getType().getImageUrl())
+                                    .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                                    .into(lineSelectedLineImageView);
+                        }else {
+                            if(lineSelectedLine.getType().getImageResourceName() != null && lineSelectedLine.getType().getImageResourceName().length() >= 1) {
+                                lineSelectedLineImageView.setImageResource(getActivity().getResources().getIdentifier(lineSelectedLine.getType().getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                            }else{
+                                lineSelectedLineImageView.setImageResource(lineSelectedLine.getType().getImageResourceID());
                             }
                         }
                     }
                 }
-
             }
 
         }
 
         if(lineType == null) {
             if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                lineType = MySettings.getTypeByName("Appliance Plug");
+                lineType = MySettings.getTypeByName("Lamp");
                 lineModeRadioGroup.setVisibility(View.GONE);
             } else {
-                lineType = MySettings.getTypeByName("Fluorescent Lamp");
+                lineType = MySettings.getTypeByName("Lamp");
                 lineModeRadioGroup.setVisibility(View.VISIBLE);
             }
         }
@@ -559,6 +558,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     }
 
                     MySettings.updateLine(currentLine.getId(), newLine);
+                    DevicesInMemory.updateLine(newLine);
 
                     unsavedChanges = false;
                     parentFragment.tabUserChangesState(LINE_POSITION, false);

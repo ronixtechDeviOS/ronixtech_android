@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_circle_green">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="48dp">
+
+        <com.sdsmdg.harjot.crollerTest.Croller
+            android:id="@+id/dimming_croller"
+            android:layout_width="225dp"
+            android:layout_height="225dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            app:min="0"
+            app:max="100"
+            app:start_offset="45"
+            app:sweep_angle="300"
+            app:progress_primary_color="@color/blueColor"
+            app:progress_secondary_color="@color/silverColor"
+            app:progress_primary_circle_size="6"
+            app:progress_secondary_circle_size="3"
+            app:indicator_color="@color/blueColor"
+            app:indicator_width="8"
+            app:back_circle_color="@color/silverColor"
+            app:is_continuous="false"
+            app:label_color="@color/blueColor"
+            app:label_size="12"
+            app:label=""
+            app:main_circle_color="@color/whiteColor" />
+
+        <TextView
+            android:id="@+id/room_name_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/dimming_croller"
+            android:layout_marginTop="0dp"
+            android:textSize="16sp"
+            android:textColor="@color/blueColor"
+            android:textStyle="bold"
+            android:text="RoomName" />
+
+        <TextView
+            android:id="@+id/line_name_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/room_name_textview"
+            android:layout_marginTop="0dp"
+            android:textSize="16sp"
+            android:textColor="@color/greenColor"
+            android:text="RoomName" />
+
+        <Button
+            android:id="@+id/done_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_below="@id/dimming_croller"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/button_background_round_blue"
+            android:textColor="@color/whiteColor"
+            android:text="@string/done"/>
+    </RelativeLayout>
+
+</RelativeLayout>

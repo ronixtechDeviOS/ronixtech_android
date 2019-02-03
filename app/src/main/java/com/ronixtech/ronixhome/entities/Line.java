@@ -203,7 +203,7 @@ public class Line {
                 cachedType = MySettings.getType(typeID);
                 return cachedType;
             }else{
-                cachedType = MySettings.getTypeByName("LED Lamp");
+                cachedType = MySettings.getTypeByName("Lamp");
                 return cachedType;
             }
         }

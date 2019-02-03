@@ -36,6 +36,9 @@ public abstract class LineDAO{
     @Query("UPDATE line SET type_id =:typeID WHERE id =:lineID")
     public abstract void updateLineTypeID(long lineID, long typeID);
 
+    @Query("UPDATE line SET type_name =:typeName WHERE id =:lineID")
+    public abstract void updateLineTypeName(long lineID, String typeName);
+
     @Query("UPDATE line SET mode =:mode WHERE id =:lineID")
     public abstract void updateLineMode(long lineID, int mode);
 

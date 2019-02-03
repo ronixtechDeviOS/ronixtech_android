@@ -514,6 +514,7 @@ public class MySettings {
         MySettings.initDB().lineDAO().updateLineName(lineID, newLine.getName());
         MySettings.initDB().lineDAO().updateLinePowerUsage(lineID, newLine.getLinePowerUsage());
         MySettings.initDB().lineDAO().updateLineTypeID(lineID, newLine.getTypeID());
+        MySettings.initDB().lineDAO().updateLineTypeName(lineID, newLine.getLineTypeString());
         MySettings.initDB().lineDAO().updateLineMode(lineID, newLine.getMode());
         MySettings.initDB().lineDAO().updateLinePrimaryDeviceChipID(lineID, newLine.getPrimaryDeviceChipID());
         MySettings.initDB().lineDAO().updateLinePrimaryLinePosition(lineID, newLine.getPrimaryLinePosition());

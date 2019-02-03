@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -74,7 +73,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     private static final int LIST_VIEW = 0;
     private static final int GRID_VIEW = 2;
-    private static int lastSelectedView = GRID_VIEW;
+    private static int lastSelectedView = LIST_VIEW;
 
     GridView roomsGridView;
     RoomsGridAdapter roomsGridAdapter;
@@ -645,7 +644,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                                 for (Device dev : DevicesInMemory.getDevices()) {
                                     if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
                                         if(!MySettings.isControlActive()) {
-                                            getDeviceInfo(dev);
+                                            Utils.getDeviceInfo(dev);
                                         }else{
                                             Utils.log(TAG, "Controls active, skipping get_status", true);
                                         }
@@ -736,6 +735,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
 
     public void updateUI(){
         if(isResumed) {
+            place = MySettings.getCurrentPlace();
             if(place != null){
                 if(MySettings.getPlaceFloors(place.getId()).size() == 1) {
                     if(place.getMode() == Place.PLACE_MODE_LOCAL){
@@ -761,6 +761,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }else{
                 MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.dashboard), getResources().getColor(R.color.whiteColor));
             }
+
 
             /*roomsDashboardListAdapter = new RoomsDashboardListAdapter(getActivity(), rooms, getFragmentManager(), MySettings.getCurrentPlace().getMode());
             roomsListView.setAdapter(roomsDashboardListAdapter);
@@ -788,72 +789,6 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         }
     }
 
-    private void getDeviceInfo(Device device){
-        Utils.log(TAG, "Getting device info...", true);
-        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-            if(device.getFirmwareVersion() != null && device.getFirmwareVersion().length() >= 1){
-                Integer currentFirmwareVersion = Integer.valueOf(device.getFirmwareVersion());
-                if(currentFirmwareVersion  <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                    Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
-                    statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }else{
-                    Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
-                    deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            }else{
-                Utils.StatusGetter statusGetter = new Utils.StatusGetter(device);
-                statusGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-            Utils.ModeGetter modeGetter = new Utils.ModeGetter(device);
-            modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
-            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
-            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-
-        /*//volley request to device to get its status
-        String url = "http://" + device.getIpAddress() + Constants.GET_DEVICE_STATUS;
-
-        Log.d(TAG,  "getDeviceStatus URL: " + url);
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "getDeviceStatus response: " + response);
-
-                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
-                DataParser dataParser = new DataParser(device, response);
-                dataParser.execute();
-
-                //device.setErrorCount(0);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Volley Error: " + error.getMessage());
-
-                HttpConnectorDeviceStatus.getInstance(getActivity()).getRequestQueue().cancelAll("getStatusRequest");
-
-                *//*MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
-                if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    MySettings.updateDeviceIP(device, "");
-                    MySettings.updateDeviceErrorCount(device, 0);
-                    MySettings.scanNetwork();
-                }*//*
-            }
-        });
-        request.setTag("getStatusRequest");
-        request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(Device.REFRESH_TIMEOUT, Device.REFRESH_NUMBER_OF_RETRIES, 0f));
-        HttpConnectorDeviceStatus.getInstance(MainActivity.getInstance()).addToRequestQueue(request);*/
-    }
-
     @Override
     public void onPlaceSelected(Place selectedPlace){
         if(selectedPlace != null){
@@ -879,6 +814,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             if(MySettings.getPlaceRooms(place) != null && MySettings.getPlaceRooms(place).size() >= 1){
                 rooms.addAll(MySettings.getPlaceRooms(place));
             }
+            loadDevicesFromDatabase();
             roomsGridAdapter.notifyDataSetChanged();
             roomsDashboardListAdapter.notifyDataSetChanged();
 
