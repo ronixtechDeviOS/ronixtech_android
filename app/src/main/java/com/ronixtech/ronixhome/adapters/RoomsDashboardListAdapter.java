@@ -134,36 +134,36 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                 ViewHolder tempViewHolder1 = vHolder;
                 GlideApp.with(activity)
                         .load(tempFile)
-                        .placeholder(activity.getResources().getDrawable(R.drawable.room_icon)) //TODO remove this and replace with actual images from Fahad, depending on room type
+                        .placeholder(activity.getResources().getDrawable(R.drawable.room_background_default))
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         /*.skipMemoryCache(true)*/
                         .into(tempViewHolder1.backgroundImageView);
             }else{
-                //TODO remove this and replace with actual images from Fahad, depending on room type
-                if(position == 0){
-                    vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
-                }else if(position == 1){
-                    vHolder.backgroundImageView.setImageResource(R.drawable.kitchen_sample_1);
-                }else if(position == 2){
-                    vHolder.backgroundImageView.setImageResource(R.drawable.workspace_sample);
-                }else if(position == 3){
-                    vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
-                }else if(position == 4){
-                    vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+                if(item.getType().getBackgroundImageUrl() != null && item.getType().getBackgroundImageUrl().length() >= 1){
+                    GlideApp.with(activity)
+                            .load(item.getType().getBackgroundImageUrl())
+                            .placeholder(activity.getResources().getDrawable(R.drawable.room_background_default))
+                            .into(vHolder.backgroundImageView);
+                }else {
+                    if(item.getType().getBackgroundImageResourceName() != null && item.getType().getBackgroundImageResourceName().length() >= 1){
+                        vHolder.backgroundImageView.setImageResource(activity.getResources().getIdentifier(item.getType().getBackgroundImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                    }else {
+                        vHolder.backgroundImageView.setImageResource(item.getType().getBackgroundImageResourceID());
+                    }
                 }
             }
         }else{
-            //TODO remove this and replace with actual images from Fahad, depending on room type
-            if(position == 0){
-                vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
-            }else if(position == 1){
-                vHolder.backgroundImageView.setImageResource(R.drawable.kitchen_sample_1);
-            }else if(position == 2){
-                vHolder.backgroundImageView.setImageResource(R.drawable.workspace_sample);
-            }else if(position == 3){
-                vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
-            }else if(position == 4){
-                vHolder.backgroundImageView.setImageResource(R.drawable.bedroom_sample_1);
+            if(item.getType().getBackgroundImageUrl() != null && item.getType().getBackgroundImageUrl().length() >= 1){
+                GlideApp.with(activity)
+                        .load(item.getType().getBackgroundImageUrl())
+                        .placeholder(activity.getResources().getDrawable(R.drawable.room_background_default))
+                        .into(vHolder.backgroundImageView);
+            }else {
+                if(item.getType().getBackgroundImageResourceName() != null && item.getType().getBackgroundImageResourceName().length() >= 1){
+                    vHolder.backgroundImageView.setImageResource(activity.getResources().getIdentifier(item.getType().getBackgroundImageResourceName(), "drawable", Constants.PACKAGE_NAME));
+                }else {
+                    vHolder.backgroundImageView.setImageResource(item.getType().getBackgroundImageResourceID());
+                }
             }
         }
 

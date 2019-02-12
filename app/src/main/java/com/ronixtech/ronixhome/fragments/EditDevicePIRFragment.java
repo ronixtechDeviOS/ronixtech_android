@@ -490,6 +490,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                             jsonObject.put("U_P_CID", line.getPrimaryDeviceChipID());
                             jsonObject.put("U_P_CIP", MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getIpAddress());
                             jsonObject.put("U_P_LNO", ""+line.getPosition());
+                            jsonObject.put("U_P_TYP", ""+MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getDeviceTypeID());
                             if(line.getPirPowerState() == Line.LINE_STATE_ON){
                                 if(line.getPirDimmingValue() == 10){
                                     jsonObject.put("U_P_LVN", ":");
@@ -501,8 +502,8 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                                 jsonObject.put("U_P_LVN", "0");
                                 jsonObject.put("U_P_LVF", ":");
                             }
+                            //TODO send U_P_DUR in SECONDS not MILLISECONDS
                             jsonObject.put("U_P_DUR", "" +  Utils.getTimeUnitMilliseconds(line.getPirTriggerActionDurationTimeUnit(), line.getPirTriggerActionDuration()));
-
 
                             jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
 

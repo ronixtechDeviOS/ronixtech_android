@@ -32,7 +32,7 @@
                     android:id="@+id/room_background_imageview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/bedroom_sample_1"
+                    android:src="@drawable/room_background_default"
                     android:scaleType="centerCrop"/>
                 <RelativeLayout
                     android:id="@+id/room_info_layout"

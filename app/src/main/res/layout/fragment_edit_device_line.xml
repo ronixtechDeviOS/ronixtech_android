@@ -104,7 +104,9 @@
                             android:id="@+id/line_type_imageview"
                             android:layout_width="46dp"
                             android:layout_height="46dp"
-                            android:src="@drawable/line_type_led__lamp"
+                            android:src="@drawable/line_type_lamp_white"
+                            android:background="@drawable/rooms_dashboard_line_default_background"
+                            android:padding="8dp"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="16dp"
                             android:layout_marginLeft="16dp"/>
@@ -201,11 +203,13 @@
                         android:background="@drawable/button_background_round_border_blue">
                         <ImageView
                             android:id="@+id/line_selected_line_type_imageview"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
+                            android:layout_width="46dp"
+                            android:layout_height="46dp"
+                            android:padding="8dp"
+                            android:background="@drawable/rooms_dashboard_line_default_background"
                             android:layout_centerVertical="true"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/device_colored_icon"/>
+                            android:src="@drawable/line_type_lamp_white"/>
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

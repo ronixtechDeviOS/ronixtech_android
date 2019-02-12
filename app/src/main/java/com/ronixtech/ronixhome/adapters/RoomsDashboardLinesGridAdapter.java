@@ -140,7 +140,7 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
         if(item.getType().getImageUrl() != null && item.getType().getImageUrl().length() >= 1){
             GlideApp.with(activity)
                     .load(item.getType().getImageUrl())
-                    .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                     .into(vHolder.typeImageView);
         }else {
             if(item.getType().getImageResourceName() != null && item.getType().getImageResourceName().length() >= 1) {

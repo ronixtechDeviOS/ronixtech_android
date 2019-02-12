@@ -6,6 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
@@ -498,39 +502,39 @@ public class Utils {
     public static void generateRoomTypes(){
         List<Type> roomTypes = new ArrayList<>();
 
-        Type type = new Type(Constants.TYPE_ROOM, "Balcony", "", R.drawable.room_type_balcony, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_balcony), "");
+        Type type = new Type(Constants.TYPE_ROOM, "Balcony", "", R.drawable.room_type_balcony, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_balcony),"", R.drawable.room_background_balcony, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_balcony), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Basement", "", R.drawable.room_type_basement, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_basement), "");
+        type = new Type(Constants.TYPE_ROOM, "Basement", "", R.drawable.room_type_basement, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_basement),"", R.drawable.room_background_basement, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_basement), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Bathroom", "", R.drawable.room_type_bathroom, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_bathroom), "");
+        type = new Type(Constants.TYPE_ROOM, "Bathroom", "", R.drawable.room_type_bathroom, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_bathroom),"", R.drawable.room_background_bathroom, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_bathroom), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Bedroom", "", R.drawable.room_type_bedroom, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_bedroom), "0e8c9b");
+        type = new Type(Constants.TYPE_ROOM, "Bedroom", "", R.drawable.room_type_bedroom, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_bedroom),"", R.drawable.room_background_bedroom, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_bedroom), "0e8c9b");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Kids Bedroom", "", R.drawable.room_type_bedroom_kids, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_bedroom_kids), "");
+        type = new Type(Constants.TYPE_ROOM, "Kids Bedroom", "", R.drawable.room_type_bedroom_kids, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_bedroom_kids),"", R.drawable.room_type_bedroom_kids, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_bedroom_kids), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Corridor", "", R.drawable.room_type_corridor, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_corridor), "");
+        type = new Type(Constants.TYPE_ROOM, "Corridor", "", R.drawable.room_type_corridor, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_corridor),"", R.drawable.room_background_corridor, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_corridor), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Dining", "", R.drawable.room_type_dining, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_dining), "");
+        type = new Type(Constants.TYPE_ROOM, "Dining", "", R.drawable.room_type_dining, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_dining),"", R.drawable.room_background_dining, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_dining), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Entryway", "", R.drawable.room_type_entryway, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_entryway), "");
+        type = new Type(Constants.TYPE_ROOM, "Entryway", "", R.drawable.room_type_entryway, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_entryway),"", R.drawable.room_background_entryway, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_entryway), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Frontyard", "", R.drawable.room_type_frontyard, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_frontyard), "");
+        type = new Type(Constants.TYPE_ROOM, "Frontyard", "", R.drawable.room_type_frontyard, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_frontyard),"", R.drawable.room_background_frontyard, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_frontyard), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Garage", "", R.drawable.room_type_garage, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_garage), "");
+        type = new Type(Constants.TYPE_ROOM, "Garage", "", R.drawable.room_type_garage, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_garage),"", R.drawable.room_background_garage, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_garage), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Home Cinema", "", R.drawable.room_type_home_cinema, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_home_cinema), "");
+        type = new Type(Constants.TYPE_ROOM, "Home Cinema", "", R.drawable.room_type_home_cinema, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_home_cinema),"", R.drawable.room_background_home_cinema, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_home_cinema), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Kitchen", "", R.drawable.room_type_kitchen, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_kitchen), "7e3086");
+        type = new Type(Constants.TYPE_ROOM, "Kitchen", "", R.drawable.room_type_kitchen, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_kitchen),"", R.drawable.room_background_kitchen, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_kitchen), "7e3086");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Library", "", R.drawable.room_type_library, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_library), "");
+        type = new Type(Constants.TYPE_ROOM, "Library", "", R.drawable.room_type_library, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_library),"", R.drawable.room_background_library, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_library), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Living Room", "", R.drawable.room_type_living_room, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_living_room), "6ca731");
+        type = new Type(Constants.TYPE_ROOM, "Living Room", "", R.drawable.room_type_living_room, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_living_room),"", R.drawable.room_background_living_room, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_living_room), "6ca731");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Office", "", R.drawable.room_type_office, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_office), "71716f");
+        type = new Type(Constants.TYPE_ROOM, "Office", "", R.drawable.room_type_office, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_office),"", R.drawable.room_background_office, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_office), "71716f");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Terrace", "", R.drawable.room_type_terrace, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_terrace), "");
+        type = new Type(Constants.TYPE_ROOM, "Terrace", "", R.drawable.room_type_terrace, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_terrace),"", R.drawable.room_background_terrace, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_terrace), "");
         roomTypes.add(type);
-        type = new Type(Constants.TYPE_ROOM, "Toilet", "", R.drawable.room_type_toilet, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_toilet), "");
+        type = new Type(Constants.TYPE_ROOM, "Toilet", "", R.drawable.room_type_toilet, MyApp.getInstance().getResources().getResourceName(R.drawable.room_type_toilet),"", R.drawable.room_background_toilet, MyApp.getInstance().getResources().getResourceName(R.drawable.room_background_toilet), "");
         roomTypes.add(type);
         for (Type ty: roomTypes) {
             MySettings.addType(ty);
@@ -601,12 +605,36 @@ public class Utils {
         type = new Type(Constants.TYPE_LINE, "Window", "", R.drawable.line_type_window, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_window), "");
         lineTypes.add(type);*/
 
-        Type type = new Type(Constants.TYPE_LINE, "Lamp", "", R.drawable.line_type_lamp, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_lamp), "");
+        Type type = new Type(Constants.TYPE_LINE, "Lamp", "", R.drawable.line_type_lamp_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_lamp_white), "");
         lineTypes.add(type);
-        type = new Type(Constants.TYPE_LINE, "Ceiling Light", "", R.drawable.line_type_cieling_light, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_cieling_light), "");
+        type = new Type(Constants.TYPE_LINE, "Chandelier", "", R.drawable.line_type_chandelier_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_chandelier_white), "");
         lineTypes.add(type);
-        type = new Type(Constants.TYPE_LINE, "Table Light", "", R.drawable.line_type_table_light, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_table_light), "");
+        type = new Type(Constants.TYPE_LINE, "Ceiling Light", "", R.drawable.line_type_cieling_light_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_cieling_light_white), "");
         lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Tube Light", "", R.drawable.line_type_tube_light_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_tube_light_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Table Light", "", R.drawable.line_type_table_light_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_table_light_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Standing Light", "", R.drawable.line_type_standing_lamp_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_standing_lamp_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Ceiling Fan", "", R.drawable.line_type_ceiling_fan_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_ceiling_fan_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE, "Fan", "", R.drawable.line_type_fan_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_fan_white), "");
+        lineTypes.add(type);
+
+
+
+        type = new Type(Constants.TYPE_LINE_PLUG, "Appliance Plug", "", R.drawable.line_type_appliance_plug_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_appliance_plug_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE_PLUG, "Toaster", "", R.drawable.line_type_toaster_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_toaster_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE_PLUG, "TV", "", R.drawable.line_type_tv_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_tv_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE_PLUG, "Hair Dryer", "", R.drawable.line_type_hair_dryer_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_hair_dryer_white), "");
+        lineTypes.add(type);
+        type = new Type(Constants.TYPE_LINE_PLUG, "Humidifier", "", R.drawable.line_type_humidifier_white, MyApp.getInstance().getResources().getResourceName(R.drawable.line_type_humidifier_white), "");
+        lineTypes.add(type);
+
 
         for (Type ty: lineTypes) {
             MySettings.addType(ty);
@@ -1020,6 +1048,44 @@ public class Utils {
             void onGeocodingSuccess(String address, String city, String state, String country, String zipCode);
             void onGeocodingFail(String errorMsg);
         }
+    }
+
+    public static Bitmap resizeBitmapByDimensions(Bitmap bitmap, int width, int height, boolean recycle) {
+        if (width == bitmap.getWidth() && height == bitmap.getHeight())
+            return bitmap;
+
+        //Bitmap target = Bitmap.createScaledBitmap(bitmap, width, height, false);
+
+        float scale = Math.min(((float)height / bitmap.getWidth()), ((float)width / bitmap.getHeight()));
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+        Bitmap target = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        if (recycle) bitmap.recycle();
+        return target;
+    }
+
+    public static Bitmap resizeBitmapByScale(Bitmap bitmap, float scale, boolean recycle) {
+        //Bitmap target = Bitmap.createScaledBitmap(pickedBitmap, 120, 120, false);
+        int width = Math.round(bitmap.getWidth() * scale);
+        int height = Math.round(bitmap.getHeight() * scale);
+        if (width == bitmap.getWidth() && height == bitmap.getHeight())
+            return bitmap;
+        Bitmap target = Bitmap.createBitmap(width, height, getConfig(bitmap));
+        Canvas canvas = new Canvas(target);
+        canvas.scale(scale, scale);
+        Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        if (recycle) bitmap.recycle();
+        return target;
+    }
+
+    private static Bitmap.Config getConfig(Bitmap bitmap) {
+        Bitmap.Config config = bitmap.getConfig();
+        if (config == null) {
+            config = Bitmap.Config.ARGB_8888;
+        }
+        return config;
     }
 
     public static byte byteOfInt(int value, int which) {

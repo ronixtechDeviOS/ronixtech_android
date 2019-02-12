@@ -103,6 +103,8 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
 
     boolean unsavedChanges = false;
 
+    boolean dimmingEnabled = true;
+
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
 
@@ -168,6 +170,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+            dimmingEnabled = true;
             if(DEVICE_NUMBER_OF_LINES == 1){
                 lineNameEditText.setHint(Utils.getString(getActivity(), R.string.line_1_name_hint));
                 lineGifImageView.setImageResource(R.drawable.line_left);
@@ -192,6 +195,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 }
             }
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+            dimmingEnabled = false;
             if(LINE_POSITION == 0){
                 lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_1_name_hint));
             }else if(LINE_POSITION == 1){
@@ -225,7 +229,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 if(lineType.getImageUrl() != null && lineType.getImageUrl().length() >= 1){
                     GlideApp.with(getActivity())
                             .load(lineType.getImageUrl())
-                            .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                            .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(lineTypeImageView);
                 }else {
                     if(lineType.getImageResourceName() != null && lineType.getImageResourceName().length() >= 1){
@@ -250,7 +254,8 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 lineDimmingCheckBox.setChecked(true);
             }else if(currentLine.getDimmingState() == Line.DIMMING_STATE_OFF){
-                lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
+                //lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
+                lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 lineDimmingCheckBox.setChecked(false);
             }
 
@@ -277,7 +282,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         if(lineSelectedLine.getType().getImageUrl() != null && lineSelectedLine.getType().getImageUrl().length() >= 1){
                             GlideApp.with(getActivity())
                                     .load(lineSelectedLine.getType().getImageUrl())
-                                    .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                                    .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_lamp_white))
                                     .into(lineSelectedLineImageView);
                         }else {
                             if(lineSelectedLine.getType().getImageResourceName() != null && lineSelectedLine.getType().getImageResourceName().length() >= 1) {
@@ -294,7 +299,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
 
         if(lineType == null) {
             if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                lineType = MySettings.getTypeByName("Lamp");
+                lineType = MySettings.getTypeByName("Appliance Plug");
                 lineModeRadioGroup.setVisibility(View.GONE);
             } else {
                 lineType = MySettings.getTypeByName("Lamp");
@@ -307,7 +312,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             if(lineType.getImageUrl() != null && lineType.getImageUrl().length() >= 1){
                 GlideApp.with(getActivity())
                         .load(lineType.getImageUrl())
-                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_lamp_white))
                         .into(lineTypeImageView);
             }else {
                 if(lineType.getImageResourceName() != null && lineType.getImageResourceName().length() >= 1){
@@ -379,29 +384,58 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             @Override
             public void onClick(View view) {
                 if(lineMode == Line.MODE_PRIMARY){
-                    if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
-                        // DialogFragment.show() will take care of adding the fragment
-                        // in a transaction.  We also want to remove any currently showing
-                        // dialog, so make our own transaction and take care of that here.
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
-                        if (prev != null) {
-                            ft.remove(prev);
-                        }
-                        ft.addToBackStack(null);
+                    if(dimmingEnabled){
+                        if(MySettings.getTypes(Constants.TYPE_LINE) != null && MySettings.getTypes(Constants.TYPE_LINE).size() >= 1){
+                            // DialogFragment.show() will take care of adding the fragment
+                            // in a transaction.  We also want to remove any currently showing
+                            // dialog, so make our own transaction and take care of that here.
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                            if (prev != null) {
+                                ft.remove(prev);
+                            }
+                            ft.addToBackStack(null);
 
-                        // Create and show the dialog.
-                        TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
-                        fragment.setTypesCategory(Constants.TYPE_LINE);
-                        fragment.setTargetFragment(EditDeviceLineFragment.this, 0);
-                        fragment.show(ft, "typePickerDialogFragment");
+                            // Create and show the dialog.
+                            TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
+                            fragment.setTypesCategory(Constants.TYPE_LINE);
+                            fragment.setTargetFragment(EditDeviceLineFragment.this, 0);
+                            fragment.show(ft, "typePickerDialogFragment");
+                        }else{
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
+                            Utils.generateLineTypes();
+                        }
                     }else{
-                        Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
-                        Utils.generateLineTypes();
+                        if(MySettings.getTypes(Constants.TYPE_LINE_PLUG) != null && MySettings.getTypes(Constants.TYPE_LINE_PLUG).size() >= 1){
+                            // DialogFragment.show() will take care of adding the fragment
+                            // in a transaction.  We also want to remove any currently showing
+                            // dialog, so make our own transaction and take care of that here.
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                            if (prev != null) {
+                                ft.remove(prev);
+                            }
+                            ft.addToBackStack(null);
+
+                            // Create and show the dialog.
+                            TypePickerDialogFragment fragment = TypePickerDialogFragment.newInstance();
+                            fragment.setTypesCategory(Constants.TYPE_LINE_PLUG);
+                            fragment.setTargetFragment(EditDeviceLineFragment.this, 0);
+                            fragment.show(ft, "typePickerDialogFragment");
+                        }else{
+                            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.no_types_available), true);
+                            Utils.generateLineTypes();
+                        }
                     }
                 }
             }
         });
+
+        if(dimmingEnabled){
+            lineDimmingLayout.setVisibility(View.VISIBLE);
+        }else{
+            lineDimmingLayout.setVisibility(View.GONE);
+        }
 
         lineDimmingLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -475,7 +509,8 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                 if(isChecked){
                     lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 }else{
-                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
+                    //lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_off));
+                    lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 }
                 /*if(isChecked && currentLine.getDimmingState() == Line.DIMMING_STATE_ON){
                     unsavedChanges = false;
@@ -626,7 +661,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             if(lineType.getImageUrl() != null && lineType.getImageUrl().length() >= 1){
                 GlideApp.with(getActivity())
                         .load(lineType.getImageUrl())
-                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_led__lamp))
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_lamp_white))
                         .into(lineTypeImageView);
             }else {
                 if(lineType.getImageResourceName() != null && lineType.getImageResourceName().length() >= 1) {
@@ -670,7 +705,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
             if(lineSelectedLine.getType().getImageUrl() != null && lineSelectedLine.getType().getImageUrl().length() >= 1){
                 GlideApp.with(getActivity())
                         .load(lineSelectedLine.getType().getImageUrl())
-                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                        .placeholder(getActivity().getResources().getDrawable(R.drawable.line_type_lamp_white))
                         .into(lineSelectedLineImageView);
             }else {
                 if(lineSelectedLine.getType().getImageResourceName() != null && lineSelectedLine.getType().getImageResourceName().length() >= 1) {

@@ -79,7 +79,7 @@ public class LineAdapter extends ArrayAdapter {
         if(lines.get(position).getType().getImageUrl() != null && lines.get(position).getType().getImageUrl().length() >= 1){
             GlideApp.with(activity)
                     .load(lines.get(position).getType().getImageUrl())
-                    .placeholder(activity.getResources().getDrawable(R.drawable.line_type_fluorescent_lamp))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                     .into(vHolder.lineImageView);
         }else {
             if(lines.get(position).getType().getImageResourceName() != null && lines.get(position).getType().getImageResourceName().length() >= 1) {

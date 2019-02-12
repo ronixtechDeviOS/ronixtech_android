@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,13 @@ public class TypeAdapter extends ArrayAdapter {
     Activity activity ;
     List<Type> types;
     ViewHolder vHolder = null;
+    int padding;
 
     public TypeAdapter(Activity activity, List types){
         super(activity, R.layout.list_item_type, types);
         this.activity = activity;
         this.types = types;
+        padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, activity.getResources().getDisplayMetrics());
     }
 
     @Override
@@ -63,9 +66,13 @@ public class TypeAdapter extends ArrayAdapter {
         vHolder.typeNameTextView.setText(""+types.get(position).getName());
         if(types.get(position).getImageResourceName() != null && types.get(position).getImageResourceName().length() >= 1){
             vHolder.typeImageView.setImageResource(activity.getResources().getIdentifier(types.get(position).getImageResourceName(), "drawable", Constants.PACKAGE_NAME));
-
         }else{
             vHolder.typeImageView.setImageResource(types.get(position).getImageResourceID());
+        }
+
+        if(types.get(position).getCategoryID() == Constants.TYPE_LINE || types.get(position).getCategoryID() == Constants.TYPE_LINE_PLUG){
+            vHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_default_background);
+            vHolder.typeImageView.setPadding(padding, padding, padding, padding);
         }
 
         return rowView;

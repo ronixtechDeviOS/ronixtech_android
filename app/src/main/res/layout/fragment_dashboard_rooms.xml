@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_latest">
+        android:background="@drawable/background_latest_2">
 
         <RelativeLayout
             android:id="@+id/rooms_header_layout"
