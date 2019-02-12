@@ -143,7 +143,8 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 addDeviceConfigurationLineFragment2.setFragmentManager(getFragmentManager());
                 addDeviceConfigurationLineFragment2.setParentFragment(this);
                 pagerAdapter.addFrag(addDeviceConfigurationLineFragment2, Utils.getString(getActivity(), R.string.line_3_name_hint));
-            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment1 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment1.setCurrentLinePosition(0);
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(3);
@@ -165,7 +166,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 addDeviceConfigurationLineFragment3.setParentFragment(this);
                 pagerAdapter.addFrag(addDeviceConfigurationLineFragment3, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else{
-                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.unknown_smart_controller_type), true);
+                Utils.showToast(getActivity(), Utils.getStringExtraInt(getActivity(), R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);

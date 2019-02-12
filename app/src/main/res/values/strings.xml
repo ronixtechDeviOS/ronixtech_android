@@ -223,6 +223,7 @@
     <string name="success_message_device">Your new Smart Controller setup is now complete.</string>
     <string name="success_message_export">Your data export is now complete.</string>
     <string name="success_message_import">Your data import is now complete. Press Continue to reload with the new configuration.</string>
+    <string name="success_message_device_firmware">Your Smart Controller has been updated successfully.</string>
 
 
     <string name="edit_device_location_title">Relocate your Smart Controller</string>

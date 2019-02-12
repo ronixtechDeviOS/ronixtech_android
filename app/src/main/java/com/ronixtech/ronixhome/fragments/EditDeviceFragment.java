@@ -160,7 +160,8 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment2.setPlaceMode(placeMode);
                 editDeviceLineFragment2.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment2, Utils.getString(getActivity(), R.string.line_3_name_hint));
-            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
                 editDeviceLineFragment1.setCurrentLinePosition(0);
                 editDeviceLineFragment1.setDeviceNumberOfLines(3);
@@ -198,7 +199,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 fragmentTransaction.commit();
             }
         }else{
-            Utils.showToast(getActivity(), Utils.getStringExtraInt(getActivity(), R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
+            Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);

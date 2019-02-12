@@ -527,7 +527,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
             if(statusCode == 200){
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     fragment.notifyCrashlyticsOfAffectedDeviceUpdate();
-                    MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
+                    //MySettings.updateDeviceType(device, Device.DEVICE_TYPE_wifi_3lines_old);
                 }
 
                 if(device.isFirmwareUpdateAvailable()){
@@ -536,8 +536,9 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                     deviceRebooter.execute();
                 }else if(device.isHwFirmwareUpdateAvailable()){
                     Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_successfull), true);
-                    MySettings.setTempDevice(null);
-                    fragment.goToHomeFragment();
+                    /*MySettings.setTempDevice(null);
+                    fragment.goToHomeFragment();*/
+                    fragment.goToLoadingFragment();
                 }
 
             }else{
@@ -698,7 +699,7 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                if(device.isFirmwareUpdateAvailable()){
+                /*if(device.isFirmwareUpdateAvailable()){
                     device.setFirmwareUpdateAvailable(false);
                     MySettings.setTempDevice(device);
                 }else if(device.isHwFirmwareUpdateAvailable()){
@@ -712,7 +713,9 @@ public class UpdateDeviceFirmwareUploadFragment extends Fragment {
                 }else{
                     MySettings.setTempDevice(null);
                     fragment.goToHomeFragment();
-                }
+                }*/
+
+                fragment.goToLoadingFragment();
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_reboot_device), true);
                 fragment.goToHomeFragment();

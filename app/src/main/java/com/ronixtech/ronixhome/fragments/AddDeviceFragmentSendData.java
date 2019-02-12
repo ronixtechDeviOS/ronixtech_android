@@ -94,23 +94,8 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         Device device = MySettings.getTempDevice();
         if(device != null){
-            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                PIRResetPairings pirResetPairings = new PIRResetPairings(getActivity(), this);
-                pirResetPairings.execute();
-            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                /*ControllerAddPairings controllerAddPairings = new ControllerAddPairings(getActivity(), this);
-                controllerAddPairings.execute();*/
-                DimmingControlsSenderPost dimmingControlsSenderPost = new DimmingControlsSenderPost(getActivity(), this);
-                dimmingControlsSenderPost.execute();
-            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
-                wiFiDataSenderGet.execute();
-            }else{
-                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(getActivity(), this);
-                wiFiDataSenderGet.execute();
-            }
+            DHCPToggler dhcpToggler = new DHCPToggler(getActivity(), this);
+            dhcpToggler.execute();
         }
 
         //volley request to device to send ssid/password and then get device info for next steps
@@ -262,13 +247,13 @@ public class AddDeviceFragmentSendData extends Fragment {
         void onStartListening();
     }
 
-    public static class PIRResetPairings extends AsyncTask<Void, Void, Void> {
+    public static class DHCPToggler extends AsyncTask<Void, Void, Void> {
         int statusCode;
 
         Activity activity;
         AddDeviceFragmentSendData fragment;
 
-        public PIRResetPairings(Activity activity, AddDeviceFragmentSendData fragment) {
+        public DHCPToggler(Activity activity, AddDeviceFragmentSendData fragment) {
             this.activity = activity;
             this.fragment = fragment;
         }
@@ -285,17 +270,23 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200) {
-                if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null && MySettings.getTempDevice().getLines().size() >= 1){
-                    PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment);
-                    pirAddPairings.execute();
-                }else{
-                    DHCPToggler dhcpToggler = new DHCPToggler(activity, fragment);
-                    dhcpToggler.execute();
-                }
+            Device device = MySettings.getTempDevice();
+            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                /*ControllerAddPairings controllerAddPairings = new ControllerAddPairings(getActivity(), this);
+                controllerAddPairings.execute();*/
+                DimmingControlsSenderPost dimmingControlsSenderPost = new DimmingControlsSenderPost(activity, fragment);
+                dimmingControlsSenderPost.execute();
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                PIRResetPairings pirResetPairings = new PIRResetPairings(activity, fragment);
+                pirResetPairings.execute();
             }else{
-                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
-                fragment.goToSearchFragment();
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
             }
         }
 
@@ -309,7 +300,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Utils.log(TAG, "resetPairings URL: " + url, true);
+                    Utils.log(TAG, "DHCPToggler URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -321,12 +312,10 @@ public class AddDeviceFragmentSendData extends Fragment {
                     urlConnection.setRequestMethod("POST");
 
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("U_P_STT", "0");
-                    jsonObject.put("U_P_CID", "0");
-
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+                    jsonObject.put("R_W_DHC", "on");
 
-                    Utils.log(TAG, "resetPairings POST data: " + jsonObject.toString(), true);
+                    Utils.log(TAG, "DHCPToggler POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -342,12 +331,12 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Utils.log(TAG, "resetPairings response: " + result.toString(), true);
+                    Utils.log(TAG, "DHCPToggler response: " + result.toString(), true);
                 }catch (MalformedURLException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                }catch (IOException e){
-                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (JSONException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                }catch (IOException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
@@ -355,124 +344,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
                     numberOfRetries++;
                 }
-            }
-
-            return null;
-        }
-    }
-
-    public static class PIRAddPairings extends AsyncTask<Void, Void, Void> {
-        int statusCode;
-
-        Activity activity;
-        AddDeviceFragmentSendData fragment;
-
-        public PIRAddPairings(Activity activity, AddDeviceFragmentSendData fragment) {
-            this.activity = activity;
-            this.fragment = fragment;
-        }
-
-        @Override
-        protected void onPreExecute(){
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... params){
-
-        }
-
-        @Override
-        protected void onPostExecute(Void params) {
-            if(statusCode == 200) {
-                DHCPToggler dhcpToggler = new DHCPToggler(activity, fragment);
-                dhcpToggler.execute();
-            }else{
-                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
-                fragment.goToSearchFragment();
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            HttpURLConnection urlConnection = null;
-            if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null && MySettings.getTempDevice().getLines().size() >= 1){
-                for (Line line:MySettings.getTempDevice().getLines()) {
-                    statusCode = 0;
-                    int numberOfRetries = 0;
-                    while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
-                        try{
-                            String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
-
-                            URL url = new URL(urlString);
-                            Utils.log(TAG, "addPairing URL: " + url, true);
-
-                            urlConnection = (HttpURLConnection) url.openConnection();
-                            urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
-                            urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
-                            urlConnection.setDoOutput(true);
-                            urlConnection.setDoInput(true);
-                            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                            urlConnection.setRequestProperty("Accept", "application/json");
-                            urlConnection.setRequestMethod("POST");
-
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("U_P_STT", "1");
-                            /*jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
-                            jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());*/
-                            jsonObject.put("U_P_CID", line.getPrimaryDeviceChipID());
-                            jsonObject.put("U_P_CIP", MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getIpAddress());
-                            jsonObject.put("U_P_LNO", ""+line.getPosition());
-                            jsonObject.put("U_P_TYP", ""+MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getDeviceTypeID());
-                            if(line.getPirPowerState() == Line.LINE_STATE_ON){
-                                if(line.getPirDimmingValue() == 10){
-                                    jsonObject.put("U_P_LVN", ":");
-                                }else{
-                                    jsonObject.put("U_P_LVN", ""+line.getPirDimmingValue());
-                                }
-                                jsonObject.put("U_P_LVF", "0");
-                            }else if(line.getPirPowerState() == Line.LINE_STATE_OFF){
-                                jsonObject.put("U_P_LVN", "0");
-                                jsonObject.put("U_P_LVF", ":");
-                            }
-                            //TODO send U_P_DUR in SECONDS not MILLISECONDS
-                            jsonObject.put("U_P_DUR", "" +  Utils.getTimeUnitMilliseconds(line.getPirTriggerActionDurationTimeUnit(), line.getPirTriggerActionDuration()));
-
-                            jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
-
-                            Utils.log(TAG, "addPairing POST data: " + jsonObject.toString(), true);
-
-                            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
-                            outputStreamWriter.write(jsonObject.toString());
-                            outputStreamWriter.flush();
-                            outputStreamWriter.close();
-
-                            statusCode = urlConnection.getResponseCode();
-                            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                            StringBuilder result = new StringBuilder();
-                            String dataLine;
-                            while((dataLine = bufferedReader.readLine()) != null) {
-                                result.append(dataLine);
-                            }
-                            urlConnection.disconnect();
-                            Utils.log(TAG, "addPairing response: " + result.toString(), true);
-                        }catch (MalformedURLException e){
-                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                        }catch (IOException e){
-                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                        }catch (JSONException e){
-                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                        }finally {
-                            if(urlConnection != null) {
-                                urlConnection.disconnect();
-                            }
-                            numberOfRetries++;
-                        }
-                    }
-                }
-            }else{
-                statusCode = 200;
             }
 
             return null;
@@ -585,8 +456,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode == 200){
-                DHCPToggler dhcpToggler = new DHCPToggler(activity, fragment);
-                dhcpToggler.execute();
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();
@@ -664,13 +535,13 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
-    public static class DHCPToggler extends AsyncTask<Void, Void, Void> {
+    public static class PIRResetPairings extends AsyncTask<Void, Void, Void> {
         int statusCode;
 
         Activity activity;
         AddDeviceFragmentSendData fragment;
 
-        public DHCPToggler(Activity activity, AddDeviceFragmentSendData fragment) {
+        public PIRResetPairings(Activity activity, AddDeviceFragmentSendData fragment) {
             this.activity = activity;
             this.fragment = fragment;
         }
@@ -687,8 +558,18 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
-            wiFiDataSenderGet.execute();
+            if(statusCode == 200) {
+                if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null && MySettings.getTempDevice().getLines().size() >= 1){
+                    PIRAddPairings pirAddPairings = new PIRAddPairings(activity, fragment);
+                    pirAddPairings.execute();
+                }else{
+                    WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                    wiFiDataSenderGet.execute();
+                }
+            }else{
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
+                fragment.goToSearchFragment();
+            }
         }
 
         @Override
@@ -701,7 +582,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
 
                     URL url = new URL(urlString);
-                    Utils.log(TAG, "DHCPToggler URL: " + url, true);
+                    Utils.log(TAG, "resetPairings URL: " + url, true);
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
@@ -713,10 +594,12 @@ public class AddDeviceFragmentSendData extends Fragment {
                     urlConnection.setRequestMethod("POST");
 
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
-                    jsonObject.put("R_W_DHC", "on");
+                    jsonObject.put("U_P_STT", "0");
+                    jsonObject.put("U_P_CID", "0");
 
-                    Utils.log(TAG, "DHCPToggler POST data: " + jsonObject.toString(), true);
+                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                    Utils.log(TAG, "resetPairings POST data: " + jsonObject.toString(), true);
 
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
                     outputStreamWriter.write(jsonObject.toString());
@@ -732,12 +615,12 @@ public class AddDeviceFragmentSendData extends Fragment {
                         result.append(dataLine);
                     }
                     urlConnection.disconnect();
-                    Utils.log(TAG, "DHCPToggler response: " + result.toString(), true);
+                    Utils.log(TAG, "resetPairings response: " + result.toString(), true);
                 }catch (MalformedURLException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                }catch (JSONException e){
-                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }catch (IOException e){
+                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                }catch (JSONException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 }finally {
                     if(urlConnection != null) {
@@ -745,6 +628,124 @@ public class AddDeviceFragmentSendData extends Fragment {
                     }
                     numberOfRetries++;
                 }
+            }
+
+            return null;
+        }
+    }
+
+    public static class PIRAddPairings extends AsyncTask<Void, Void, Void> {
+        int statusCode;
+
+        Activity activity;
+        AddDeviceFragmentSendData fragment;
+
+        public PIRAddPairings(Activity activity, AddDeviceFragmentSendData fragment) {
+            this.activity = activity;
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... params){
+
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if(statusCode == 200) {
+                WiFiDataSenderGet wiFiDataSenderGet = new WiFiDataSenderGet(activity, fragment);
+                wiFiDataSenderGet.execute();
+            }else{
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
+                fragment.goToSearchFragment();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            if(MySettings.getTempDevice() != null && MySettings.getTempDevice().getLines() != null && MySettings.getTempDevice().getLines().size() >= 1){
+                for (Line line:MySettings.getTempDevice().getLines()) {
+                    statusCode = 0;
+                    int numberOfRetries = 0;
+                    while(statusCode != 200 && numberOfRetries <= Device.CONFIG_NUMBER_OF_RETRIES){
+                        try{
+                            String urlString = Constants.DEVICE_URL + Constants.DEVICE_STATUS_CONTROL_URL;
+
+                            URL url = new URL(urlString);
+                            Utils.log(TAG, "addPairing URL: " + url, true);
+
+                            urlConnection = (HttpURLConnection) url.openConnection();
+                            urlConnection.setConnectTimeout(Device.CONFIG_TIMEOUT);
+                            urlConnection.setReadTimeout(Device.CONFIG_TIMEOUT);
+                            urlConnection.setDoOutput(true);
+                            urlConnection.setDoInput(true);
+                            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                            urlConnection.setRequestProperty("Accept", "application/json");
+                            urlConnection.setRequestMethod("POST");
+
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("U_P_STT", "1");
+                            /*jsonObject.put("U_P_CID", MySettings.getDeviceByID2(line.getDeviceID()).getChipID());
+                            jsonObject.put("U_P_CIP", MySettings.getDeviceByID2(line.getDeviceID()).getIpAddress());*/
+                            jsonObject.put("U_P_CID", line.getPrimaryDeviceChipID());
+                            jsonObject.put("U_P_CIP", MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getIpAddress());
+                            jsonObject.put("U_P_LNO", ""+line.getPosition());
+                            jsonObject.put("U_P_TYP", ""+MySettings.getDeviceByChipID2(line.getPrimaryDeviceChipID()).getDeviceTypeID());
+                            if(line.getPirPowerState() == Line.LINE_STATE_ON){
+                                if(line.getPirDimmingValue() == 10){
+                                    jsonObject.put("U_P_LVN", ":");
+                                }else{
+                                    jsonObject.put("U_P_LVN", ""+line.getPirDimmingValue());
+                                }
+                                jsonObject.put("U_P_LVF", "0");
+                            }else if(line.getPirPowerState() == Line.LINE_STATE_OFF){
+                                jsonObject.put("U_P_LVN", "0");
+                                jsonObject.put("U_P_LVF", ":");
+                            }
+                            //TODO send U_P_DUR in SECONDS not MILLISECONDS
+                            jsonObject.put("U_P_DUR", "" +  Utils.getTimeUnitMilliseconds(line.getPirTriggerActionDurationTimeUnit(), line.getPirTriggerActionDuration()));
+
+                            jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, Constants.DEVICE_DEFAULT_ACCESS_TOKEN);
+
+                            Utils.log(TAG, "addPairing POST data: " + jsonObject.toString(), true);
+
+                            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                            outputStreamWriter.write(jsonObject.toString());
+                            outputStreamWriter.flush();
+                            outputStreamWriter.close();
+
+                            statusCode = urlConnection.getResponseCode();
+                            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                            StringBuilder result = new StringBuilder();
+                            String dataLine;
+                            while((dataLine = bufferedReader.readLine()) != null) {
+                                result.append(dataLine);
+                            }
+                            urlConnection.disconnect();
+                            Utils.log(TAG, "addPairing response: " + result.toString(), true);
+                        }catch (MalformedURLException e){
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                        }catch (IOException e){
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                        }catch (JSONException e){
+                            Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                        }finally {
+                            if(urlConnection != null) {
+                                urlConnection.disconnect();
+                            }
+                            numberOfRetries++;
+                        }
+                    }
+                }
+            }else{
+                statusCode = 200;
             }
 
             return null;
@@ -779,7 +780,8 @@ public class AddDeviceFragmentSendData extends Fragment {
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
                     //reboot the device
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -799,16 +801,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                             deviceRebooterPost.execute();
                         }
                     }, 1000);
-                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                    //reboot the device
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
-                            deviceRebooterGet.execute();
-                        }
-                    }, 1000);
                 }else{
                     //reboot the device
                     final Handler handler = new Handler();
@@ -820,7 +812,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                         }
                     }, 1000);
                 }
-
             }else{
                 WiFiDataSenderPost wiFiDataSenderPost = new WiFiDataSenderPost(activity, fragment);
                 wiFiDataSenderPost.execute();
@@ -903,7 +894,8 @@ public class AddDeviceFragmentSendData extends Fragment {
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
                     //reboot the device
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -923,7 +915,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                             deviceRebooterPost.execute();
                         }
                     }, 1000);
-                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                }else{
                     //reboot the device
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -934,7 +926,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                         }
                     }, 1000);
                 }
-
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
                 fragment.goToSearchFragment();

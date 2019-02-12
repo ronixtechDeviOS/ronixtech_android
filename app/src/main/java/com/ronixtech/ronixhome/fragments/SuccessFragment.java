@@ -82,6 +82,8 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
             successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_export));
         }else if(successSource == Constants.SUCCESS_SOURCE_IMPORT){
             successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_import));
+        }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE_FIRMWARE){
+            successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_device_firmware));
         }
 
 
@@ -98,7 +100,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     fragmentTransaction.commit();
                 }else if(successSource == Constants.SUCCESS_SOURCE_ROOM){
-                    //go to PlacesFragment
+                    //go to Rooms Dashboard
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -107,7 +109,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     fragmentTransaction.commit();
                 }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE){
-                    //go to PlacesFragment
+                    //go to Rooms Dashboard
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -116,7 +118,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     fragmentTransaction.commit();
                 }else if(successSource == Constants.SUCCESS_SOURCE_EXPORT){
-                    //go to PlacesFragment
+                    //go to Rooms Dashboardt
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -134,6 +136,15 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
                         getActivity().startActivity(mainIntent);
                         Runtime.getRuntime().exit(0);
                     }
+                }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE_FIRMWARE){
+                    //go to Rooms Dashboard
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                    fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    fragmentTransaction.commit();
                 }
             }
         });

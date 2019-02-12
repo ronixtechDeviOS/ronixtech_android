@@ -144,6 +144,7 @@ public class Constants {
     public static final int SUCCESS_SOURCE_DEVICE = 2;
     public static final int SUCCESS_SOURCE_EXPORT = 3;
     public static final int SUCCESS_SOURCE_IMPORT= 4;
+    public static final int SUCCESS_SOURCE_DEVICE_FIRMWARE = 5;
 
     //action constants
     public static final int ACTION_YES = 0;
