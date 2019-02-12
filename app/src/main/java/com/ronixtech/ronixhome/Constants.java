@@ -136,6 +136,7 @@ public class Constants {
     public static final int TYPE_FLOOR = 1;
     public static final int TYPE_ROOM = 2;
     public static final int TYPE_LINE = 3;
+    public static final int TYPE_LINE_PLUG = 4;
 
     //success fragment constants
     public static final int SUCCESS_SOURCE_PLACE = 0;

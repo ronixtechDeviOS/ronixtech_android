@@ -1384,7 +1384,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
-                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(vHolder.firstLineTypeImageView);
                 }else {
                     if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
@@ -1414,7 +1414,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
-                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(vHolder.secondLineTypeImageView);
                 }else {
                     if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
@@ -1444,7 +1444,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
-                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(vHolder.thirdLineTypeImageView);
                 }else {
                     if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
@@ -1486,7 +1486,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
-                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(vHolder.firstLineTypeImageView);
                 }else {
                     if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
@@ -1506,7 +1506,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
-                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(vHolder.secondLineTypeImageView);
                 }else {
                     if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
@@ -1526,7 +1526,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
-                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_led__lamp))
+                            .placeholder(activity.getResources().getDrawable(R.drawable.line_type_lamp_white))
                             .into(vHolder.thirdLineTypeImageView);
                 }else {
                     if(line.getType().getImageResourceName() != null && line.getType().getImageResourceName().length() >= 1) {
@@ -1653,7 +1653,7 @@ public class DeviceAdapter extends ArrayAdapter {
         }else {
             vHolder.firstLineTypeImageView.setImageResource(line.getType().getImageResourceID());
         }*/
-        vHolder.pirTypeImageView.setImageResource(R.drawable.motion_sensor_icon);
+        vHolder.pirTypeImageView.setImageResource(R.drawable.line_type_motion_sensor_white);
         if(item.getPIRData().getState() == Line.LINE_STATE_ON){
             vHolder.pirTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
         }else if(item.getPIRData().getState() == Line.LINE_STATE_OFF){

@@ -41,6 +41,9 @@ public class MyApp extends MultiDexApplication {
         for (Type type:MySettings.getTypes(Constants.TYPE_LINE)) {
             MySettings.initDB().typeDAO().removeType(type.getId());
         }
+        for (Type type:MySettings.getTypes(Constants.TYPE_LINE_PLUG)) {
+            MySettings.initDB().typeDAO().removeType(type.getId());
+        }
 
         Utils.generatePlaceTypes();
         Utils.generateFloorTypes();

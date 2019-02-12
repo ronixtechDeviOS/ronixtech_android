@@ -299,7 +299,10 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                                     File outputFile = new File(getActivity().getFilesDir()  + "/RonixHome/" + "RoomImages/" + "room_" + room.getId() + ".jpg");
                                     FileOutputStream out = new FileOutputStream(outputFile, false);
 
-                                    pickedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
+                                    //Bitmap finalBitmap = Utils.resizeBitmapByScale(pickedBitmap, 0.4f, true);
+                                    Bitmap finalBitmap = Utils.resizeBitmapByDimensions(pickedBitmap, 500, 500, true);
+                                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
+
 
                                     //Bitmap compressedBitmap = BitmapFactory.decodeStream(new FileInputStream(out.toString()));
 

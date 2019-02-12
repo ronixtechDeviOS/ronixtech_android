@@ -672,7 +672,16 @@ public class MySettings {
         MySettings.initDB().typeDAO().insertType(type);
     }
     public static List<Type> getTypes(int category){
-        return MySettings.initDB().typeDAO().getTypes(category);
+        List<Type> types = new ArrayList<>();
+
+        if(category == Constants.TYPE_LINE_PLUG){
+            types.addAll(MySettings.initDB().typeDAO().getTypes(Constants.TYPE_LINE_PLUG));
+            types.addAll(MySettings.initDB().typeDAO().getTypes(Constants.TYPE_LINE));
+        }else{
+            types.addAll(MySettings.initDB().typeDAO().getTypes(category));
+        }
+
+        return types;
     }
 
     public static void addWifiNetwork(WifiNetwork wifiNetwork){
@@ -1463,6 +1472,21 @@ public class MySettings {
                 }
             };
 
+            Migration MIGRATION_30_31 = new Migration(30, 31) {
+                @Override
+                public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                    //dropAllUserTables(database);
+
+                    database.execSQL("ALTER TABLE Type "
+                            + " ADD COLUMN background_image_url TEXT DEFAULT ''");
+                    database.execSQL("ALTER TABLE Type "
+                            + " ADD COLUMN background_image_resource_id INTEGER NOT NULL DEFAULT 0");
+                    database.execSQL("ALTER TABLE Type "
+                            + " ADD COLUMN background_image_resource_name TEXT DEFAULT ''");
+                }
+            };
+
             database = Room.databaseBuilder(MyApp.getInstance(), AppDatabase.class, Constants.DB_NAME)
                             .addMigrations(MIGRATION_1_2,
                                     MIGRATION_2_3,
@@ -1492,7 +1516,8 @@ public class MySettings {
                                     MIGRATION_26_27,
                                     MIGRATION_27_28,
                                     MIGRATION_28_29,
-                                    MIGRATION_29_30)
+                                    MIGRATION_29_30,
+                                    MIGRATION_30_31)
                             .allowMainThreadQueries().
                             build();
             return database;

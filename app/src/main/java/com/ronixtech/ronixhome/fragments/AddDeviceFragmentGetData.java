@@ -661,7 +661,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
                                             fragment.goToSoundControllerConfigurationFragment();
                                         }else{
-                                            Utils.showToast(activity, Utils.getString(activity, R.string.unknown_smart_controller_type), true);
+                                            Utils.showToast(activity, Utils.getStringExtraInt(activity, R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
                                             fragment.goToSearchFragment();
                                         }
                                     }

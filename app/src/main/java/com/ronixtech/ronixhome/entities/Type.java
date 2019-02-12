@@ -18,6 +18,12 @@ public class Type {
     private int imageResourceID;
     @ColumnInfo(name = "image_resource_name")
     private String imageResourceName;
+    @ColumnInfo(name = "background_image_url")
+    private String backgroundImageUrl;
+    @ColumnInfo(name = "background_image_resource_id")
+    private int backgroundImageResourceID;
+    @ColumnInfo(name = "background_image_resource_name")
+    private String backgroundImageResourceName;
     @ColumnInfo(name = "color_hex_code")
     private String colorHexCode;
 
@@ -28,6 +34,9 @@ public class Type {
         this.imageUrl = "";
         this.imageResourceID = 0;
         this.imageResourceName = "";
+        this.backgroundImageUrl = "";
+        this.backgroundImageResourceID = 0;
+        this.backgroundImageResourceName = "";
         this.colorHexCode = "";
     }
 
@@ -38,6 +47,22 @@ public class Type {
         this.imageUrl = typeImageUrl;
         this.imageResourceID = typeImageResourceID;
         this.imageResourceName = imageResourceName;
+        this.backgroundImageUrl = "";
+        this.backgroundImageResourceID = 0;
+        this.backgroundImageResourceName = "";
+        this.colorHexCode = colorHexCode;
+    }
+
+    public Type(int categoryID, String typeName, String typeImageUrl, int typeImageResourceID, String imageResourceName, String backgroundImageUrl, int backgroundImageResourceID, String backgroundImageResourceName, String colorHexCode){
+        this.id = 0;
+        this.categoryID = categoryID;
+        this.name = typeName;
+        this.imageUrl = typeImageUrl;
+        this.imageResourceID = typeImageResourceID;
+        this.imageResourceName = imageResourceName;
+        this.backgroundImageUrl = backgroundImageUrl;
+        this.backgroundImageResourceID = backgroundImageResourceID;
+        this.backgroundImageResourceName = backgroundImageResourceName;
         this.colorHexCode = colorHexCode;
     }
 
@@ -87,6 +112,30 @@ public class Type {
 
     public void setImageResourceName(String imageResourceName) {
         this.imageResourceName = imageResourceName;
+    }
+
+    public String getBackgroundImageUrl() {
+        return backgroundImageUrl;
+    }
+
+    public void setBackgroundImageUrl(String backgroundImageUrl) {
+        this.backgroundImageUrl = backgroundImageUrl;
+    }
+
+    public int getBackgroundImageResourceID() {
+        return backgroundImageResourceID;
+    }
+
+    public void setBackgroundImageResourceID(int backgroundImageResourceID) {
+        this.backgroundImageResourceID = backgroundImageResourceID;
+    }
+
+    public String getBackgroundImageResourceName() {
+        return backgroundImageResourceName;
+    }
+
+    public void setBackgroundImageResourceName(String backgroundImageResourceName) {
+        this.backgroundImageResourceName = backgroundImageResourceName;
     }
 
     public String getColorHexCode() {
