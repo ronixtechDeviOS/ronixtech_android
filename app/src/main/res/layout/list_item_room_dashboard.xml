@@ -70,11 +70,11 @@
                 </RelativeLayout>
                 <ImageView
                     android:id="@+id/room_advanced_options_button"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="16dp"
                     android:src="@drawable/dots_white"
                     android:tint="@color/whiteColor"
                     android:layout_alignParentEnd="true"
@@ -86,7 +86,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/black_50_transparent_background">
+                    android:background="@color/black_70_transparent_background">
                     <HorizontalScrollView
                         android:id="@+id/room_lines_horizontal_scrollview"
                         android:layout_width="match_parent"

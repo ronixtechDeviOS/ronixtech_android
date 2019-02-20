@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/whiteColor"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/add_place_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+            <ImageView
+                android:id="@+id/add_place_imageview"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/add_place_icon"/>
+            <TextView
+                android:id="@+id/add_place_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/add_place_imageview"
+                android:layout_toRightOf="@id/add_place_imageview"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_centerVertical="true"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="Place"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/darkGrayColor"/>
+
+        <RelativeLayout
+            android:id="@+id/add_room_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="8dp">
+            <ImageView
+                android:id="@+id/add_room_imageview"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/add_room_icon"/>
+            <TextView
+                android:id="@+id/add_room_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/add_room_imageview"
+                android:layout_toRightOf="@id/add_room_imageview"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_centerVertical="true"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="Room"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/darkGrayColor"/>
+
+        <RelativeLayout
+            android:id="@+id/add_device_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="8dp">
+            <ImageView
+                android:id="@+id/add_device_imageview"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/add_device_icon"/>
+            <TextView
+                android:id="@+id/add_device_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/add_device_imageview"
+                android:layout_toRightOf="@id/add_device_imageview"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_centerVertical="true"
+                android:textSize="18sp"
+                android:textColor="@color/blackColor"
+                android:text="Device"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+</FrameLayout>

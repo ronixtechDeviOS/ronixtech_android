@@ -107,6 +107,10 @@ public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment
         deviceConfigurationHintFragment4.setDeviceType(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER);
         pagerAdapter.addFrag(deviceConfigurationHintFragment4, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER));
 
+        DeviceConfigurationHintFragment deviceConfigurationHintFragment5 = new DeviceConfigurationHintFragment();
+        deviceConfigurationHintFragment5.setDeviceType(Device.DEVICE_TYPE_SHUTTER);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment5, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SHUTTER));
+
         pagerAdapter.notifyDataSetChanged();
 
         mTabLayout.setupWithViewPager(viewPager);

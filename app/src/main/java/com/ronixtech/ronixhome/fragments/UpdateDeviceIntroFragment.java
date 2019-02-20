@@ -83,7 +83,8 @@ public class UpdateDeviceIntroFragment extends Fragment {
         device = MySettings.getTempDevice();
         if(device != null){
             if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
-                    || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                 updateTypeInstructionsTextView.setVisibility(View.GONE);
                 updateHWCheckbox.setVisibility(View.GONE);
                 updateWifiCheckBox.setVisibility(View.GONE);
@@ -154,7 +155,8 @@ public class UpdateDeviceIntroFragment extends Fragment {
             public void onClick(View view) {
                 if(device != null){
                     if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
-                            || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                            || device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

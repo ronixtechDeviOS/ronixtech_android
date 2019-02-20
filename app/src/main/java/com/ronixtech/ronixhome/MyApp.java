@@ -9,6 +9,8 @@ import android.support.multidex.MultiDexApplication;
 
 import com.ronixtech.ronixhome.entities.Type;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
 public class MyApp extends MultiDexApplication {
     private static MyApp mInstance;
 
@@ -16,6 +18,12 @@ public class MyApp extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/arial.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
 
         mInstance = this;
 

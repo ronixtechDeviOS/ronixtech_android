@@ -1,16 +1,19 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +34,7 @@ import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.LoginActivity;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.User;
 
@@ -83,6 +87,8 @@ public class RegistrationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_registration, container, false);
+        LoginActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.register), getResources().getColor(R.color.whiteColor));
+        setHasOptionsMenu(true);
 
         logoImageView = view.findViewById(R.id.logo_imageview);
         firstNameEditText = view.findViewById(R.id.registration_first_name_edittext);
@@ -102,14 +108,14 @@ public class RegistrationFragment extends Fragment {
                         // PRESSED
                         //show password
                         passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_on);
+                        //togglePasswordVisibilityImageView.setImageResource(R.drawable.password_on);
                         passwordVisible = true;
                         return true; // if you want to handle the touch event
                     case MotionEvent.ACTION_UP:
                         // RELEASED
                         //hide password
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                        //togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
                         passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
@@ -117,7 +123,7 @@ public class RegistrationFragment extends Fragment {
                         // RELEASED
                         //hide password
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                        //togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
                         passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
@@ -125,6 +131,35 @@ public class RegistrationFragment extends Fragment {
                 return false;
             }
         });
+
+        Drawable drawable = firstNameEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            firstNameEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            firstNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
+        drawable = lastNameEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            lastNameEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            lastNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
+        drawable = emailEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            emailEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            emailEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
+        drawable = passwordEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            passwordEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            passwordEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
 
         /*togglePasswordVisibilityImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +187,7 @@ public class RegistrationFragment extends Fragment {
             }
         });
 
-        firstNameEditText.addTextChangedListener(new TextWatcher() {
+        /*firstNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -231,7 +266,7 @@ public class RegistrationFragment extends Fragment {
                     Utils.setButtonEnabled(registerButton, false);
                 }
             }
-        });
+        });*/
 
         passwordEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -421,10 +456,11 @@ public class RegistrationFragment extends Fragment {
     }
 
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        //inflater.inflate(R.menu.menu_gym, menu);
     }
 
     /*@Override

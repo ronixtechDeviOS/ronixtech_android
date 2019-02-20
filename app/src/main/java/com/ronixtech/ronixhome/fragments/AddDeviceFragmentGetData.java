@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +53,8 @@ public class AddDeviceFragmentGetData extends Fragment {
     private static final String TAG = AddDeviceFragmentGetData.class.getSimpleName();
 
     private HomeConnectedListenerInterface mListener;
+
+    private static boolean typeVerificationRequierd = false;
 
     public AddDeviceFragmentGetData() {
         // Required empty public constructor
@@ -318,6 +321,34 @@ public class AddDeviceFragmentGetData extends Fragment {
         }
     }
 
+    public void goToShutterControllerConfigurationFragment(){
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceConfigurationShutterFragment addDeviceConfigurationShutterFragment = new AddDeviceConfigurationShutterFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceConfigurationShutterFragment, "addDeviceConfigurationShutterFragment");
+                //fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
+    }
+
+    public void goToTypeVerificationFragment(){
+        if(MainActivity.getInstance() != null && MainActivity.isResumed){
+            if(getFragmentManager() != null){
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceTypeVerificationFragment addDeviceTypeVerificationFragment = new AddDeviceTypeVerificationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceTypeVerificationFragment, "addDeviceTypeVerificationFragment");
+                //fragmentTransaction.addToBackStack("addDeviceConfigurationPIRFragment");
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
+    }
+
     public void goToConfigurationFragment(){
         if(MainActivity.getInstance() != null && MainActivity.isResumed){
             if(getFragmentManager() != null){
@@ -429,6 +460,8 @@ public class AddDeviceFragmentGetData extends Fragment {
         @Override
         protected void onPostExecute(Void params) {
             if(statusCode != 200 || MySettings.getTempDevice() == null || MySettings.getTempDevice().getDeviceTypeID() == 0){
+                typeVerificationRequierd = true;
+
                 DeviceTypeGetter2 deviceTypeGetter2 = new DeviceTypeGetter2(activity, fragment);
                 deviceTypeGetter2.execute();
             }else{
@@ -463,12 +496,22 @@ public class AddDeviceFragmentGetData extends Fragment {
                         JSONObject jsonObject = new JSONObject(result.toString());
                         if(jsonObject.has(Constants.PARAMETER_DEVICE_TYPE_ID)){
                             String typeIDString = jsonObject.getString(Constants.PARAMETER_DEVICE_TYPE_ID);
+                            if(typeIDString.equalsIgnoreCase("100006") || typeIDString.equalsIgnoreCase("0")){
+                                typeVerificationRequierd = true;
+                            }else{
+                                typeVerificationRequierd = false;
+                            }
                             int deviceTypeID = Integer.valueOf(typeIDString);
                             Device tempDevice = MySettings.getTempDevice();
                             tempDevice.setDeviceTypeID(deviceTypeID);
                             MySettings.setTempDevice(tempDevice);
                         }else if(jsonObject.has("U_W_TYP")){
                             String typeIDString = jsonObject.getString("U_W_TYP");
+                            if(typeIDString.equalsIgnoreCase("100006") || typeIDString.equalsIgnoreCase("0")){
+                                typeVerificationRequierd = true;
+                            }else{
+                                typeVerificationRequierd = false;
+                            }
                             int deviceTypeID = Integer.valueOf(typeIDString);
                             Device tempDevice = MySettings.getTempDevice();
                             tempDevice.setDeviceTypeID(deviceTypeID);
@@ -518,12 +561,17 @@ public class AddDeviceFragmentGetData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(statusCode == 200){
+            /*if(statusCode == 200){
                 fragment.getChipID();
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.unable_to_get_device_type_id), true);
                 fragment.goToSearchFragment();
+            }*/
+            if(statusCode != 200){
+                typeVerificationRequierd = true;
             }
+
+            fragment.getChipID();
         }
 
         @Override
@@ -565,19 +613,43 @@ public class AddDeviceFragmentGetData extends Fragment {
                     urlConnection.disconnect();
                     Utils.log(TAG, "getDeviceType2 response: " + result.toString(), true);
                     if(result.length() >= 3){
+                        String typeIDString = "";
                         JSONObject jsonObject = new JSONObject(result.toString());
                         if(jsonObject.has("UNIT_STATUS")){
                             JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
+
                             if(unitStatus != null && unitStatus.has("U_W_STT")){
                                 JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
                                 if(wifiStatus != null && wifiStatus.has("U_W_TYP")){
-                                    String typeIDString = wifiStatus.getString("U_W_TYP");
-                                    int deviceTypeID = Integer.valueOf(typeIDString);
-                                    Device tempDevice = MySettings.getTempDevice();
-                                    tempDevice.setDeviceTypeID(deviceTypeID);
-                                    MySettings.setTempDevice(tempDevice);
+                                    typeIDString = wifiStatus.getString("U_W_TYP");
+                                    if(typeIDString != null && typeIDString.length() >= 1){
+                                        int deviceTypeID = Integer.valueOf(typeIDString);
+                                        Device tempDevice = MySettings.getTempDevice();
+                                        tempDevice.setDeviceTypeID(deviceTypeID);
+                                        MySettings.setTempDevice(tempDevice);
+                                    }
                                 }
                             }
+
+                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+                                if(hardwareStatus != null && hardwareStatus.has("U_H_TYP")){
+                                    typeIDString = hardwareStatus.getString("U_H_TYP");
+                                    if(typeIDString != null && typeIDString.length() >= 1){
+                                        int deviceTypeID = Integer.valueOf(typeIDString);
+                                        Device tempDevice = MySettings.getTempDevice();
+                                        tempDevice.setDeviceTypeID(deviceTypeID);
+                                        MySettings.setTempDevice(tempDevice);
+                                    }
+                                }
+                            }
+                        }
+
+
+                        if(typeIDString == null || typeIDString.equalsIgnoreCase("100006") || typeIDString.equalsIgnoreCase("0")){
+                            typeVerificationRequierd = true;
+                        }else{
+                            typeVerificationRequierd = false;
                         }
                     }
                 }catch (MalformedURLException e){
@@ -650,19 +722,28 @@ public class AddDeviceFragmentGetData extends Fragment {
                                             DevicesInMemory.removeDevice(memoryDevice);
                                             MainActivity.getInstance().removeDevice(memoryDevice);
                                         }
-                                        Device device = MySettings.getTempDevice();
-                                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                                            fragment.goToPIRConfigurationFragment();
-                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                                                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                                            fragment.goToConfigurationFragment();
-                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                                            fragment.goToSoundControllerConfigurationFragment();
+                                        if(typeVerificationRequierd){
+                                            Log.d("AAAA", "typeVerificationRequierd: true");
+                                            fragment.goToTypeVerificationFragment();
                                         }else{
-                                            Utils.showToast(activity, Utils.getStringExtraInt(activity, R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
-                                            fragment.goToSearchFragment();
+                                            Log.d("AAAA", "typeVerificationRequierd: false");
+                                            Device device = MySettings.getTempDevice();
+                                            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                                                fragment.goToPIRConfigurationFragment();
+                                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                                                fragment.goToConfigurationFragment();
+                                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                                                fragment.goToSoundControllerConfigurationFragment();
+                                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SHUTTER){
+                                                fragment.goToShutterControllerConfigurationFragment();
+                                            }else{
+                                                Utils.showToast(activity, Utils.getStringExtraInt(activity, R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
+                                                fragment.goToSearchFragment();
+                                            }
                                         }
                                     }
                                 })
@@ -688,24 +769,31 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     }
                                 })
                                 .show();
-                    }else{
-
                     }
                 }else {
                     //debugTextView.append("Chip ID: " + chipID + "\n");
-                    Device device = MySettings.getTempDevice();
-                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                            device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-                        fragment.goToConfigurationFragment();
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-                        fragment.goToPIRConfigurationFragment();
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-                        fragment.goToSoundControllerConfigurationFragment();
+                    if(typeVerificationRequierd){
+                        Log.d("AAAA", "typeVerificationRequierd: true");
+                        fragment.goToTypeVerificationFragment();
                     }else{
-                        Utils.showToast(activity, Utils.getStringExtraInt(activity, R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
-                        fragment.goToSearchFragment();
+                        Log.d("AAAA", "typeVerificationRequierd: false");
+                        Device device = MySettings.getTempDevice();
+                        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                            fragment.goToConfigurationFragment();
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                            fragment.goToPIRConfigurationFragment();
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+                            fragment.goToSoundControllerConfigurationFragment();
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SHUTTER){
+                            fragment.goToShutterControllerConfigurationFragment();
+                        }else{
+                            Utils.showToast(activity, Utils.getStringExtraInt(activity, R.string.unknown_smart_controller_type, device.getDeviceTypeID()), true);
+                            fragment.goToSearchFragment();
+                        }
                     }
                 }
             }else{

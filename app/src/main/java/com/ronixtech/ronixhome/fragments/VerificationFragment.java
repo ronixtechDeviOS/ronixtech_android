@@ -2,6 +2,7 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,7 +39,8 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
     private OnFragmentInteractionListener mListener;
 
     TextView verificationMessageTextView;
-    Button resendEmailButton, cancelButton, wrongEmaiButton;
+    Button resendEmailButton, cancelButton;
+    TextView wrongEmailTextView;
 
     FirebaseAuth mAuth;
 
@@ -73,7 +75,9 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
         verificationMessageTextView = view.findViewById(R.id.verification_message_hint_textview);
         resendEmailButton = view.findViewById(R.id.resend_email_button);
         cancelButton = view.findViewById(R.id.cancel_button);
-        wrongEmaiButton = view.findViewById(R.id.wrong_email_button);
+        wrongEmailTextView = view.findViewById(R.id.wrong_email_textview);
+
+        wrongEmailTextView.setPaintFlags(wrongEmailTextView.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
 
         if(MySettings.getActiveUser() != null) {
             verificationMessageTextView.setText(Utils.getStringExtraText(getActivity(), R.string.verification_message_hint, MySettings.getActiveUser().getEmail()));
@@ -98,7 +102,7 @@ public class VerificationFragment extends android.support.v4.app.Fragment {
             }
         });
 
-        wrongEmaiButton.setOnClickListener(new View.OnClickListener() {
+        wrongEmailTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent loginIntent = new Intent(getActivity(), LoginActivity.class);

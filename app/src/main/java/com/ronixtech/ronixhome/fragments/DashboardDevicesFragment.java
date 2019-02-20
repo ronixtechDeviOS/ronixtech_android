@@ -327,7 +327,8 @@ public class DashboardDevicesFragment extends Fragment {
             devicesListView.setVisibility(View.GONE);
             devicesListViewLongPressHint.setVisibility(View.GONE);
         }else{
-            addFabMenu.setVisibility(View.VISIBLE);
+            //addFabMenu.setVisibility(View.VISIBLE);
+            addFabMenu.setVisibility(View.GONE);
             devicesListView.setVisibility(View.VISIBLE);
             //devicesListViewLongPressHint.setVisibility(View.VISIBLE);
             devicesListViewLongPressHint.setVisibility(View.GONE);
@@ -480,7 +481,37 @@ public class DashboardDevicesFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        //inflater.inflate(R.menu.menu_gym, menu);
+        inflater.inflate(R.menu.menu_dashboard_devices, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_add) {
+            /*// DialogFragment.show() will take care of adding the fragment
+            // in a transaction.  We also want to remove any currently showing
+            // dialog, so make our own transaction and take care of that here.
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("additionDialogFragment");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            AddDialogFragment fragment = AddDialogFragment.newInstance();
+            fragment.show(ft, "additionDialogFragment");*/
+            //go to add device fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+            fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+            fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+            fragmentTransaction.commit();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

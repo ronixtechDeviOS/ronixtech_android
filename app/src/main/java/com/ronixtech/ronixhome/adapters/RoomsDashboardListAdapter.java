@@ -167,6 +167,22 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
             }
         }
 
+        /*vHolder.roomLayout.setOnTouchListener(new OnSwipeTouchListener(activity) {
+            public void onSwipeTop() {
+                Toast.makeText(activity, "top", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeRight() {
+                Toast.makeText(activity, "right", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeLeft() {
+                Toast.makeText(activity, "left", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeBottom() {
+                Toast.makeText(activity, "bottom", Toast.LENGTH_SHORT).show();
+            }
+
+        });*/
+
         /*if(item.getType().getColorHexCode().length() == 6){
             vHolder.roomInfoLayout.setBackgroundColor(Color.parseColor(Utils.getColorHex(item.getType().getColorHexCode(), 20)));
         }else{
@@ -186,7 +202,8 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                     if(device.getLines() != null && device.getLines().size() >= 1){
                         for (Line line:device.getLines()) {
                             if(!roomLines.contains(line)){

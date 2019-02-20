@@ -132,7 +132,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
 
 
         if(device != null){
-            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines|| device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
                 editDeviceLineFragment1.setCurrentLinePosition(0);
                 editDeviceLineFragment1.setDeviceNumberOfLines(1);
@@ -142,7 +142,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment1.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
                 mTabLayout.setVisibility(View.GONE);
-            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
                 editDeviceLineFragment1.setCurrentLinePosition(0);
                 editDeviceLineFragment1.setDeviceNumberOfLines(2);
@@ -161,7 +161,7 @@ public class EditDeviceFragment extends android.support.v4.app.Fragment {
                 editDeviceLineFragment2.setMqttClient(mqttAndroidClient);
                 pagerAdapter.addFrag(editDeviceLineFragment2, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround|| device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                 EditDeviceLineFragment editDeviceLineFragment1 = new EditDeviceLineFragment();
                 editDeviceLineFragment1.setCurrentLinePosition(0);
                 editDeviceLineFragment1.setDeviceNumberOfLines(3);

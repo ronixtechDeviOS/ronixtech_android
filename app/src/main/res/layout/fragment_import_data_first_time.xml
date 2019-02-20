@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.ImportDataFirstTimeFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -12,26 +13,17 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_2">
-            <ImageView
-                android:id="@+id/logo_imageview"
-                android:layout_width="125dp"
-                android:layout_height="125dp"
-                android:focusableInTouchMode="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="64dp"
-                android:src="@drawable/logo_text_big"/>
+            android:background="@drawable/background_dark">
 
             <TextView
                 android:id="@+id/instructions_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/logo_imageview"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="96dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:textSize="18sp"
-                android:textColor="@color/blackColor"
+                android:textColor="@color/whiteColor"
                 android:text="@string/data_import_first_time"/>
 
             <Button
@@ -43,25 +35,25 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/button_background_round_blue"
+                android:background="@drawable/button_background_round_white"
                 android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
+                android:textColor="@color/darkBlueColor"
+                android:textSize="16sp"
                 android:text="@string/restore_data"/>
 
-            <Button
-                android:id="@+id/skip_button"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
+            <TextView
+                android:id="@+id/skip_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/restore_data_button"
                 android:layout_centerHorizontal="true"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:padding="8dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/button_background_round_border_blue"
                 android:textAllCaps="false"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/orangeColor"
+                android:textSize="16sp"
                 android:text="@string/add_place_skip"/>
 
         </RelativeLayout>

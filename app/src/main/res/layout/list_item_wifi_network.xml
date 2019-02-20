@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/blackColor"
+            android:textColor="@color/whiteColor"
             android:text="SSID_NAME"/>
         <TextView
             android:id="@+id/wifi_network_item_place_name_textview"
@@ -37,7 +37,7 @@
             android:layout_below="@id/wifi_network_item_name_textview"
             android:layout_marginTop="4dp"
             android:textSize="16sp"
-            android:textColor="@color/blackColor"
+            android:textColor="@color/whiteColor"
             android:text="PLACE_NAME"/>
         <TextView
             android:id="@+id/wifi_network_item_signal_textview"

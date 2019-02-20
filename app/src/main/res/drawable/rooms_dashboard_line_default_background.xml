@@ -18,7 +18,7 @@
         android:right="1dp"
         android:top="1dp"
         android:bottom="1dp"
-        android:drawable="@drawable/background_blue">
+        android:drawable="@drawable/background_blue_3">
     </item>
 
 </layer-list>

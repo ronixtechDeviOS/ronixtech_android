@@ -8,18 +8,18 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/whiteColor">
+        android:background="@drawable/background_dark">
         <TextView
             android:id="@+id/succes_message_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="64dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:textAlignment="center"
             android:textSize="20sp"
-            android:textColor="@color/blueColor"
+            android:textColor="@color/whiteColor"
             android:text="SUCCESS MESSAGE"/>
 
         <ImageView
@@ -38,11 +38,11 @@
             android:layout_below="@id/success_imageview"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="32dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/button_background_round_blue"
-            android:textColor="@color/whiteColor"
+            android:background="@drawable/button_background_round_white"
+            android:textColor="@color/darkBlueColor"
             android:text="@string/continue_button"/>
     </RelativeLayout>
 

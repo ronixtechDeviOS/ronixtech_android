@@ -3,6 +3,7 @@ package com.ronixtech.ronixhome.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -54,6 +55,17 @@ public class SplashActivity extends AppCompatActivity {
                 goToMainActivity();
             }
         }, SPLASH_DISPLAY_LENGTH);*/
+
+        setContentView(R.layout.activity_splash);
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        //ActionBar actionBar = getActionBar();
+        //actionBar.hide();
+
 
         new Utils.InternetChecker(this, new Utils.InternetChecker.OnConnectionCallback() {
             @Override

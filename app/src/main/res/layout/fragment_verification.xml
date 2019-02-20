@@ -12,7 +12,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_2">
+            android:background="@drawable/background_dark">
             <ImageView
                 android:id="@+id/logo_imageview"
                 android:layout_width="125dp"
@@ -36,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:textSize="24sp"
-                    android:textColor="@color/blueColor"
+                    android:textColor="@color/orangeColor"
                     android:text="@string/verification_title"/>
 
                 <TextView
@@ -47,7 +47,7 @@
                     android:layout_below="@id/thanks_for_registring_textview"
                     android:layout_marginTop="8dp"
                     android:textSize="18sp"
-                    android:textColor="@color/blackColor"
+                    android:textColor="@color/whiteColor"
                     android:text="@string/verification_message_hint"/>
 
                 <TextView
@@ -58,7 +58,7 @@
                     android:layout_below="@id/verification_message_hint_textview"
                     android:layout_marginTop="8dp"
                     android:textSize="18sp"
-                    android:textColor="@color/blackColor"
+                    android:textColor="@color/whiteColor"
                     android:text="@string/verification_message_resend"/>
 
             </RelativeLayout>
@@ -72,11 +72,11 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/button_background_round_blue"
+                android:background="@drawable/button_background_round_white"
                 android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
+                android:textColor="@color/darkBlueColor"
+                android:textSize="16sp"
                 android:text="@string/verification_resend"/>
-
 
             <Button
                 android:id="@+id/cancel_button"
@@ -89,25 +89,25 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/button_background_round_border_blue"
+                android:background="@drawable/button_background_round_white"
                 android:textAllCaps="false"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/darkBlueColor"
+                android:textSize="16sp"
                 android:text="@string/cancel"/>
 
-            <Button
-                android:id="@+id/wrong_email_button"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
+            <TextView
+                android:id="@+id/wrong_email_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/cancel_button"
                 android:layout_centerHorizontal="true"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
+                android:padding="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/button_background_round_border_blue"
                 android:textAllCaps="false"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/orangeColor"
+                android:textSize="16sp"
                 android:text="@string/verification_wrong_mail"/>
         </RelativeLayout>
 

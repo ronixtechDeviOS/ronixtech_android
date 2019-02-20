@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.AddPlaceFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -11,7 +12,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_1">
+            android:background="@drawable/background_dark">
             <TextView
                 android:id="@+id/add_place_title_textview"
                 android:layout_width="wrap_content"
@@ -21,16 +22,17 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textSize="24sp"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/orangeColor"
                 android:textAlignment="center"
                 android:text="@string/add_place_title"/>
             <ImageView
                 android:id="@+id/add_place_imageview"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/place_icon"
+                android:src="@drawable/place_icon_circular"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/add_place_title_textview"/>
+                android:layout_below="@id/add_place_title_textview"
+                android:layout_marginTop="8dp"/>
             <TextView
                 android:id="@+id/add_place_description_textview"
                 android:layout_width="wrap_content"
@@ -40,8 +42,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:textColor="@color/whiteColor"
                 android:textSize="16sp"
-                android:textColor="@color/blackColor"
                 android:textAlignment="center"
                 android:text="@string/add_place_description"/>
 
@@ -49,35 +51,47 @@
                 android:id="@+id/place_name_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_below="@id/add_place_description_textview"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
+                android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/place_name"/>
-            <EditText
-                android:id="@+id/place_name_edittedxt"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/place_name_inputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/place_name_textview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="8dp"
-                android:imeOptions="actionDone"
-                android:inputType="textCapWords"
-                android:textAlignment="center"
-                android:hint="@string/place_name"/>
+                android:textColorHint="@color/whiteColor">
+                <EditText
+                    android:id="@+id/place_name_edittedxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/whiteColor"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapWords"
+                    android:textAlignment="center"
+                    android:textColor="@color/whiteColor"
+                    android:textColorHint="@color/whiteColor"
+                    android:hint="@string/place_name"/>
+            </android.support.design.widget.TextInputLayout>
 
             <TextView
                 android:id="@+id/place_type_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/place_name_edittedxt"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_below="@id/place_name_inputlayout"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
+                android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/place_type"/>
             <RelativeLayout
@@ -85,11 +99,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/place_type_textview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
-                android:background="@drawable/button_background_round_border_blue">
+                android:background="@drawable/button_background_bottom_line_gray">
                 <ImageView
                     android:id="@+id/type_imageview"
                     android:layout_width="46dp"
@@ -119,8 +133,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
+                    android:textColor="@color/whiteColor"
                     android:textSize="16sp"
-                    android:textColor="@color/blackColor"
                     android:text="@string/place_type_hint"/>
             </RelativeLayout>
 
@@ -129,8 +143,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/place_type_selection_layout"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="16dp">
                 <TextView
                     android:id="@+id/place_number_of_floors_textview"
@@ -138,6 +152,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:textAlignment="center"
+                    android:textColor="@color/whiteColor"
                     android:textSize="18sp"
                     android:text="@string/number_of_floors_colon"/>
 
@@ -148,13 +163,17 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/place_number_of_floors_textview"
                     android:layout_toRightOf="@id/place_number_of_floors_textview"
+                    android:layout_toStartOf="@id/number_of_floors_buttons_layout"
+                    android:layout_toLeftOf="@id/number_of_floors_buttons_layout"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:textAlignment="center"
+                    android:textColor="@color/whiteColor"
                     android:textSize="18sp"
                     android:text="1"/>
 
                 <LinearLayout
+                    android:id="@+id/number_of_floors_buttons_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -165,20 +184,20 @@
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_blue"
-                        android:textColor="@color/blackColor"
+                        android:background="@drawable/button_background_round_border_gray"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/minus_symbol"/>
                     <android.support.v4.widget.Space
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.1"/>
+                        android:layout_weight="0"/>
                     <Button
                         android:id="@+id/increment_button"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_blue"
-                        android:textColor="@color/blackColor"
+                        android:background="@drawable/button_background_round_border_gray"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/add_symbol"/>
                 </LinearLayout>
 
@@ -189,18 +208,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/place_number_of_floors_layout"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
+                android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/wifi_networks"/>
             <ListView
                 android:id="@+id/selected_wifi_networks_listview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="8dp"
                 android:layout_below="@id/place_wifi_network_textview"
                 tools:listitem="@layout/list_item_wifi_network_editable"/>
@@ -210,16 +230,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/selected_wifi_networks_listview"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
-                android:background="@drawable/button_background_round_border_blue">
+                android:background="@drawable/button_background_bottom_line_gray">
                 <ImageView
                     android:id="@+id/selected_wifi_network_imageview"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/home_network_blue"
+                    android:src="@drawable/wifi_gray"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>
@@ -245,7 +265,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:textSize="16sp"
-                    android:textColor="@color/blackColor"
+                    android:textColor="@color/whiteColor"
                     android:text="@string/select_wifi_network_hint"/>
             </RelativeLayout>
 
@@ -254,12 +274,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/wifi_network_selection_layout"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginTop="16dp"
                 android:textSize="18sp"
                 android:checked="true"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/whiteColor"
                 android:text="@string/default_place_hint"/>
 
             <Button
@@ -267,13 +287,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/default_place_checkbox"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="16dp"
-                android:background="@drawable/button_background_round_gray"
-                android:textColor="@color/whiteColor"
+                android:background="@drawable/button_background_round_white"
+                android:textColor="@color/darkBlueColor"
                 android:text="@string/continue_button"/>
 
         </RelativeLayout>

@@ -205,4 +205,24 @@ public abstract class DeviceDAO {
         removeDeviceLines(device.getId());
         removeDevice(device.getId());
     }
+
+
+    public void insertShutter(Device device){
+        insertDevice(device);
+    }
+    public Device getShutterByID(long id) {
+        Device device = findByID(id);
+        return device;
+    }
+    public Device getShutterByMacAddress(String macAddress) {
+        Device device = findByMAC(macAddress);
+        return device;
+    }
+    public Device getShutterByChipID(String chipID) {
+        Device device = findByChipID(chipID);
+        return device;
+    }
+    public void removeShutter(Device device){
+        removeDevice(device.getId());
+    }
 }

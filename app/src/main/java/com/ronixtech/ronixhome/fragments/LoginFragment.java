@@ -1,7 +1,11 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Intent;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +15,8 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -47,6 +54,7 @@ import com.ronixtech.ronixhome.HttpConnector;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.LoginActivity;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Backup;
 import com.ronixtech.ronixhome.entities.User;
@@ -79,7 +87,9 @@ public class LoginFragment extends Fragment {
     ImageView logoImageView;
     EditText emailEditText, passwordEditText;
     ImageView togglePasswordVisibilityImageView;
-    Button loginButton, registerButton, resetPasswordButton;
+    Button loginButton;
+    RelativeLayout registerLayout, registerFacebookLayout;
+    TextView resetPasswordTextView;
     LoginButton facebookLoginButton;
 
     boolean passwordVisible = false;
@@ -115,15 +125,18 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        LoginActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.login), getResources().getColor(R.color.whiteColor));
+        setHasOptionsMenu(true);
 
         logoImageView = view.findViewById(R.id.logo_imageview);
         emailEditText = view.findViewById(R.id.login_email_edittext);
         passwordEditText = view.findViewById(R.id.login_password_edittext);
         togglePasswordVisibilityImageView = view.findViewById(R.id.toggle_password_visibility_imageview);
         loginButton = view.findViewById(R.id.login_button);
-        resetPasswordButton = view.findViewById(R.id.forgot_password_button);
+        resetPasswordTextView = view.findViewById(R.id.forgot_password_textview);
         facebookLoginButton = view.findViewById(R.id.facebook_login_button);
-        registerButton = view.findViewById(R.id.register_button);
+        registerLayout = view.findViewById(R.id.register_layout);
+        registerFacebookLayout = view.findViewById(R.id.facebook_register_layout);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -159,14 +172,14 @@ public class LoginFragment extends Fragment {
                         // PRESSED
                         //show password
                         passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_on);
+                        //togglePasswordVisibilityImageView.setImageResource(R.drawable.password_on);
                         passwordVisible = true;
                         return true; // if you want to handle the touch event
                     case MotionEvent.ACTION_UP:
                         // RELEASED
                         //hide password
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                        //togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
                         passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
@@ -174,7 +187,7 @@ public class LoginFragment extends Fragment {
                         // RELEASED
                         //hide password
                         passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
+                        //togglePasswordVisibilityImageView.setImageResource(R.drawable.password_off);
                         passwordVisible = false;
                         passwordEditText.setSelection(passwordEditText.getText().toString().length() >= 1 ? passwordEditText.getText().toString().length() : 0);
                         return true; // if you want to handle the touch event
@@ -182,6 +195,23 @@ public class LoginFragment extends Fragment {
                 return false;
             }
         });
+
+        resetPasswordTextView.setPaintFlags(resetPasswordTextView.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+
+        Drawable drawable = emailEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            emailEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            emailEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
+        drawable = passwordEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            passwordEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            passwordEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
 
         /*togglePasswordVisibilityImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,7 +230,7 @@ public class LoginFragment extends Fragment {
             }
         });*/
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        registerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FragmentManager fragmentManager = getFragmentManager();
@@ -212,7 +242,13 @@ public class LoginFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-        resetPasswordButton.setOnClickListener(new View.OnClickListener() {
+        registerFacebookLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.not_yet_implemented), true);
+            }
+        });
+        resetPasswordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(Utils.validateInputs(emailEditText)){
@@ -499,10 +535,11 @@ public class LoginFragment extends Fragment {
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        //inflater.inflate(R.menu.menu_gym, menu);
     }
 
    /*@Override

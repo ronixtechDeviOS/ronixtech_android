@@ -10,9 +10,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.adapters.PlacesDashboardListAdapter;
 import com.ronixtech.ronixhome.adapters.PlacesGridAdapter;
 import com.ronixtech.ronixhome.entities.Place;
 
@@ -48,6 +51,9 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
     PlacesGridAdapter placeAdapter;
     List<Place> places;
     TextView placesGridViewLongPressHint;
+
+    ListView placesListView;
+    PlacesDashboardListAdapter placesListAdapter;
 
     public PlacesFragment() {
         // Required empty public constructor
@@ -89,7 +95,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
 
         addPlaceLayout = view.findViewById(R.id.add_new_place_layout);
 
-        placesGridView = view.findViewById(R.id.places_gridview);
+        /*placesGridView = view.findViewById(R.id.places_gridview);
         places = MySettings.getAllPlaces();
         placeAdapter = new PlacesGridAdapter(getActivity(), places, getFragmentManager(), new PlacesGridAdapter.PlacesListener() {
             @Override
@@ -144,7 +150,65 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                         .show();
             }
         });
-        placesGridView.setAdapter(placeAdapter);
+        placesGridView.setAdapter(placeAdapter);*/
+
+
+        placesListView = view.findViewById(R.id.places_listview);
+        places = MySettings.getAllPlaces();
+        placesListAdapter = new PlacesDashboardListAdapter(getActivity(), places, getFragmentManager(), new PlacesDashboardListAdapter.PlacesListener() {
+            @Override
+            public void onPlaceDeleted() {
+                MySettings.setCurrentPlace(null);
+                MySettings.setCurrentFloor(null);
+                MySettings.setCurrentRoom(null);
+                places.clear();
+                places.addAll(MySettings.getAllPlaces());
+                placesListAdapter.notifyDataSetChanged();
+                setLayoutVisibility();
+            }
+            @Override
+            public void onDefaultPlaceRequested() {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(Utils.getString(getActivity(), R.string.select_default_place_title))
+                        //set message
+                        .setMessage(Utils.getString(getActivity(), R.string.select_default_place_message))
+                        //set positive button
+                        .setPositiveButton(Utils.getString(getActivity(), R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                if(MySettings.getAllPlaces() != null || MySettings.getAllPlaces().size() >= 1){
+                                    // DialogFragment.show() will take care of adding the fragment
+                                    // in a transaction.  We also want to remove any currently showing
+                                    // dialog, so make our own transaction and take care of that here.
+                                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                                    if (prev != null) {
+                                        ft.remove(prev);
+                                    }
+                                    ft.addToBackStack(null);
+
+                                    // Create and show the dialog.
+                                    PickPlaceDialogFragment fragment = PickPlaceDialogFragment.newInstance();
+                                    fragment.setTargetFragment(PlacesFragment.this, 0);
+                                    fragment.show(ft, "pickPlaceDialogFragment");
+                                }
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(Utils.getString(getActivity(), R.string.later), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                            }
+                        })
+                        .show();
+            }
+        });
+        placesListView.setAdapter(placesListAdapter);
 
         setLayoutVisibility();
 
@@ -224,11 +288,14 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
 
         if(showAddPlaceLayout){
             addFabMenu.setVisibility(View.GONE);
-            placesGridView.setVisibility(View.GONE);
+            //placesGridView.setVisibility(View.GONE);
+            placesListView.setVisibility(View.GONE);
             placesGridViewLongPressHint.setVisibility(View.GONE);
         }else{
-            addFabMenu.setVisibility(View.VISIBLE);
-            placesGridView.setVisibility(View.VISIBLE);
+            //addFabMenu.setVisibility(View.VISIBLE);
+            addFabMenu.setVisibility(View.GONE);
+            //placesGridView.setVisibility(View.VISIBLE);
+            placesListView.setVisibility(View.VISIBLE);
             //placesGridViewLongPressHint.setVisibility(View.VISIBLE);
             placesGridViewLongPressHint.setVisibility(View.GONE);
         }
@@ -251,7 +318,37 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        //inflater.inflate(R.menu.menu_gym, menu);
+        inflater.inflate(R.menu.menu_places, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_add) {
+            /*// DialogFragment.show() will take care of adding the fragment
+            // in a transaction.  We also want to remove any currently showing
+            // dialog, so make our own transaction and take care of that here.
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("additionDialogFragment");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            AddDialogFragment fragment = AddDialogFragment.newInstance();
+            fragment.show(ft, "additionDialogFragment");*/
+            //go to add place fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AddPlaceFragment addPlaceFragment = new AddPlaceFragment();
+            fragmentTransaction.replace(R.id.fragment_view, addPlaceFragment, "addPlaceFragment");
+            fragmentTransaction.addToBackStack("addPlaceFragment");
+            fragmentTransaction.commit();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /*@Override

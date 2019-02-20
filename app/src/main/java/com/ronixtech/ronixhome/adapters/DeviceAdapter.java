@@ -92,7 +92,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -101,12 +101,15 @@ public class DeviceAdapter extends ArrayAdapter {
         if(deviceType == Device.DEVICE_TYPE_wifi_1line || deviceType == Device.DEVICE_TYPE_wifi_2lines || deviceType == Device.DEVICE_TYPE_wifi_3lines ||
                 deviceType == Device.DEVICE_TYPE_wifi_1line_old || deviceType == Device.DEVICE_TYPE_wifi_2lines_old || deviceType == Device.DEVICE_TYPE_wifi_3lines_old ||
                 deviceType == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines){
+                deviceType == Device.DEVICE_TYPE_PLUG_1lines || deviceType == Device.DEVICE_TYPE_PLUG_2lines|| deviceType == Device.DEVICE_TYPE_PLUG_3lines ||
+                deviceType == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || deviceType == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| deviceType == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
             return 0;
         }else if(deviceType == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             return 1;
         }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
             return 2;
+        }else if(deviceType == Device.DEVICE_TYPE_SHUTTER){
+            return 3;
         }
         return 0;
     }
@@ -173,7 +176,7 @@ public class DeviceAdapter extends ArrayAdapter {
 
             if(item != null){
                 if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines){
                     vHolder.firstLineLayout.setVisibility(View.VISIBLE);
                     vHolder.secondLineLayout.setVisibility(View.GONE);
                     vHolder.thirdLineLayout.setVisibility(View.GONE);
@@ -258,6 +261,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     populateLineData(item);
                 }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                     populatePlugLineData(item);
+                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    populatePlugLineData(item);
                 }
 
                 controlsEnabled = true;
@@ -292,6 +297,10 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
+                }
+
+                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
@@ -1366,6 +1375,303 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 });
             }
+        }else if(viewType == 3){
+            if(rowView == null){
+                LayoutInflater inflater = activity.getLayoutInflater();
+                rowView = inflater.inflate(R.layout.list_item_shutter, null);
+                vHolder = new ViewHolder();
+                vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
+                vHolder.shutterLayout = rowView.findViewById(R.id.shutter_layout);
+                vHolder.shutterAdvancedOptionsButton= rowView.findViewById(R.id.shutter_advanced_options_button);
+                vHolder.shutterDownImageView = rowView.findViewById(R.id.shutter_down_imageview);
+                vHolder.shutterStopImageView = rowView.findViewById(R.id.shutter_stop_imageview);
+                vHolder.shutterUpImageView = rowView.findViewById(R.id.shutter_up_imageview);
+                vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
+                vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+
+                rowView.setTag(vHolder);
+            }
+            else{
+                vHolder = (ViewHolder) rowView.getTag();
+            }
+
+            if(item != null){
+                if(placeMode == Place.PLACE_MODE_LOCAL){
+                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+
+                    if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                    }else{
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                    }
+                }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                    vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+
+                    if(item.isDeviceMQTTReachable()){
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                    }else{
+                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+
+
+                if(item.getLastSeenTimestamp() != 0) {
+                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+
+                    //show full date if not same day (if it's a new day)
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    long currentTimestamp = cal2.getTimeInMillis();
+                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                    cal2.setTimeInMillis(currentTimestamp);
+                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                    if (!sameDay) {
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                    }else{
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                    }
+
+                }else{
+                    //vHolder.lastSeenLayout.setVisibility(View.GONE);
+                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
+                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+                }
+
+                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                    populateLineData(item);
+                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                    populatePlugLineData(item);
+                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    populatePlugLineData(item);
+                }
+
+                controlsEnabled = true;
+
+                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
+                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                    if(item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1){
+                        Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
+                        if(currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
+                            controlsEnabled = false;
+                        }
+                    }
+                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                MySettings.setTempDevice(item);
+
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                fragmentTransaction.commit();
+                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                            }
+                        }
+                    });
+                }else{
+                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
+                }
+
+
+                final ViewHolder tempViewHolder = vHolder;
+                vHolder.shutterDownImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                        //shutter down
+                        Utils.toggleShutter(item, Device.SHUTTER_ACTION_DOWN, placeMode, new Utils.ShutterToggler.ToggleCallback() {
+                            @Override
+                            public void onToggleSuccess() {
+
+                            }
+                            @Override
+                            public void onToggleFail() {
+
+                            }
+                        });
+                        if(controlsEnabled){
+
+                        }else{
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                        }
+                    }
+                });
+                vHolder.shutterStopImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                        //shutter stop
+                        Utils.toggleShutter(item, Device.SHUTTER_ACTION_STOP, placeMode, new Utils.ShutterToggler.ToggleCallback() {
+                            @Override
+                            public void onToggleSuccess() {
+
+                            }
+                            @Override
+                            public void onToggleFail() {
+
+                            }
+                        });
+                        if(controlsEnabled){
+
+                        }else{
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                        }
+                    }
+                });
+                vHolder.shutterUpImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                        //shutter up
+                        Utils.toggleShutter(item, Device.SHUTTER_ACTION_UP, placeMode, new Utils.ShutterToggler.ToggleCallback() {
+                            @Override
+                            public void onToggleSuccess() {
+
+                            }
+                            @Override
+                            public void onToggleFail() {
+
+                            }
+                        });
+                        if(controlsEnabled){
+
+                        }else{
+                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                        }
+                    }
+                });
+
+                vHolder.shutterAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        PopupMenu popup = new PopupMenu(activity, view);
+                        popup.getMenuInflater().inflate(R.menu.menu_shutter, popup.getMenu());
+
+                        popup.show();
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item1) {
+                                int id = item1.getItemId();
+                                if(id == R.id.action_device_info){
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                    deviceInfoFragment.setDevice(item);
+                                    deviceInfoFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                    fragmentTransaction.commit();
+                                }else if(id == R.id.action_edit_device_location){
+                                    MySettings.setTempDevice(item);
+
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                    editDeviceLocationFragment.setPlaceMode(placeMode);
+                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    fragmentTransaction.commit();
+                                }else if(id == R.id.action_update_device){
+                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                        MySettings.setTempDevice(item);
+
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        fragmentTransaction.commit();
+                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
+                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                    }
+                                }else if(id == R.id.action_remove_device){
+                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                            //set icon
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            //set title
+                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
+                                            //set message
+                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
+                                            //set positive button
+                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    //set what would happen when positive button is clicked
+                                                    removeDevice(item);
+                                                }
+                                            })
+                                            //set negative button
+                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    //set what should happen when negative button is clicked
+                                                }
+                                            })
+                                            .show();
+                                }
+                                return true;
+                            }
+                        });
+                    }
+                });
+
+                vHolder.shutterDownImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.shutterStopImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.shutterUpImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+                vHolder.shutterLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        return true;
+                    }
+                });
+            }
         }
 
         return rowView;
@@ -1827,6 +2133,10 @@ public class DeviceAdapter extends ArrayAdapter {
         CardView pirLayout;
         ImageView pirTypeImageView;
         ImageView pirAdvancedOptionsButton;
+
+        CardView shutterLayout;
+        ImageView shutterDownImageView  , shutterUpImageView, shutterStopImageView;
+        ImageView shutterAdvancedOptionsButton;
 
         RelativeLayout scanningNetworkLayout;
         RelativeLayout lastSeenLayout;
@@ -2339,12 +2649,15 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                        device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
                     Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_successfull), false);
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
                     DeviceRebooterPost deviceRebooterPost = new DeviceRebooterPost(device);
                     deviceRebooterPost.execute();
                 }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+                    Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_successfull), false);
+                }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SHUTTER){
                     Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_successfull), false);
                 }
             }else{

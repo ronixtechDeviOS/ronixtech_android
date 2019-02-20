@@ -121,7 +121,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
 
 
         if(device != null){
-            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines){
+            if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines){
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment1 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment1.setCurrentLinePosition(0);
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(1);
@@ -129,7 +129,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 addDeviceConfigurationLineFragment1.setParentFragment(this);
                 pagerAdapter.addFrag(addDeviceConfigurationLineFragment1, Utils.getString(getActivity(), R.string.line_1_name_hint));
                 mTabLayout.setVisibility(View.GONE);
-            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
+            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment1 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment1.setCurrentLinePosition(0);
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(2);
@@ -144,7 +144,7 @@ public class AddDeviceConfigurationFragment extends Fragment {
                 addDeviceConfigurationLineFragment2.setParentFragment(this);
                 pagerAdapter.addFrag(addDeviceConfigurationLineFragment2, Utils.getString(getActivity(), R.string.line_3_name_hint));
             }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                 AddDeviceConfigurationLineFragment addDeviceConfigurationLineFragment1 = new AddDeviceConfigurationLineFragment();
                 addDeviceConfigurationLineFragment1.setCurrentLinePosition(0);
                 addDeviceConfigurationLineFragment1.setDeviceNumberOfLines(3);

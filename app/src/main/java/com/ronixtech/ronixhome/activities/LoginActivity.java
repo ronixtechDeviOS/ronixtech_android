@@ -1,13 +1,19 @@
 package com.ronixtech.ronixhome.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -25,13 +31,34 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.fragments.LoginFragment;
 import com.ronixtech.ronixhome.fragments.VerificationFragment;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
+
+    Toolbar toolbar;
+    private static TextView mTitle;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
         setContentView(R.layout.activity_login);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        mTitle.setText(getString(R.string.app_name));
+        mTitle.setTextColor(getResources().getColor(R.color.whiteColor));
 
         Utils.showLoading(this);
         FirebaseDynamicLinks.getInstance()
@@ -151,5 +178,10 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    public static void setActionBarTitle(String title, int colorID){
+        mTitle.setText(title);
+        mTitle.setTextColor(colorID);
     }
 }

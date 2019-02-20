@@ -31,11 +31,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -77,6 +79,7 @@ public class WifiListFragment extends Fragment {
 
     Button continueButton;
 
+    RelativeLayout searchingLayout;
     List<WifiNetwork> networks;
     ListView networksListView;
     WifiNetworkItemAdapter networksAdapter;
@@ -127,6 +130,7 @@ public class WifiListFragment extends Fragment {
         //MainActivity.setActionBarTitle(getActivity().getResources().getStringExtraInt(R.string.add_device), getResources().getColor(R.color.whiteColor));
         //setHasOptionsMenu(true);
 
+        searchingLayout = view.findViewById(R.id.searching_for_networks_layout);
         searchStatusTextView = view.findViewById(R.id.search_status_textview);
         networksListView = view.findViewById(R.id.networks_listview);
         networks = new ArrayList<>();
@@ -310,6 +314,8 @@ public class WifiListFragment extends Fragment {
                     if(callback != null) {
                         callback.onNetworkSelected(network);
                     }
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(passwordEditText.getWindowToken(), 0);
                     dialog.dismiss();
                 }else{
                     YoYo.with(Techniques.Shake)
@@ -456,6 +462,7 @@ public class WifiListFragment extends Fragment {
                         })
                         .show();
             }else{
+                searchingLayout.setVisibility(View.VISIBLE);
                 mWifiScanReceiver = new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context c, Intent intent) {
@@ -478,12 +485,14 @@ public class WifiListFragment extends Fragment {
                             }
                             networksAdapter.notifyDataSetChanged();
                             if(networks.size() >= 1){
-                                searchStatusTextView.setVisibility(View.GONE);
+                                searchingLayout.setVisibility(View.GONE);
+                                //searchStatusTextView.setVisibility(View.GONE);
                             }else{
-                                searchStatusTextView.setVisibility(View.VISIBLE);
+                                searchingLayout.setVisibility(View.VISIBLE);
+                                /*searchStatusTextView.setVisibility(View.VISIBLE);
                                 if(getActivity() != null) {
                                     searchStatusTextView.setText(Utils.getString(getActivity(), R.string.no_networks_in_range));
-                                }
+                                }*/
                             }
                             mWifiManager.startScan();
                         }

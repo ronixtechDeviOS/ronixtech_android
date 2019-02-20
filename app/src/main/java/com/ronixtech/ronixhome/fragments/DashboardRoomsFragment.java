@@ -19,6 +19,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -180,16 +181,16 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         MySettings.removeDevice(device);
                     }
 
-                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines) {
+                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines) {
                         if(device.getLines() == null || device.getLines().size() != 1){
                             MySettings.removeDevice(device);
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
                         if(device.getLines() == null || device.getLines().size() != 2){
                             MySettings.removeDevice(device);
                         }
                     }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
-                            || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                            || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         if(device.getLines() == null || device.getLines().size() != 3){
                             MySettings.removeDevice(device);
                         }
@@ -615,7 +616,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             roomsListView.setVisibility(View.GONE);
             roomsHeaderLayout.setVisibility(View.GONE);
         }else{
-            addFabMenu.setVisibility(View.VISIBLE);
+            //addFabMenu.setVisibility(View.VISIBLE);
+            addFabMenu.setVisibility(View.GONE);
             //roomsGridViewLongPressHint.setVisibility(View.VISIBLE);
             roomsGridViewLongPressHint.setVisibility(View.GONE);
 
@@ -832,7 +834,45 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        //inflater.inflate(R.menu.menu_gym, menu);
+        inflater.inflate(R.menu.menu_dashboard_rooms, menu);
+
+        /*MenuItem item = menu.findItem(R.id.spinner);
+        Spinner spinner = (Spinner) item.getActionView();
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.test_list, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);*/
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_add) {
+            /*// DialogFragment.show() will take care of adding the fragment
+            // in a transaction.  We also want to remove any currently showing
+            // dialog, so make our own transaction and take care of that here.
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("additionDialogFragment");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            AddDialogFragment fragment = AddDialogFragment.newInstance();
+            fragment.show(ft, "additionDialogFragment");*/
+            //go to add room fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AddRoomFragment addRoomFragment = new AddRoomFragment();
+            fragmentTransaction.replace(R.id.fragment_view, addRoomFragment, "addRoomFragment");
+            fragmentTransaction.addToBackStack("addRoomFragment");
+            fragmentTransaction.commit();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void onButtonPressed(Uri uri) {

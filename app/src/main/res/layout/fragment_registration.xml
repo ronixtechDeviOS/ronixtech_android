@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.RegistrationFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -12,7 +13,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_2">
+            android:background="@drawable/background_dark">
             <ImageView
                 android:id="@+id/logo_imageview"
                 android:layout_width="125dp"
@@ -31,165 +32,76 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:orientation="vertical">
-                <RelativeLayout
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/button_background_round_gray">
-                    <android.support.design.widget.TextInputLayout
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/whiteColor">
+                    <EditText
+                        android:id="@+id/registration_first_name_edittext"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
-                            android:id="@+id/registration_first_name_edittext"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="50dp"
-                            android:paddingEnd="50dp"
-                            android:imeOptions="actionNext"
-                            android:inputType="textPersonName"
-                            android:hint="@string/first_name"/>
-                    </android.support.design.widget.TextInputLayout>
-                    <RelativeLayout
-                        android:layout_width="45dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/background_blue_rounded_left">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/user"
-                            android:layout_centerInParent="true"/>
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/whiteColor"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginEnd="2dp"
-                            android:layout_marginStart="2dp"/>
-                    </RelativeLayout>
-                </RelativeLayout>
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/whiteColor"
+                        android:hint="@string/first_name"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/whiteColor">
+                    <EditText
+                        android:id="@+id/registration_last_name_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/whiteColor"
+                        android:hint="@string/last_name"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/whiteColor">
+                    <EditText
+                        android:id="@+id/registration_email_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/whiteColor"
+                        android:hint="@string/email"/>
+                </android.support.design.widget.TextInputLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/button_background_round_gray">
+                    android:layout_marginTop="8dp">
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
-                            android:id="@+id/registration_last_name_edittext"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="50dp"
-                            android:paddingEnd="50dp"
-                            android:imeOptions="actionNext"
-                            android:inputType="textPersonName"
-                            android:hint="@string/last_name"/>
-                    </android.support.design.widget.TextInputLayout>
-                    <RelativeLayout
-                        android:layout_width="45dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/background_blue_rounded_left">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/user"
-                            android:layout_centerInParent="true"/>
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/whiteColor"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginEnd="2dp"
-                            android:layout_marginStart="2dp"/>
-                    </RelativeLayout>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/button_background_round_gray">
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
-                            android:id="@+id/registration_email_edittext"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="50dp"
-                            android:paddingEnd="50dp"
-                            android:imeOptions="actionNext"
-                            android:inputType="textEmailAddress"
-                            android:hint="@string/email"/>
-                    </android.support.design.widget.TextInputLayout>
-                    <RelativeLayout
-                        android:layout_width="45dp"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/background_blue_rounded_left">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/user"
-                            android:layout_centerInParent="true"/>
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/whiteColor"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginEnd="2dp"
-                            android:layout_marginStart="2dp"/>
-                    </RelativeLayout>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/button_background_round_gray">
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:textColorHint="@color/whiteColor">
                         <EditText
                             android:id="@+id/registration_password_edittext"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingStart="50dp"
-                            android:paddingEnd="50dp"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
+                            android:textColor="@color/whiteColor"
+                            android:textColorHint="@color/whiteColor"
                             android:hint="@string/password"/>
                     </android.support.design.widget.TextInputLayout>
                     <ImageView
                         android:id="@+id/toggle_password_visibility_imageview"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/password_off"
+                        android:src="@drawable/password_toggle_icon"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"/>
-                    <RelativeLayout
-                        android:layout_width="45dp"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/background_blue_rounded_left">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/password"
-                            android:layout_centerInParent="true"/>
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/whiteColor"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginEnd="2dp"
-                            android:layout_marginStart="2dp"/>
-                    </RelativeLayout>
                 </RelativeLayout>
             </LinearLayout>
 
@@ -201,12 +113,13 @@
                 android:layout_centerHorizontal="true"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:background="@drawable/button_background_round_gray"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
+                android:background="@drawable/button_background_round_white"
                 android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
+                android:textColor="@color/darkBlueColor"
+                android:textSize="18sp"
                 android:text="@string/register"/>
 
         </RelativeLayout>

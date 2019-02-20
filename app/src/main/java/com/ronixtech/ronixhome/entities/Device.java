@@ -20,11 +20,16 @@ public class Device implements Comparable {
     private static final String DEVICE_MODEL_PLUG_1_LINE = "SmartPlug - 1 Line - WiFi";
     private static final String DEVICE_MODEL_PLUG_2_LINE = "SmartPlug - 2 Lines - WiFi";
     private static final String DEVICE_MODEL_PLUG_3_LINE = "SmartPlug - 3 Lines - WiFi";
+    private static final String DEVICE_MODEL_MAGIC_SWITCH_1_LINE = "Magic Switch - 1 Line - WiFi";
+    private static final String DEVICE_MODEL_MAGIC_SWITCH_2_LINE = "Magic Switch - 2 Lines - WiFi";
+    private static final String DEVICE_MODEL_MAGIC_SWITCH_3_LINE = "Magic Switch - 3 Lines - WiFi";
     private static final String DEVICE_MODEL_PIR_SENSOR = "SmartSensor - MotionSensor";
+    private static final String DEVICE_MODEL_SHUTTER = "SmartShutter";
     private static final String DEVICE_MODEL_SOUND_CONTROLLER = "SmartSound";
 
     private static final String DEVICE_MODEL_SWITCH = "SmartSwitch";
     private static final String DEVICE_MODEL_PLUG = "SmartPlug";
+    private static final String DEVICE_MODEL_MAGIC_SWITCH = "MagicSwitch";
     private static final String DEVICE_MODEL_SENSOR = "SmartSensor";
     private static final String DEVICE_MODEL_SOUND = "SmartSound";
 
@@ -45,6 +50,14 @@ public class Device implements Comparable {
     public static final int DEVICE_TYPE_PLUG_1lines = 100031;
     public static final int DEVICE_TYPE_PLUG_2lines = 100032;
     public static final int DEVICE_TYPE_PLUG_3lines = 100033;
+    public static final int DEVICE_TYPE_MAGIC_SWITCH_1lines = 100021;
+    public static final int DEVICE_TYPE_MAGIC_SWITCH_2lines = 100022;
+    public static final int DEVICE_TYPE_MAGIC_SWITCH_3lines = 100023;
+    public static final int DEVICE_TYPE_SHUTTER = 40;
+
+    public static final int SHUTTER_ACTION_DOWN = 0;
+    public static final int SHUTTER_ACTION_STOP = 1;
+    public static final int SHUTTER_ACTION_UP = 2;
 
 
     public static final int MAX_CONSECUTIVE_ERROR_COUNT = 20;
@@ -364,9 +377,7 @@ public class Device implements Comparable {
     }
 
     public boolean isHwFirmwareUpdateAvailable() {
-        //TODO add this later when HW upgrading works as expected
         return hwFirmwareUpdateAvailable;
-        //return false;
     }
 
     public void setHwFirmwareUpdateAvailable(boolean hwFirmwareUpdateAvailable) {
@@ -418,10 +429,18 @@ public class Device implements Comparable {
             return DEVICE_MODEL_PLUG_2_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_3lines){
             return DEVICE_MODEL_PLUG_3_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines){
+            return DEVICE_MODEL_MAGIC_SWITCH_1_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
+            return DEVICE_MODEL_MAGIC_SWITCH_2_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+            return DEVICE_MODEL_MAGIC_SWITCH_3_LINE;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
             return DEVICE_MODEL_PIR_SENSOR;
         }else if(deviceTypeID == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             return DEVICE_MODEL_SOUND_CONTROLLER;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_SHUTTER){
+            return DEVICE_MODEL_SHUTTER;
         }else return DEVICE_MODEL_UNKNOWN;
     }
 
@@ -432,10 +451,14 @@ public class Device implements Comparable {
             return DEVICE_MODEL_SWITCH;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_1lines || deviceTypeID == Device.DEVICE_TYPE_PLUG_2lines || deviceTypeID == Device.DEVICE_TYPE_PLUG_3lines){
             return DEVICE_MODEL_PLUG;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+            return DEVICE_MODEL_MAGIC_SWITCH;
         }else if(deviceTypeID == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
             return DEVICE_MODEL_SENSOR;
         }else if(deviceTypeID == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             return DEVICE_MODEL_SOUND;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_SHUTTER){
+            return DEVICE_MODEL_SHUTTER;
         }else return DEVICE_MODEL_UNKNOWN;
     }
 
@@ -469,5 +492,34 @@ public class Device implements Comparable {
         }else{
             return 0;
         }
+    }
+
+    @Override
+    public String toString(){
+        if(deviceTypeID == Device.DEVICE_TYPE_wifi_1line_old || deviceTypeID == Device.DEVICE_TYPE_wifi_1line){
+            return DEVICE_MODEL_SWITCH_WIFI_1_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_wifi_2lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_2lines){
+            return DEVICE_MODEL_SWITCH_WIFI_2_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_wifi_3lines_old || deviceTypeID == Device.DEVICE_TYPE_wifi_3lines || deviceTypeID == DEVICE_TYPE_wifi_3lines_workaround){
+            return DEVICE_MODEL_SWITCH_WIFI_3_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_1lines){
+            return DEVICE_MODEL_PLUG_1_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_2lines){
+            return DEVICE_MODEL_PLUG_2_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PLUG_3lines){
+            return DEVICE_MODEL_PLUG_3_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines){
+            return DEVICE_MODEL_MAGIC_SWITCH_1_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
+            return DEVICE_MODEL_MAGIC_SWITCH_2_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+            return DEVICE_MODEL_MAGIC_SWITCH_3_LINE;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
+            return DEVICE_MODEL_PIR_SENSOR;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
+            return DEVICE_MODEL_SOUND_CONTROLLER;
+        }else if(deviceTypeID == Device.DEVICE_TYPE_SHUTTER){
+            return DEVICE_MODEL_SHUTTER;
+        }else return DEVICE_MODEL_UNKNOWN;
     }
 }

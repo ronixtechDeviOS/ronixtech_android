@@ -83,6 +83,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         AddDeviceFragmentSendData.HomeConnectedListenerInterface,
@@ -115,6 +117,11 @@ public class MainActivity extends AppCompatActivity
     MqttAndroidClient mqttAndroidClient;
 
     List<Device> allDevices;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -890,6 +897,76 @@ public class MainActivity extends AppCompatActivity
                                                 device.setFirmwareUpdateAvailable(true);
                                             }
                                         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                                            if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                                if(hardwareStatus.has("U_H_FWV")) {
+                                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                                            if (onlineHWVersion != currentHWVersion) {
+                                                                device.setHwFirmwareUpdateAvailable(true);
+                                                            }else{
+                                                                device.setHwFirmwareUpdateAvailable(false);
+                                                            }
+                                                        }
+                                                    }else{
+                                                        device.setHwFirmwareUpdateAvailable(true);
+                                                    }
+                                                }else{
+                                                    device.setHwFirmwareUpdateAvailable(true);
+                                                }
+
+
+                                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+                                                if(hardwareStatus.has("L_0_STT")){
+                                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                                    line0PowerState = Integer.valueOf(line0PowerStateString);
+                                                }
+                                                if(hardwareStatus.has("L_1_STT")){
+                                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                                    line1PowerState = Integer.valueOf(line1PowerStateString);
+                                                }
+                                                if(hardwareStatus.has("L_2_STT")){
+                                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                                    line2PowerState = Integer.valueOf(line2PowerStateString);
+                                                }
+
+                                                List<Line> lines = device.getLines();
+                                                for (Line line:lines) {
+                                                    if(line.getPosition() == 0){
+                                                        line.setPowerState(line0PowerState);
+                                                    }else if(line.getPosition() == 1){
+                                                        line.setPowerState(line1PowerState);
+                                                    }else if(line.getPosition() == 2){
+                                                        line.setPowerState(line2PowerState);
+                                                    }
+                                                }
+
+                                                String temperatureString, beepString, hwLockString;
+                                                int temperatureValue;
+                                                boolean beep, hwLock;
+                                                temperatureString = hardwareStatus.getString("U_H_TMP");
+                                                beepString = hardwareStatus.getString("U_BEEP_");
+                                                hwLockString = hardwareStatus.getString("U_H_LCK");
+
+                                                temperatureValue = Integer.parseInt(temperatureString);
+                                                beep = Boolean.parseBoolean(beepString);
+                                                hwLock = Boolean.parseBoolean(hwLockString);
+
+                                                device.setTemperature(temperatureValue);
+                                                device.setBeep(beep);
+                                                device.setHwLock(hwLock);
+
+                                                device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
+                                            }else {
+                                                device.setFirmwareUpdateAvailable(true);
+                                            }
+                                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 

@@ -595,7 +595,8 @@ public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
@@ -764,6 +765,49 @@ public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.
                                     pirData.setState(pirState);
 
                                     device.setPIRData(pirData);
+
+                                }else {
+                                    device.setFirmwareUpdateAvailable(true);
+                                }
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SHUTTER){
+                                if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                    if(hardwareStatus.has("U_H_FWV")) {
+                                        String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                        if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                            device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                            if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                                int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                                int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                                if (onlineHWVersion != currentHWVersion) {
+                                                    device.setHwFirmwareUpdateAvailable(true);
+                                                }else{
+                                                    device.setHwFirmwareUpdateAvailable(false);
+                                                }
+                                            }
+                                        }else{
+                                            device.setHwFirmwareUpdateAvailable(true);
+                                        }
+                                    }else{
+                                        device.setHwFirmwareUpdateAvailable(true);
+                                    }
+
+                                    if(hardwareStatus.has("U_H_HWV")){
+                                        String hwVersionString = hardwareStatus.getString("U_H_HWV");
+                                        if(hwVersionString != null && hwVersionString.length() >= 1){
+                                            int hwVersion = Integer.parseInt(hwVersionString);
+                                            device.setHwVersion(""+hwVersion);
+                                        }
+                                    }
+
+                                    if(hardwareStatus.has("U_H_TYP")){
+                                        String hwTypeString = hardwareStatus.getString("U_H_TYP");
+                                        if(hwTypeString != null && hwTypeString.length() >= 1){
+                                            int hwType = Integer.parseInt(hwTypeString);
+                                            device.setDeviceTypeID(hwType);
+                                        }
+                                    }
 
                                 }else {
                                     device.setFirmwareUpdateAvailable(true);

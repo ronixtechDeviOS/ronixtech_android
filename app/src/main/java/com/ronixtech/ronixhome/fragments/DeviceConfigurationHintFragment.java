@@ -74,6 +74,10 @@ public class DeviceConfigurationHintFragment extends android.support.v4.app.Frag
             instructionsGifImageView.setImageResource(R.drawable.access_point_activation_final);
             instructionsTextView.setText(Utils.getString(getActivity(), R.string.add_device_hint_plug_1) + "\n\n");
             instructionsTextView.append(Utils.getString(getActivity(), R.string.add_device_hint_plug_2) + "\n\n");
+        }else if(deviceType == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || deviceType == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || deviceType == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+            instructionsGifImageView.setImageResource(R.drawable.access_point_activation_final);
+            instructionsTextView.setText(Utils.getString(getActivity(), R.string.add_device_hint_magic_switch_1) + "\n\n");
+            instructionsTextView.append(Utils.getString(getActivity(), R.string.add_device_hint_magic_switch_2) + "\n\n");
         }else if(deviceType == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
             instructionsGifImageView.setImageResource(R.drawable.access_point_activation_final);
             instructionsTextView.setText(Utils.getString(getActivity(), R.string.add_device_hint_pir_1) + "\n\n");
@@ -82,6 +86,11 @@ public class DeviceConfigurationHintFragment extends android.support.v4.app.Frag
             instructionsGifImageView.setImageResource(R.drawable.access_point_activation_final);
             instructionsTextView.setText(Utils.getString(getActivity(), R.string.add_device_hint_sound_controller_1) + "\n\n");
             instructionsTextView.append(Utils.getString(getActivity(), R.string.add_device_hint_sound_controller_2) + "\n\n");
+        }else if(deviceType == Device.DEVICE_TYPE_SHUTTER){
+            instructionsGifImageView.setImageResource(R.drawable.access_point_activation_final);
+            instructionsTextView.setText(Utils.getString(getActivity(), R.string.add_device_hint_shutter_1) + "\n\n");
+            instructionsTextView.append(Utils.getString(getActivity(), R.string.add_device_hint_shutter_2) + "\n\n");
+            instructionsTextView.append(Utils.getString(getActivity(), R.string.add_device_hint_shutter_3) + "\n\n");
         }
 
         return view;

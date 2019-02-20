@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AddDeviceTypeVerificationFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/whiteColor">
+
+        <TextView
+            android:id="@+id/type_verification_title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"
+            android:textColor="@color/blackColor"
+            android:text="@string/add_device_get_data_type_verification_message"/>
+
+        <TextView
+            android:id="@+id/type_verification_types_title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/type_verification_title_textview"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"
+            android:textColor="@color/blackColor"
+            android:text="@string/add_device_get_data_type_verification_available_types"/>
+
+        <RelativeLayout
+            android:id="@+id/device_type_selection_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/type_verification_types_title_textview"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            android:background="@drawable/button_background_round_border_blue">
+            <ImageView
+                android:id="@+id/selected_device_type_imageview"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/device_colored_icon"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"/>
+            <ImageView
+                android:id="@+id/selected_device_arrow_image_view"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"/>
+            <TextView
+                android:id="@+id/selected_device_type_name_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/selected_device_type_imageview"
+                android:layout_toRightOf="@id/selected_device_type_imageview"
+                android:layout_toStartOf="@id/selected_device_arrow_image_view"
+                android:layout_toLeftOf="@id/selected_device_arrow_image_view"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textSize="16sp"
+                android:textColor="@color/blackColor"
+                android:text="@string/add_device_get_data_type_verification_device_type_hint"/>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/continue_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/device_type_selection_layout"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/whiteColor"
+            android:background="@drawable/button_background_round_gray"
+            android:text="@string/continue_button"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.AddPlaceLocationAddressFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -12,7 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_1"
+            android:background="@drawable/background_dark"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/add_place_location_title_textview"
@@ -23,89 +24,95 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textSize="24sp"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/orangeColor"
                 android:textAlignment="center"
                 android:text="@string/add_place_location_address_title"/>
-            <RelativeLayout
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/button_background_round_gray">
+                android:textColorHint="@color/whiteColor">
                 <EditText
                     android:id="@+id/place_location_address_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="text|textCapWords|textMultiLine"
                     android:maxLines="3"
                     android:hint="@string/place_address"/>
-            </RelativeLayout>
+            </android.support.design.widget.TextInputLayout>
 
-            <RelativeLayout
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/button_background_round_gray">
+                android:textColorHint="@color/whiteColor">
                 <EditText
                     android:id="@+id/place_location_city_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:hint="@string/place_city"/>
-            </RelativeLayout>
+            </android.support.design.widget.TextInputLayout>
 
-            <RelativeLayout
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/button_background_round_gray">
+                android:textColorHint="@color/whiteColor">
                 <EditText
                     android:id="@+id/place_location_state_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:hint="@string/place_state"/>
-            </RelativeLayout>
+            </android.support.design.widget.TextInputLayout>
 
-            <RelativeLayout
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/button_background_round_gray">
+                android:textColorHint="@color/whiteColor">
                 <EditText
                     android:id="@+id/place_location_country_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:hint="@string/place_country"/>
-            </RelativeLayout>
+            </android.support.design.widget.TextInputLayout>
 
-            <RelativeLayout
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/button_background_round_gray">
+                android:textColorHint="@color/whiteColor">
                 <EditText
                     android:id="@+id/place_location_zip_code_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:hint="@string/place_zip_code"/>
-            </RelativeLayout>
+            </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/done_button"
@@ -115,8 +122,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:background="@drawable/button_background_round_blue"
-                android:textColor="@color/whiteColor"
+                android:background="@drawable/button_background_round_white"
+                android:textColor="@color/darkBlueColor"
                 android:text="@string/done"/>
 
         </LinearLayout>

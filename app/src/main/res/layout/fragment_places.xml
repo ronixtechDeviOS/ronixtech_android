@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_1">
+        android:background="@drawable/background_light">
         <GridView
             android:id="@+id/places_gridview"
             android:layout_width="match_parent"
@@ -26,6 +26,16 @@
             android:stretchMode="columnWidth"
             android:scrollbars="none"
             android:gravity="center"/>
+
+        <ListView
+            android:id="@+id/places_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:scrollbars="none"
+            android:dividerHeight="6dp"
+            android:divider="@color/transparentColor"
+            tools:listitem="@layout/list_item_place_dashboard"/>
 
         <TextView
             android:id="@+id/places_gridview_long_press_hint_textview"
@@ -46,28 +56,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.8"
-                android:layout_marginTop="32dp"
                 android:orientation="vertical"
                 android:layout_gravity="center_vertical">
                 <RelativeLayout
                     android:id="@+id/add_new_place_layout"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:background="@drawable/background_dark">
                     <ImageView
                         android:id="@+id/add_place_icon"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/add_place_icon"/>
+                        android:src="@drawable/add_place_icon_circular"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_below="@id/add_place_icon"
-                        android:textSize="18sp"
-                        android:textColor="@color/darkestGrayColor"
+                        android:layout_marginTop="16dp"
+                        android:textSize="20sp"
+                        android:textColor="@color/whiteColor"
                         android:textAlignment="center"
                         android:text="@string/add_new_place"/>
                 </RelativeLayout>
@@ -77,7 +88,7 @@
             <android.support.v4.widget.Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.1"/>
+                android:layout_weight="0"/>
         </LinearLayout>
 
         <com.github.clans.fab.FloatingActionMenu

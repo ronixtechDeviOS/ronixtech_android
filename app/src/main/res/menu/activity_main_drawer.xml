@@ -35,6 +35,7 @@
             <item
                 android:id="@+id/nav_home_network"
                 android:icon="@drawable/baseline_network_wifi_black_36"
+                android:visible="false"
                 android:title="@string/home_network" />
             <item
                 android:id="@+id/nav_refresh_devices"
@@ -43,7 +44,7 @@
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/about_icon_gray"
-                android:title="@string/help" />
+                android:title="@string/about" />
         </menu>
     </item>
 

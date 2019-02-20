@@ -5,16 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
@@ -79,7 +75,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
         zipCodeEditText = view.findViewById(R.id.place_location_zip_code_edittext);
         doneButton = view.findViewById(R.id.done_button);
 
-        addressEditText.addTextChangedListener(new TextWatcher() {
+        /*addressEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -92,7 +88,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(validateInputsWithoutYoyo()){
+                if(Utils.validateInputsWithoutYoyo(addressEditText, cityEditText, countryEditText, zipCodeEditText)){
                     Utils.setButtonEnabled(doneButton, true);
                 }else{
                     Utils.setButtonEnabled(doneButton, false);
@@ -113,7 +109,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(validateInputsWithoutYoyo()){
+                if(Utils.validateInputsWithoutYoyo(addressEditText, cityEditText, countryEditText, zipCodeEditText)){
                     Utils.setButtonEnabled(doneButton, true);
                 }else{
                     Utils.setButtonEnabled(doneButton, false);
@@ -134,7 +130,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(validateInputsWithoutYoyo()){
+                if(Utils.validateInputsWithoutYoyo(addressEditText, cityEditText, countryEditText, zipCodeEditText)){
                     Utils.setButtonEnabled(doneButton, true);
                 }else{
                     Utils.setButtonEnabled(doneButton, false);
@@ -155,7 +151,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(validateInputsWithoutYoyo()){
+                if(Utils.validateInputsWithoutYoyo(addressEditText, cityEditText, countryEditText, zipCodeEditText)){
                     Utils.setButtonEnabled(doneButton, true);
                 }else{
                     Utils.setButtonEnabled(doneButton, false);
@@ -176,13 +172,13 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(validateInputsWithoutYoyo()){
+                if(Utils.validateInputsWithoutYoyo(addressEditText, cityEditText, countryEditText, zipCodeEditText)){
                     Utils.setButtonEnabled(doneButton, true);
                 }else{
                     Utils.setButtonEnabled(doneButton, false);
                 }
             }
-        });
+        });*/
 
         if(MySettings.getTempPlace() != null){
             place = MySettings.getTempPlace();
@@ -202,7 +198,7 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(validateInputs()){
+                if(Utils.validateInputs(addressEditText, cityEditText, countryEditText, zipCodeEditText)){
                     if(place != null){
                         place.setAddress(""+addressEditText.getText().toString());
                         place.setCity(""+cityEditText.getText().toString());
@@ -273,79 +269,6 @@ public class AddPlaceLocationAddressFragment extends android.support.v4.app.Frag
 
         return view;
     }
-
-    private boolean validateInputs(){
-        boolean inputsValid = true;
-
-        if(addressEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(addressEditText);
-        }
-
-        if(cityEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(cityEditText);
-        }
-
-        if(stateEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(stateEditText);
-        }
-
-        if(countryEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(countryEditText);
-        }
-
-        if(zipCodeEditText.getText().toString().length() < 1){
-            inputsValid = false;
-            YoYo.with(Techniques.Shake)
-                    .duration(700)
-                    .repeat(1)
-                    .playOn(zipCodeEditText);
-        }
-
-        return inputsValid;
-    }
-
-    private boolean validateInputsWithoutYoyo(){
-        boolean inputsValid = true;
-
-        if(addressEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-
-        if(cityEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-
-        if(stateEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-
-        if(countryEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-
-        if(zipCodeEditText.getText().toString().length() < 1){
-            inputsValid = false;
-        }
-
-        return inputsValid;
-    }
-
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

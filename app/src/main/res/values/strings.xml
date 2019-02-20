@@ -5,7 +5,8 @@
     <string name="login">Login</string>
     <string name="email">Email</string>
     <string name="forgot_password">Forgot Password?</string>
-    <string name="register">Create New Account</string>
+    <string name="register">New Account</string>
+    <string name="login_with">Login with</string>
 
     <string name="password_reset_mail_sent_successfully">An email has been sent to you. Please check your inbox.</string>
 
@@ -235,10 +236,15 @@
     <string name="add_device_hint_switch_3">3- Press Continue when you\'re ready</string>
     <string name="add_device_hint_plug_1">1- Select your Smart Plug\'s SSID from the list that will show up after pressing Continue</string>
     <string name="add_device_hint_plug_2">2- Press Continue when you\'re ready</string>
+    <string name="add_device_hint_magic_switch_1">1- Select your MagicSwitch\'s SSID from the list that will show up after pressing Continue</string>
+    <string name="add_device_hint_magic_switch_2">2- Press Continue when you\'re ready</string>
     <string name="add_device_hint_pir_1">1- Configuration Mode Instructions for SmartSensor Controllers Go Here</string>
     <string name="add_device_hint_pir_2">2- Press Continue when you\'re ready</string>
     <string name="add_device_hint_sound_controller_1">1- Configuration Mode Instructions for SmartSound Controller Go Here</string>
-    <string name="add_device_hint_sound_controller_2">2- Press Continue when you\'re ready</string>
+    <string name="add_device_hint_sound_controller_2">2- Press Continue when you\'re ready</string>+
+    <string name="add_device_hint_shutter_1">1- Press and hold the \'LOCK\' and \'UP\' buttons at the same time for 3 seconds, until you hear a long beep.</string>
+    <string name="add_device_hint_shutter_2">2- After the beep, your phone will attempt to connect to the RonixTech unit to configure it to connect yo your home network.</string>
+    <string name="add_device_hint_shutter_3">3- Press Continue when you\'re ready</string>
     <string name="add_device_search">Searching For Smart Controller</string>
     <string name="add_device_get_data">Getting Smart Controller Info</string>
     <string name="add_device_send_data">Configuring Smart Controller</string>
@@ -247,6 +253,11 @@
     <string name="locate_device">Smart Controller Location</string>
     <string name="select_floor_first">Select a floor</string>
     <string name="add_device_get_configuration">Getting Smart Controller Configuration</string>
+
+    <string name="add_device_get_data_type_verification">Verify Controller Type</string>
+    <string name="add_device_get_data_type_verification_message">As a verification, please select the type of the RonixTech SmartController you\'re adding</string>
+    <string name="add_device_get_data_type_verification_available_types">Available controller types:</string>
+    <string name="add_device_get_data_type_verification_device_type_hint">Tap here to select the controller type</string>
 
     <string name="add_device_wifi_not_available">WiFi is not available on this device, please use a device with supported hardware.</string>
     <string name="add_device_searching">Searching For Smart Controller</string>
@@ -316,6 +327,8 @@
     <string name="sound_controller_configuration_description">Please select the number of speakers that will be connected to this controller</string>
     <string name="number_of_speakers">Number of speakers:</string>
 
+    <string name="shutter_controller_name_hint">Shutter</string>
+
     <string name="place_devices_on">Turn ON</string>
     <string name="place_devices_off">Turn OFF</string>
     <string name="room_devices_on">Turn ON</string>
@@ -355,8 +368,8 @@
     <string name="device_type">Controller Type</string>
     <string name="device_last_seen">Last Seen</string>
     <string name="device_status">Status</string>
-    <string name="device_mqtt_reachable">Online</string>
-    <string name="device_mqtt_unreachable">Offline/Local Mode</string>
+    <string name="device_mqtt_reachable">Remote</string>
+    <string name="device_mqtt_unreachable">Local</string>
     <string name="device_dhcp_info">DHCP Status</string>
     <string name="device_ip_address">IP Address</string>
     <string name="device_dhcp_gateway">Gateway</string>
@@ -504,6 +517,8 @@
     <string name="data_import_first_time">We have detected that you previously made backups using this account. Do you want to choose one of them to be imported??</string>
     <string name="restore_data">Restore Data</string>
 
+    <string name="not_yet_implemented">Not yet implemented</string>
+
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="done">Done</string>
@@ -552,5 +567,7 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <array name="test_list"><item>Place 1</item><item>Place 2</item><item>Place 3</item></array>
 
 </resources>

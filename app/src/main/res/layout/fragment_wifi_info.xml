@@ -13,7 +13,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/whiteColor">
+            android:background="@drawable/background_dark">
             <Button
                 android:id="@+id/continue_button"
                 android:layout_width="match_parent"
@@ -23,8 +23,8 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@color/whiteColor"
-                android:background="@drawable/button_background_round_gray"
+                android:textColor="@color/darkBlueColor"
+                android:background="@drawable/button_background_round_white"
                 android:enabled="false"
                 android:text="@string/add_network"/>
 
@@ -32,13 +32,13 @@
                 android:id="@+id/network_info_title_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
-                android:textSize="16sp"
-                android:textColor="@color/blackColor"
+                android:textSize="18sp"
+                android:textColor="@color/whiteColor"
                 android:text="@string/configure_home_network_title"/>
 
             <LinearLayout
@@ -70,7 +70,7 @@
                         android:layout_centerHorizontal="true"
                         android:textAlignment="center"
                         android:textSize="16sp"
-                        android:textColor="@color/blackColor"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/network_manually_or_from_list"/>
 
                     <TextView
@@ -82,7 +82,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
                         android:textSize="20sp"
-                        android:textColor="@color/darkGrayColor"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/ssid_colon"/>
                     <TextView
                         android:id="@+id/ssid_textview"
@@ -93,7 +93,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
                         android:textSize="20sp"
-                        android:textColor="@color/blackColor"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/ssid_tap_to_edit"/>
 
                     <LinearLayout
@@ -115,7 +115,7 @@
                             android:inputType="textCapWords"
                             android:imeOptions="actionDone"
                             android:textSize="20sp"
-                            android:textColor="@color/blackColor"
+                            android:textColor="@color/whiteColor"
                             android:text="@string/ssid_hint"/>
 
                         <ImageView
@@ -137,7 +137,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
                         android:textSize="20sp"
-                        android:textColor="@color/darkGrayColor"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/password_colon"/>
                     <TextView
                         android:id="@+id/password_textview"
@@ -148,7 +148,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
                         android:textSize="20sp"
-                        android:textColor="@color/blackColor"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/password_tap_to_edit"/>
 
                     <LinearLayout
@@ -170,7 +170,7 @@
                             android:inputType="textCapWords"
                             android:imeOptions="actionDone"
                             android:textSize="20sp"
-                            android:textColor="@color/blackColor"
+                            android:textColor="@color/whiteColor"
                             android:text="@string/password_hint"/>
 
                         <ImageView

@@ -1,13 +1,14 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -127,7 +128,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         defaultPlaceCheckBox = view.findViewById(R.id.default_place_checkbox);
         continueButton= view.findViewById(R.id.continue_button);
 
-        placeNameEditText.addTextChangedListener(new TextWatcher() {
+        /*placeNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -146,7 +147,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     Utils.setButtonEnabled(continueButton, false);
                 }
             }
-        });
+        });*/
 
         placeTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -302,6 +303,13 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
             }
         }
 
+        Drawable drawable = placeNameEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            placeNameEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            placeNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
         placeNameEditText.requestFocus();
 
         return view;
@@ -324,11 +332,11 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                     placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
                 }
             }
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(continueButton, true);
             }else{
                 Utils.setButtonEnabled(continueButton, false);
-            }
+            }*/
         }
     }
 
@@ -340,11 +348,11 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
             }
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(continueButton, true);
             }else{
                 Utils.setButtonEnabled(continueButton, false);
-            }
+            }*/
         }
     }
 
@@ -356,11 +364,11 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
             }
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(continueButton, true);
             }else{
                 Utils.setButtonEnabled(continueButton, false);
-            }
+            }*/
         }
     }
 

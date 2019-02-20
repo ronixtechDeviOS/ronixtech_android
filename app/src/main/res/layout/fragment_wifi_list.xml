@@ -6,8 +6,32 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteColor">
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/searching_for_networks_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp">
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"/>
+            <TextView
+                android:id="@+id/progress_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_below="@id/progress_bar"
+                android:textAlignment="center"
+                android:textColor="@color/whiteColor"
+                android:textSize="16sp"
+                android:text="@string/searching_for_networks"/>
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/search_status_textview"
             android:layout_width="wrap_content"
@@ -18,9 +42,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:textAlignment="center"
-            android:textColor="@color/blackColor"
-            android:textSize="16sp"
-            android:text="@string/searching_for_networks"/>
+            android:textColor="@color/whiteColor"
+            android:textSize="16sp"/>
 
         <Button
             android:id="@+id/continue_button"
@@ -42,7 +65,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/search_status_textview"
-            android:layout_above="@id/continue_button"/>
+            android:layout_above="@id/continue_button"
+            tools:listitem="@layout/list_item_wifi_network"/>
     </RelativeLayout>
 
 

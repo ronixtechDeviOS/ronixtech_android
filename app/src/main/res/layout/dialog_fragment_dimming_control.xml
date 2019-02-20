@@ -15,6 +15,7 @@
             android:layout_width="225dp"
             android:layout_height="225dp"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_marginTop="16dp"
             app:min="0"
             app:max="100"

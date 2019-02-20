@@ -2,21 +2,21 @@
 <LinearLayout android:id="@+id/line_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="56dp"
-    android:layout_height="56dp"
-    android:paddingTop="6dp"
-    android:paddingLeft="6dp"
-    android:paddingRight="6dp"
+    android:layout_width="64dp"
+    android:layout_height="64dp"
+    android:paddingTop="4dp"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
     android:paddingBottom="8dp"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/line_type_imageview"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="0dp"
         android:padding="6dp"
         android:background="@drawable/rooms_dashboard_line_off_background"/>
 
@@ -45,7 +45,7 @@
         android:layout_marginEnd="4dp"
         android:singleLine="true"
         android:textColor="@color/whiteColor"
-        android:textSize="12sp"
+        android:textSize="10sp"
         android:text="LineName"/>
 
 </LinearLayout>

@@ -17,7 +17,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/Toolbar.Transparent" >
+            app:popupTheme="@style/Toolbar.Transparent"
+            android:background="@color/orangeColor">
             <!--android:background="z"-->
             <TextView
                 android:id="@+id/toolbar_title"

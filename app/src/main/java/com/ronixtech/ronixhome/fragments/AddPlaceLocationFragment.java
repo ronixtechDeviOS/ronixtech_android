@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -21,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -56,7 +58,8 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    Button getMyLocationButton, enterAddressButton, skipForNowButton;
+    Button getMyLocationButton, enterAddressButton;
+    TextView skipForNowTextView;
 
     public AddPlaceLocationFragment() {
         // Required empty public constructor
@@ -90,7 +93,9 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
 
         getMyLocationButton = view.findViewById(R.id.add_place_get_location_button);
         enterAddressButton = view.findViewById(R.id.add_place_enter_address_button);
-        skipForNowButton = view.findViewById(R.id.add_place_skip_button);
+        skipForNowTextView = view.findViewById(R.id.add_place_skip_textview);
+
+        skipForNowTextView.setPaintFlags(skipForNowTextView.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
 
         getMyLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +117,7 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
             }
         });
 
-        skipForNowButton.setOnClickListener(new View.OnClickListener() {
+        skipForNowTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 com.ronixtech.ronixhome.entities.Place tempPlace = MySettings.getTempPlace();

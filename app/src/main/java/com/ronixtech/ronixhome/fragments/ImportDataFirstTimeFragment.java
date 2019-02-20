@@ -2,14 +2,20 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.LoginActivity;
 import com.ronixtech.ronixhome.activities.MainActivity;
 
 /**
@@ -52,11 +58,15 @@ public class ImportDataFirstTimeFragment extends android.support.v4.app.Fragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_import_data_first_time, container, false);
+        LoginActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.import_data), getResources().getColor(R.color.whiteColor));
+        setHasOptionsMenu(true);
 
         //MySettings.clearNonUserData();
 
         Button importData = view.findViewById(R.id.restore_data_button);
-        Button skipButton = view.findViewById(R.id.skip_button);
+        TextView skipTextView= view.findViewById(R.id.skip_textview);
+
+        skipTextView.setPaintFlags(skipTextView.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
 
         importData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +78,7 @@ public class ImportDataFirstTimeFragment extends android.support.v4.app.Fragment
             }
         });
 
-        skipButton.setOnClickListener(new View.OnClickListener() {
+        skipTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent mainIntent = new Intent(getActivity(), MainActivity.class);
@@ -82,10 +92,11 @@ public class ImportDataFirstTimeFragment extends android.support.v4.app.Fragment
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        //inflater.inflate(R.menu.menu_gym, menu);
     }
 
     /*@Override
