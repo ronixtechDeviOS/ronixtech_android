@@ -181,13 +181,13 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.secondLineLayout.setVisibility(View.GONE);
                     vHolder.thirdLineLayout.setVisibility(View.GONE);
                 }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines){
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
                     vHolder.firstLineLayout.setVisibility(View.VISIBLE);
                     vHolder.secondLineLayout.setVisibility(View.VISIBLE);
                     vHolder.thirdLineLayout.setVisibility(View.GONE);
                 }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                     vHolder.firstLineLayout.setVisibility(View.VISIBLE);
                     vHolder.secondLineLayout.setVisibility(View.VISIBLE);
                     vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
@@ -259,9 +259,8 @@ public class DeviceAdapter extends ArrayAdapter {
                         item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     populateLineData(item);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                    populatePlugLineData(item);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                     populatePlugLineData(item);
                 }
 
@@ -296,11 +295,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
-                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
-                }
-
-                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
 
@@ -1459,9 +1455,8 @@ public class DeviceAdapter extends ArrayAdapter {
                         item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                         item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
                     populateLineData(item);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                    populatePlugLineData(item);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                     populatePlugLineData(item);
                 }
 

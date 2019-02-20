@@ -194,16 +194,8 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                     lineGifImageView.setImageResource(R.drawable.line_right);
                 }
             }
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
-            dimmingEnabled = false;
-            if(LINE_POSITION == 0){
-                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_1_name_hint));
-            }else if(LINE_POSITION == 1){
-                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_2_name_hint));
-            }else if(LINE_POSITION == 2){
-                lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_3_name_hint));
-            }
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
             dimmingEnabled = false;
             if(LINE_POSITION == 0){
                 lineNameEditText.setHint(Utils.getString(getActivity(), R.string.plug_1_name_hint));
@@ -307,7 +299,8 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
         }
 
         if(lineType == null) {
-            if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
+            if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
                 lineType = MySettings.getTypeByName("Appliance Plug");
                 lineModeRadioGroup.setVisibility(View.GONE);
             } else {

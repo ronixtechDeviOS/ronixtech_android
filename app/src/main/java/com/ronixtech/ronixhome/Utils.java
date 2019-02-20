@@ -1393,33 +1393,8 @@ public class Utils {
                                             break;
                                     }
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                if(newState == Line.LINE_STATE_ON){
-                                    switch(position){
-                                        case 0:
-                                            jsonObject.put("L_0_STT", 1);
-                                            break;
-                                        case 1:
-                                            jsonObject.put("L_1_STT", 1);
-                                            break;
-                                        case 2:
-                                            jsonObject.put("L_2_STT", 1);
-                                            break;
-                                    }
-                                }else if(newState == Line.LINE_STATE_OFF){
-                                    switch(position){
-                                        case 0:
-                                            jsonObject.put("L_0_STT", 0);
-                                            break;
-                                        case 1:
-                                            jsonObject.put("L_1_STT", 0);
-                                            break;
-                                        case 2:
-                                            jsonObject.put("L_2_STT", 0);
-                                            break;
-                                    }
-                                }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                 if(newState == Line.LINE_STATE_ON){
                                     switch(position){
                                         case 0:
@@ -1560,33 +1535,8 @@ public class Utils {
                                     break;
                             }
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                        if(newState == Line.LINE_STATE_ON){
-                            switch(position){
-                                case 0:
-                                    jsonObject.put("L_0_STT", "1");
-                                    break;
-                                case 1:
-                                    jsonObject.put("L_1_STT", "1");
-                                    break;
-                                case 2:
-                                    jsonObject.put("L_2_STT", "1");
-                                    break;
-                            }
-                        }else if(newState == Line.LINE_STATE_OFF){
-                            switch(position){
-                                case 0:
-                                    jsonObject.put("L_0_STT", "0");
-                                    break;
-                                case 1:
-                                    jsonObject.put("L_1_STT", "0");
-                                    break;
-                                case 2:
-                                    jsonObject.put("L_2_STT", "0");
-                                    break;
-                            }
-                        }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         if(newState == Line.LINE_STATE_ON){
                             switch(position){
                                 case 0:
@@ -1749,9 +1699,8 @@ public class Utils {
                                 }
                                 break;
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                        //no dimming controls for these device types
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         //no dimming controls for these device types
                     }
                     jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
@@ -1884,31 +1833,8 @@ public class Utils {
                                 }
                                 break;
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                        switch (position){
-                            case 0:
-                                if(newState == Line.LINE_STATE_ON){
-                                    jObject.put("L_0_STT", "1");
-                                }else if(newState == Line.LINE_STATE_OFF){
-                                    jObject.put("L_0_STT", "0");
-                                }
-                                break;
-                            case 1:
-                                if(newState == Line.LINE_STATE_ON){
-                                    jObject.put("L_1_STT", "1");
-                                }else if(newState == Line.LINE_STATE_OFF){
-                                    jObject.put("L_1_STT", "0");
-                                }
-                                break;
-                            case 2:
-                                if(newState == Line.LINE_STATE_ON){
-                                    jObject.put("L_2_STT", "1");
-                                }else if(newState == Line.LINE_STATE_OFF){
-                                    jObject.put("L_2_STT", "0");
-                                }
-                                break;
-                        }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         switch (position){
                             case 0:
                                 if(newState == Line.LINE_STATE_ON){
@@ -2198,109 +2124,8 @@ public class Utils {
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                    if(hardwareStatus.has("L_0_STT")){
-                                        line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                        line0PowerState = Integer.valueOf(line0PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_1_STT")){
-                                        line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                        line1PowerState = Integer.valueOf(line1PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_2_STT")){
-                                        line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                        line2PowerState = Integer.valueOf(line2PowerStateString);
-                                    }
-
-                                    List<Line> lines = device.getLines();
-                                    for (Line line:lines) {
-                                        if(line.getPosition() == 0){
-                                            line.setPowerState(line0PowerState);
-                                        }else if(line.getPosition() == 1){
-                                            line.setPowerState(line1PowerState);
-                                        }else if(line.getPosition() == 2){
-                                            line.setPowerState(line2PowerState);
-                                        }
-                                    }
-
-                                    String temperatureString, beepString, hwLockString;
-                                    int temperatureValue;
-                                    boolean beep, hwLock;
-                                    if(hardwareStatus.has("U_H_TMP")){
-                                        temperatureString = hardwareStatus.getString("U_H_TMP");
-                                        temperatureValue = Integer.parseInt(temperatureString);
-                                        device.setTemperature(temperatureValue);
-                                    }
-                                    if(hardwareStatus.has("U_BEEP_")){
-                                        beepString = hardwareStatus.getString("U_BEEP_");
-                                        if(beepString != null && beepString.length() >= 1){
-                                            if(Integer.parseInt(beepString) == 1){
-                                                beep = true;
-                                                device.setBeep(beep);
-                                            }else{
-                                                beep = false;
-                                                device.setBeep(beep);
-                                            }
-                                        }
-                                    }
-                                    if(hardwareStatus.has("U_H_LCK")){
-                                        hwLockString = hardwareStatus.getString("U_H_LCK");
-                                        if(hwLockString != null && hwLockString.length() >= 1){
-                                            if(Integer.parseInt(hwLockString) == 1){
-                                                hwLock = true;
-                                                device.setHwLock(hwLock);
-                                            }else{
-                                                hwLock = false;
-                                                device.setHwLock(hwLock);
-                                            }
-                                        }
-                                    }
-
-                                    if(statusCode == 200) {
-                                        device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                        device.setErrorCount(0);
-                                        DevicesInMemory.updateDevice(device);
-                                    }
-                                    //MySettings.addDevice(device);
-                                }else {
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
@@ -2625,9 +2450,8 @@ public class Utils {
                                 }
                                 break;
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                        //no dimming controls for these device types
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         //no dimming controls for these device types
                     }
 
@@ -2895,109 +2719,8 @@ public class Utils {
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                    if(hardwareStatus.has("L_0_STT")){
-                                        line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                        line0PowerState = Integer.valueOf(line0PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_1_STT")){
-                                        line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                        line1PowerState = Integer.valueOf(line1PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_2_STT")){
-                                        line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                        line2PowerState = Integer.valueOf(line2PowerStateString);
-                                    }
-
-                                    List<Line> lines = device.getLines();
-                                    for (Line line:lines) {
-                                        if(line.getPosition() == 0){
-                                            line.setPowerState(line0PowerState);
-                                        }else if(line.getPosition() == 1){
-                                            line.setPowerState(line1PowerState);
-                                        }else if(line.getPosition() == 2){
-                                            line.setPowerState(line2PowerState);
-                                        }
-                                    }
-
-                                    String temperatureString, beepString, hwLockString;
-                                    int temperatureValue;
-                                    boolean beep, hwLock;
-                                    if(hardwareStatus.has("U_H_TMP")){
-                                        temperatureString = hardwareStatus.getString("U_H_TMP");
-                                        temperatureValue = Integer.parseInt(temperatureString);
-                                        device.setTemperature(temperatureValue);
-                                    }
-                                    if(hardwareStatus.has("U_BEEP_")){
-                                        beepString = hardwareStatus.getString("U_BEEP_");
-                                        if(beepString != null && beepString.length() >= 1){
-                                            if(Integer.parseInt(beepString) == 1){
-                                                beep = true;
-                                                device.setBeep(beep);
-                                            }else{
-                                                beep = false;
-                                                device.setBeep(beep);
-                                            }
-                                        }
-                                    }
-                                    if(hardwareStatus.has("U_H_LCK")){
-                                        hwLockString = hardwareStatus.getString("U_H_LCK");
-                                        if(hwLockString != null && hwLockString.length() >= 1){
-                                            if(Integer.parseInt(hwLockString) == 1){
-                                                hwLock = true;
-                                                device.setHwLock(hwLock);
-                                            }else{
-                                                hwLock = false;
-                                                device.setHwLock(hwLock);
-                                            }
-                                        }
-                                    }
-
-                                    if(statusCode == 200) {
-                                        device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                        device.setErrorCount(0);
-                                        DevicesInMemory.updateDevice(device);
-                                    }
-                                    //MySettings.addDevice(device);
-                                }else {
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
@@ -3577,109 +3300,8 @@ public class Utils {
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                    if(hardwareStatus.has("L_0_STT")){
-                                        line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                        line0PowerState = Integer.valueOf(line0PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_1_STT")){
-                                        line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                        line1PowerState = Integer.valueOf(line1PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_2_STT")){
-                                        line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                        line2PowerState = Integer.valueOf(line2PowerStateString);
-                                    }
-
-                                    List<Line> lines = device.getLines();
-                                    for (Line line:lines) {
-                                        if(line.getPosition() == 0){
-                                            line.setPowerState(line0PowerState);
-                                        }else if(line.getPosition() == 1){
-                                            line.setPowerState(line1PowerState);
-                                        }else if(line.getPosition() == 2){
-                                            line.setPowerState(line2PowerState);
-                                        }
-                                    }
-
-                                    String temperatureString, beepString, hwLockString;
-                                    int temperatureValue;
-                                    boolean beep, hwLock;
-                                    if(hardwareStatus.has("U_H_TMP")){
-                                        temperatureString = hardwareStatus.getString("U_H_TMP");
-                                        temperatureValue = Integer.parseInt(temperatureString);
-                                        device.setTemperature(temperatureValue);
-                                    }
-                                    if(hardwareStatus.has("U_BEEP_")){
-                                        beepString = hardwareStatus.getString("U_BEEP_");
-                                        if(beepString != null && beepString.length() >= 1){
-                                            if(Integer.parseInt(beepString) == 1){
-                                                beep = true;
-                                                device.setBeep(beep);
-                                            }else{
-                                                beep = false;
-                                                device.setBeep(beep);
-                                            }
-                                        }
-                                    }
-                                    if(hardwareStatus.has("U_H_LCK")){
-                                        hwLockString = hardwareStatus.getString("U_H_LCK");
-                                        if(hwLockString != null && hwLockString.length() >= 1){
-                                            if(Integer.parseInt(hwLockString) == 1){
-                                                hwLock = true;
-                                                device.setHwLock(hwLock);
-                                            }else{
-                                                hwLock = false;
-                                                device.setHwLock(hwLock);
-                                            }
-                                        }
-                                    }
-
-                                    if(statusCode == 200) {
-                                        device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                        device.setErrorCount(0);
-                                        DevicesInMemory.updateDevice(device);
-                                    }
-                                    //MySettings.addDevice(device);
-                                }else {
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
@@ -3981,33 +3603,8 @@ public class Utils {
                                     break;
                             }
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                        for (Line line : device.getLines()) {
-                            switch (line.getPosition()){
-                                case 0:
-                                    if(newState == Line.LINE_STATE_ON){
-                                        jObject.put("L_0_STT", "1");
-                                    }else if(newState == Line.LINE_STATE_OFF){
-                                        jObject.put("L_0_STT", "0");
-                                    }
-                                    break;
-                                case 1:
-                                    if(newState == Line.LINE_STATE_ON){
-                                        jObject.put("L_1_STT", "1");
-                                    }else if(newState == Line.LINE_STATE_OFF){
-                                        jObject.put("L_1_STT", "0");
-                                    }
-                                    break;
-                                case 2:
-                                    if(newState == Line.LINE_STATE_ON){
-                                        jObject.put("L_2_STT", "1");
-                                    }else if(newState == Line.LINE_STATE_OFF){
-                                        jObject.put("L_2_STT", "0");
-                                    }
-                                    break;
-                            }
-                        }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         for (Line line : device.getLines()) {
                             switch (line.getPosition()){
                                 case 0:
@@ -4319,123 +3916,8 @@ public class Utils {
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                                if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                    if(hardwareStatus.has("L_0_STT")){
-                                        line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                        line0PowerState = Integer.valueOf(line0PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_1_STT")){
-                                        line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                        line1PowerState = Integer.valueOf(line1PowerStateString);
-                                    }
-                                    if(hardwareStatus.has("L_2_STT")){
-                                        line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                        line2PowerState = Integer.valueOf(line2PowerStateString);
-                                    }
-
-                                    Device localDevice = DevicesInMemory.getLocalDevice(device);
-
-                                    List<Line> lines = device.getLines();
-                                    List<Line> localLines = localDevice.getLines();
-                                    for (Line line:lines) {
-                                        if(line.getPosition() == 0){
-                                            line.setPowerState(line0PowerState);
-                                        }else if(line.getPosition() == 1){
-                                            line.setPowerState(line1PowerState);
-                                        }else if(line.getPosition() == 2){
-                                            line.setPowerState(line2PowerState);
-                                        }
-                                    }
-                                    for (Line line:localLines) {
-                                        if(line.getPosition() == 0){
-                                            line.setPowerState(line0PowerState);
-                                        }else if(line.getPosition() == 1){
-                                            line.setPowerState(line1PowerState);
-                                        }else if(line.getPosition() == 2){
-                                            line.setPowerState(line2PowerState);
-                                        }
-                                    }
-
-                                    String temperatureString, beepString, hwLockString;
-                                    int temperatureValue;
-                                    boolean beep, hwLock;
-                                    if(hardwareStatus.has("U_H_TMP")){
-                                        temperatureString = hardwareStatus.getString("U_H_TMP");
-                                        temperatureValue = Integer.parseInt(temperatureString);
-                                        device.setTemperature(temperatureValue);
-                                    }
-                                    if(hardwareStatus.has("U_BEEP_")){
-                                        beepString = hardwareStatus.getString("U_BEEP_");
-                                        if(beepString != null && beepString.length() >= 1){
-                                            if(Integer.parseInt(beepString) == 1){
-                                                beep = true;
-                                                device.setBeep(beep);
-                                            }else{
-                                                beep = false;
-                                                device.setBeep(beep);
-                                            }
-                                        }
-                                    }
-                                    if(hardwareStatus.has("U_H_LCK")){
-                                        hwLockString = hardwareStatus.getString("U_H_LCK");
-                                        if(hwLockString != null && hwLockString.length() >= 1){
-                                            if(Integer.parseInt(hwLockString) == 1){
-                                                hwLock = true;
-                                                device.setHwLock(hwLock);
-                                            }else{
-                                                hwLock = false;
-                                                device.setHwLock(hwLock);
-                                            }
-                                        }
-                                    }
-
-                                    if(statusCode == 200) {
-                                        device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                        device.setErrorCount(0);
-                                        DevicesInMemory.updateDevice(device);
-                                        DevicesInMemory.updateLocalDevice(localDevice);
-                                        MainActivity.getInstance().refreshDevicesListFromMemory();
-                                    }
-                                    //MySettings.addDevice(device);
-                                }else {
-                                    device.setFirmwareUpdateAvailable(true);
-                                }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
@@ -4684,10 +4166,8 @@ public class Utils {
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
             Utils.ModeGetter modeGetter = new Utils.ModeGetter(device);
             modeGetter.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-            Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
-            deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
             Utils.DeviceSyncer deviceSyncer = new Utils.DeviceSyncer(device);
             deviceSyncer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
@@ -4870,27 +4350,8 @@ public class Utils {
                                     break;
                             }
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                        for (Line line : device.getLines()) {
-                            switch (line.getPosition()){
-                                case 0:
-                                    if(line.getPowerState() != localDevice.getLines().get(0).getPowerState()){
-                                        jObject.put("L_0_STT", ""+localDevice.getLines().get(0).getPowerState());
-                                    }
-                                    break;
-                                case 1:
-                                    if(line.getPowerState() != localDevice.getLines().get(1).getPowerState()){
-                                        jObject.put("L_1_STT", ""+localDevice.getLines().get(1).getPowerState());
-                                    }
-                                    break;
-                                case 2:
-                                    if(line.getPowerState() != localDevice.getLines().get(2).getPowerState()){
-                                        jObject.put("L_2_STT", ""+localDevice.getLines().get(2).getPowerState());
-                                    }
-                                    break;
-                            }
-                        }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         for (Line line : device.getLines()) {
                             switch (line.getPosition()){
                                 case 0:
@@ -5232,124 +4693,8 @@ public class Utils {
                             }else{
                                 device.setFirmwareUpdateAvailable(true);
                             }
-                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-                            if(unitStatus != null && unitStatus.has("U_H_STT")){
-                                JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
-
-                                /*if(hardwareStatus.has("U_H_FWV")) {
-                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
-                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
-                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
-                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
-                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
-                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
-                                            if (onlineHWVersion != currentHWVersion) {
-                                                device.setHwFirmwareUpdateAvailable(true);
-                                            }else{
-                                                device.setHwFirmwareUpdateAvailable(false);
-                                            }
-                                        }
-                                    }else{
-                                        device.setHwFirmwareUpdateAvailable(true);
-                                    }
-                                }else{
-                                    device.setHwFirmwareUpdateAvailable(true);
-                                }
-
-                                if(hardwareStatus.has("U_H_HWV")){
-                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
-                                    if(hwVersionString != null && hwVersionString.length() >= 1){
-                                        int hwVersion = Integer.parseInt(hwVersionString);
-                                        device.setHwVersion(""+hwVersion);
-                                    }
-                                }*/
-
-
-                                String line0PowerStateString, line1PowerStateString, line2PowerStateString;
-                                int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
-
-                                if(hardwareStatus.has("L_0_STT")){
-                                    line0PowerStateString = hardwareStatus.getString("L_0_STT");
-                                    line0PowerState = Integer.valueOf(line0PowerStateString);
-                                }
-                                if(hardwareStatus.has("L_1_STT")){
-                                    line1PowerStateString = hardwareStatus.getString("L_1_STT");
-                                    line1PowerState = Integer.valueOf(line1PowerStateString);
-                                }
-                                if(hardwareStatus.has("L_2_STT")){
-                                    line2PowerStateString = hardwareStatus.getString("L_2_STT");
-                                    line2PowerState = Integer.valueOf(line2PowerStateString);
-                                }
-
-                                List<Line> lines = device.getLines();
-                                for (Line line:lines) {
-                                    if(line.getPosition() == 0){
-                                        line.setPowerState(line0PowerState);
-                                    }else if(line.getPosition() == 1){
-                                        line.setPowerState(line1PowerState);
-                                    }else if(line.getPosition() == 2){
-                                        line.setPowerState(line2PowerState);
-                                    }
-                                }
-                                if(localDevice != null){
-                                    List<Line> localLines = localDevice.getLines();
-                                    for (Line line:localLines) {
-                                        if(line.getPosition() == 0){
-                                            line.setPowerState(line0PowerState);
-                                        }else if(line.getPosition() == 1){
-                                            line.setPowerState(line1PowerState);
-                                        }else if(line.getPosition() == 2){
-                                            line.setPowerState(line2PowerState);
-                                        }
-                                    }
-                                }
-
-                                String temperatureString, beepString, hwLockString;
-                                int temperatureValue;
-                                boolean beep, hwLock;
-                                if(hardwareStatus.has("U_H_TMP")){
-                                    temperatureString = hardwareStatus.getString("U_H_TMP");
-                                    temperatureValue = Integer.parseInt(temperatureString);
-                                    device.setTemperature(temperatureValue);
-                                }
-                                if(hardwareStatus.has("U_BEEP_")){
-                                    beepString = hardwareStatus.getString("U_BEEP_");
-                                    if(beepString != null && beepString.length() >= 1){
-                                        if(Integer.parseInt(beepString) == 1){
-                                            beep = true;
-                                            device.setBeep(beep);
-                                        }else{
-                                            beep = false;
-                                            device.setBeep(beep);
-                                        }
-                                    }
-                                }
-                                if(hardwareStatus.has("U_H_LCK")){
-                                    hwLockString = hardwareStatus.getString("U_H_LCK");
-                                    if(hwLockString != null && hwLockString.length() >= 1){
-                                        if(Integer.parseInt(hwLockString) == 1){
-                                            hwLock = true;
-                                            device.setHwLock(hwLock);
-                                        }else{
-                                            hwLock = false;
-                                            device.setHwLock(hwLock);
-                                        }
-                                    }
-                                }
-
-                                if(statusCode == 200) {
-                                    device.setLastSeenTimestamp(Calendar.getInstance().getTimeInMillis());
-                                    device.setErrorCount(0);
-                                    DevicesInMemory.updateDevice(device);
-                                    if(localDevice != null) {
-                                        DevicesInMemory.updateLocalDevice(localDevice);
-                                    }
-                                }
-                                //MySettings.addDevice(device);
-                            }else {
-                                device.setFirmwareUpdateAvailable(true);
-                            }
-                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                             if(unitStatus != null && unitStatus.has("U_H_STT")){
                                 JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
