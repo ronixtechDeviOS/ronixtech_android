@@ -18,6 +18,7 @@
                 android:id="@+id/continue_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="16dp"
@@ -41,19 +42,28 @@
                 android:textColor="@color/whiteColor"
                 android:text="@string/configure_home_network_title"/>
 
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/child_fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/network_info_title_textview"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:layout_below="@id/network_info_title_textview"
                 android:layout_above="@id/continue_button"
                 android:orientation="vertical">
-                <FrameLayout
+                <!--<FrameLayout
                     android:id="@+id/child_fragment_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp" />-->
 
                 <RelativeLayout
                     android:layout_width="match_parent"

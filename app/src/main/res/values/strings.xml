@@ -272,9 +272,9 @@
     <string name="unit_name_hint">For example, Living Room</string>
     <string name="configure_lines_title">Configure the devices of this controller</string>
     <string name="line_name_hint">For example, night lamp or fan</string>
-    <string name="line_1_name_hint">Left device</string>
-    <string name="line_2_name_hint">Middle device</string>
-    <string name="line_3_name_hint">Right device</string>
+    <string name="line_1_name_hint">Left</string>
+    <string name="line_2_name_hint">Middle</string>
+    <string name="line_3_name_hint">Right</string>
     <string name="line_type">Device Type</string>
     <string name="line_type_hint">Tap here to select the device type</string>
     <string name="line_dimming_hint">Tap here to toggle dimming</string>

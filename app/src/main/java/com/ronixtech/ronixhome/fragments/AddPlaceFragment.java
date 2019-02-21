@@ -332,7 +332,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
         }else{
             placeNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
         }
-        placeNameEditText.requestFocus();
+        //placeNameEditText.requestFocus();
 
         return view;
     }

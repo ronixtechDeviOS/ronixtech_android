@@ -354,11 +354,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }
         });
 
-        if(validateInputs()){
+        /*if(validateInputs()){
             Utils.setButtonEnabled(doneButton, true);
         }else{
             Utils.setButtonEnabled(doneButton, false);
-        }
+        }*/
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -441,11 +441,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
             }
         }
 
-        if(validateInputs()){
+        /*if(validateInputs()){
             Utils.setButtonEnabled(doneButton, true);
         }else{
             Utils.setButtonEnabled(doneButton, false);
-        }
+        }*/
     }
 
     @Override
@@ -466,11 +466,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 }
             }
         }
-        if(validateInputs()){
+        /*if(validateInputs()){
             Utils.setButtonEnabled(doneButton, true);
         }else{
             Utils.setButtonEnabled(doneButton, false);
-        }
+        }*/
     }
 
     private boolean validateInputs(){
@@ -497,11 +497,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(doneButton, true);
             }else{
                 Utils.setButtonEnabled(doneButton, false);
-            }
+            }*/
         }
     }
 
@@ -511,11 +511,11 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(doneButton, true);
             }else{
                 Utils.setButtonEnabled(doneButton, false);
-            }
+            }*/
         }
     }
 

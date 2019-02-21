@@ -1,7 +1,10 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -191,11 +194,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(validateInputs()){
+                /*if(validateInputs()){
                     Utils.setButtonEnabled(continueButton, true);
                 }else{
                     Utils.setButtonEnabled(continueButton, false);
-                }
+                }*/
             }
         });
 
@@ -295,7 +298,14 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
-        roomNameEditText.requestFocus();
+        Drawable drawable = roomNameEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            roomNameEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            roomNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
+        //roomNameEditText.requestFocus();
 
         return view;
     }
@@ -343,11 +353,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
 
             roomNameEditText.setText(selectedRoomType.getName());
 
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(continueButton, true);
             }else{
                 Utils.setButtonEnabled(continueButton, false);
-            }
+            }*/
         }
     }
 

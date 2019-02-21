@@ -111,6 +111,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
+                        android:background="@drawable/circle_indicator_blue"
                         android:src="@drawable/add_place_icon_circular"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -133,7 +134,8 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/add_room_icon"/>
+                        android:background="@drawable/circle_indicator_blue"
+                        android:src="@drawable/add_room_icon_circular"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -155,7 +157,8 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/add_device_icon"/>
+                        android:background="@drawable/circle_indicator_blue"
+                        android:src="@drawable/add_device_icon_circular"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

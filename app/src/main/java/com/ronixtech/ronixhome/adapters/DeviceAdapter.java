@@ -5,9 +5,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -151,9 +151,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.firstLineSeekBar = rowView.findViewById(R.id.first_line_seekbar);
                 vHolder.secondLineSeekBar = rowView.findViewById(R.id.second_line_seekbar);
                 vHolder.thirdLineSeekBar = rowView.findViewById(R.id.third_line_seekbar);
-                vHolder.firstLineAdvancedOptionsButton = rowView.findViewById(R.id.first_line_advanced_options_button);
-                vHolder.secondLineAdvancedOptionsButton = rowView.findViewById(R.id.second_line_advanced_options_button);
-                vHolder.thirdLineAdvancedOptionsButton = rowView.findViewById(R.id.third_line_advanced_options_button);
+                vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.firstLineTypeImageView = rowView.findViewById(R.id.first_line_type_imageview);
                 vHolder.secondLineTypeImageView = rowView.findViewById(R.id.second_line_type_imageview);
                 vHolder.thirdLineTypeImageView = rowView.findViewById(R.id.third_line_type_imageview);
@@ -163,6 +161,10 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
+                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 vHolder.firstLineSeekBar.setMax(100);
                 vHolder.secondLineSeekBar.setMax(100);
@@ -198,16 +200,16 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                     }else{
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.GONE);
                     }
@@ -216,16 +218,16 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if(item.isDeviceMQTTReachable()){
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
                     }else{
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                     }
@@ -632,177 +634,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 });
 
-                vHolder.firstLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
-
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.action_device_info){
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                                    deviceInfoFragment.setDevice(item);
-                                    deviceInfoFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
-                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device){
-                                    MySettings.setTempDevice(item);
-
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
-                                    editDeviceFragment.setPlaceMode(placeMode);
-                                    editDeviceFragment.setMqttClient(mqttAndroidClient);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device_location){
-                                    MySettings.setTempDevice(item);
-
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
-                                    editDeviceLocationFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_update_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                        MySettings.setTempDevice(item);
-
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                        fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
-                                    }
-                                }else if(id == R.id.action_remove_device){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                            //set icon
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            //set title
-                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
-                                            //set message
-                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
-                                            //set positive button
-                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what would happen when positive button is clicked
-                                                    removeDevice(item);
-                                                }
-                                            })
-                                            //set negative button
-                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what should happen when negative button is clicked
-                                                }
-                                            })
-                                            .show();
-                                }
-                                return true;
-                            }
-                        });
-                    }
-                });
-                vHolder.secondLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
-
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.action_device_info){
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                                    deviceInfoFragment.setDevice(item);
-                                    deviceInfoFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
-                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device){
-                                    MySettings.setTempDevice(item);
-
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
-                                    editDeviceFragment.setPlaceMode(placeMode);
-                                    editDeviceFragment.setMqttClient(mqttAndroidClient);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device_location){
-                                    MySettings.setTempDevice(item);
-
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
-                                    editDeviceLocationFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_update_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                        MySettings.setTempDevice(item);
-
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                        fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
-                                    }
-                                }else if(id == R.id.action_remove_device){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                            //set icon
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            //set title
-                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
-                                            //set message
-                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
-                                            //set positive button
-                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what would happen when positive button is clicked
-                                                    removeDevice(item);
-                                                }
-                                            })
-                                            //set negative button
-                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what should happen when negative button is clicked
-                                                }
-                                            })
-                                            .show();
-                                }
-                                return true;
-                            }
-                        });
-                    }
-                });
-                vHolder.thirdLineAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -891,43 +723,56 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.firstLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.firstLineAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.firstLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.firstLineAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.secondLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.secondLineAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.secondLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.secondLineAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.thirdLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.thirdLineAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.thirdLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.thirdLineAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
+                    }
+                });
+
+                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(tempViewHolder.deviceLinesLayout.getVisibility() == View.VISIBLE) {
+                            tempViewHolder.deviceLinesLayout.setVisibility(View.GONE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                        }else if(tempViewHolder.deviceLinesLayout.getVisibility() == View.GONE) {
+                            tempViewHolder.deviceLinesLayout.setVisibility(View.VISIBLE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                        }
                     }
                 });
             }
@@ -937,13 +782,14 @@ public class DeviceAdapter extends ArrayAdapter {
                 rowView = inflater.inflate(R.layout.list_item_device_sound_system_controller, null);
                 vHolder = new ViewHolder();
                 vHolder.soundDeviceLayout = rowView.findViewById(R.id.device_layout);
-                vHolder.soundDeviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                vHolder.soundDeviceNameTextView = rowView.findViewById(R.id.sound_device_name_textview);
                 vHolder.speakerVolumeSeekBar = rowView.findViewById(R.id.device_volume_seekbar);
                 vHolder.speakersLayout = rowView.findViewById(R.id.speakers_layout);
                 vHolder.deviceModeLayout = rowView.findViewById(R.id.active_mode_layout);
                 vHolder.deviceModeTextView = rowView.findViewById(R.id.device_active_mode_textview);
                 vHolder.deviceModeArrowImageView = rowView.findViewById(R.id.mode_arrow_imageview);
-                vHolder.soundDeviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
+                vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.soundDeviceTypeImageView = rowView.findViewById(R.id.device_type_imageview);
                 vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
                 vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
@@ -951,6 +797,10 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
+                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 vHolder.speakerVolumeSeekBar.setMax(100);
 
@@ -961,7 +811,6 @@ public class DeviceAdapter extends ArrayAdapter {
             }
 
             if(item != null){
-
                 populateSoundSystemDeviceData(item);
 
                 if(placeMode == Place.PLACE_MODE_LOCAL) {
@@ -969,12 +818,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                     } else {
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.GONE);
                     }
@@ -983,12 +832,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if(item.isDeviceMQTTReachable()){
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
                     }else{
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                     }
@@ -1101,7 +950,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         controlVolume(item, 0, i); //control Volume
                     }
                 });
-                vHolder.soundDeviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -1181,8 +1030,21 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.soundDeviceLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.soundDeviceAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
+                    }
+                });
+
+                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(tempViewHolder.soundDeviceLayout.getVisibility() == View.VISIBLE) {
+                            tempViewHolder.soundDeviceLayout.setVisibility(View.GONE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                        }else if(tempViewHolder.soundDeviceLayout.getVisibility() == View.GONE) {
+                            tempViewHolder.soundDeviceLayout.setVisibility(View.VISIBLE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                        }
                     }
                 });
             }
@@ -1192,17 +1054,21 @@ public class DeviceAdapter extends ArrayAdapter {
                 rowView = inflater.inflate(R.layout.list_item_device_pir_sensor, null);
                 vHolder = new ViewHolder();
                 vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                vHolder.pirDeviceNameTextView = rowView.findViewById(R.id.pir_textvie);
                 vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
-                vHolder.pirNameTextView = rowView.findViewById(R.id.pir_textvie);
                 vHolder.pirLayout = rowView.findViewById(R.id.pir_layout);
                 vHolder.pirTypeImageView = rowView.findViewById(R.id.pir_type_imageview);
-                vHolder.pirAdvancedOptionsButton = rowView.findViewById(R.id.pir_advanced_options_button);
+                vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
                 vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
                 vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
+                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 rowView.setTag(vHolder);
             }
@@ -1218,12 +1084,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                     } else {
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.GONE);
                     }
@@ -1232,12 +1098,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if(item.isDeviceMQTTReachable()){
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
                     }else{
                         //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                     }
@@ -1290,7 +1156,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 final ViewHolder tempViewHolder = vHolder;
-                vHolder.pirAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -1381,20 +1247,33 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.pirLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.pirAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
+                    }
+                });
+
+                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(tempViewHolder.pirLayout.getVisibility() == View.VISIBLE) {
+                            tempViewHolder.pirLayout.setVisibility(View.GONE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                        }else if(tempViewHolder.pirLayout.getVisibility() == View.GONE) {
+                            tempViewHolder.pirLayout.setVisibility(View.VISIBLE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                        }
                     }
                 });
             }
         }else if(viewType == 3){
             if(rowView == null){
                 LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.list_item_shutter, null);
+                rowView = inflater.inflate(R.layout.list_item_device_shutter, null);
                 vHolder = new ViewHolder();
                 vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
                 vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
                 vHolder.shutterLayout = rowView.findViewById(R.id.shutter_layout);
-                vHolder.shutterAdvancedOptionsButton= rowView.findViewById(R.id.shutter_advanced_options_button);
+                vHolder.deviceAdvancedOptionsButton= rowView.findViewById(R.id.device_advanced_options_button);
                 vHolder.shutterDownImageView = rowView.findViewById(R.id.shutter_down_imageview);
                 vHolder.shutterStopImageView = rowView.findViewById(R.id.shutter_stop_imageview);
                 vHolder.shutterUpImageView = rowView.findViewById(R.id.shutter_up_imageview);
@@ -1404,6 +1283,10 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
                 vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
+                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 rowView.setTag(vHolder);
             }
@@ -1417,12 +1300,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                     }else{
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.scanningNetworkLayout.setVisibility(View.GONE);
                     }
@@ -1431,12 +1314,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
                     if(item.isDeviceMQTTReachable()){
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
                     }else{
                         vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
                         vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                     }
@@ -1505,6 +1388,8 @@ public class DeviceAdapter extends ArrayAdapter {
                 }else{
                     vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                 }
+
+                vHolder.deviceNameTextView.setText(""+item.getName());
 
 
                 final ViewHolder tempViewHolder = vHolder;
@@ -1578,7 +1463,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     }
                 });
 
-                vHolder.shutterAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -1656,29 +1541,42 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.shutterDownImageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.shutterStopImageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.shutterUpImageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
                     }
                 });
                 vHolder.shutterLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        tempViewHolder.shutterAdvancedOptionsButton.performClick();
+                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
                         return true;
+                    }
+                });
+
+                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(tempViewHolder.shutterLayout.getVisibility() == View.VISIBLE) {
+                            tempViewHolder.shutterLayout.setVisibility(View.GONE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                        }else if(tempViewHolder.shutterLayout.getVisibility() == View.GONE) {
+                            tempViewHolder.shutterLayout.setVisibility(View.VISIBLE);
+                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                        }
                     }
                 });
             }
@@ -1721,9 +1619,21 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getDimmingState() == Line.DIMMING_STATE_ON){
                     vHolder.firstLineSeekBar.setEnabled(true);
                     vHolder.firstLineSeekBar.setVisibility(View.VISIBLE);
+
+                    if (Build.VERSION.SDK_INT >= 17) {
+                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                                ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        params.removeRule(RelativeLayout.CENTER_VERTICAL);
+                        vHolder.firstLineTextView.setLayoutParams(params);
+                    }
                 }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
                     vHolder.firstLineSeekBar.setEnabled(false);
                     vHolder.firstLineSeekBar.setVisibility(View.INVISIBLE);
+
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                            ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    params.addRule(RelativeLayout.CENTER_VERTICAL);
+                    vHolder.firstLineTextView.setLayoutParams(params);
                 }
             }else if(line.getPosition() == 1){
                 vHolder.secondLineTextView.setText(line.getName());
@@ -1751,9 +1661,21 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getDimmingState() == Line.DIMMING_STATE_ON){
                     vHolder.secondLineSeekBar.setEnabled(true);
                     vHolder.secondLineSeekBar.setVisibility(View.VISIBLE);
+
+                    if (Build.VERSION.SDK_INT >= 17) {
+                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                                ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        params.removeRule(RelativeLayout.CENTER_VERTICAL);
+                        vHolder.secondLineTextView.setLayoutParams(params);
+                    }
                 }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
                     vHolder.secondLineSeekBar.setEnabled(false);
                     vHolder.secondLineSeekBar.setVisibility(View.INVISIBLE);
+
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                            ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    params.addRule(RelativeLayout.CENTER_VERTICAL);
+                    vHolder.secondLineTextView.setLayoutParams(params);
                 }
             }else if(line.getPosition() == 2){
                 vHolder.thirdLineTextView.setText(line.getName());
@@ -1781,9 +1703,21 @@ public class DeviceAdapter extends ArrayAdapter {
                 if(line.getDimmingState() == Line.DIMMING_STATE_ON){
                     vHolder.thirdLineSeekBar.setEnabled(true);
                     vHolder.thirdLineSeekBar.setVisibility(View.VISIBLE);
+
+                    if (Build.VERSION.SDK_INT >= 17) {
+                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                                ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        params.removeRule(RelativeLayout.CENTER_VERTICAL);
+                        vHolder.secondLineTextView.setLayoutParams(params);
+                    }
                 }else if(line.getDimmingState() == Line.DIMMING_STATE_OFF){
                     vHolder.thirdLineSeekBar.setEnabled(false);
                     vHolder.thirdLineSeekBar.setVisibility(View.INVISIBLE);
+
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                            ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    params.addRule(RelativeLayout.CENTER_VERTICAL);
+                    vHolder.thirdLineTextView.setLayoutParams(params);
                 }
             }
         }
@@ -1799,6 +1733,12 @@ public class DeviceAdapter extends ArrayAdapter {
         for (Line line : lines) {
             if(line.getPosition() == 0){
                 vHolder.firstLineTextView.setText(line.getName());
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                vHolder.firstLineTextView.setLayoutParams(params);
+
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
@@ -1819,6 +1759,12 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.firstLineSeekBar.setVisibility(View.GONE);
             }else if(line.getPosition() == 1){
                 vHolder.secondLineTextView.setText(line.getName());
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                vHolder.secondLineTextView.setLayoutParams(params);
+
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
@@ -1839,6 +1785,12 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.secondLineSeekBar.setVisibility(View.GONE);
             }else if(line.getPosition() == 2){
                 vHolder.thirdLineTextView.setText(line.getName());
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                vHolder.thirdLineTextView.setLayoutParams(params);
+
                 if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
                     GlideApp.with(activity)
                             .load(line.getType().getImageUrl())
@@ -1862,6 +1814,7 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void populateSoundSystemDeviceData(Device item){
+        vHolder.deviceNameTextView.setText(""+item.getName());
         vHolder.soundDeviceNameTextView.setText(""+item.getName());
 
         /*if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
@@ -1959,7 +1912,8 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     private void populatePIRData(Device item){
-        vHolder.pirNameTextView.setText(""+item.getName());
+        vHolder.deviceNameTextView.setText(""+item.getName());
+        vHolder.pirDeviceNameTextView.setText(""+item.getName());
 
         /*if(line.getType().getImageUrl() != null && line.getType().getImageUrl().length() >= 1){
             GlideApp.with(activity)
@@ -2124,29 +2078,26 @@ public class DeviceAdapter extends ArrayAdapter {
     public static class ViewHolder{
         TextView deviceNameTextView, deviceLocationTextView;
         TextView firstLineTextView, secondLineTextView, thirdLineTextView;
-        CardView firstLineLayout, secondLineLayout, thirdLineLayout;
+        RelativeLayout firstLineLayout, secondLineLayout, thirdLineLayout;
         SeekBar firstLineSeekBar, secondLineSeekBar, thirdLineSeekBar;
-        ImageView firstLineAdvancedOptionsButton, secondLineAdvancedOptionsButton, thirdLineAdvancedOptionsButton;
         ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
+        LinearLayout deviceLinesLayout;
 
+        RelativeLayout soundDeviceLayout;
         TextView soundDeviceNameTextView;
-        CardView soundDeviceLayout;
         ImageView soundDeviceTypeImageView;
-        ImageView soundDeviceAdvancedOptionsButton;
         RelativeLayout deviceModeLayout;
         ImageView deviceModeArrowImageView;
         TextView deviceModeTextView;
         SeekBar speakerVolumeSeekBar;//will be multiple ones, depending on number of speakers
         LinearLayout speakersLayout;
 
-        TextView pirNameTextView;
-        CardView pirLayout;
+        RelativeLayout pirLayout;
+        TextView pirDeviceNameTextView;
         ImageView pirTypeImageView;
-        ImageView pirAdvancedOptionsButton;
 
-        CardView shutterLayout;
+        RelativeLayout shutterLayout;
         ImageView shutterDownImageView  , shutterUpImageView, shutterStopImageView;
-        ImageView shutterAdvancedOptionsButton;
 
         RelativeLayout scanningNetworkLayout;
         RelativeLayout lastSeenLayout;
@@ -2156,6 +2107,11 @@ public class DeviceAdapter extends ArrayAdapter {
         RelativeLayout mqttReachabilityLayout;
 
         RelativeLayout firmwareUpadteAvailableLayout;
+
+        RelativeLayout deviceTitleLayout;
+        ImageView deviceAdvancedOptionsButton;
+        ImageView expandImageView;
+        RelativeLayout deviceIconLayout;
     }
 
     android.os.Handler mHandler;

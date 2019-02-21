@@ -122,14 +122,14 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_left_white"
+                        android:src="@drawable/arrow_thin_left_white"
                         android:layout_centerVertical="true"/>
                     <ImageView
                         android:id="@+id/scroll_next_imageview"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_right_white"
+                        android:src="@drawable/arrow_thin_right_white"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"/>
