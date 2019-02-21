@@ -22,7 +22,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textSize="24sp"
-                android:textColor="@color/orangeColor"
+                android:textColor="@color/whiteColor"
                 android:textAlignment="center"
                 android:text="@string/add_room_title"/>
             <ImageView
