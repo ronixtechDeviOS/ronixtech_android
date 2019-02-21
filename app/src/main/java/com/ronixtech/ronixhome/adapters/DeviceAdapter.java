@@ -460,6 +460,11 @@ public class DeviceAdapter extends ArrayAdapter {
                                 int x = seekBar.getProgress();
                                 double progressValue = x/10.0;
                                 int progress = (int) (progressValue);
+                                if(progress == 0){
+                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                }else{
+                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                }
                                 Utils.controlDimming(item, 0, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
                                     @Override
                                     public void onDimmingSuccess() {
@@ -515,6 +520,11 @@ public class DeviceAdapter extends ArrayAdapter {
                                 int x = seekBar.getProgress();
                                 double progressValue = x/10.0;
                                 int progress = (int) (progressValue);
+                                if(progress == 0){
+                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                }else{
+                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                }
                                 Utils.controlDimming(item, 1, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
                                     @Override
                                     public void onDimmingSuccess() {
@@ -570,6 +580,11 @@ public class DeviceAdapter extends ArrayAdapter {
                                 int x = seekBar.getProgress();
                                 double progressValue = x/10.0;
                                 int progress = (int) (progressValue);
+                                if(progress == 0){
+                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                }else{
+                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                }
                                 Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
                                     @Override
                                     public void onDimmingSuccess() {
