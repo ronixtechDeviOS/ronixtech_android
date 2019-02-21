@@ -65,13 +65,13 @@ public class PickWifiNetworkDialogFragment extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         ListView listView = new ListView(getActivity());
-        if(placeID != -1){
+       if(placeID != -1){
             networks = MySettings.getPlaceWifiNetworks(placeID);
         }else{
             networks = MySettings.getAllWifiNetworks();
         }
 
-        adapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_DEVICE);
+        adapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_DEVICE, Constants.COLOR_MODE_LIGHT_BACKGROUND);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
         listView.addFooterView(footerView, null, false);
         listView.setAdapter(adapter);

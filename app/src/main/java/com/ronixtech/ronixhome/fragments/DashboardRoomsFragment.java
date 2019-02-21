@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Space;
@@ -71,6 +72,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
     RelativeLayout addPlaceLayout, addRoomLayout, addDeviceLayout;
+    LinearLayout addLayout;
 
     private static final int LIST_VIEW = 0;
     private static final int GRID_VIEW = 2;
@@ -162,6 +164,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
         }
         setHasOptionsMenu(true);
 
+        addLayout = view.findViewById(R.id.add_layout);
         addPlaceLayout = view.findViewById(R.id.add_new_place_layout);
         addRoomLayout = view.findViewById(R.id.add_new_room_layout);
         addDeviceLayout = view.findViewById(R.id.add_new_device_layout);
@@ -615,6 +618,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             roomsGridView.setVisibility(View.GONE);
             roomsListView.setVisibility(View.GONE);
             roomsHeaderLayout.setVisibility(View.GONE);
+
+            addLayout.setVisibility(View.VISIBLE);
         }else{
             //addFabMenu.setVisibility(View.VISIBLE);
             addFabMenu.setVisibility(View.GONE);
@@ -631,6 +636,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 roomsListView.setVisibility(View.VISIBLE);
             }
 
+            addLayout.setVisibility(View.GONE);
         }
     }
 

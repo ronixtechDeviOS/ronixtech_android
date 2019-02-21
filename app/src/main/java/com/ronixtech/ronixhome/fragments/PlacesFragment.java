@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
 
     FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
+    LinearLayout addLayout;
     RelativeLayout addPlaceLayout;
 
     GridView placesGridView;
@@ -93,6 +95,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
 
         placesGridViewLongPressHint = view.findViewById(R.id.places_gridview_long_press_hint_textview);
 
+        addLayout = view.findViewById(R.id.add_layout);
         addPlaceLayout = view.findViewById(R.id.add_new_place_layout);
 
         /*placesGridView = view.findViewById(R.id.places_gridview);
@@ -291,6 +294,8 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
             //placesGridView.setVisibility(View.GONE);
             placesListView.setVisibility(View.GONE);
             placesGridViewLongPressHint.setVisibility(View.GONE);
+
+            addLayout.setVisibility(View.VISIBLE);
         }else{
             //addFabMenu.setVisibility(View.VISIBLE);
             addFabMenu.setVisibility(View.GONE);
@@ -298,6 +303,8 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
             placesListView.setVisibility(View.VISIBLE);
             //placesGridViewLongPressHint.setVisibility(View.VISIBLE);
             placesGridViewLongPressHint.setVisibility(View.GONE);
+
+            addLayout.setVisibility(View.GONE);
         }
     }
 

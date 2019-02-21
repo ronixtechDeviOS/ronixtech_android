@@ -22,12 +22,14 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
     List<WifiNetwork> networks;
     ViewHolder vHolder = null;
     private int wifiNetworksType;
+    int colorMode;
 
-    public WifiNetworkItemAdapter(Activity activity, List networks, int wifiNetworksType){
+    public WifiNetworkItemAdapter(Activity activity, List networks, int wifiNetworksType, int colorMode){
         super(activity, R.layout.list_item_wifi_network, networks);
         this.activity = activity;
         this.networks = networks;
         this.wifiNetworksType = wifiNetworksType;
+        this.colorMode = colorMode;
     }
 
     @Override
@@ -88,7 +90,15 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
             }
         }
 
-
+        if(colorMode == Constants.COLOR_MODE_DARK_BACKGROUND){
+            vHolder.networkNameTextView.setTextColor(activity.getResources().getColor(R.color.whiteColor));
+            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.whiteColor));
+            vHolder.placeNameTextView.setTextColor(activity.getResources().getColor(R.color.whiteColor));
+        }else if(colorMode == Constants.COLOR_MODE_LIGHT_BACKGROUND){
+            vHolder.networkNameTextView.setTextColor(activity.getResources().getColor(R.color.blackColor));
+            vHolder.networkSignalTextView.setTextColor(activity.getResources().getColor(R.color.blackColor));
+            vHolder.placeNameTextView.setTextColor(activity.getResources().getColor(R.color.blackColor));
+        }
 
         if(item.getSignal() != null && item.getSignal().length() >= 1){
             int signalStrenth = Integer.valueOf(item.getSignal());

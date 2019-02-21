@@ -91,6 +91,7 @@
             android:id="@+id/add_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/background_dark"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,14 +111,14 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/add_place_icon"/>
+                        android:src="@drawable/add_place_icon_circular"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_below="@id/add_place_icon"
                         android:textSize="18sp"
-                        android:textColor="@color/darkestGrayColor"
+                        android:textColor="@color/whiteColor"
                         android:textAlignment="center"
                         android:text="@string/add_new_place"/>
                 </RelativeLayout>
@@ -139,7 +140,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_below="@id/add_room_icon"
                         android:textSize="18sp"
-                        android:textColor="@color/darkestGrayColor"
+                        android:textColor="@color/whiteColor"
                         android:textAlignment="center"
                         android:text="@string/add_new_room"/>
                 </RelativeLayout>
@@ -161,7 +162,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_below="@id/add_device_icon"
                         android:textSize="18sp"
-                        android:textColor="@color/darkestGrayColor"
+                        android:textColor="@color/whiteColor"
                         android:textAlignment="center"
                         android:text="@string/add_new_device"/>
                 </RelativeLayout>

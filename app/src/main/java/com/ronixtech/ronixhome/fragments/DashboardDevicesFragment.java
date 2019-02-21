@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,6 +52,7 @@ public class DashboardDevicesFragment extends Fragment {
     FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
     RelativeLayout addDeviceLayout;
+    LinearLayout addLayout;
 
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
@@ -111,6 +113,7 @@ public class DashboardDevicesFragment extends Fragment {
 
         listHandler = new Handler();
 
+        addLayout = view.findViewById(R.id.add_layout);
         addDeviceLayout = view.findViewById(R.id.add_new_device_layout);
 
         addFabMenu = view.findViewById(R.id.add_fab_menu);
@@ -326,12 +329,16 @@ public class DashboardDevicesFragment extends Fragment {
             addFabMenu.setVisibility(View.GONE);
             devicesListView.setVisibility(View.GONE);
             devicesListViewLongPressHint.setVisibility(View.GONE);
+
+            addLayout.setVisibility(View.VISIBLE);
         }else{
             //addFabMenu.setVisibility(View.VISIBLE);
             addFabMenu.setVisibility(View.GONE);
             devicesListView.setVisibility(View.VISIBLE);
             //devicesListViewLongPressHint.setVisibility(View.VISIBLE);
             devicesListViewLongPressHint.setVisibility(View.GONE);
+
+            addLayout.setVisibility(View.GONE);
         }
     }
 

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -20,6 +21,7 @@ import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.adapters.FloorsDashboardListAdapter;
 import com.ronixtech.ronixhome.adapters.FloorsGridAdapter;
 import com.ronixtech.ronixhome.entities.Floor;
 
@@ -47,6 +49,9 @@ public class FloorsFragment extends Fragment{
     FloorsGridAdapter floorAdapter;
     List<Floor> floors;
     TextView floorsGirdViewLongPressHint;
+
+    ListView floorsListView;
+    FloorsDashboardListAdapter floorsListAdapter;
 
     int source = Constants.SOURCE_HOME_FRAGMENT;
 
@@ -91,7 +96,7 @@ public class FloorsFragment extends Fragment{
 
         floorsGirdViewLongPressHint = view.findViewById(R.id.floors_gridview_long_press_hint_textview);
 
-        floorsGridView = view.findViewById(R.id.floors_gridview);
+        /*floorsGridView = view.findViewById(R.id.floors_gridview);
         noFloorsTextView = view.findViewById(R.id.no_floors_textview);
         if(MySettings.getCurrentPlace() != null){
             floors = MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors();
@@ -123,7 +128,41 @@ public class FloorsFragment extends Fragment{
                 floorAdapter.notifyDataSetChanged();
             }
         });
-        floorsGridView.setAdapter(floorAdapter);
+        floorsGridView.setAdapter(floorAdapter);*/
+
+        floorsListView = view.findViewById(R.id.floors_listview);
+        noFloorsTextView = view.findViewById(R.id.no_floors_textview);
+        if(MySettings.getCurrentPlace() != null){
+            floors = MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors();
+        }else {
+            floors = MySettings.getAllFloors();
+        }
+        floorsListAdapter = new FloorsDashboardListAdapter(getActivity(), floors, getFragmentManager(), new FloorsDashboardListAdapter.FloorsListener() {
+            @Override
+            public void onFloorDeleted() {
+                MySettings.setCurrentFloor(null);
+                MySettings.setCurrentRoom(null);
+
+                floors.clear();
+                if(MySettings.getCurrentPlace() != null){
+                    floors.addAll(MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors());
+                }else {
+                    floors.addAll(MySettings.getAllFloors());
+                }
+                floorsListAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onFloorNameChanged() {
+                floors.clear();
+                if(MySettings.getCurrentPlace() != null){
+                    floors.addAll(MySettings.getPlace(MySettings.getCurrentPlace().getId()).getFloors());
+                }else {
+                    floors.addAll(MySettings.getAllFloors());
+                }
+                floorsListAdapter.notifyDataSetChanged();
+            }
+        });
+        floorsListView.setAdapter(floorsListAdapter);
 
         if(floors != null && floors.size() >= 1){
             noFloorsTextView.setVisibility(View.GONE);
@@ -178,6 +217,8 @@ public class FloorsFragment extends Fragment{
                 }
             }
         });
+
+        addMenu.setVisibility(View.GONE);
 
         return view;
     }

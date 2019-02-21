@@ -134,7 +134,7 @@ public class WifiListFragment extends Fragment {
         searchStatusTextView = view.findViewById(R.id.search_status_textview);
         networksListView = view.findViewById(R.id.networks_listview);
         networks = new ArrayList<>();
-        networksAdapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_SEARCH);
+        networksAdapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_SEARCH, Constants.COLOR_MODE_DARK_BACKGROUND);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
         networksListView.addFooterView(footerView);
         networksListView.setAdapter(networksAdapter);

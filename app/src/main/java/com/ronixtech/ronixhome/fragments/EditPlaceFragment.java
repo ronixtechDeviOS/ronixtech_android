@@ -129,7 +129,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
                 Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
             }
-        }, Constants.REMOVE_NETWORK_FROM_DB_NO);
+        }, Constants.REMOVE_NETWORK_FROM_DB_NO, Constants.COLOR_MODE_DARK_BACKGROUND);
         selectedWifiNetworksListView.setAdapter(selectedWifiNetworksAdapter);
 
         placeFloorsListView = view.findViewById(R.id.place_floors_listview);
@@ -161,7 +161,30 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 }
                 Floor floor = new Floor();
                 floor.setId(-1);
-                floor.setName("Floor #" + (lastLevel+1));
+                int x = lastLevel+1;
+                if(x == 1){
+                    floor.setName("Ground Floor");
+                }else if(x == 2){
+                    floor.setName("First Floor");
+                }else if(x == 3){
+                    floor.setName("Second Floor");
+                }else if(x == 4){
+                    floor.setName("Third Floor");
+                }else if(x == 5){
+                    floor.setName("Forth Floor");
+                }else if(x == 6){
+                    floor.setName("Fifth Floor");
+                }else if(x == 7){
+                    floor.setName("Sixth Floor");
+                }else if(x == 8){
+                    floor.setName("Seventh Floor");
+                }else if(x == 9){
+                    floor.setName("Eighth Floor");
+                }else if(x == 10){
+                    floor.setName("Ninth Floor");
+                }else{
+                    floor.setName("Floor #" + x);
+                }
                 floor.setLevel(lastLevel+1);
                 floor.setPlaceID(place.getId());
                 placeFloors.add(floor);

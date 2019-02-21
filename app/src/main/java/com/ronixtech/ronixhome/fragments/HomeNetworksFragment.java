@@ -89,7 +89,7 @@ public class HomeNetworksFragment extends android.support.v4.app.Fragment {
                 //selectedWifiNetworks.addAll(MySettings.getPlaceWifiNetworks(place.getId()));
                 networksAdapter.notifyDataSetChanged();
             }
-        }, Constants.REMOVE_NETWORK_FROM_DB_YES);
+        }, Constants.REMOVE_NETWORK_FROM_DB_YES, Constants.COLOR_MODE_LIGHT_BACKGROUND);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_wifi_network_footer, null, false);
         networksListView.addFooterView(footerView);
         networksListView.setAdapter(networksAdapter);

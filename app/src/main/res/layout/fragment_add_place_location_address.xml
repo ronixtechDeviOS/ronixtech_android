@@ -42,6 +42,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="text|textCapWords|textMultiLine"
                     android:maxLines="3"
+                    android:textColor="@color/whiteColor"
                     android:hint="@string/place_address"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -59,6 +60,7 @@
                     android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
+                    android:textColor="@color/whiteColor"
                     android:hint="@string/place_city"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -77,6 +79,7 @@
                     android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
+                    android:textColor="@color/whiteColor"
                     android:hint="@string/place_state"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -94,6 +97,7 @@
                     android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords"
+                    android:textColor="@color/whiteColor"
                     android:hint="@string/place_country"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -111,6 +115,7 @@
                     android:backgroundTint="@color/whiteColor"
                     android:imeOptions="actionDone"
                     android:inputType="number"
+                    android:textColor="@color/whiteColor"
                     android:hint="@string/place_zip_code"/>
             </android.support.design.widget.TextInputLayout>
 

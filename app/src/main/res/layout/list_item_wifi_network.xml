@@ -12,7 +12,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:src="@drawable/wifi_gray"/>
+        android:src="@drawable/signal_0"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

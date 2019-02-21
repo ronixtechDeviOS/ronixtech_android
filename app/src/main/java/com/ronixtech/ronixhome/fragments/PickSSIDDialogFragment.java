@@ -64,7 +64,7 @@ public class PickSSIDDialogFragment extends DialogFragment {
             networks = new ArrayList<>();
         }
 
-        adapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_SEARCH);
+        adapter = new WifiNetworkItemAdapter(getActivity(), networks, Constants.WIFI_NETWORK_SEARCH, Constants.COLOR_MODE_LIGHT_BACKGROUND);
         listView.setAdapter(adapter);
         listView.setDivider(null);
 

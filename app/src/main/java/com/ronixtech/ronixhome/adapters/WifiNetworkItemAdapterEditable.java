@@ -34,6 +34,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
     List<WifiNetwork> networks;
     ViewHolder vHolder = null;
     int removeNetworkFromDB = Constants.REMOVE_NETWORK_FROM_DB_NO;
+    int colorMode;
 
     private WifiNetworksListener wifiNetworksListener;
 
@@ -41,12 +42,13 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
         public void onNetworkDeleted();
     }
 
-    public WifiNetworkItemAdapterEditable(Activity activity, List networks, WifiNetworksListener wifiNetworksListener, int removeNetworkFromDB){
+    public WifiNetworkItemAdapterEditable(Activity activity, List networks, WifiNetworksListener wifiNetworksListener, int removeNetworkFromDB, int colorMode){
         super(activity, R.layout.list_item_wifi_network_editable, networks);
         this.activity = activity;
         this.networks = networks;
         this.wifiNetworksListener = wifiNetworksListener;
         this.removeNetworkFromDB = removeNetworkFromDB;
+        this.colorMode = colorMode;
     }
 
     @Override
@@ -100,6 +102,14 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
             }
         }else{
             vHolder.placeNameTextView.setText(Utils.getString(activity, R.string.wifi_no_place));
+        }
+
+        if(colorMode == Constants.COLOR_MODE_DARK_BACKGROUND){
+            vHolder.networkNameTextView.setTextColor(activity.getResources().getColor(R.color.whiteColor));
+            vHolder.placeNameTextView.setTextColor(activity.getResources().getColor(R.color.whiteColor));
+        }else if(colorMode == Constants.COLOR_MODE_LIGHT_BACKGROUND){
+            vHolder.networkNameTextView.setTextColor(activity.getResources().getColor(R.color.blackColor));
+            vHolder.placeNameTextView.setTextColor(activity.getResources().getColor(R.color.blackColor));
         }
 
         if(item.getSignal() != null && item.getSignal().length() >= 1){

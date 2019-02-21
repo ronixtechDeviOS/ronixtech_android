@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -104,16 +105,41 @@ public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment
         pagerAdapter.addFrag(deviceConfigurationHintFragment3, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_PIR_MOTION_SENSOR));
 
         DeviceConfigurationHintFragment deviceConfigurationHintFragment4 = new DeviceConfigurationHintFragment();
-        deviceConfigurationHintFragment4.setDeviceType(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER);
-        pagerAdapter.addFrag(deviceConfigurationHintFragment4, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER));
+        deviceConfigurationHintFragment4.setDeviceType(Device.DEVICE_TYPE_SHUTTER);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment4, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SHUTTER));
 
         DeviceConfigurationHintFragment deviceConfigurationHintFragment5 = new DeviceConfigurationHintFragment();
-        deviceConfigurationHintFragment5.setDeviceType(Device.DEVICE_TYPE_SHUTTER);
-        pagerAdapter.addFrag(deviceConfigurationHintFragment5, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SHUTTER));
+        deviceConfigurationHintFragment5.setDeviceType(Device.DEVICE_TYPE_MAGIC_SWITCH_3lines);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment5, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_MAGIC_SWITCH_3lines));
+
+        DeviceConfigurationHintFragment deviceConfigurationHintFragment6 = new DeviceConfigurationHintFragment();
+        deviceConfigurationHintFragment6.setDeviceType(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER);
+        pagerAdapter.addFrag(deviceConfigurationHintFragment6, Device.getDeviceTypeCategoryString(Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER));
 
         pagerAdapter.notifyDataSetChanged();
 
         mTabLayout.setupWithViewPager(viewPager);
+
+        ImageView leftImageView, rightImageView;
+        leftImageView = view.findViewById(R.id.left_imageview);
+        rightImageView = view.findViewById(R.id.right_imageview);
+
+        leftImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(viewPager.getCurrentItem() > 0) {
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+                }
+            }
+        });
+        rightImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(viewPager.getCurrentItem() < viewPager.getAdapter().getCount()) {
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+                }
+            }
+        });
 
         continueButton = view.findViewById(R.id.continue_button);
         continueButton.setOnClickListener(new View.OnClickListener() {

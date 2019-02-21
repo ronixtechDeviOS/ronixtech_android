@@ -151,6 +151,10 @@ public class Constants {
     public static final int ACTION_NO = 1;
     public static final int ACTION_CANCEL = 2;
 
+    //theme constants
+    public static final int COLOR_MODE_DARK_BACKGROUND = 0;
+    public static final int COLOR_MODE_LIGHT_BACKGROUND = 1;
+
     //notification channel constant, only for api26+
     public static final String CHANNEL_ID = "4";
 
