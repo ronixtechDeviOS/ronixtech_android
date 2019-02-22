@@ -558,8 +558,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                                 }else{
                                     device.setFirmwareUpdateAvailable(true);
                                 }
-                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 
@@ -644,7 +643,7 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                                         device.getLines().add(line);
                                     }
 
-                                    if(secondLinePresent){
+                                    if(secondLinePresent && (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines)){
                                         Line line = new Line();
                                         line.setPosition(1);
                                         line.setName(Utils.getString(getActivity(), R.string.line_2_name_hint));
@@ -658,7 +657,156 @@ public class AddDeviceConfigurationPreparingFragment extends android.support.v4.
                                         device.getLines().add(line);
                                     }
 
-                                    if(thirdLinePresent){
+                                    if(thirdLinePresent && device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                                        Line line = new Line();
+                                        line.setPosition(2);
+                                        line.setName(Utils.getString(getActivity(), R.string.line_3_name_hint));
+                                        line.setPowerState(line2PowerState);
+
+                                        line.setTypeID(lineType.getId());
+                                        line.setMode(lineMode);
+
+                                        line.setDeviceID(deviceID);
+
+                                        device.getLines().add(line);
+                                    }
+
+
+                                    String temperatureString, beepString, hwLockString;
+                                    int temperatureValue;
+                                    boolean beep, hwLock;
+                                    if(hardwareStatus.has("U_H_TMP")){
+                                        temperatureString = hardwareStatus.getString("U_H_TMP");
+                                        temperatureValue = Integer.parseInt(temperatureString);
+                                        device.setTemperature(temperatureValue);
+                                    }
+                                    if(hardwareStatus.has("U_BEEP_")){
+                                        beepString = hardwareStatus.getString("U_BEEP_");
+                                        if(beepString != null && beepString.length() >= 1){
+                                            if(Integer.parseInt(beepString) == 1){
+                                                beep = true;
+                                                device.setBeep(beep);
+                                            }else{
+                                                beep = false;
+                                                device.setBeep(beep);
+                                            }
+                                        }
+                                    }
+                                    if(hardwareStatus.has("U_H_LCK")){
+                                        hwLockString = hardwareStatus.getString("U_H_LCK");
+                                        if(hwLockString != null && hwLockString.length() >= 1){
+                                            if(Integer.parseInt(hwLockString) == 1){
+                                                hwLock = true;
+                                                device.setHwLock(hwLock);
+                                            }else{
+                                                hwLock = false;
+                                                device.setHwLock(hwLock);
+                                            }
+                                        }
+                                    }
+                                }else {
+                                    device.setFirmwareUpdateAvailable(true);
+                                }
+                            }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
+                                if(unitStatus != null && unitStatus.has("U_H_STT")){
+                                    JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
+
+                                /*if(hardwareStatus.has("U_H_FWV")) {
+                                    String currentHWFirmwareVersion = hardwareStatus.getString("U_H_FWV");
+                                    if (currentHWFirmwareVersion != null && currentHWFirmwareVersion.length() >= 1){
+                                        device.setHwFirmwareVersion(currentHWFirmwareVersion);
+                                        if(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()).length() >= 1) {
+                                            int currentHWVersion = Integer.valueOf(currentHWFirmwareVersion);
+                                            int onlineHWVersion = Integer.valueOf(MySettings.getDeviceLatestHWFirmwareVersion(device.getDeviceTypeID()));
+                                            if (onlineHWVersion != currentHWVersion) {
+                                                device.setHwFirmwareUpdateAvailable(true);
+                                            }else{
+                                                device.setHwFirmwareUpdateAvailable(false);
+                                            }
+                                        }
+                                    }else{
+                                        device.setHwFirmwareUpdateAvailable(true);
+                                    }
+                                }else{
+                                    device.setHwFirmwareUpdateAvailable(true);
+                                }
+
+                                if(hardwareStatus.has("U_H_HWV")){
+                                    String hwVersionString = hardwareStatus.getString("U_H_HWV");
+                                    if(hwVersionString != null && hwVersionString.length() >= 1){
+                                        int hwVersion = Integer.parseInt(hwVersionString);
+                                        device.setHwVersion(""+hwVersion);
+                                    }
+                                }*/
+
+                                    boolean firstLinePreset = false, secondLinePresent = false, thirdLinePresent = false;
+
+                                    String line0PowerStateString, line1PowerStateString, line2PowerStateString;
+                                    int line0PowerState = 0, line1PowerState = 0, line2PowerState = 0;
+
+                                    if(hardwareStatus.has("L_0_STT")){
+                                        firstLinePreset = true;
+                                        line0PowerStateString = hardwareStatus.getString("L_0_STT");
+                                        line0PowerState = Integer.valueOf(line0PowerStateString);
+                                    }
+                                    if(hardwareStatus.has("L_1_STT")){
+                                        secondLinePresent = true;
+                                        line1PowerStateString = hardwareStatus.getString("L_1_STT");
+                                        line1PowerState = Integer.valueOf(line1PowerStateString);
+                                    }
+                                    if(hardwareStatus.has("L_2_STT")){
+                                        thirdLinePresent = true;
+                                        line2PowerStateString = hardwareStatus.getString("L_2_STT");
+                                        line2PowerState = Integer.valueOf(line2PowerStateString);
+                                    }
+
+                                    //init device lines then insert it into DB
+                                    Type lineType = MySettings.getTypeByName("Lamp");
+                                    int lineMode = Line.MODE_PRIMARY;
+
+                                    //create the lines then device.setLines/line.setDeviceID then MySettings.addDevice()
+                                    Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+
+                                    if(dbDevice == null){
+                                        MySettings.addDevice(device);
+                                        dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                                    }
+
+                                    long deviceID = dbDevice.getId();
+                                    device.setId(deviceID);
+
+                                    Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
+
+                                    //loop over the number of lines
+                                    if(firstLinePreset){
+                                        Line line = new Line();
+                                        line.setPosition(0);
+                                        line.setName(Utils.getString(getActivity(), R.string.line_1_name_hint));
+                                        line.setPowerState(line0PowerState);
+
+                                        line.setTypeID(lineType.getId());
+                                        line.setMode(lineMode);
+
+                                        line.setDeviceID(deviceID);
+
+                                        device.getLines().add(line);
+                                    }
+
+                                    if(secondLinePresent && (device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines)){
+                                        Line line = new Line();
+                                        line.setPosition(1);
+                                        line.setName(Utils.getString(getActivity(), R.string.line_2_name_hint));
+                                        line.setPowerState(line1PowerState);
+
+                                        line.setTypeID(lineType.getId());
+                                        line.setMode(lineMode);
+
+                                        line.setDeviceID(deviceID);
+
+                                        device.getLines().add(line);
+                                    }
+
+                                    if(thirdLinePresent && device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                                         Line line = new Line();
                                         line.setPosition(2);
                                         line.setName(Utils.getString(getActivity(), R.string.line_3_name_hint));

@@ -769,9 +769,11 @@ public class DeviceAdapter extends ArrayAdapter {
                         if(tempViewHolder.deviceLinesLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.deviceLinesLayout.setVisibility(View.GONE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.deviceLinesLayout.getVisibility() == View.GONE) {
                             tempViewHolder.deviceLinesLayout.setVisibility(View.VISIBLE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
@@ -1041,9 +1043,11 @@ public class DeviceAdapter extends ArrayAdapter {
                         if(tempViewHolder.soundDeviceLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.soundDeviceLayout.setVisibility(View.GONE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.soundDeviceLayout.getVisibility() == View.GONE) {
                             tempViewHolder.soundDeviceLayout.setVisibility(View.VISIBLE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
@@ -1258,9 +1262,11 @@ public class DeviceAdapter extends ArrayAdapter {
                         if(tempViewHolder.pirLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.pirLayout.setVisibility(View.GONE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.pirLayout.getVisibility() == View.GONE) {
                             tempViewHolder.pirLayout.setVisibility(View.VISIBLE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
@@ -1573,9 +1579,11 @@ public class DeviceAdapter extends ArrayAdapter {
                         if(tempViewHolder.shutterLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.shutterLayout.setVisibility(View.GONE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.shutterLayout.getVisibility() == View.GONE) {
                             tempViewHolder.shutterLayout.setVisibility(View.VISIBLE);
                             tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
+                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
