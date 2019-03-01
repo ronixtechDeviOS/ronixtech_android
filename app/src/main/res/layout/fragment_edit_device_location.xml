@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.EditDeviceLocationFragment">
     <FrameLayout
         android:layout_width="match_parent"
@@ -12,7 +13,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_1">
+            android:background="@drawable/background_dark">
             <TextView
                 android:id="@+id/add_device_title_textview"
                 android:layout_width="wrap_content"
@@ -22,14 +23,15 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textSize="24sp"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/whiteColor"
                 android:textAlignment="center"
                 android:text="@string/edit_device_location_title"/>
             <ImageView
                 android:id="@+id/add_device_imageview"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/device_icon"
+                android:src="@drawable/device_icon_circular"
+                android:foreground="@drawable/circle_indicator_blue_dark"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/add_device_title_textview"/>
             <TextView
@@ -42,7 +44,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textSize="16sp"
-                android:textColor="@color/blackColor"
+                android:textColor="@color/whiteColor"
                 android:textAlignment="center"
                 android:text="@string/edit_device_description"/>
 
@@ -55,6 +57,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
+                android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/place"/>
             <RelativeLayout
@@ -66,12 +69,12 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
-                android:background="@drawable/button_background_round_border_blue">
+                android:background="@drawable/button_background_bottom_line_gray">
                 <ImageView
                     android:id="@+id/selected_place_image_view"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/place_icon"
+                    android:src="@drawable/place_icon_circular"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>
@@ -79,7 +82,8 @@
                     android:id="@+id/selected_place_arrow_image_view"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:src="@drawable/arrow_thick_down_orange"
+                    android:padding="16dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
@@ -97,7 +101,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:textSize="16sp"
-                    android:textColor="@color/blackColor"
+                    android:textColor="@color/whiteColor"
                     android:text="@string/place_selection_hint"/>
             </RelativeLayout>
 
@@ -116,6 +120,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:textAlignment="center"
+                    android:textColor="@color/whiteColor"
                     android:textSize="18sp"
                     android:text="@string/floor_colon"/>
 
@@ -126,13 +131,17 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/floor_level_textview"
                     android:layout_toRightOf="@id/floor_level_textview"
+                    android:layout_toStartOf="@id/floor_actions_layout"
+                    android:layout_toLeftOf="@id/floor_actions_layout"
                     android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
                     android:textAlignment="center"
+                    android:textColor="@color/whiteColor"
                     android:textSize="18sp"
                     android:text="-"/>
 
                 <LinearLayout
+                    android:id="@+id/floor_actions_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -143,20 +152,20 @@
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_blue"
-                        android:textColor="@color/blackColor"
+                        android:background="@drawable/button_background_round_border_gray"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/minus_symbol"/>
                     <android.support.v4.widget.Space
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.1"/>
+                        android:layout_weight="0"/>
                     <Button
                         android:id="@+id/increment_button"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_blue"
-                        android:textColor="@color/blackColor"
+                        android:background="@drawable/button_background_round_border_gray"
+                        android:textColor="@color/whiteColor"
                         android:text="@string/add_symbol"/>
                 </LinearLayout>
             </RelativeLayout>
@@ -170,6 +179,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
+                android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/room"/>
             <RelativeLayout
@@ -181,12 +191,12 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
-                android:background="@drawable/button_background_round_border_blue">
+                android:background="@drawable/button_background_bottom_line_gray">
                 <ImageView
                     android:id="@+id/selected_room_image_view"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/room_icon"
+                    android:src="@drawable/room_icon_circular"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>
@@ -194,7 +204,8 @@
                     android:id="@+id/selected_room_arrow_image_view"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:src="@drawable/arrow_thick_down_orange"
+                    android:padding="16dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
@@ -212,7 +223,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:textSize="16sp"
-                    android:textColor="@color/blackColor"
+                    android:textColor="@color/whiteColor"
                     android:text="@string/room_selection_hint"/>
             </RelativeLayout>
 
@@ -225,6 +236,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
                 android:textAlignment="center"
+                android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/wifi_network"/>
             <RelativeLayout
@@ -236,12 +248,12 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:padding="4dp"
-                android:background="@drawable/button_background_round_border_blue">
+                android:background="@drawable/button_background_bottom_line_gray">
                 <ImageView
                     android:id="@+id/selected_wifi_network_imageview"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/home_network_blue"
+                    android:src="@drawable/signal_0"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"/>
@@ -249,7 +261,8 @@
                     android:id="@+id/selected_wifi_network_arrow_image_view"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_blue_24dp"
+                    android:src="@drawable/arrow_thick_down_orange"
+                    android:padding="16dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
@@ -267,7 +280,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
                     android:textSize="16sp"
-                    android:textColor="@color/blackColor"
+                    android:textColor="@color/whiteColor"
                     android:text="@string/select_wifi_network_hint"/>
             </RelativeLayout>
 
@@ -281,7 +294,7 @@
                 android:layout_marginTop="16dp"
                 android:textSize="18sp"
                 android:checked="true"
-                android:textColor="@color/blueColor"
+                android:textColor="@color/whiteColor"
                 android:text="@string/unit_static_ip_description"/>
 
             <Button
@@ -294,9 +307,8 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@color/whiteColor"
-                android:background="@drawable/button_background_round_gray"
-                android:enabled="false"
+                android:textColor="@color/darkBlueColor"
+                android:background="@drawable/button_background_round_white"
                 android:text="@string/save"/>
 
         </RelativeLayout>

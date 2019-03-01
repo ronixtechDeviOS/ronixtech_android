@@ -61,7 +61,6 @@ import com.ronixtech.ronixhome.fragments.ExportDataFragment;
 import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
 import com.ronixtech.ronixhome.fragments.ImportDataFragment;
 import com.ronixtech.ronixhome.fragments.LinkedAccountsFragment;
-import com.ronixtech.ronixhome.fragments.LogViewerFragment;
 import com.ronixtech.ronixhome.fragments.PlacesFragment;
 import com.ronixtech.ronixhome.fragments.UserProfileFragment;
 
@@ -95,23 +94,30 @@ public class MainActivity extends AppCompatActivity
     private static MainActivity mInstance;
     public static boolean isResumed;
 
+    Toolbar toolbar;
+    private static TextView mTitle;
+
     NavigationView navigationView;
+    LinearLayout headerLayout;
+    TextView userNameTextView, userEmailTextView;
+    ImageView userImageView;
+
+    RelativeLayout navDashboardLayout, newVersionAvailableLayout;
+    LinearLayout navPlacesLayout, navRefreshDevicesLayout, navAboutLayout, navLinkedAccountsLayout, navExportDataLayout, navImportDataLayout, navProfileLayout, navLogoutLayout;
+
+    TextView currentVersionTextView, latestVersionTextView;
 
     FragmentManager fragmentManager;
     DashboardDevicesFragment dashboardDevicesFragment;
     DashboardRoomsFragment dashboardRoomsFragment;
-    Toolbar toolbar;
-    private static TextView mTitle;
 
-    TextView userNameTextView, userEmailTextView;
-    ImageView userImageView;
 
     BroadcastReceiver myWifiReceiver;
     IntentFilter intentFilter;
 
-    int logCounterMAX = 8;
+    /*int logCounterMAX = 8;
     int logCounterToast = 3;
-    int logCounter;
+    int logCounter;*/
 
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
@@ -233,8 +239,16 @@ public class MainActivity extends AppCompatActivity
         navigationView.setItemIconTintList(null);
 
 
-        LinearLayout headerLayout = (LinearLayout) navigationView.getHeaderView(0);
-        headerLayout.setOnClickListener(new View.OnClickListener() {
+        headerLayout = (LinearLayout) navigationView.getHeaderView(0);
+
+        userNameTextView = headerLayout.findViewById(R.id.user_name_textview);
+        userEmailTextView = headerLayout.findViewById(R.id.user_email_textview);
+        userImageView = headerLayout.findViewById(R.id.user_picture_imageview);
+
+        userNameTextView.setText(MySettings.getActiveUser().getFullName());
+        userEmailTextView.setText(MySettings.getActiveUser().getEmail());
+
+        userImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -247,14 +261,7 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(Gravity.START);
             }
         });
-        userNameTextView = headerLayout.findViewById(R.id.user_name_textview);
-        userEmailTextView = headerLayout.findViewById(R.id.user_email_textview);
-        userImageView = headerLayout.findViewById(R.id.imageView);
-
-        userNameTextView.setText(MySettings.getActiveUser().getFirstName() + " " + MySettings.getActiveUser().getLastName());
-        userEmailTextView.setText(MySettings.getActiveUser().getEmail());
-
-        logCounter = 0;
+        /*logCounter = 0;
         userImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,10 +281,191 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
+        });*/
+
+        navDashboardLayout = headerLayout.findViewById(R.id.nav_dashboard_layout);
+        navPlacesLayout = headerLayout.findViewById(R.id.nav_places_layout);
+        navRefreshDevicesLayout = headerLayout.findViewById(R.id.nav_refresh_devices_layout);
+        navAboutLayout = headerLayout.findViewById(R.id.nav_about_layout);
+        navLinkedAccountsLayout = headerLayout.findViewById(R.id.nav_linked_accounts_layout);
+        navExportDataLayout = headerLayout.findViewById(R.id.nav_export_layout);
+        navImportDataLayout = headerLayout.findViewById(R.id.nav_import_layout);
+        navProfileLayout = headerLayout.findViewById(R.id.nav_profile_layout);
+        navLogoutLayout = headerLayout.findViewById(R.id.nav_logout_layout);
+
+        navDashboardLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navPlacesLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                PlacesFragment placesFragment = new PlacesFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, placesFragment, "placesFragment");
+                fragmentTransaction.addToBackStack("placesFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navRefreshDevicesLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.showToast(mInstance, "Refreshing devices", true);
+                if(allDevices != null){
+                    for (Device dev : allDevices) {
+                        if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
+                            Utils.getDeviceInfo(dev);
+                        }else{
+                            MySettings.scanNetwork();
+                        }
+                    }
+
+                    new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
+                        @Override
+                        public void onConnectionSuccess() {
+                            MySettings.setInternetConnectivityState(true);
+                            //subscribe on MQTT for ALL units
+                            if(mqttAndroidClient != null && mqttAndroidClient.isConnected()){
+                                try {
+                                    for (Device device : allDevices) {
+                                        subscribe(mqttAndroidClient, device, 1);
+                                    }
+                                }catch (MqttException e){
+                                    Utils.log(TAG, "Exception " + e.getMessage(), true);
+                                    for (Device device : allDevices) {
+                                        device.setDeviceMQTTReachable(false);
+                                        MySettings.addDevice(device);
+                                        DevicesInMemory.updateDevice(device);
+                                    }
+                                    MainActivity.getInstance().refreshDevicesListFromMemory();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onConnectionFail(String errorMsg) {
+                            MySettings.setInternetConnectivityState(false);
+                            Utils.showToast(mInstance, Utils.getString(mInstance, R.string.no_internet_connection), true);
+                        }
+                    }).execute();
+                }else{
+                    //no devices available to refresh
+                }
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navAboutLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AboutFragment aboutFragment = new AboutFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, aboutFragment, "aboutFragment");
+                fragmentTransaction.addToBackStack("aboutFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navLinkedAccountsLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                LinkedAccountsFragment linkedAccountsFragment = new LinkedAccountsFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, linkedAccountsFragment, "linkedAccountsFragment");
+                fragmentTransaction.addToBackStack("linkedAccountsFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navExportDataLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                ExportDataFragment exportDataFragment = new ExportDataFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, exportDataFragment, "exportDataFragment");
+                fragmentTransaction.addToBackStack("exportDataFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navImportDataLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                ImportDataFragment importDataFragment = new ImportDataFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, importDataFragment, "importDataFragment");
+                fragmentTransaction.addToBackStack("importDataFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navProfileLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                UserProfileFragment userProfileFragment = new UserProfileFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
+                fragmentTransaction.addToBackStack("userProfileFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navLogoutLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(mInstance)
+                        //set icon
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //set title
+                        .setTitle(Utils.getString(mInstance, R.string.logout_title))
+                        //set message
+                        .setMessage(Utils.getString(mInstance, R.string.logout_message))
+                        //set positive button
+                        .setPositiveButton(Utils.getString(mInstance, R.string.logout), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what would happen when positive button is clicked
+                                MySettings.clearData();
+                                Intent loginIntent = new Intent(mInstance, LoginActivity.class);
+                                startActivity(loginIntent);
+                                finish();
+                            }
+                        })
+                        //set negative button
+                        .setNegativeButton(Utils.getString(mInstance, R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //set what should happen when negative button is clicked
+                            }
+                        })
+                        .show();
+                drawer.closeDrawer(Gravity.START);
+            }
         });
 
-        RelativeLayout currentVersionLayout = (RelativeLayout) navigationView.getMenu().findItem(R.id.nav_current_version).getActionView();
-        TextView currentVersionTextView = currentVersionLayout.findViewById(R.id.current_version_textview);
+
+        currentVersionTextView = headerLayout.findViewById(R.id.current_version_textview);
         try {
             PackageInfo pInfo = mInstance.getPackageManager().getPackageInfo(getPackageName(), 0);
             String version = pInfo.versionName;
@@ -286,6 +474,21 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
             currentVersionTextView.setText("0.0");
         }
+
+        newVersionAvailableLayout = headerLayout.findViewById(R.id.nav_new_version_available_layout);
+        latestVersionTextView = headerLayout.findViewById(R.id.new_version_available_textview);
+        newVersionAvailableLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    PackageInfo pInfo = mInstance.getPackageManager().getPackageInfo(getPackageName(), 0);
+                    Utils.openPlayStore(MainActivity.this, pInfo.packageName);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        getLatestAppVersion();
 
         myWifiReceiver = new BroadcastReceiver(){
             @Override
@@ -472,10 +675,24 @@ public class MainActivity extends AppCompatActivity
     private void getLatestAppVersion(){
         new Utils.GooglePlayAppVersion(mInstance.getPackageName(), new Utils.GooglePlayAppVersion.Listener() {
             @Override
-            public void result(String version) {
-                RelativeLayout latestVersionLayout = (RelativeLayout) navigationView.getMenu().findItem(R.id.nav_latest_version).getActionView();
-                TextView latestVersionTextView = latestVersionLayout.findViewById(R.id.latest_version_textview);
-                latestVersionTextView.setText("release"+"-"+version);
+            public void result(String latestVersionString) {
+                if(latestVersionString != null){
+                    try {
+                        double latestVersion = Double.parseDouble(latestVersionString);
+                        PackageInfo pInfo = mInstance.getPackageManager().getPackageInfo(getPackageName(), 0);
+                        String currentVersionString = pInfo.versionName;
+                        double currentVersion = Double.parseDouble(currentVersionString);
+                        if(latestVersion > currentVersion/*!currentVersionString.equalsIgnoreCase(latestVersionString)*/){
+                            latestVersionTextView.setText(Utils.getStringExtraText(MainActivity.this, R.string.new_version_available_with_version, latestVersionString));
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                        latestVersionTextView.setText(Utils.getString(MainActivity.this, R.string.check_for_updates));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        latestVersionTextView.setText(Utils.getString(MainActivity.this, R.string.check_for_updates));
+                    }
+                }
             }
         }).execute();
     }

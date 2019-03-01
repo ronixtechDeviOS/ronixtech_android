@@ -759,12 +759,7 @@ public class Utils {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //set what would happen when positive button is clicked
-                            //go to play store
-                            try {
-                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
-                            } catch (android.content.ActivityNotFoundException anfe) {
-                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
-                            }
+                            openPlayStore(context, packageName);
                         }
                     })
                     //set negative button
@@ -775,6 +770,15 @@ public class Utils {
                         }
                     })
                     .show();
+        }
+    }
+
+    public static void openPlayStore(Context context, String packageName){
+        //go to play store
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+        } catch (android.content.ActivityNotFoundException anfe) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
         }
     }
 

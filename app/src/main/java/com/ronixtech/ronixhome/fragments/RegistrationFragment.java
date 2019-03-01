@@ -300,7 +300,7 @@ public class RegistrationFragment extends Fragment {
                                 Utils.log(TAG, "createUserWithEmail success", true);
                                 FirebaseUser fbUser = mAuth.getCurrentUser();
                                 UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(firstName + "" + lastName)
+                                        .setDisplayName(firstName + " " + lastName)
                                         .build();
 
                                 if(fbUser != null){

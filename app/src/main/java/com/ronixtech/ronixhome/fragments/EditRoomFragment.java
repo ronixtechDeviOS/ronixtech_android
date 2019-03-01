@@ -2,7 +2,10 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -289,6 +292,14 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
                 }
             }
         });
+
+        Drawable drawable = roomNameEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            roomNameEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            roomNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
 
         return view;
     }

@@ -2,12 +2,15 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,6 +129,9 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
         staticIPAddressCheckBox = view.findViewById(R.id.static_ip_address_checkbox);
 
         saveButton = view.findViewById(R.id.save_button);
+
+        ColorStateList colorStateList = ContextCompat.getColorStateList(getContext(), R.color.checkbox_states);
+        CompoundButtonCompat.setButtonTintList(staticIPAddressCheckBox, colorStateList);
 
         selectedRoom = MySettings.getRoom(device.getRoomID());
         selectedFloor = MySettings.getFloor(selectedRoom.getFloorID());
@@ -364,11 +370,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
             }
         });
 
-        if(validateInputs()){
+        /*if(validateInputs()){
             Utils.setButtonEnabled(saveButton, true);
         }else{
             Utils.setButtonEnabled(saveButton, false);
-        }
+        }*/
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -461,11 +467,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
             }
         }
 
-        if(validateInputs()){
+        /*if(validateInputs()){
             Utils.setButtonEnabled(saveButton, true);
         }else{
             Utils.setButtonEnabled(saveButton, false);
-        }
+        }*/
     }
 
     @Override
@@ -486,11 +492,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                 }
             }
         }
-        if(validateInputs()){
+        /*if(validateInputs()){
             Utils.setButtonEnabled(saveButton, true);
         }else{
             Utils.setButtonEnabled(saveButton, false);
-        }
+        }*/
     }
 
     private boolean validateInputs(){
@@ -517,11 +523,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(saveButton, true);
             }else{
                 Utils.setButtonEnabled(saveButton, false);
-            }
+            }*/
         }
     }
 
@@ -531,11 +537,11 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
         if(wifiNetwork != null){
             selectedWifiNetwork = wifiNetwork;
             wifiNetworkNameTextView.setText(""+selectedWifiNetwork.getSsid());
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(saveButton, true);
             }else{
                 Utils.setButtonEnabled(saveButton, false);
-            }
+            }*/
         }
     }
 

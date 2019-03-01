@@ -61,6 +61,8 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
     Button getMyLocationButton, enterAddressButton;
     TextView skipForNowTextView;
 
+    private int mode = Constants.PLACE_MODE_ADD;
+
     public AddPlaceLocationFragment() {
         // Required empty public constructor
     }
@@ -156,7 +158,17 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
             }
         });
 
+        if(mode == Constants.PLACE_MODE_ADD){
+            skipForNowTextView.setVisibility(View.VISIBLE);
+        }else{
+            skipForNowTextView.setVisibility(View.GONE);
+        }
+
         return view;
+    }
+
+    public void setMode(int mode){
+        this.mode = mode;
     }
 
     private void checkLocationPermissions(){
@@ -252,13 +264,13 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                 builder.setNegativeButton(Utils.getString(getActivity(), R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        FragmentManager fragmentManager = getFragmentManager();
+                        /*FragmentManager fragmentManager = getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
                         DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
                         fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
                         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        fragmentTransaction.commitAllowingStateLoss();
+                        fragmentTransaction.commitAllowingStateLoss();*/
                     }
                 });
                 builder.show();
@@ -293,13 +305,13 @@ public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //set what should happen when negative button is clicked
-                                FragmentManager fragmentManager = getFragmentManager();
+                                /*FragmentManager fragmentManager = getFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
                                 DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
                                 fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
                                 fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                fragmentTransaction.commitAllowingStateLoss();
+                                fragmentTransaction.commitAllowingStateLoss();*/
                             }
                         })
                         .show();

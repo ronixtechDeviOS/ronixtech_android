@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -148,6 +151,9 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                 }
             }
         });*/
+
+        ColorStateList colorStateList = ContextCompat.getColorStateList(getContext(), R.color.checkbox_states);
+        CompoundButtonCompat.setButtonTintList(defaultPlaceCheckBox, colorStateList);
 
         placeTypeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -300,6 +306,7 @@ public class AddPlaceFragment extends Fragment implements TypePickerDialogFragme
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                         AddPlaceLocationFragment addPlaceLocationFragment = new AddPlaceLocationFragment();
+                        addPlaceLocationFragment.setMode(Constants.PLACE_MODE_ADD);
                         fragmentTransaction.replace(R.id.fragment_view, addPlaceLocationFragment, "addPlaceLocationFragment");
                         fragmentTransaction.addToBackStack("addPlaceLocationFragment");
                         fragmentTransaction.commit();

@@ -151,6 +151,10 @@ public class Constants {
     public static final int ACTION_NO = 1;
     public static final int ACTION_CANCEL = 2;
 
+    //add/edit place constants
+    public static final int PLACE_MODE_ADD = 0;
+    public static final int PLACE_MODE_EDIT = 1;
+
     //theme constants
     public static final int COLOR_MODE_DARK_BACKGROUND = 0;
     public static final int COLOR_MODE_LIGHT_BACKGROUND = 1;

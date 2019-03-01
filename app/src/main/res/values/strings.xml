@@ -32,6 +32,7 @@
     <string name="help">Help</string>
     <string name="account">Account</string>
     <string name="profile">Profile</string>
+    <string name="sync">Sync</string>
     <string name="linked_accounts">Linked Accounts</string>
     <string name="export_data">Export Data</string>
     <string name="import_data">Import Data</string>
@@ -41,6 +42,7 @@
     <string name="support_email_title">For support and technical assistance:</string>
     <string name="support_email">technical@ronixtech.com</string>
 
+    <string name="welcome">Welcome</string>
 
     <string name="location">Location</string>
 
@@ -478,8 +480,8 @@
 
     <string name="wifi_no_place">No place associated yet</string>
 
-    <string name="change_room_location">Moving a Room to another Place will also move all its devices to that place. The new place\'s WiFi network(s) will not take effect on any Smart Controller until you re-configure them again.</string>
-    <string name="remove_wifi_network_hint">Modifying the WiFi networks of a place will not take effect on any Smart Controller until you re-configure it again.</string>
+    <string name="change_room_location">Moving a Room to another Place will also move all its devices to that place. The new place\'s WiFi network(s) will not take effect on any Smart Controller until you re-configure the controllers again.</string>
+    <string name="remove_wifi_network_hint">Modifying the WiFi networks of a place will not take effect on any Smart Controller until you re-configure the controller again.</string>
     <string name="remove_wifi_network_question">Are you sure you want to remove the selected WiFi network?</string>
     <string name="remove_wifi_network_description">Removing the WiFi network will require you to re-add it if you still want to use it again</string>
 
@@ -540,6 +542,9 @@
     <string name="current_version">Current Version</string>
     <string name="current_version_colon">Current Version:</string>
     <string name="latest_version">Online Version</string>
+    <string name="new_version_available">New version available, tap here to update from the Play Store</string>
+    <string name="new_version_available_with_version">New version available (%s), tap here to update from the Play Store</string>
+    <string name="check_for_updates">Tap here to check for updates</string>
 
     <string name="log_viewer">Log Viewer</string>
     <string name="log_viewier_message">Tap %d times to view device logs</string>

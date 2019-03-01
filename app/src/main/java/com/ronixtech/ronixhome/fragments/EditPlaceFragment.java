@@ -2,9 +2,15 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -195,6 +201,9 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
 
         savePlaceButton = view.findViewById(R.id.save_place_button);
 
+        ColorStateList colorStateList = ContextCompat.getColorStateList(getContext(), R.color.checkbox_states);
+        CompoundButtonCompat.setButtonTintList(defaultPlaceCheckBox, colorStateList);
+
         if(place != null) {
             place = MySettings.getPlace(place.getId());
             placeNameEditText.setText(place.getName());
@@ -245,11 +254,11 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(validateInputs()){
+                /*if(validateInputs()){
                     Utils.setButtonEnabled(savePlaceButton, true);
                 }else{
                     Utils.setButtonEnabled(savePlaceButton, false);
-                }
+                }*/
             }
         });
 
@@ -357,6 +366,7 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                         AddPlaceLocationFragment addPlaceLocationFragment = new AddPlaceLocationFragment();
+                        addPlaceLocationFragment.setMode(Constants.PLACE_MODE_EDIT);
                         fragmentTransaction.replace(R.id.fragment_view, addPlaceLocationFragment, "addPlaceLocationFragment");
                         fragmentTransaction.addToBackStack("addPlaceLocationFragment");
                         fragmentTransaction.commit();
@@ -411,6 +421,14 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
             }
         });
 
+        Drawable drawable = placeNameEditText.getBackground(); // get current EditText drawable
+        drawable.setColorFilter(getActivity().getResources().getColor(R.color.darkGrayColor), PorterDuff.Mode.SRC_ATOP); // change the drawable color
+        if(Build.VERSION.SDK_INT > 16) {
+            placeNameEditText.setBackground(drawable); // set the new drawable to EditText
+        }else{
+            placeNameEditText.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
+        }
+
         return view;
     }
 
@@ -431,11 +449,11 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                     placeTypeImageView.setImageResource(selectedPlaceType.getImageResourceID());
                 }
             }
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(savePlaceButton, true);
             }else{
                 Utils.setButtonEnabled(savePlaceButton, false);
-            }
+            }*/
         }
     }
 
@@ -447,11 +465,11 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
             }
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(savePlaceButton, true);
             }else{
                 Utils.setButtonEnabled(savePlaceButton, false);
-            }
+            }*/
         }
     }
 
@@ -463,11 +481,11 @@ public class EditPlaceFragment extends android.support.v4.app.Fragment implement
                 selectedWifiNetworksAdapter.notifyDataSetChanged();
             }
             Utils.justifyListViewHeightBasedOnChildren(selectedWifiNetworksListView);
-            if(validateInputs()){
+            /*if(validateInputs()){
                 Utils.setButtonEnabled(savePlaceButton, true);
             }else{
                 Utils.setButtonEnabled(savePlaceButton, false);
-            }
+            }*/
         }
     }
 

@@ -15,7 +15,7 @@
         <menu>
             <item
                 android:id="@+id/nav_places"
-                android:icon="@drawable/place_icon"
+                android:icon="@drawable/place_icon_orange"
                 android:title="@string/places" />
             <item
                 android:id="@+id/nav_floors"
@@ -39,11 +39,11 @@
                 android:title="@string/home_network" />
             <item
                 android:id="@+id/nav_refresh_devices"
-                android:icon="@drawable/baseline_refresh_gray_48"
+                android:icon="@drawable/refresh_icon_orange"
                 android:title="@string/refresh_devices" />
             <item
                 android:id="@+id/nav_about"
-                android:icon="@drawable/about_icon_gray"
+                android:icon="@drawable/about_icon_orange"
                 android:title="@string/about" />
         </menu>
     </item>
@@ -52,8 +52,7 @@
         <menu>
             <item
                 android:id="@+id/nav_profile"
-                android:icon="@drawable/baseline_person_gray_48"
-                android:visible="false"
+                android:icon="@drawable/user_picture_icon_orange"
                 android:title="@string/profile" />
             <item
                 android:id="@+id/nav_linked_accounts"
@@ -69,7 +68,7 @@
                 android:title="@string/import_data" />
             <item
                 android:id="@+id/log_out"
-                android:icon="@drawable/ic_keyboard_arrow_left_gray_24dp"
+                android:icon="@drawable/logout_icon_orange"
                 android:title="@string/logout" />
         </menu>
     </item>

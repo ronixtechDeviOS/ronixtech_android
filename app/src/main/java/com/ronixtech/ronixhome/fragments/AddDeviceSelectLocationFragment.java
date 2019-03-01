@@ -1,10 +1,13 @@
 package com.ronixtech.ronixhome.fragments;
 
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -109,6 +112,9 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         staticIPAddressCheckBox = view.findViewById(R.id.static_ip_address_checkbox);
 
         doneButton = view.findViewById(R.id.done_button);
+
+        ColorStateList colorStateList = ContextCompat.getColorStateList(getContext(), R.color.checkbox_states);
+        CompoundButtonCompat.setButtonTintList(staticIPAddressCheckBox, colorStateList);
 
         if(selectedPlace == null){
             if(MySettings.getCurrentPlace() != null) {
