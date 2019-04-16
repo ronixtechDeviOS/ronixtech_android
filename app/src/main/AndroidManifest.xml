@@ -63,7 +63,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
