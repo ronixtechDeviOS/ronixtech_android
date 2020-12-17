@@ -509,6 +509,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                                         Utils.log(TAG, "Updating current place", true);
                                         if(localPlace.getMode() == Place.PLACE_MODE_LOCAL) {
                                             Utils.log(TAG, "Updating current place: Setting mode to LOCAL", true);
+                                            MainActivity.getInstance().refreshDeviceListFromDatabase();
                                         }else if(localPlace.getMode() == Place.PLACE_MODE_REMOTE) {
                                             Utils.log(TAG, "Updating current place: Setting mode to REMOTE", true);
                                         }
@@ -653,14 +654,15 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                             if(DevicesInMemory.getDevices() != null && DevicesInMemory.getDevices().size() >= 1){
                                 boolean allDevicesReachable = true;
                                 for (Device dev : DevicesInMemory.getDevices()) {
-                                    if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
+                                    if(dev.getIpAddress() != "" && dev.getIpAddress().length() >= 1) {
                                         if(!MySettings.isControlActive()) {
                                             Utils.getDeviceInfo(dev);
                                         }else{
                                             Utils.log(TAG, "Controls active, skipping get_status", true);
                                         }
                                     }else{
-                                        MySettings.scanNetwork();
+                                        //Utils.showToast(MainActivity.getInstance(),"Please connect to internet to get status",true);
+                                        //MySettings.scanNetwork();
                                         allDevicesReachable = false;
                                     }
                                 }
@@ -962,6 +964,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             }
         }
         loadDevicesFromDatabase();
+        MainActivity.getInstance().refreshDevicesListFromMemory();
         if(MySettings.getCurrentPlace() != null){
             if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
                 Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
@@ -991,6 +994,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 //refresh MQTT client
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     MainActivity.getInstance().refreshMqttClient();
+
                 }
             }
         }

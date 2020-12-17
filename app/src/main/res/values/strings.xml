@@ -573,6 +573,10 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <array name="test_list"><item>Place 1</item><item>Place 2</item><item>Place 3</item></array>
+    <array name="test_list">
+        <item>Place 1</item>
+        <item>Place 2</item>
+        <item>Place 3</item>
+    </array>
 
 </resources>

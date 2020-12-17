@@ -45,6 +45,7 @@ import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.HttpConnector;
+import com.ronixtech.ronixhome.alexa.LoginManager;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -55,6 +56,7 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
 import com.ronixtech.ronixhome.fragments.AboutFragment;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
+import com.ronixtech.ronixhome.fragments.AlexaFragment;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.ExportDataFragment;
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity
     TextView userNameTextView, userEmailTextView;
     ImageView userImageView;
 
-    RelativeLayout navDashboardLayout, newVersionAvailableLayout;
+    RelativeLayout navDashboardLayout, newVersionAvailableLayout,navAlexaLayout;
     LinearLayout navPlacesLayout, navRefreshDevicesLayout, navAboutLayout, navLinkedAccountsLayout, navExportDataLayout, navImportDataLayout, navProfileLayout, navLogoutLayout;
 
     TextView currentVersionTextView, latestVersionTextView;
@@ -135,6 +137,7 @@ public class MainActivity extends AppCompatActivity
         mInstance = this;
         setContentView(R.layout.activity_main);
 
+        LoginManager.init(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -284,6 +287,7 @@ public class MainActivity extends AppCompatActivity
         });*/
 
         navDashboardLayout = headerLayout.findViewById(R.id.nav_dashboard_layout);
+        navAlexaLayout = headerLayout.findViewById(R.id.nav_alexa_layout);
         navPlacesLayout = headerLayout.findViewById(R.id.nav_places_layout);
         navRefreshDevicesLayout = headerLayout.findViewById(R.id.nav_refresh_devices_layout);
         navAboutLayout = headerLayout.findViewById(R.id.nav_about_layout);
@@ -304,6 +308,20 @@ public class MainActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
                 fragmentTransaction.commit();
                 drawer.closeDrawer(Gravity.START);
+            }
+        });
+        navAlexaLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AlexaFragment aboutFragment = new AlexaFragment();
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentTransaction.replace(R.id.fragment_view, aboutFragment, "alexaFragment");
+                fragmentTransaction.addToBackStack("alexaFragment");
+                fragmentTransaction.commit();
+                drawer.closeDrawer(Gravity.START);
+
             }
         });
         navPlacesLayout.setOnClickListener(new View.OnClickListener() {
@@ -328,7 +346,8 @@ public class MainActivity extends AppCompatActivity
                         if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
                             Utils.getDeviceInfo(dev);
                         }else{
-                            MySettings.scanNetwork();
+                           // Utils.showToast(mInstance, "Connect to the internet to use devices", true);
+                            //MySettings.scanNetwork();
                         }
                     }
 
@@ -654,8 +673,14 @@ public class MainActivity extends AppCompatActivity
                     checkingCellularConnection = false;
                 }else{
                     if(mqttAndroidClient == null || !mqttAndroidClient.isConnected()) {
-                        String clientId = MqttClient.generateClientId();
-                        initMqttClient(mInstance, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+                        try {
+                            String clientId = MqttClient.generateClientId();
+                            initMqttClient(mInstance, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
+                        }
+                        catch(Exception e)
+                        {
+                            Utils.log(TAG,"Mqtt initialization error: "+e.getMessage(),true);
+                        }
                     }else{
                         Utils.log(TAG, "MQTT is already connected", true);
                         checkingCellularConnection = false;
@@ -938,6 +963,16 @@ public class MainActivity extends AppCompatActivity
                                         if(wifiStatus != null) {
                                             if(wifiStatus.has("U_W_UID")) {
                                                 String chipID = wifiStatus.getString("U_W_UID");
+                                                if(wifiStatus.getString("R_W_IP_") != "") {
+                                                    if (device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(wifiStatus.getString("R_W_IP_"))) {
+                                                        Utils.log(TAG, "Updated IP(MQTT): " + wifiStatus.getString("R_W_IP_"), true);
+                                                        MySettings.updateDeviceIP(device, wifiStatus.getString("R_W_IP_"));
+                                                        device.setIpAddress(wifiStatus.getString("R_W_IP_"));
+                                                        DevicesInMemory.updateDevice(device);
+                                                        MySettings.updateDeviceErrorCount(device, 0);
+                                                        //  return null;
+                                                    }
+                                                }
                                             }else{
                                                 device.setFirmwareUpdateAvailable(true);
                                             }
@@ -1351,7 +1386,7 @@ public class MainActivity extends AppCompatActivity
             });
         }
     }
-    private MqttConnectOptions getMqttConnectionOption() {
+    public MqttConnectOptions getMqttConnectionOption() {
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setCleanSession(true);
         mqttConnectOptions.setAutomaticReconnect(true);
@@ -1445,7 +1480,7 @@ public class MainActivity extends AppCompatActivity
                     if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
                         Utils.getDeviceInfo(dev);
                     }else{
-                        MySettings.scanNetwork();
+                        Utils.showToast(mInstance, "Please make sure the devices and phone is connected to the internet", true);
                     }
                 }
 

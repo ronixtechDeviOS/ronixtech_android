@@ -207,7 +207,9 @@ public class NetworkScannerAsyncTask extends AsyncTask<Void, Void, Void> {
                 Count.reset();
             }
             try {
-                bufferedReader.close();
+                if(bufferedReader!=null) {
+                    bufferedReader.close();
+                }
             } catch (IOException e) {
                 Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 e.printStackTrace();

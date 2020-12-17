@@ -36,7 +36,7 @@ public class DeviceScanner extends Worker{
                     if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
                         getDeviceInfo(dev);
                     }else{
-                        MySettings.scanNetwork();
+                       // MySettings.scanNetwork();
                         allDevicesReachable = false;
                     }
                 }
@@ -86,7 +86,7 @@ public class DeviceScanner extends Worker{
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     MySettings.updateDeviceIP(device, "");
                     MySettings.updateDeviceErrorCount(device, 0);
-                    MySettings.scanNetwork();
+                  //  MySettings.scanNetwork();
                 }
             }
         });
@@ -137,7 +137,7 @@ public class DeviceScanner extends Worker{
                         if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
                             MySettings.updateDeviceIP(device, "");
                             MySettings.updateDeviceErrorCount(device, 0);
-                            MySettings.scanNetwork();
+                           // MySettings.scanNetwork();
                             return null;
                         }
                     }

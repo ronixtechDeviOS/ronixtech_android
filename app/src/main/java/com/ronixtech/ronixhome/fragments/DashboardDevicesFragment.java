@@ -274,7 +274,8 @@ public class DashboardDevicesFragment extends Fragment {
                                             Utils.log(TAG, "Controls active, skipping get_status", true);
                                         }
                                     }else{
-                                        MySettings.scanNetwork();
+                                       // Utils.showToast(MainActivity.getInstance(),"Please connect to internet to get status",true);
+                                        // MySettings.scanNetwork();
                                         allDevicesReachable = false;
                                     }
                                 }

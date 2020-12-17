@@ -12,6 +12,10 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
 
     <application
         android:name=".MyApp"
@@ -78,6 +82,20 @@
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize"/>
+
+        <activity android:name="com.amazon.identity.auth.device.workflow.WorkflowActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:allowTaskReparenting="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- android:host must use the full package name found in Manifest General Attributes -->
+                <data android:host="${applicationId}" android:scheme="amzn"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

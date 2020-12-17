@@ -69,6 +69,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
         MainActivity.setActionBarTitle(getActivity().getResources().getString(R.string.app_name), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
 
+
         successMessageTextView = view.findViewById(R.id.succes_message_textview);
         continueButton = view.findViewById(R.id.continue_button);
 

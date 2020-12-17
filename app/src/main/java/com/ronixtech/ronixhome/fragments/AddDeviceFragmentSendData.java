@@ -2,6 +2,7 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -10,16 +11,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -27,6 +32,15 @@ import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +55,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import javax.net.ssl.SNIHostName;
+
+import okhttp3.internal.Util;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -51,7 +69,14 @@ import java.util.List;
  */
 public class AddDeviceFragmentSendData extends Fragment {
     private static final String TAG = AddDeviceFragmentSendData.class.getSimpleName();
-
+    Handler myHandler = new Handler();
+    Boolean check=false;
+    android.support.v7.app.AlertDialog alertDialog;
+    android.support.v7.app.AlertDialog staticalertDialog;
+    android.support.v7.app.AlertDialog exitalertDialog;
+    MqttAndroidClient mqttAndroidClient;
+    Device device;
+    TextView textView;
     private HomeConnectedListenerInterface mListener;
 
     public AddDeviceFragmentSendData() {
@@ -83,7 +108,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_device_send_data, container, false);
         MainActivity.setActionBarTitle(Utils.getString(getActivity(), R.string.add_device_send_data), getResources().getColor(R.color.whiteColor));
         setHasOptionsMenu(true);
-
+         device = MySettings.getTempDevice();
+         textView=view.findViewById(R.id.progress_textview);
         sendConfigurationToDevice();
 
         return view;
@@ -92,7 +118,8 @@ public class AddDeviceFragmentSendData extends Fragment {
     private void sendConfigurationToDevice(){
         //debugTextView.append("Sending home network info to your RonixTech device...\n");
 
-        Device device = MySettings.getTempDevice();
+        showAlert();
+        textView.setText("Configuring device");
         if(device != null){
             DHCPToggler dhcpToggler = new DHCPToggler(getActivity(), this);
             dhcpToggler.execute();
@@ -145,10 +172,162 @@ public class AddDeviceFragmentSendData extends Fragment {
         HttpConnector.getInstance(getActivity()).addToRequestQueue(request);*/
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.v(TAG,"onStop");
+        myHandler.removeCallbacksAndMessages(null);
+        if(mqttAndroidClient != null){
+            try {
+                mqttAndroidClient.disconnect();
+                mqttAndroidClient.unregisterResources();
+                mqttAndroidClient.close();
+            }catch (MqttException e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }catch (Exception e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }
+        }
+
+        if(alertDialog!=null && alertDialog.isShowing())
+        {
+            alertDialog.dismiss();
+        }
+
+        if(exitalertDialog!=null && exitalertDialog.isShowing())
+        {
+            exitalertDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+      /*  myHandler.removeCallbacksAndMessages(null);
+        if(mqttAndroidClient != null){
+            try {
+                mqttAndroidClient.disconnect();
+                mqttAndroidClient.unregisterResources();
+                mqttAndroidClient.close();
+            }catch (MqttException e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }catch (Exception e){
+                Utils.log(TAG, "Exception: " + e.getMessage(), true);
+            }
+        }
+
+        if(staticalertDialog!=null && staticalertDialog.isShowing())
+        {
+            staticalertDialog.dismiss();
+        }*/
+    }
+
+    private void showAlert() {
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //disconnecting mqtt
+                 alertDialog=new android.support.v7.app.AlertDialog.Builder(MainActivity.getInstance())
+                        .setTitle("RonixTech")
+                        .setMessage("Taking longer than expected. Please select an option to continue")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                check=true;
+                                mqttConnect();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                check=true;
+                                showExitAlert();
+                            }
+                        })
+                        .setNeutralButton("Connect Locally", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if(MainActivity.getInstance() != null && MainActivity.isResumed){
+                                    if(getFragmentManager() != null){
+                                        FragmentManager fragmentManager = getFragmentManager();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        AddDeviceLocal addDeviceLocal = new AddDeviceLocal();
+                                        fragmentTransaction.replace(R.id.fragment_view, addDeviceLocal, "AddDeviceLocal");
+                                       // fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                                        fragmentTransaction.commitAllowingStateLoss();
+                                    }
+                                }
+
+                            }
+                        }).show();
+            }
+        },15000); // Show after 15 Seconds only for the first time
+
+    }
+
+    public void showExitAlert()
+    {
+        exitalertDialog =new android.support.v7.app.AlertDialog.Builder(MainActivity.getInstance())
+                .setTitle("RonixTech")
+                .setMessage("This will terminate the process of adding the smart controller")
+                .setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                       // showStaticAlert();
+                        alertDialog.show();
+                    }
+                })
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteDevice();
+                        gotoRoomsDashboard();
+                    }
+                }).show();
+    }
+
+    private void deleteDevice() {
+        MySettings.removeDevice(device);
+        DevicesInMemory.removeDevice(device);
+        MainActivity.getInstance().removeDevice(device);
+        MainActivity.getInstance().refreshDevicesListFromMemory();
+    }
+
+    private void gotoRoomsDashboard() {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+        DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
+        fragmentTransaction.replace(R.id.fragment_view, dashboardRoomsFragment, "dashboardRoomsFragment");
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentTransaction.commit();
+    }
+
+
     public void goToSearchFragment(){
         if(MainActivity.getInstance() != null && MainActivity.isResumed) {
             if (getFragmentManager() != null) {
-                getFragmentManager().popBackStack("addDeviceFragmentIntro", 0);
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceFragmentIntro addDeviceFragmentIntro =new AddDeviceFragmentIntro();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                fragmentTransaction.commit();
             }
         }
     }
@@ -177,10 +356,12 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
 
             List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-            for(WifiConfiguration i : list) {
-                if(i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
-                    mWifiManager.removeNetwork(i.networkId);
-                    break;
+            if(list!=null) {
+                for (WifiConfiguration i : list) {
+                    if (i.SSID != null && i.SSID.toLowerCase().contains(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                        mWifiManager.removeNetwork(i.networkId);
+                        break;
+                    }
                 }
             }
 
@@ -220,6 +401,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         //inflater.inflate(R.menu.menu_gym, menu);
     }
 
+
+
     public void onButtonPressed(Uri uri) {
         /*if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -241,6 +424,19 @@ public class AddDeviceFragmentSendData extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void getStatusMQTT() {
+        textView.setText("Trying to connect to smart controller online");
+        try {
+            String clientid = MqttClient.generateClientId();
+            initMqttClient(MainActivity.getInstance(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientid);
+        }
+        catch(Exception e)
+        {
+            Utils.log(TAG,"Mqtt initialization error: "+e.getMessage(),true);
+        }
+        new Handler().postDelayed(() -> mqttConnect(),4000);
     }
 
     public interface HomeConnectedListenerInterface{
@@ -789,6 +985,7 @@ public class AddDeviceFragmentSendData extends Fragment {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            fragment.textView.setText("Rebooting Device");
                             DeviceRebooterGet deviceRebooterGet = new DeviceRebooterGet(activity, fragment);
                             deviceRebooterGet.execute();
                         }
@@ -998,6 +1195,177 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
+    public void unsubscribe(@NonNull final MqttAndroidClient client, Device device) throws MqttException {
+        final IMqttToken token = client.unsubscribe(String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+        if(token != null){
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Utils.log(TAG, "MQTT unsubscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), true);
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.e(TAG, "MQTT unsubscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()));
+                }
+            });
+        }
+
+        final IMqttToken token2 = client.unsubscribe(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+        if(token2 != null){
+            token2.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Utils.log(TAG, "MQTT unsubscribe onSuccess: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.e(TAG, "MQTT unsubscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
+                }
+            });
+        }
+    }
+
+    public void initMqttClient(Context context, String brokerUrl, String clientId) {
+         mqttAndroidClient = new MqttAndroidClient(context, brokerUrl, clientId);
+        Log.v(TAG,"Started");
+        if(mqttAndroidClient != null){
+        mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean b, String s) {
+                Log.v(TAG,"COMPLETE");
+                try {
+                    subscribe(mqttAndroidClient,MySettings.getTempDevice(),2);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void connectionLost(Throwable throwable) {
+                Log.v(TAG,"LOST");
+            }
+
+            @Override
+            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+                String response = new String(mqttMessage.getPayload());
+                int index = s.lastIndexOf("/");
+                Device device = MySettings.getDeviceByChipID2(s.substring(index + 1));
+                if (device != null) {
+                    if (response != null && response.length() >= 1 && response.contains("UNIT_STATUS")) {
+                        JSONObject jsonObject = new JSONObject(response);
+                        if (jsonObject.has("UNIT_STATUS")) {
+                            //parse received unit status and update relevant device, which has the received chip_id
+                            JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
+
+                            if(unitStatus != null && unitStatus.has("U_W_STT")){
+                                JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
+                                if(wifiStatus != null) {
+                                    MySettings.getTempDevice().setIpAddress(wifiStatus.getString("R_W_IP_"));
+                                    MySettings.updateDeviceIP(device,wifiStatus.getString("R_W_IP_") );
+                                    Log.v(TAG,"Device: "+device.toString()+" IP: "+wifiStatus.getString("R_W_IP_"));
+                                    myHandler.removeCallbacksAndMessages(null);
+                                    goToSuccessFragment();
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                Log.v(TAG,"DEV COMP");
+            }
+        });
+        }
+
+     /*   try {
+            IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
+            Log.v(TAG,"Started 2");
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    Log.v(TAG,"ONSuccess");
+
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.v(TAG,"Connection Failure");
+                    if(check) {
+                        showStaticAlert();
+                    }
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }*/
+
+    }
+
+    public void mqttConnect()
+    {
+        try {
+            if (mqttAndroidClient != null) {
+                IMqttToken token = mqttAndroidClient.connect(getMqttConnectionOption());
+                Log.v(TAG, "Started 2");
+
+                token.setActionCallback(new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken iMqttToken) {
+                        Log.v(TAG, "ONSuccess");
+
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                        Log.v(TAG, "Connection Failure");
+                        if (check) {
+                            // showStaticAlert();
+                            alertDialog.show();
+                        }
+                    }
+                });
+            }
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public MqttConnectOptions getMqttConnectionOption() {
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setCleanSession(true);
+        mqttConnectOptions.setAutomaticReconnect(false);
+        //mqttConnectOptions.setWill(Constants.MQTT_URL, "I am going offline".getBytes(), 1, false);
+        mqttConnectOptions.setUserName(Constants.MQTT_USERNAME);
+        mqttConnectOptions.setPassword(Constants.MQTT_PASSWORD.toCharArray());
+        return mqttConnectOptions;
+    }
+
+    public void subscribe(@NonNull final MqttAndroidClient client, Device device, int qos) throws MqttException {
+        final IMqttToken token = client.subscribe(String.format(Constants.MQTT_TOPIC_STATUS, device.getChipID()), qos);
+        if (token != null) {
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                   Log.v(TAG,"Subscribed Success");
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    Log.v(TAG,"Subscribed Failure");
+                }
+            });
+        }
+    }
+
+
+
     public static class DeviceRebooterGet extends AsyncTask<Void, Void, Void> {
         int statusCode;
 
@@ -1028,8 +1396,8 @@ public class AddDeviceFragmentSendData extends Fragment {
                 if(MySettings.getHomeNetwork() != null) {
                     fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
                 }
+                fragment.getStatusMQTT();
 
-                fragment.goToSuccessFragment();
             }
         }
 
@@ -1102,7 +1470,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                 if(MySettings.getHomeNetwork() != null) {
                     fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
                 }
-
                 fragment.goToSuccessFragment();
             }
         }

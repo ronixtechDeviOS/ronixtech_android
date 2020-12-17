@@ -477,6 +477,7 @@ public class WifiListFragment extends Fragment {
                                     if(!networks.contains(network)){
                                         networks.add(network);
                                     }
+                                    //networks.add(network);
                                     /*if(result.SSID.toLowerCase().contains(preferredNetwork.getSsid())){
                                         Toast.makeText(getActivity(), "WiFi network within range, connecting...", Toast.LENGTH_SHORT).show();
                                         connectToWifiNetwork(result.SSID, preferredNetwork.getPassword());
@@ -495,6 +496,7 @@ public class WifiListFragment extends Fragment {
                                 }*/
                             }
                             mWifiManager.startScan();
+                            getActivity().unregisterReceiver(mWifiScanReceiver);
                         }
                     }
                 };
@@ -508,7 +510,7 @@ public class WifiListFragment extends Fragment {
                     Utils.log(TAG, "Error registering mWifiScanReceiver", true);
                 }
 
-                mWifiManager.startScan();
+              mWifiManager.startScan();
             }
         }
 

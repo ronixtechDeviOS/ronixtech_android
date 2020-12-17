@@ -66,7 +66,7 @@ public class MySettings {
     private static int tempDeviceTypeID;
     private static Device tempDevice;
     private static boolean appFirstStart;
-
+    private static String tempSSID;
     private static Place currentPlace, tempPlace;
     private static Floor currentFloor;
     private static com.ronixtech.ronixhome.entities.Room currentRoom, tempRoom;
@@ -84,6 +84,14 @@ public class MySettings {
 
     }
 
+    public static void setTempSSID(String temp)
+    {
+        tempSSID=temp;
+    }
+    public static String getTempSSID()
+    {
+        return tempSSID;
+    }
     public static void setHomeNetwork(WifiNetwork network) {
         MySettings.homeNetwork = network;
 
@@ -727,14 +735,15 @@ public class MySettings {
     }
 
     public static void scanNetwork(){
-        NetworkDiscovery.init();
+     //   NetworkDiscovery.init();
+
 
         if(!MySettings.getCurrentScanningState()){
-            MySettings.setCurrentScanningState(true);
+            MySettings.setCurrentScanningState(false);
             Utils.showUpdatingNotification();
 
-            NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask();
-            networkScannerAsyncTask.execute();
+            /*NetworkScannerAsyncTask networkScannerAsyncTask = new NetworkScannerAsyncTask();
+            networkScannerAsyncTask.execute();*/
             /*// Create a Constraints that defines when the task should run
             Constraints myConstraints = new Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)

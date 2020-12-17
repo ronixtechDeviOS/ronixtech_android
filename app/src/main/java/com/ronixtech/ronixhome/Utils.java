@@ -41,6 +41,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.alexa.LoginManager;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.PIRData;
@@ -75,6 +76,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -87,6 +89,7 @@ public class Utils {
     private static final String TAG = Utils.class.getSimpleName();
     public static final int ANIMATION_TYPE_TRANSLATION = 0;
     public static final int ANIMATION_TYPE_FADE = 1;
+    private final static String PATTERN = "yyyy/MM/dd hh:mm:ss";
 
     private static CustomProgressDialog customProgressDialog;
 
@@ -1187,6 +1190,14 @@ public class Utils {
         }
     }
 
+    public static String getDate(long timeInMills) {
+        long expireTime = LoginManager.getExpireTime();
+        Date date = new Date(expireTime);
+        SimpleDateFormat df = new SimpleDateFormat(PATTERN);
+        String expireText = df.format(date);
+        return expireText;
+    }
+
     public static void log(String tag, String message, boolean analytics){
         Log.d(tag, message);
         analytics = false;
@@ -1890,7 +1901,8 @@ public class Utils {
                     }
                     if(result.length() >= 10){
                         JSONObject jsonObject = new JSONObject(result.toString());
-                        if(jsonObject != null){
+                        if(jsonObject != null)
+                        {
                             JSONObject unitStatus = jsonObject.getJSONObject("UNIT_STATUS");
 
                             if(unitStatus != null && unitStatus.has("U_W_STT")){
@@ -1902,7 +1914,7 @@ public class Utils {
                                             if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
                                                 MySettings.updateDeviceIP(device, "");
                                                 MySettings.updateDeviceErrorCount(device, 0);
-                                                MySettings.scanNetwork();
+                                               // MySettings.scanNetwork();
                                                 MainActivity.getInstance().refreshDeviceListFromDatabase();
                                                 return null;
                                             }
@@ -2295,9 +2307,9 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                       /* device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
-                        MySettings.updateDeviceIP(device, "");
+                        MySettings.updateDeviceIP(device, "");*/
                         //MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
@@ -2308,10 +2320,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                        /*device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                        *///MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (JSONException e){
@@ -2321,10 +2333,10 @@ public class Utils {
                         //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                         if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                             device.setErrorCount(0);
-                            device.setIpAddress("");
+                          /*  device.setIpAddress("");
                             DevicesInMemory.updateDevice(device);
                             MySettings.updateDeviceIP(device, "");
-                            //MySettings.updateDeviceErrorCount(device, 0);
+                          */  //MySettings.updateDeviceErrorCount(device, 0);
                             //MySettings.scanNetwork();
                         }
                     }else {
@@ -2497,7 +2509,7 @@ public class Utils {
                                             if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
                                                 MySettings.updateDeviceIP(device, "");
                                                 MySettings.updateDeviceErrorCount(device, 0);
-                                                MySettings.scanNetwork();
+                                               // MySettings.scanNetwork();
                                                 MainActivity.getInstance().refreshDeviceListFromDatabase();
                                                 return null;
                                             }
@@ -2890,10 +2902,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                        /*device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                        *///MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (IOException e){
@@ -2903,10 +2915,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                    /*    device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                    */    //MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (JSONException e){
@@ -2916,10 +2928,10 @@ public class Utils {
                         //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                         if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                             device.setErrorCount(0);
-                            device.setIpAddress("");
+                      /*      device.setIpAddress("");
                             DevicesInMemory.updateDevice(device);
                             MySettings.updateDeviceIP(device, "");
-                            //MySettings.updateDeviceErrorCount(device, 0);
+                      */      //MySettings.updateDeviceErrorCount(device, 0);
                             //MySettings.scanNetwork();
                         }
                     }else {
@@ -3078,7 +3090,7 @@ public class Utils {
                                             if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
                                                 MySettings.updateDeviceIP(device, "");
                                                 MySettings.updateDeviceErrorCount(device, 0);
-                                                MySettings.scanNetwork();
+                                                //MySettings.scanNetwork();
                                                 MainActivity.getInstance().refreshDeviceListFromDatabase();
                                                 return null;
                                             }
@@ -3471,10 +3483,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                        /*device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                        *///MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (IOException e){
@@ -3484,10 +3496,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                        /*device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                        *///MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (JSONException e){
@@ -3497,10 +3509,10 @@ public class Utils {
                         //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                         if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                             device.setErrorCount(0);
-                            device.setIpAddress("");
+                          /*  device.setIpAddress("");
                             DevicesInMemory.updateDevice(device);
                             MySettings.updateDeviceIP(device, "");
-                            //MySettings.updateDeviceErrorCount(device, 0);
+                          */  //MySettings.updateDeviceErrorCount(device, 0);
                             //MySettings.scanNetwork();
                         }
                     }else {
@@ -3674,7 +3686,7 @@ public class Utils {
                                             if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
                                                 MySettings.updateDeviceIP(device, "");
                                                 MySettings.updateDeviceErrorCount(device, 0);
-                                                MySettings.scanNetwork();
+                                               // MySettings.scanNetwork();
                                                 MainActivity.getInstance().refreshDeviceListFromDatabase();
                                                 return null;
                                             }
@@ -4101,10 +4113,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                       /* device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                       */ //MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (IOException e){
@@ -4114,10 +4126,10 @@ public class Utils {
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                        /*device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                        *///MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }catch (JSONException e){
@@ -4127,10 +4139,10 @@ public class Utils {
                         //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                         if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                             device.setErrorCount(0);
-                            device.setIpAddress("");
+                          /*  device.setIpAddress("");
                             DevicesInMemory.updateDevice(device);
                             MySettings.updateDeviceIP(device, "");
-                            //MySettings.updateDeviceErrorCount(device, 0);
+                          */  //MySettings.updateDeviceErrorCount(device, 0);
                             //MySettings.scanNetwork();
                         }
                     }else {
@@ -4151,6 +4163,11 @@ public class Utils {
 
     public static void getDeviceInfo(Device device){
         Utils.log(TAG, "Getting device info...", true);
+       /* SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
+        String format = s.format(new Date());*/
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS");
+        String millisInString  = dateFormat.format(new Date());
+        Utils.log(TAG,"Current Time: "+millisInString,true);
         if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
@@ -4250,10 +4267,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                  /*  device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                  */  //MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }
@@ -4450,7 +4467,7 @@ public class Utils {
                                         if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
                                             MySettings.updateDeviceIP(device, "");
                                             MySettings.updateDeviceErrorCount(device, 0);
-                                            MySettings.scanNetwork();
+                                           // MySettings.scanNetwork();
                                             MainActivity.getInstance().refreshDeviceListFromDatabase();
                                             return null;
                                         }
@@ -4921,10 +4938,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                 /*   device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                 */   //MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
@@ -4934,10 +4951,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                   /* device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                   */ //MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
@@ -4947,10 +4964,10 @@ public class Utils {
                     //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                     /*   device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                     */   //MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }else {
@@ -5004,10 +5021,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                    /*device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                    *///MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }
@@ -5054,12 +5071,21 @@ public class Utils {
                                 if(wifiStatus.has("U_W_UID")) {
                                     String chipID = wifiStatus.getString("U_W_UID");
                                     if (device.getChipID().length() >= 1) {
-                                        if (!device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
-                                            MySettings.updateDeviceIP(device, "");
-                                            MySettings.updateDeviceErrorCount(device, 0);
-                                            MySettings.scanNetwork();
-                                            MainActivity.getInstance().refreshDeviceListFromDatabase();
-                                            return null;
+                                        if (device.getChipID().toLowerCase().equals(chipID.toLowerCase())) {
+                                            if(wifiStatus.getString("R_W_IP_") != "") {
+                                                if (device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(wifiStatus.getString("R_W_IP_"))) {
+                                                    Utils.log(TAG, "Updated IP(Local): " + wifiStatus.getString("R_W_IP_"), true);
+                                                    MySettings.updateDeviceIP(device, wifiStatus.getString("R_W_IP_"));
+                                                    device.setIpAddress(wifiStatus.getString("R_W_IP_"));
+                                                    MySettings.updateDeviceErrorCount(device, 0);
+                                                    DevicesInMemory.updateDevice(device);
+                                                    if (MainActivity.getInstance() != null) {
+                                                        MainActivity.getInstance().refreshDevicesListFromMemory();
+                                                    }
+                                                    // MainActivity.getInstance().refreshDeviceListFromDatabase();
+                                                    //  return null;
+                                                }
+                                            }
                                         }
                                     }
                                 }else{
@@ -5256,10 +5282,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                  /*  device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                  */  //MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
@@ -5269,10 +5295,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                    /*device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                    *///MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
@@ -5282,10 +5308,10 @@ public class Utils {
                     //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
-                        device.setIpAddress("");
+                      /*  device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                        //MySettings.updateDeviceErrorCount(device, 0);
+                      */  //MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }else{
@@ -5334,10 +5360,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                  /*  device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                  */  //MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }
@@ -5483,10 +5509,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                   /* device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                   */ //MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
@@ -5496,10 +5522,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                    /*device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                    *///MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
@@ -5509,10 +5535,10 @@ public class Utils {
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
-                    device.setIpAddress("");
+                    /*device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    //MySettings.updateDeviceErrorCount(device, 0);
+                    *///MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }finally {

@@ -3,6 +3,9 @@ package com.ronixtech.ronixhome;
 public class Constants {
     public static final String PACKAGE_NAME = "com.ronixtech.ronixhome";
 
+    // Login with Amazon
+    public static String PRODUCT_ID = "ronixtechunit";
+
     //endpoint URLs
     public static final String DEVICE_URL = "http://192.168.4.1";
     public static final String DEVICE_STATUS_CONTROL_URL = "/ronix/json/post";

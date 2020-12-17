@@ -634,7 +634,13 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                 for(int x = 0; x < numberOfTempDeviceLines; x++){
                     Line tempDeviceLine = tempDeviceLines.get(x);
                     if(tempDeviceLine.getPosition() == currentLine.getPosition()){
-                        device.getLines().remove(x);
+                            try {
+                                device.getLines().remove(x);
+                            }
+                            catch(IndexOutOfBoundsException e)
+                            {
+                                Utils.log(TAG,"Multiple instances of same controller",true);
+                            }
                         currentLine = tempDeviceLine;
                     }
                 }

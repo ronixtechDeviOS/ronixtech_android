@@ -268,14 +268,15 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         return enabled;
     }
 
-    private void refreshNetworks(){
+    private void refreshNetworks()
+    {
         if(checkLocationServices() && checkWifiService()){
             progressTextView.setText(Utils.getString(getActivity(), R.string.add_device_searching));
             progressCircle.setDonut_progress("" + 0);
             progressCircle.setText("" + 0 + "%");
 
             /** CountDownTimer starts with 45 seconds and every onTick is 1 second */
-            final int totalMillis = 1 * 45 * 1000; // 45 seconds in milli seconds
+            final int totalMillis = 1 * 40 * 1000; // 40 seconds in milli seconds
             searchingCountDownTimer = new CountDownTimer(totalMillis, 1) {
                 public void onTick(long millisUntilFinished) {
 
@@ -291,6 +292,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                         progressCircle.setText("" + totalProgress + "%");
                     }
                 }
+
 
                 public void onFinish() {
                     // DO something when 45 seconds are up
@@ -344,7 +346,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                         }
                                     }
                                 }else{
-                                    mWifiManager.startScan();
+                                  //  mWifiManager.startScan(); //frequent scans makes the main thread slow
                                 }
                             }
                         }
@@ -360,9 +362,10 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             }catch (Exception e){
                 Utils.log(TAG, "Error registering mWifiScanReceiver", true);
             }
-
             mWifiManager.startScan();
+
         }
+
     }
 
     private void connectToWifiNetwork(final String ssid, String password, boolean registerCallback){
@@ -595,6 +598,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         device.setMacAddress(network.getMacAddress());
         device.setName(network.getSsid());
         MySettings.setTempDevice(device);
+        MySettings.setTempSSID(network.getSsid());
         Utils.log(TAG, "Connecting to " + network.getSsid() + " with default password", true);
         try {
             if (mWifiScanReceiver != null) {

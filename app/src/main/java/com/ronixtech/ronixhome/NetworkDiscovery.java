@@ -140,7 +140,6 @@ public class NetworkDiscovery {
                                                     if(device.getIpAddress() == null || device.getIpAddress().length() < 1 || !device.getIpAddress().equals(host.getHostAddress())){
                                                         Utils.log(TAG, "Device " + device.getName() + " updated with IP: " + host.getHostAddress(), true);
                                                         Utils.showNotification(device);
-
                                                         device.setIpAddress(host.getHostAddress());
                                                         DevicesInMemory.updateDevice(device);
                                                         MySettings.updateDeviceIP(device, host.getHostAddress());
