@@ -56,6 +56,7 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
 import com.ronixtech.ronixhome.fragments.AboutFragment;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
+import com.ronixtech.ronixhome.fragments.AddDeviceSelectLocationFragment;
 import com.ronixtech.ronixhome.fragments.AlexaFragment;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
@@ -84,7 +85,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+*/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -125,11 +128,6 @@ public class MainActivity extends AppCompatActivity
     MqttAndroidClient mqttAndroidClient;
 
     List<Device> allDevices;
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -313,15 +311,15 @@ public class MainActivity extends AppCompatActivity
         navAlexaLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+               /* FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AlexaFragment aboutFragment = new AlexaFragment();
                 fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragmentTransaction.replace(R.id.fragment_view, aboutFragment, "alexaFragment");
                 fragmentTransaction.addToBackStack("alexaFragment");
                 fragmentTransaction.commit();
-                drawer.closeDrawer(Gravity.START);
-
+                drawer.closeDrawer(Gravity.START);*/
+                Utils.showToast(MainActivity.getInstance(),"Coming Soon",false);
             }
         });
         navPlacesLayout.setOnClickListener(new View.OnClickListener() {

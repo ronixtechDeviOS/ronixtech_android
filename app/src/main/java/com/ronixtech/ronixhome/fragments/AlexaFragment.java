@@ -28,6 +28,7 @@ import com.ronixtech.ronixhome.alexa.LoginManager;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Device;
 
 import org.json.JSONObject;
 
@@ -52,6 +53,7 @@ public class AlexaFragment extends Fragment {
     final JSONObject scopeData = new JSONObject();
     final JSONObject productInstanceAttributes = new JSONObject();
     private ConnectManager mConnectManager;
+    private Device device;
 
     public AlexaFragment() {
         // Required empty public constructor
@@ -86,6 +88,7 @@ public class AlexaFragment extends Fragment {
         mPulseView = view.findViewById(R.id.avi);
         mProcessingView = view.findViewById(R.id.processing_view);
 
+        device= new Device();
         mConnectManager = new ConnectManager(MainActivity.getInstance());
         mAudioPlayer = new AudioPlayer(MainActivity.getInstance());
         mPref = MainActivity.getInstance().getSharedPreferences("ronixtech", Context.MODE_PRIVATE);
@@ -231,15 +234,31 @@ public class AlexaFragment extends Fragment {
                             String txt = ((AvsTemplateItem) item).getPayLoad().getTextField();
                             if(MySettings.getCurrentPlace() != null) {
                                 int mode=MySettings.getCurrentPlace().getMode();
-                                if(txt.contains("all on")) {
-                                    Utils.toggleDevice(MySettings.getDeviceByChipID2("e3ca40"),1,mode);
+                                if(txt.contains("on")) {
+                                    if(txt.contains("device"))
+                                    {
+                                      String deviceName =  txt.substring(txt.indexOf("device "+1));
+                                       device= MySettings.getDeviceByName(deviceName);
+                                       if(device != null)
+                                       {
+                                          // Utils.toggleLine();
+                                       }
+                                       else
+                                       {
+                                           Utils.showToast(MainActivity.getInstance(),"No Device Found",false);
+                                       }
+                                    }
+                                    else
+                                    {
+                                        Utils.showToast(MainActivity.getInstance(),"Incorrect Command",false);
+                                    }
                                 }
                                 else if(txt.contains("all off"))
                                 {
                                     Utils.toggleDevice(MySettings.getDeviceByChipID2("e3ca40"),0,mode);
                                 }
                             }
-                            }
+                        }
                     }
 
                 }

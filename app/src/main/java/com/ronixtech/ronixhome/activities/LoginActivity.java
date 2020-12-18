@@ -32,18 +32,16 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.fragments.LoginFragment;
 import com.ronixtech.ronixhome.fragments.VerificationFragment;
 
+/*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-
+*/
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
 
     Toolbar toolbar;
     private static TextView mTitle;
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -58,7 +58,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
     private static final int RC_PERMISSION_LOCATION = 1004;
     private static final int RC_PERMISSION_ACCESS_WIFI_STATE = 1005;
     private static final int RC_PERMISSION_CHANGE_WIFI_STATE= 1006;
-
+    private static final int RC_PERMISSION_CHANGE_NETWORK_STATE= 1007;
     private static final int RC_ACTIVITY_WIFI_TURN_ON = 1007;
     private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
 
@@ -145,11 +145,12 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
     private void checkWifiChangePermissions(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 //debugTextView.append("modify wifi permissions granted\n");
                 refreshNetworks();
             }else{
+                requestPermissions(new String[]{"android.permission.ACCESS_NETWORK_STATE"},RC_PERMISSION_CHANGE_NETWORK_STATE);
                 requestPermissions(new String[]{"android.permission.CHANGE_WIFI_STATE"}, RC_PERMISSION_CHANGE_WIFI_STATE);
             }
         }else{
@@ -365,6 +366,11 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             mWifiManager.startScan();
 
         }
+
+    }
+
+    private void connectToWifiNetwork2(String ssid, String pass)
+    {
 
     }
 
@@ -596,7 +602,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         Utils.log(TAG, "User chose ssid " + network.getSsid(), true);
         Device device = new Device();
         device.setMacAddress(network.getMacAddress());
-        device.setName(network.getSsid());
+       // device.setName(network.getSsid());
         MySettings.setTempDevice(device);
         MySettings.setTempSSID(network.getSsid());
         Utils.log(TAG, "Connecting to " + network.getSsid() + " with default password", true);
@@ -613,7 +619,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         handler.post(new Runnable() {
             @Override
             public void run() {
-                connectToWifiNetwork(network.getSsid(), network.getPassword(), true);
+                connectToWifiNetwork(network.getSsid(), Constants.DEVICE_DEFAULT_PASSWORD, true);
             }
         });
     }

@@ -30,12 +30,18 @@ public abstract class DeviceDAO {
     @Query("SELECT * FROM device WHERE chip_id =:chipID")
     public abstract Device findByChipID(String chipID);
 
+    @Query("SELECT * FROM device WHERE name =:deviceName")
+    public abstract Device findByDeviceName(String deviceName);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertDevice(Device device);
 
 
     @Query("UPDATE device SET ip_address =:ipAddress WHERE id =:deviceID")
     public abstract void updateDeviceIP(long deviceID, String ipAddress);
+
+    @Query("UPDATE device SET name =:DeviceName WHERE id =:deviceID")
+    public abstract void updateDeviceName(long deviceID, String DeviceName);
 
     @Query("UPDATE device SET room_id =:roomID WHERE id =:deviceID")
     public abstract void updateDeviceRoom(long deviceID, long roomID);
@@ -108,7 +114,15 @@ public abstract class DeviceDAO {
         removeDevice(device.getId());
     }
 
-
+    public Device getDeviceWithDeviceName(String name)
+    {
+        Device device = findByDeviceName(name);
+        if(device != null){
+            List<Line> lines = getLinesList(device.getId());
+            device.setLines(lines);
+        }
+        return device;
+    }
 
     public void insertDeviceWithSoundDeviceData(Device device){
         if(device.getSoundDeviceData() != null) {
@@ -129,8 +143,9 @@ public abstract class DeviceDAO {
         if(device != null) {
             SoundDeviceData soundDeviceData = MySettings.getSoundDeviceData(id);
             device.setSoundDeviceData(soundDeviceData);
+            return device;
         }
-        return device;
+      return null;
     }
     public Device getDeviceWithSoundSystemDataByMacAddress(String macAddress) {
         Device device = findByMAC(macAddress);

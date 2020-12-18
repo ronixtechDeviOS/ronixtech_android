@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
     TextView selectedFloorTextView;
     Button incrementFloorButton, decremetnFloorButton;
     CheckBox staticIPAddressCheckBox;
+    EditText deviceNameText;
 
     Button doneButton;
 
@@ -110,6 +112,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         incrementFloorButton = view.findViewById(R.id.increment_button);
         decremetnFloorButton = view.findViewById(R.id.decrement_button);
         staticIPAddressCheckBox = view.findViewById(R.id.static_ip_address_checkbox);
+        deviceNameText = view.findViewById(R.id.deviceName);
 
         doneButton = view.findViewById(R.id.done_button);
 
@@ -376,7 +379,9 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                     device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
                     device.setRoomID(selectedRoom.getId());
                     device.setStaticIPAddress(ipAddressStatic);
+                    device.setName(deviceNameText.getText().toString());
                     MySettings.updateDeviceRoom(device, selectedRoom.getId());
+                    MySettings.updateDeviceName(device,deviceNameText.getText().toString());
                     MySettings.setHomeNetwork(selectedWifiNetwork);
 
                     FragmentManager fragmentManager = getFragmentManager();
@@ -493,7 +498,10 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
         if(selectedWifiNetwork == null){
             inputsValid = false;
         }
-
+        if(deviceNameText.getText().toString().matches(""))
+        {
+            inputsValid = false;
+        }
         return inputsValid;
     }
 

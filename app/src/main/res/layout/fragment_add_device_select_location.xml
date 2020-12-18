@@ -295,14 +295,28 @@
                 android:textSize="18sp"
                 android:checked="true"
                 android:textColor="@color/whiteColor"
+                 android:visibility="gone"
                 android:text="@string/unit_static_ip_description"/>
+            <EditText
+                android:id="@+id/deviceName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/wifi_network_selection_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:hint="Enter Controller Name"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                />
 
             <Button
                 android:id="@+id/done_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/static_ip_address_checkbox"
+                android:layout_below="@id/deviceName"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"

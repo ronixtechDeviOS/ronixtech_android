@@ -381,7 +381,14 @@ public class MySettings {
         }
     }
     public static void updateDeviceIP(Device device, String ipAddress){
-        MySettings.initDB().deviceDAO().updateDeviceIP(device.getId(), ipAddress);
+        if(ipAddress != "") {
+            MySettings.initDB().deviceDAO().updateDeviceIP(device.getId(), ipAddress);
+        }
+    }
+
+    public static void updateDeviceName(Device device,String Name)
+    {
+        MySettings.initDB().deviceDAO().updateDeviceName(device.getId(),Name);
     }
     public static void updateDeviceRoom(Device device, long roomID){
         MySettings.initDB().deviceDAO().updateDeviceRoom(device.getId(), roomID);
@@ -489,6 +496,11 @@ public class MySettings {
     }
     public static Device getDeviceByChipID2(String chipID) {
         return MySettings.initDB().deviceDAO().getDeviceWithLinesByChipID(chipID);
+    }
+
+    public static Device getDeviceByName(String deviceName)
+    {
+        return MySettings.initDB().deviceDAO().getDeviceWithDeviceName(deviceName);
     }
     public static List<Line> getSecondaryLines(Device device){
         return MySettings.initDB().lineDAO().getSecondaryLine(device.getChipID());
