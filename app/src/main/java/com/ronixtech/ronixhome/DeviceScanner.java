@@ -2,6 +2,8 @@ package com.ronixtech.ronixhome;
 
 import android.os.AsyncTask;
 
+import androidx.work.Worker;
+
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -15,8 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-
-import androidx.work.Worker;
 
 public class DeviceScanner extends Worker{
     private static final String TAG = DeviceScanner.class.getSimpleName();
@@ -84,7 +84,8 @@ public class DeviceScanner extends Worker{
                 Utils.log(TAG, "Volley Error: " + error.getMessage(), true);
                 MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
-                    MySettings.updateDeviceIP(device, "");
+                   // MySettings.updateDeviceIP(device, "");
+                    Utils.showToast(MainActivity.getInstance(),"Error connecting to controller. Refresh Devices",true);
                     MySettings.updateDeviceErrorCount(device, 0);
                   //  MySettings.scanNetwork();
                 }

@@ -442,7 +442,10 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                     for(int x = 0; x < numberOfTempDeviceLines; x++){
                         Line tempDeviceLine = tempDeviceLines.get(x);
                         if(tempDeviceLine.getPosition() == currentLine.getPosition()){
-                            device.getLines().remove(x);
+                            if(device.getLines().size() > x)
+                            {
+                                device.getLines().remove(x);
+                            }
                             currentLine = tempDeviceLine;
                         }
                     }
@@ -487,12 +490,25 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         Utils.log(TAG, "continueButton - move to next fragment", true);
                         parentFragment.moveToNextFragment();
                     }else{
+
+
                         MySettings.addDevice(device);
-                        Utils.log(TAG, "continueButton - move to location fragment!", true);
+                        MySettings.updateDeviceRoom(device, device.getRoomID());
+                        MySettings.updateDeviceName(device, device.getName());
+                        Utils.log(TAG, "continueButton - move to data sending fragment!", true);
+                        /*
                         FragmentTransaction fragmentTransaction = parentFragment.getFragmentManager().beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                         AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
                         fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocationFragment");
+                        //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
+                        fragmentTransaction.commit();*/
+
+
+                        FragmentTransaction fragmentTransaction =parentFragment.getFragmentManager().beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
+                        fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
                         //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
                         fragmentTransaction.commit();
                     }

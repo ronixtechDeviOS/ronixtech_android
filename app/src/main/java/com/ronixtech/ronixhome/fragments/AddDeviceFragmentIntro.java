@@ -150,7 +150,7 @@ public class AddDeviceFragmentIntro extends Fragment implements WifiInfoFragment
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 AddDeviceFragmentSearch addDeviceFragmentSearch = new AddDeviceFragmentSearch();
                 fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSearch, "addDeviceFragmentSearch");
-                fragmentTransaction.addToBackStack("addDeviceFragmentSearch");
+            //    fragmentTransaction.addToBackStack("addDeviceFragmentSearch");
                 fragmentTransaction.commit();
             }
         });

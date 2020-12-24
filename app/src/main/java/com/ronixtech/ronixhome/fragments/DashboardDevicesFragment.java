@@ -175,12 +175,13 @@ public class DashboardDevicesFragment extends Fragment {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
+
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocation");
                     fragmentTransaction.commit();
                 }
             }
@@ -192,12 +193,13 @@ public class DashboardDevicesFragment extends Fragment {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
+
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocation");
                     fragmentTransaction.commit();
                 }
             }
@@ -510,12 +512,21 @@ public class DashboardDevicesFragment extends Fragment {
             AddDialogFragment fragment = AddDialogFragment.newInstance();
             fragment.show(ft, "additionDialogFragment");*/
             //go to add device fragment
-            FragmentManager fragmentManager = getFragmentManager();
+
+         /*   FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
             AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
             fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
             fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+            fragmentTransaction.commit();*/
+
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+            AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+            fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+            fragmentTransaction.addToBackStack("addDeviceSelectLocation");
             fragmentTransaction.commit();
         }
 

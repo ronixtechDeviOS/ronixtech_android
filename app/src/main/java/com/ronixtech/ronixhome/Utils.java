@@ -2303,10 +2303,11 @@ public class Utils {
                 }catch (MalformedURLException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     device.setErrorCount(device.getErrorCount() + 1);
-                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                   // MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
+                        Utils.showToast(MainActivity.getInstance(),"Error connecting to controller. Refresh Devices",true);
                        /* device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");*/
@@ -2316,7 +2317,7 @@ public class Utils {
                 }catch (IOException e){
                     Utils.log(TAG, "Exception: " + e.getMessage(), true);
                     device.setErrorCount(device.getErrorCount() + 1);
-                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                  //  MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                     DevicesInMemory.updateDevice(device);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);

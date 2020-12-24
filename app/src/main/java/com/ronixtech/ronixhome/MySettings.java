@@ -9,6 +9,11 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.ronixtech.ronixhome.entities.Device;
@@ -23,11 +28,6 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.work.Constraints;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 public class MySettings {
     private static final String TAG = MySettings.class.getSimpleName();
@@ -381,7 +381,7 @@ public class MySettings {
         }
     }
     public static void updateDeviceIP(Device device, String ipAddress){
-        if(ipAddress != "") {
+        if(!ipAddress.matches("")) {
             MySettings.initDB().deviceDAO().updateDeviceIP(device.getId(), ipAddress);
         }
     }

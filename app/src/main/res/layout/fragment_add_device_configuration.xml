@@ -30,7 +30,7 @@
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textColor="@color/blackColor"
-                android:text="@string/unit_name_edit" />
+                android:text="Configure Smart Controller" />
             <EditText
                 android:id="@+id/device_name_edittext"
                 android:layout_width="match_parent"
@@ -56,6 +56,7 @@
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textColor="@color/blackColor"
+                android:visibility="gone"
                 android:text="@string/configure_lines_title" />
 
             <android.support.design.widget.TabLayout

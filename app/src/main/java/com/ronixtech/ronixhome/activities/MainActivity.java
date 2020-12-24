@@ -45,10 +45,10 @@ import com.ronixtech.ronixhome.BuildConfig;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.HttpConnector;
-import com.ronixtech.ronixhome.alexa.LoginManager;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.alexa.LoginManager;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Place;
@@ -56,8 +56,6 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
 import com.ronixtech.ronixhome.fragments.AboutFragment;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
-import com.ronixtech.ronixhome.fragments.AddDeviceSelectLocationFragment;
-import com.ronixtech.ronixhome.fragments.AlexaFragment;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
 import com.ronixtech.ronixhome.fragments.ExportDataFragment;
@@ -349,7 +347,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
 
-                    new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
+                     new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
                         @Override
                         public void onConnectionSuccess() {
                             MySettings.setInternetConnectivityState(true);
@@ -828,9 +826,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPause() {
+        super.onPause();
         isResumed = false;
         unregisterReceiver(myWifiReceiver);
-        super.onPause();
+
     }
 
     @Override

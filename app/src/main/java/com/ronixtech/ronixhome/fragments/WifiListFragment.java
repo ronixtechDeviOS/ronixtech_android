@@ -19,6 +19,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -45,6 +46,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.WifiNetworkItemAdapter;
 import com.ronixtech.ronixhome.entities.WifiNetwork;
 
@@ -63,6 +65,7 @@ public class WifiListFragment extends Fragment {
     private static final String TAG = WifiListFragment.class.getSimpleName();
 
     private WifiListFragment.OnNetworkSelectedListener callback;
+
     public interface OnNetworkSelectedListener {
         public void onNetworkSelected(WifiNetwork network);
     }
@@ -72,7 +75,7 @@ public class WifiListFragment extends Fragment {
 
     private static final int RC_PERMISSION_LOCATION = 1004;
     private static final int RC_PERMISSION_ACCESS_WIFI_STATE = 1005;
-    private static final int RC_PERMISSION_CHANGE_WIFI_STATE= 1006;
+    private static final int RC_PERMISSION_CHANGE_WIFI_STATE = 1006;
 
     private static final int RC_ACTIVITY_WIFI_TURN_ON = 1007;
     private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
@@ -118,7 +121,7 @@ public class WifiListFragment extends Fragment {
         }*/
     }
 
-    public void setNetworkSelectedListener(WifiListFragment.OnNetworkSelectedListener listener){
+    public void setNetworkSelectedListener(WifiListFragment.OnNetworkSelectedListener listener) {
         this.callback = listener;
     }
 
@@ -174,7 +177,7 @@ public class WifiListFragment extends Fragment {
         return view;
     }
 
-    private void showManualNetworkDialog(){
+    private void showManualNetworkDialog() {
         final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
         LinearLayout layout = new LinearLayout(getActivity());
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -230,22 +233,22 @@ public class WifiListFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ssidEditText.getText().toString() != null && ssidEditText.getText().toString().length() >= 1){
-                    if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
+                if (ssidEditText.getText().toString() != null && ssidEditText.getText().toString().length() >= 1) {
+                    if (passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
                         WifiNetwork network = new WifiNetwork();
                         network.setSsid(ssidEditText.getText().toString());
                         network.setPassword(passwordEditText.getText().toString());
-                        if(callback != null) {
+                        if (callback != null) {
                             callback.onNetworkSelected(network);
                         }
                         dialog.dismiss();
-                    }else{
+                    } else {
                         YoYo.with(Techniques.Shake)
                                 .duration(700)
                                 .repeat(1)
                                 .playOn(passwordEditText);
                     }
-                }else{
+                } else {
                     YoYo.with(Techniques.Shake)
                             .duration(700)
                             .repeat(1)
@@ -265,7 +268,7 @@ public class WifiListFragment extends Fragment {
         dialog.show();
     }
 
-    private void showPasswordDialog(WifiNetwork network){
+    private void showPasswordDialog(WifiNetwork network) {
         final android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(getActivity()).create();
         LinearLayout layout = new LinearLayout(getActivity());
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -309,15 +312,15 @@ public class WifiListFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
+                if (passwordEditText.getText().toString() != null && passwordEditText.getText().toString().length() >= 4) {
                     network.setPassword(passwordEditText.getText().toString());
-                    if(callback != null) {
+                    if (callback != null) {
                         callback.onNetworkSelected(network);
                     }
-                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(passwordEditText.getWindowToken(), 0);
                     dialog.dismiss();
-                }else{
+                } else {
                     YoYo.with(Techniques.Shake)
                             .duration(700)
                             .repeat(1)
@@ -335,73 +338,73 @@ public class WifiListFragment extends Fragment {
         dialog.show();
     }
 
-    private void checkLocationPermissions(){
+    private void checkLocationPermissions() {
         Utils.log(TAG, "location - chechLocationPermissions", true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Utils.log(TAG, "location - checkLocationPermissions greater than M", true);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 Utils.log(TAG, "location - checkLocationPermissions checkSelfPermission TRUE", true);
                 checkWifiAccessPermissions();
-            }else{
+            } else {
                 Utils.log(TAG, "location - checkLocationPermissions checkSelfPermission FALSE", true);
                 requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, RC_PERMISSION_LOCATION);
             }
-        }else{
+        } else {
             //no need to show runtime permission stuff
             Utils.log(TAG, "location - checkLocationPermissions older than M", true);
             checkWifiAccessPermissions();
         }
     }
 
-    private void checkWifiAccessPermissions(){
+    private void checkWifiAccessPermissions() {
         Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions", true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions greater than M", true);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions checkSelfPermission TRUE", true);
                 checkWifiChangePermissions();
-            }else{
+            } else {
                 Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions checkSelfPermission FALSE", true);
                 requestPermissions(new String[]{"android.permission.ACCESS_WIFI_STATE"}, RC_PERMISSION_ACCESS_WIFI_STATE);
             }
-        }else{
+        } else {
             //no need to show runtime permission stuff
             Utils.log(TAG, "wifiaccess - checkWifiAccessPermissions older than M", true);
             checkWifiChangePermissions();
         }
     }
 
-    private void checkWifiChangePermissions(){
+    private void checkWifiChangePermissions() {
         Utils.log(TAG, "wifichange - checkWifiChangePermissions", true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Utils.log(TAG, "wifichange - checkWifiChangePermissions greater than M", true);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 Utils.log(TAG, "wifichange - checkWifiChangePermissions checkSelfPermission TRUE", true);
                 refreshNetworks();
-            }else{
+            } else {
                 Utils.log(TAG, "wifichange - checkWifiChangePermissions checkSelfPermission FALSE", true);
                 requestPermissions(new String[]{"android.permission.CHANGE_WIFI_STATE"}, RC_PERMISSION_CHANGE_WIFI_STATE);
             }
-        }else{
+        } else {
             //no need to show runtime permission stuff
             Utils.log(TAG, "wifichange - checkWifiChangePermissions older than M", true);
             refreshNetworks();
         }
     }
 
-    private boolean checkLocationServices(){
+    private boolean checkLocationServices() {
         boolean actionNeeded = false;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null) {
                 LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                 boolean isGpsProviderEnabled, isNetworkProviderEnabled;
                 isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-                if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
+                if (!isGpsProviderEnabled && !isNetworkProviderEnabled) {
                     actionNeeded = true;
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(Utils.getString(getActivity(), R.string.location_required_title));
@@ -426,17 +429,17 @@ public class WifiListFragment extends Fragment {
         return actionNeeded;
     }
 
-    public void setWifiNetwork(WifiNetwork network){
+    public void setWifiNetwork(WifiNetwork network) {
         this.preferredNetwork = network;
     }
 
-    private void refreshNetworks(){
-        if(checkLocationServices()){
+    private void refreshNetworks() {
+        if (checkLocationServices()) {
             return;
         }
-        if(getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null){
+        if (getActivity() != null && getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) != null) {
             mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            if(!mWifiManager.isWifiEnabled()){
+            if (!mWifiManager.isWifiEnabled()) {
                 android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
                         //set icon
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -461,7 +464,7 @@ public class WifiListFragment extends Fragment {
                             }
                         })
                         .show();
-            }else{
+            } else {
                 searchingLayout.setVisibility(View.VISIBLE);
                 mWifiScanReceiver = new BroadcastReceiver() {
                     @Override
@@ -469,14 +472,16 @@ public class WifiListFragment extends Fragment {
                         if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
                             //networks.clear();
                             List<ScanResult> mScanResults = mWifiManager.getScanResults();
-                            if(mScanResults != null){
+                            if (mScanResults != null) {
                                 for (ScanResult result : mScanResults) {
                                     WifiNetwork network = new WifiNetwork();
                                     network.setSsid(result.SSID);
-                                    network.setSignal(""+result.level);
-                                    if(!networks.contains(network)){
+                                    network.setSignal("" + result.level);
+                                    if (!networks.contains(network)) {
                                         networks.add(network);
+                                        networksAdapter.notifyDataSetChanged();
                                     }
+
                                     //networks.add(network);
                                     /*if(result.SSID.toLowerCase().contains(preferredNetwork.getSsid())){
                                         Toast.makeText(getActivity(), "WiFi network within range, connecting...", Toast.LENGTH_SHORT).show();
@@ -484,19 +489,18 @@ public class WifiListFragment extends Fragment {
                                     }*/
                                 }
                             }
-                            networksAdapter.notifyDataSetChanged();
-                            if(networks.size() >= 1){
+
+                            if (networks.size() >= 1) {
                                 searchingLayout.setVisibility(View.GONE);
                                 //searchStatusTextView.setVisibility(View.GONE);
-                            }else{
+                            } else {
                                 searchingLayout.setVisibility(View.VISIBLE);
                                 /*searchStatusTextView.setVisibility(View.VISIBLE);
                                 if(getActivity() != null) {
                                     searchStatusTextView.setText(Utils.getString(getActivity(), R.string.no_networks_in_range));
                                 }*/
                             }
-                            mWifiManager.startScan();
-                            getActivity().unregisterReceiver(mWifiScanReceiver);
+                        //   mWifiManager.startScan();
                         }
                     }
                 };
@@ -506,22 +510,22 @@ public class WifiListFragment extends Fragment {
                         getActivity().registerReceiver(mWifiScanReceiver,
                                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     }
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     Utils.log(TAG, "Error registering mWifiScanReceiver", true);
                 }
 
-              mWifiManager.startScan();
+                mWifiManager.startScan();
             }
         }
 
     }
 
-    private void connectToWifiNetwork(final String ssid, String password){
+    private void connectToWifiNetwork(final String ssid, String password) {
         try {
             if (mWifiScanReceiver != null) {
                 getActivity().unregisterReceiver(mWifiScanReceiver);
             }
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             Utils.log(TAG, "Error unregistering mWifiScanReceiver", true);
         }
 
@@ -569,7 +573,7 @@ public class WifiListFragment extends Fragment {
                 getActivity().registerReceiver(mWifiConnectionReceiver,
                         new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
             }
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             Utils.log(TAG, "Error registering mWifiConnectionReceiver", true);
         }
 
@@ -580,7 +584,7 @@ public class WifiListFragment extends Fragment {
             conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
         }*/
         conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
-        conf.preSharedKey = "\""+ password +"\"";
+        conf.preSharedKey = "\"" + password + "\"";
         conf.status = WifiConfiguration.Status.ENABLED;
         conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
@@ -589,6 +593,9 @@ public class WifiListFragment extends Fragment {
 
         mWifiManager.setWifiEnabled(true);
 
+        if (ActivityCompat.checkSelfPermission(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
         for(WifiConfiguration i : list) {
             if(i.SSID != null && i.SSID.contains("\"" + ssid + "\"")) {

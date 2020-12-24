@@ -9,21 +9,31 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
+import android.net.NetworkSpecifier;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSpecifier;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,21 +60,24 @@ import java.util.List;
  * Use the {@link AddDeviceFragmentSearch#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogFragment.OnNetworkSelectedListener{
+public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogFragment.OnNetworkSelectedListener {
     private static final String TAG = AddDeviceFragmentSearch.class.getSimpleName();
 
     private HomeConnectedListenerInterface mListener;
 
     private static final int RC_PERMISSION_LOCATION = 1004;
     private static final int RC_PERMISSION_ACCESS_WIFI_STATE = 1005;
-    private static final int RC_PERMISSION_CHANGE_WIFI_STATE= 1006;
-    private static final int RC_PERMISSION_CHANGE_NETWORK_STATE= 1007;
+    private static final int RC_PERMISSION_CHANGE_WIFI_STATE = 1006;
+    private static final int RC_PERMISSION_CHANGE_NETWORK_STATE = 1007;
+    private static final int RC_PERMISSION_WRITE_SETTINGS = 1008;
     private static final int RC_ACTIVITY_WIFI_TURN_ON = 1007;
     private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
 
     WifiManager mWifiManager;
     BroadcastReceiver mWifiScanReceiver;
     BroadcastReceiver mWifiConnectionReceiver;
+    android.support.v7.app.AlertDialog exitalertDialog;
+    boolean ronixFound = false;
 
     CountDownTimer searchingCountDownTimer, connectingCountDownTimer;
 
@@ -102,8 +115,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         setHasOptionsMenu(true);
 
         progressCircle = view.findViewById(R.id.progress_circle);
-        progressTextView= view.findViewById(R.id.progress_textview);
-
+        progressTextView = view.findViewById(R.id.progress_textview);
         //scan for device in the background, when found, confirm it's the correct the device and continue to device configuration screen
         //first check if there are permissions to handle WiFi operations
         checkLocationPermissions();
@@ -111,65 +123,140 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         return view;
     }
 
-    private void checkLocationPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+    @Override
+    public void onStart() {
+        super.onStart();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if( keyCode == KeyEvent.KEYCODE_BACK )
+                {
+                    if(getActivity() != null) {
+                        try{
+                            getActivity().unregisterReceiver(mWifiScanReceiver);
+                            getActivity().unregisterReceiver(mWifiConnectionReceiver);
+                        }catch (Exception e){
+                            Utils.log(TAG, "Already unregistered - " + e.getMessage(), true);
+                        }
+                    }
+                    goToInfoFragment();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
+    }
+
+    private void checkLocationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 //debugTextView.append("location permissions granted\n");
                 checkWifiAccessPermissions();
-            }else{
+            } else {
                 requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, RC_PERMISSION_LOCATION);
             }
-        }else{
+        } else {
             //no need to show runtime permission stuff
             //debugTextView.append("location permissions granted from manifest file\n");
             checkWifiAccessPermissions();
         }
     }
 
-    private void checkWifiAccessPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+    private void checkWifiAccessPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 //debugTextView.append("wifi access permissions granted\n");
                 checkWifiChangePermissions();
-            }else{
+            } else {
                 requestPermissions(new String[]{"android.permission.ACCESS_WIFI_STATE"}, RC_PERMISSION_ACCESS_WIFI_STATE);
             }
-        }else{
+        } else {
             //no need to show runtime permission stuff
             //debugTextView.append("wifi access permissions granted from manifest file\n");
             checkWifiChangePermissions();
         }
     }
 
-    private void checkWifiChangePermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED) {
+    private void checkWifiChangePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
                 //debugTextView.append("modify wifi permissions granted\n");
-                refreshNetworks();
-            }else{
-                requestPermissions(new String[]{"android.permission.ACCESS_NETWORK_STATE"},RC_PERMISSION_CHANGE_NETWORK_STATE);
+                checkNetworkChangePermission();
+            } else {
+
                 requestPermissions(new String[]{"android.permission.CHANGE_WIFI_STATE"}, RC_PERMISSION_CHANGE_WIFI_STATE);
             }
-        }else{
+        } else {
             //no need to show runtime permission stuff
             //debugTextView.append("modify wifi permissions granted from manifest file\n");
             refreshNetworks();
         }
     }
 
-    private boolean checkLocationServices(){
+    private void checkNetworkChangePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CHANGE_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted
+                //debugTextView.append("modify wifi permissions granted\n");
+               checkWriteSettingsPermission();
+
+            } else {
+
+                requestPermissions(new String[]{"android.permission.CHANGE_NETWORK_STATE"}, RC_PERMISSION_CHANGE_NETWORK_STATE);
+            }
+        } else {
+            //no need to show runtime permission stuff
+            //debugTextView.append("modify wifi permissions granted from manifest file\n");
+            refreshNetworks();
+        }
+    }
+
+
+    private void checkWriteSettingsPermission() {
+        boolean permission;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            permission = Settings.System.canWrite(MainActivity.getInstance());
+            if (permission) {
+                // Permission is granted
+                //debugTextView.append("modify wifi permissions granted\n");
+                refreshNetworks();
+            } else {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                    intent.setData(Uri.parse("package:" + MainActivity.getInstance().getPackageName()));
+                    MainActivity.getInstance().startActivityForResult(intent, RC_PERMISSION_WRITE_SETTINGS);
+                }
+                else {
+                    ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.WRITE_SETTINGS}, RC_PERMISSION_WRITE_SETTINGS);
+                }
+                requestPermissions(new String[]{"android.permission.ACTION_MANAGE_WRITE_SETTINGS"}, RC_PERMISSION_WRITE_SETTINGS);
+            }
+        } else {
+            //no need to show runtime permission stuff
+            //debugTextView.append("modify wifi permissions granted from manifest file\n");
+            refreshNetworks();
+        }
+    }
+
+
+
+    private boolean checkLocationServices() {
         boolean enabled = true;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (getActivity() != null && getActivity().getSystemService(Context.LOCATION_SERVICE) != null) {
                 LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                 boolean isGpsProviderEnabled, isNetworkProviderEnabled;
                 isGpsProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-                if(!isGpsProviderEnabled && !isNetworkProviderEnabled) {
+                if (!isGpsProviderEnabled && !isNetworkProviderEnabled) {
                     enabled = false;
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(Utils.getString(getActivity(), R.string.location_required_title));
@@ -185,7 +272,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             FragmentManager fragmentManager = getFragmentManager();
-                            if(fragmentManager != null) {
+                            if (fragmentManager != null) {
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_FADE);
                                 DashboardRoomsFragment dashboardRoomsFragment = new DashboardRoomsFragment();
@@ -202,11 +289,11 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         return enabled;
     }
 
-    private boolean checkWifiService(){
+    private boolean checkWifiService() {
         boolean enabled = true;
         mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if(mWifiManager != null){
-            if(!mWifiManager.isWifiEnabled()){
+        if (mWifiManager != null) {
+            if (!mWifiManager.isWifiEnabled()) {
                 enabled = false;
                 android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
                         //set icon
@@ -239,7 +326,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                         })
                         .show();
             }
-        }else{
+        } else {
             enabled = false;
             //wifi is not available
             android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(getActivity())
@@ -269,9 +356,8 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         return enabled;
     }
 
-    private void refreshNetworks()
-    {
-        if(checkLocationServices() && checkWifiService()){
+    private void refreshNetworks() {
+        if (checkLocationServices() && checkWifiService()) {
             progressTextView.setText(Utils.getString(getActivity(), R.string.add_device_searching));
             progressCircle.setDonut_progress("" + 0);
             progressCircle.setText("" + 0 + "%");
@@ -283,11 +369,11 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
                     //forward progress
                     long finishedMillis = totalMillis - millisUntilFinished;
-                    int totalProgress = (int) (((float)finishedMillis / (float)totalMillis) * 100.0);
+                    int totalProgress = (int) (((float) finishedMillis / (float) totalMillis) * 100.0);
 
-                    long totalSeconds =  Math.round(((double)finishedMillis/(double)totalMillis) * 45.0);
+                    long totalSeconds = Math.round(((double) finishedMillis / (double) totalMillis) * 45.0);
 
-                    if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                    if (MainActivity.getInstance() != null && MainActivity.isResumed) {
                         progressCircle.setDonut_progress("" + totalProgress);
                         //progressCircle.setText(getActivity().getResources().getStringExtraInt(R.string.seconds, 45 - (int) totalSeconds));
                         progressCircle.setText("" + totalProgress + "%");
@@ -297,9 +383,9 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
                 public void onFinish() {
                     // DO something when 45 seconds are up
-                    if(MainActivity.getInstance() != null && MainActivity.isResumed) {
-                        if(getFragmentManager() != null) {
-                            getFragmentManager().popBackStack();
+                    if (MainActivity.getInstance() != null && MainActivity.isResumed) {
+                        if (getFragmentManager() != null) {
+                            goToInfoFragment();
                         }
                     }
                 }
@@ -307,12 +393,14 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             mWifiScanReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context c, Intent intent) {
+                    ronixFound=false;
                     if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
                         List<ScanResult> mScanResults = mWifiManager.getScanResults();
-                        if(mScanResults != null){
+                        if (mScanResults != null) {
                             for (ScanResult result : mScanResults) {
                                 //debugTextView.append("found SSID: " + result.SSID + "\n");
-                                if(result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())){
+                                if (result.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER.toLowerCase())) {
+                                    ronixFound=true;
                                     searchingCountDownTimer.cancel();
 
                                     //show popup if not already shown, and add scanned network to its list
@@ -323,18 +411,22 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                     scannedNetwork.setSsid(result.SSID);
                                     scannedNetwork.setMacAddress(result.BSSID);
                                     scannedNetwork.setPassword(Constants.DEVICE_DEFAULT_PASSWORD);
-                                    scannedNetwork.setSignal(""+result.level);
+                                    scannedNetwork.setSignal("" + result.level);
 
-                                    if(MainActivity.getInstance() != null && MainActivity.isResumed){
-                                        if(getFragmentManager() != null){
+                                    if (MainActivity.getInstance() != null && MainActivity.isResumed) {
+                                        if (getFragmentManager() != null) {
                                             // DialogFragment.show() will take care of adding the fragment
                                             // in a transaction.  We also want to remove any currently showing
                                             // dialog, so make our own transaction and take care of that here.
+                                            if(exitalertDialog!=null && exitalertDialog.isShowing())
+                                            {
+                                                exitalertDialog.dismiss();
+                                            }
                                             PickSSIDDialogFragment ssidFragment = (PickSSIDDialogFragment) getFragmentManager().findFragmentByTag("ssidPickerDialogFragment");
                                             if (ssidFragment != null) {
                                                 Utils.log(TAG, "Fragment is showing", true);
                                                 ssidFragment.addNetworkToList(scannedNetwork);
-                                            }else{
+                                            } else {
                                                 Utils.log(TAG, "Fragment is not showing", true);
                                                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                                                 // Create and show the dialog.
@@ -346,9 +438,13 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                             }
                                         }
                                     }
-                                }else{
-                                  //  mWifiManager.startScan(); //frequent scans makes the main thread slow
+                                } else {
+                                    //  mWifiManager.startScan(); //frequent scans makes the main thread slow
                                 }
+                            }
+                            if(ronixFound == false)
+                            {
+                                showExitAlert();
                             }
                         }
                     }
@@ -360,23 +456,127 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                     getActivity().registerReceiver(mWifiScanReceiver,
                             new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 Utils.log(TAG, "Error registering mWifiScanReceiver", true);
             }
-            mWifiManager.startScan();
+           mWifiManager.startScan();
 
         }
 
     }
 
-    private void connectToWifiNetwork2(String ssid, String pass)
+    public void showExitAlert()
     {
+        exitalertDialog =new android.support.v7.app.AlertDialog.Builder(MainActivity.getInstance())
+                .setTitle("RonixTech")
+                .setMessage("No Smart Controllers wifi in range")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                      mWifiManager.startScan();
+                    }
+                })
+                .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                           goToInfoFragment();
+                    }
+                }).show();
+    }
+
+    public void goToInfoFragment(){
+            if (getFragmentManager() != null) {
+                if(exitalertDialog!=null && exitalertDialog.isShowing())
+                {
+                    exitalertDialog.dismiss();
+                }
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceFragmentIntro addDeviceFragmentIntro =new AddDeviceFragmentIntro();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                fragmentTransaction.commit();
+            }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void connectToWifiNetwork2(String ssid, String pass) {
+       // registerReceiver(ssid,pass);
+        final NetworkSpecifier specifier =
+                new WifiNetworkSpecifier.Builder()
+                        .setSsid(ssid)
+                        .setWpa2Passphrase(pass)
+                        .build();
+        final NetworkRequest request =
+                new NetworkRequest.Builder()
+                        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                        .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .setNetworkSpecifier(specifier)
+                        .build();
+        final ConnectivityManager connectivityManager =
+                (ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(@NonNull Network network) {
+                ((ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE))
+                        .bindProcessToNetwork(network);
+                          WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                            String connectedSSID = wifiInfo.getSSID();
+
+                            Utils.log(TAG, "Currently connected to: " + connectedSSID, true);
+
+                            if (connectedSSID.toLowerCase().contains(ssid.toLowerCase())) {
+                                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.connected_to) + " " + connectedSSID, true);
+                                connectingCountDownTimer.cancel();
+//                                progressTextView.append(Utils.getStringExtraText(getActivity(), R.string.add_device_connected, connectedSSID) + "\n");
+
+                                try {
+                                    if (getActivity() != null) {
+                                        getActivity().unregisterReceiver(mWifiConnectionReceiver);
+                                    }
+                                } catch (Exception e) {
+                                    Utils.log(TAG, "Error unregistering mWifiConnectionReceiver", true);
+                                }
+
+                                if (MainActivity.getInstance() != null && MainActivity.isResumed) {
+                                    if (getFragmentManager() != null) {
+                                        FragmentManager fragmentManager = getFragmentManager();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        AddDeviceFragmentGetData addDeviceFragmentGetData = new AddDeviceFragmentGetData();
+                                        fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentGetData, "addDeviceFragmentGetData");
+                                        //fragmentTransaction.addToBackStack("addDeviceFragmentGetData");
+                                        fragmentTransaction.commitAllowingStateLoss();
+                                    }
+
+                                }
+
+                        }
+                  }
+
+            @Override
+            public void onUnavailable() {
+
+                    goToInfoFragment();
+            }
+
+            @Override
+            public void onLost(@NonNull Network network) {
+                ((ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE))
+                        .bindProcessToNetwork(null);
+            }
+        };
+        connectivityManager.requestNetwork(request, networkCallback);
 
     }
 
-    private void connectToWifiNetwork(final String ssid, String password, boolean registerCallback){
-        if(registerCallback){
-            /*Tested (I didn't test with the WPS "Wi-Fi Protected Setup" standard):
+
+
+    private void connectToWifiNetwork(final String ssid, String password, boolean registerCallback) {
+        if (registerCallback) {
+            /*
+            Tested (I didn't test with the WPS "Wi-Fi Protected Setup" standard):
             In API15 (ICE_CREAM_SANDWICH) this method is called when the new Wi-Fi network state is:
             DISCONNECTED, OBTAINING_IPADDR, CONNECTED or SCANNING
 
@@ -385,17 +585,17 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             or CONNECTED
 
             (Those states can be obtained as NetworkInfo.DetailedState objects by calling
-            the NetworkInfo object method: "networkInfo.getDetailedState()")*/
+            the NetworkInfo object method: "networkInfo.getDetailedState()")
 
-            /*
+
              * NetworkInfo object associated with the Wi-Fi network.
-             * It won't be null when "android.net.wifi.STATE_CHANGE" action intent arrives.
-             */
+             * It won't be null when "android.net.wifi.STATE_CHANGE" action intent arrives.*/
+
             mWifiConnectionReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context c, Intent intent) {
                     if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                        if(getActivity() != null && getActivity().getSystemService(Context.CONNECTIVITY_SERVICE) != null){
+                        if (getActivity() != null && getActivity().getSystemService(Context.CONNECTIVITY_SERVICE) != null) {
                             ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
                             NetworkInfo networkInfo = cm.getActiveNetworkInfo();
                             if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
@@ -405,7 +605,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
                                 Utils.log(TAG, "Currently connected to: " + connectedSSID, true);
 
-                                if(connectedSSID.toLowerCase().contains(ssid.toLowerCase())){
+                                if (connectedSSID.toLowerCase().contains(ssid.toLowerCase())) {
                                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.connected_to) + " " + connectedSSID, true);
                                     connectingCountDownTimer.cancel();
                                     progressTextView.append(Utils.getStringExtraText(getActivity(), R.string.add_device_connected, connectedSSID) + "\n");
@@ -414,12 +614,12 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                         if (getActivity() != null) {
                                             getActivity().unregisterReceiver(mWifiConnectionReceiver);
                                         }
-                                    }catch (Exception e){
+                                    } catch (Exception e) {
                                         Utils.log(TAG, "Error unregistering mWifiConnectionReceiver", true);
                                     }
 
-                                    if(MainActivity.getInstance() != null && MainActivity.isResumed){
-                                        if(getFragmentManager() != null){
+                                    if (MainActivity.getInstance() != null && MainActivity.isResumed) {
+                                        if (getFragmentManager() != null) {
                                             FragmentManager fragmentManager = getFragmentManager();
                                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -434,7 +634,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                                     //namely device mac address (previously), chipid (get request now), typeid (get request now)
                                     //then send configured SSID/password to the device
                                     //getDeviceType();
-                                }else{
+                                } else {
                                     connectToWifiNetwork(ssid, password, true);
                                 }
                             }
@@ -448,16 +648,20 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                     getActivity().registerReceiver(mWifiConnectionReceiver,
                             new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 Utils.log(TAG, "Error registering mWifiConnectionReceiver", true);
             }
         }
 
+        if (ActivityCompat.checkSelfPermission(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
         List<WifiConfiguration> list = mWifiManager.getConfiguredNetworks();
-        for(WifiConfiguration i : list) {
-            if(i != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)){
+        for (WifiConfiguration i : list) {
+            if (i != null && i.SSID.toLowerCase().startsWith(Constants.DEVICE_NAME_IDENTIFIER)) {
                 Utils.log(TAG, "Removing network '" + i.SSID + "' from saved networks", true);
-                if(!mWifiManager.removeNetwork(i.networkId)){
+                if (!mWifiManager.removeNetwork(i.networkId)) {
                     Utils.log(TAG, "Failed to remove network " + i.SSID + ", disabling it", true);
                     mWifiManager.disableNetwork(i.networkId);
                 }
@@ -467,7 +671,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
         try {
             Thread.sleep(1000);
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
 
         }
 
@@ -475,7 +679,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
         try {
             Thread.sleep(1000);
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
 
         }
 
@@ -486,7 +690,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
         }*/
         conf.SSID = "\"" + ssid + "\"";   // Please note the quotes. String should contain ssid in quotes
-        conf.preSharedKey = "\""+ password +"\"";
+        conf.preSharedKey = "\"" + password + "\"";
         conf.status = WifiConfiguration.Status.ENABLED;
 
         //WPA/WPA2 Security
@@ -510,7 +714,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
         try {
             Thread.sleep(1000);
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
 
         }
 
@@ -521,15 +725,15 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
         Utils.log(TAG, "Added network, new ID:" + networkID, true);
 
-        if(networkID != -1) {
+        if (networkID != -1) {
             Utils.log(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + networkID, true);
             mWifiManager.disconnect();
             mWifiManager.enableNetwork(networkID, true);
             mWifiManager.reconnect();
-        }else{
+        } else {
             list = mWifiManager.getConfiguredNetworks();
-            for(WifiConfiguration i : list) {
-                if(i.SSID != null && i.SSID.toLowerCase().contains(ssid.toLowerCase()/*"\"" + ssid.toLowerCase() + "\""*/)) {
+            for (WifiConfiguration i : list) {
+                if (i.SSID != null && i.SSID.toLowerCase().contains(ssid.toLowerCase()/*"\"" + ssid.toLowerCase() + "\""*/)) {
                     Utils.log(TAG, "Connecting to SSID: " + conf.SSID + " with password: " + password + " and networkID: " + conf.networkId, true);
                     mWifiManager.disconnect();
                     mWifiManager.enableNetwork(i.networkId, true);
@@ -552,6 +756,16 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
     }
 
     private int getExistingNetworkId(String SSID) {
+        if (ActivityCompat.checkSelfPermission(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+        }
         List<WifiConfiguration> configuredNetworks = mWifiManager.getConfiguredNetworks();
         if (configuredNetworks != null) {
             for (WifiConfiguration existingConfig : configuredNetworks) {
@@ -600,9 +814,10 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         }.start();
 
         Utils.log(TAG, "User chose ssid " + network.getSsid(), true);
-        Device device = new Device();
+     //   Device device = new Device();
+        Device device = MySettings.getTempDevice();
         device.setMacAddress(network.getMacAddress());
-       // device.setName(network.getSsid());
+        device.setName(network.getSsid());
         MySettings.setTempDevice(device);
         MySettings.setTempSSID(network.getSsid());
         Utils.log(TAG, "Connecting to " + network.getSsid() + " with default password", true);
@@ -619,7 +834,12 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         handler.post(new Runnable() {
             @Override
             public void run() {
-                connectToWifiNetwork(network.getSsid(), Constants.DEVICE_DEFAULT_PASSWORD, true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    connectToWifiNetwork2(network.getSsid(),network.getPassword());
+                }
+                else {
+                    connectToWifiNetwork(network.getSsid(), Constants.DEVICE_DEFAULT_PASSWORD, true);
+                }
             }
         });
     }
@@ -711,11 +931,25 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                     }
                 }
             }
+            case RC_PERMISSION_WRITE_SETTINGS:
+            {
+                if(grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    refreshNetworks();
+                }
+                else
+                {
+                    Utils.showToast(getActivity(), "You need to enable Write Permission", true);
+                   goToInfoFragment();
+                }
+
+            }
         }
     }
 
     @Override
     public void onStop(){
+        super.onStop();
         Utils.log(TAG, "onStop", true);
         if(getActivity() != null) {
             try{
@@ -725,8 +959,14 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 Utils.log(TAG, "Already unregistered - " + e.getMessage(), true);
             }
         }
-        super.onStop();
+        if(exitalertDialog!=null && exitalertDialog.isShowing())
+        {
+            exitalertDialog.dismiss();
+        }
+
     }
+
+
 
 
     @Override

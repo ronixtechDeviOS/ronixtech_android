@@ -67,7 +67,7 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
     private Room selectedRoom;
     private WifiNetwork selectedWifiNetwork;
 
-    private boolean ipAddressStatic = true;
+    private boolean ipAddressStatic = false;
 
     public AddDeviceSelectLocationFragment() {
         // Required empty public constructor
@@ -375,22 +375,30 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                 if(validateInputs()){
                     MySettings.updateWifiNetworkPlace(selectedWifiNetwork, selectedPlace.getId());
 
-                    Device device = MySettings.getTempDevice();
-                    device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
+                    Device device = new Device();
+                 //   device = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
                     device.setRoomID(selectedRoom.getId());
                     device.setStaticIPAddress(ipAddressStatic);
                     device.setName(deviceNameText.getText().toString());
-                    MySettings.updateDeviceRoom(device, selectedRoom.getId());
-                    MySettings.updateDeviceName(device,deviceNameText.getText().toString());
+                 //   MySettings.updateDeviceRoom(device, selectedRoom.getId());
+                 //   MySettings.updateDeviceName(device,deviceNameText.getText().toString());
                     MySettings.setHomeNetwork(selectedWifiNetwork);
+                    MySettings.setTempDevice(device);
 
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
+                    fragmentTransaction.commit();
+/*
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                     AddDeviceFragmentSendData addDeviceFragmentSendData = new AddDeviceFragmentSendData();
                     fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentSendData, "addDeviceFragmentSendData");
                     //fragmentTransaction.addToBackStack("addDeviceSelectLocationFragment");
-                    fragmentTransaction.commitAllowingStateLoss();
+                    fragmentTransaction.commitAllowingStateLoss(); */
                 }
             }
         });

@@ -263,7 +263,7 @@
 
     <string name="add_device_wifi_not_available">WiFi is not available on this device, please use a device with supported hardware.</string>
     <string name="add_device_searching">Searching For Smart Controller</string>
-    <string name="add_device_found_device">RonixTech controller found!</string>
+    <string name="add_device_found_device">Smart controller found!</string>
     <string name="add_device_connecting">Connecting to %s</string>
     <string name="add_device_connected">Connected to %s</string>
 
