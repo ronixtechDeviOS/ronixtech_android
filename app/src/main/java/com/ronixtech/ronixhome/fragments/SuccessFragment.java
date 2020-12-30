@@ -17,9 +17,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ronixtech.ronixhome.Constants;
+import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
+import com.ronixtech.ronixhome.entities.Device;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +38,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
 
     TextView successMessageTextView;
     Button continueButton;
-
+    Device device;
     private int successSource;
 
     public SuccessFragment() {
@@ -70,6 +72,7 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
         setHasOptionsMenu(true);
 
 
+
         successMessageTextView = view.findViewById(R.id.succes_message_textview);
         continueButton = view.findViewById(R.id.continue_button);
 
@@ -78,6 +81,8 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
         }else if(successSource == Constants.SUCCESS_SOURCE_ROOM){
             successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_room));
         }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE){
+            device=MySettings.getTempDevice();
+            addDevicetoDB();
             successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_device));
         }else if(successSource == Constants.SUCCESS_SOURCE_EXPORT){
             successMessageTextView.setText(Utils.getString(getActivity(), R.string.success_message_export));
@@ -151,6 +156,16 @@ public class SuccessFragment extends android.support.v4.app.Fragment {
         });
 
         return view;
+    }
+
+    private void addDevicetoDB() {
+        MySettings.addDeviceOnly(device);
+        device.setId(MySettings.getDeviceByChipID(device.getChipID(),device.getDeviceTypeID()).getId());
+        MySettings.addDevice(device);/*
+        MySettings.updateDeviceRoom(device, device.getRoomID());
+        MySettings.updateDeviceName(device, device.getName());
+        MySettings.updateDeviceIP(device,device.getIpAddress());*/
+
     }
 
     public void setSuccessSource(int source){

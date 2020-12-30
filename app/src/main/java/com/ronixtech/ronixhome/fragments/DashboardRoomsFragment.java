@@ -196,6 +196,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                             || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         if(device.getLines() == null || device.getLines().size() != 3){
                             MySettings.removeDevice(device);
+                            Utils.log(TAG,"Deleting, device lines: "+device.getLines(),false);
                         }
                     }
                 }
@@ -374,13 +375,19 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
-                }else {
+                }
+                else if(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()).isEmpty())
+                {
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
+                }
+                else
+                    {
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocation");
                     fragmentTransaction.commit();
                 }
             }
@@ -419,13 +426,19 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
-                }else{
+                }
+                else if(MySettings.getFloorRooms(MySettings.getCurrentFloor().getId()).isEmpty())
+                {
+                    Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
+                }
+                else
+                {
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceFragmentIntro addDeviceFragmentIntro = new AddDeviceFragmentIntro();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceFragmentIntro, "addDeviceFragmentIntro");
-                    fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
+                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                    fragmentTransaction.addToBackStack("addDeviceSelectLocation");
                     fragmentTransaction.commit();
                 }
             }

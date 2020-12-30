@@ -132,6 +132,11 @@ public class WifiNetworkItemAdapter extends ArrayAdapter{
         return rowView;
     }
 
+    public void updateAdapter(WifiNetwork mDataList) {
+
+        //this.networks.add(mDataList);
+    }
+
     public static class ViewHolder{
         TextView networkNameTextView, networkSignalTextView, placeNameTextView;
         ImageView networkSignalImageView;

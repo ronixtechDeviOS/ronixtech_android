@@ -342,7 +342,7 @@
 
     <string name="remove_device">Remove Smart Controller</string>
     <string name="edit_device">Edit Smart Controller</string>
-    <string name="edit_device_location">Change Location</string>
+    <string name="edit_device_location">Change Location/Network</string>
 
     <string name="edit_device_unsaved_changes_title">Unsaved Changes</string>
     <string name="edit_device_unsaved_changes_message">You have some unfinished changes. Are you sure you want to go back and discard these changes?</string>
@@ -438,9 +438,7 @@
 
     <string name="error_adding_smart_controller">Error adding smart controller, please try again.</string>
     <string name="unknown_smart_controller_type">Unknown smart controller type (%d). Please try again later or contact support.</string>
-<!--
-    <string name="smart_controller_connection_error">Error connecting to smart controller, please try again</string>-->
-    <string name="smart_controller_connection_error">Error connecting to smart controller, please refresh devices</string>
+    <string name="smart_controller_connection_error">Error connecting to smart controller, please try again</string>
     <string name="server_connection_error">Unable to connect to server, please try again</string>
     <string name="no_internet_connection_try_later">No internet connection, please try again later</string>
     <string name="no_internet_connection">No internet connection</string>

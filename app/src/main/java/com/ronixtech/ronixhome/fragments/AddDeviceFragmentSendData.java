@@ -78,6 +78,7 @@ public class AddDeviceFragmentSendData extends Fragment {
     Handler myHandler = new Handler();
     Boolean check=false;
     AlertDialog alertDialog;
+    AlertDialog.Builder dialogBuilder;
     android.support.v7.app.AlertDialog exitalertDialog;
     MqttAndroidClient mqttAndroidClient;
     Device device;
@@ -116,8 +117,46 @@ public class AddDeviceFragmentSendData extends Fragment {
          device = MySettings.getTempDevice();
          textView=view.findViewById(R.id.progress_textview);
         sendConfigurationToDevice();
-
+        dialogInit();
+        alertDialog=dialogBuilder.create();
         return view;
+    }
+
+    private void dialogInit() {
+        dialogBuilder=new AlertDialog.Builder(MainActivity.getInstance())
+                .setTitle("RonixTech")
+                .setMessage("Taking longer than expected. Please select an option to continue")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        check = true;
+                        mqttConnect();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        check = true;
+                        showExitAlert();
+                    }
+                })
+                .setNeutralButton("Connect Locally", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (MainActivity.getInstance() != null && MainActivity.isResumed) {
+                            if (getFragmentManager() != null) {
+                                FragmentManager fragmentManager = getFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                AddDeviceLocal addDeviceLocal = new AddDeviceLocal();
+                                fragmentTransaction.replace(R.id.fragment_view, addDeviceLocal, "AddDeviceLocal");
+                                // fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                                fragmentTransaction.commitAllowingStateLoss();
+                            }
+                        }
+
+                    }
+                });
     }
 
     private void sendConfigurationToDevice(){
@@ -267,41 +306,9 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
         },15000); // Show after 15 Seconds only for the first time
 */
-
-        alertDialog=new android.support.v7.app.AlertDialog.Builder(MainActivity.getInstance())
-                .setTitle("RonixTech")
-                .setMessage("Taking longer than expected. Please select an option to continue")
-                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        check=true;
-                        mqttConnect();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        check=true;
-                        showExitAlert();
-                    }
-                })
-                .setNeutralButton("Connect Locally", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if(MainActivity.getInstance() != null && MainActivity.isResumed){
-                            if(getFragmentManager() != null){
-                                FragmentManager fragmentManager = getFragmentManager();
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                AddDeviceLocal addDeviceLocal = new AddDeviceLocal();
-                                fragmentTransaction.replace(R.id.fragment_view, addDeviceLocal, "AddDeviceLocal");
-                                // fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
-                                fragmentTransaction.commitAllowingStateLoss();
-                            }
-                        }
-
-                    }
-                }).show();
+    if(!alertDialog.isShowing()) {
+        alertDialog.show();
+        }
     }
 
     public void showExitAlert()
@@ -408,6 +415,41 @@ public class AddDeviceFragmentSendData extends Fragment {
         };
         connectivityManager.requestNetwork(request, networkCallback);
 
+        /*final WifiNetworkSuggestion suggestion1 =
+                new WifiNetworkSuggestion.Builder()
+                        .setSsid(ssid)
+                        .setWpa2Passphrase(pass)
+                        .setIsAppInteractionRequired(true) // Optional (Needs location permission)
+                        .build();
+
+        final List<WifiNetworkSuggestion> suggestionsList = new ArrayList<WifiNetworkSuggestion>()
+        {{ add(suggestion1);
+        }};
+
+        final WifiManager wifiManager = (WifiManager) MyApp.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        final int status = wifiManager.addNetworkSuggestions(suggestionsList);
+        if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+            // do error handling here…
+              }
+
+    // Optional (Wait for post connection broadcast to one of your suggestions)
+        final IntentFilter intentFilter =
+                new IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
+
+        final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (!intent.getAction().equals(
+                        WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
+                    return;
+                }
+                getStatusMQTT();
+                // do post connect processing here...
+            }
+        };
+        MainActivity.getInstance().registerReceiver(broadcastReceiver, intentFilter);
+*/
 
     }
 
@@ -1320,7 +1362,7 @@ public class AddDeviceFragmentSendData extends Fragment {
             public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
                 String response = new String(mqttMessage.getPayload());
                 int index = s.lastIndexOf("/");
-                Device device = MySettings.getDeviceByChipID2(s.substring(index + 1));
+                //Device device = MySettings.getDeviceByChipID2(s.substring(index + 1));
                 if (device != null) {
                     if (response != null && response.length() >= 1 && response.contains("UNIT_STATUS")) {
                         JSONObject jsonObject = new JSONObject(response);
@@ -1331,8 +1373,9 @@ public class AddDeviceFragmentSendData extends Fragment {
                             if(unitStatus != null && unitStatus.has("U_W_STT")){
                                 JSONObject wifiStatus = unitStatus.getJSONObject("U_W_STT");
                                 if(wifiStatus != null) {
-                                    MySettings.getTempDevice().setIpAddress(wifiStatus.getString("R_W_IP_"));
-                                    MySettings.updateDeviceIP(device,wifiStatus.getString("R_W_IP_") );
+                                    device.setIpAddress(wifiStatus.getString("R_W_IP_"));
+                                   // MySettings.updateDeviceIP(device,wifiStatus.getString("R_W_IP_") );
+                                    MySettings.setTempDevice(device);
                                     Log.v(TAG,"Device: "+device.toString()+" IP: "+wifiStatus.getString("R_W_IP_"));
                                     myHandler.removeCallbacksAndMessages(null);
                                     goToSuccessFragment();
@@ -1457,22 +1500,28 @@ public class AddDeviceFragmentSendData extends Fragment {
 
         @Override
         protected void onPostExecute(Void params) {
-            if(MainActivity.getInstance() != null){
-                if(fragment.mListener != null){
-                    fragment.mListener.onStartListening();
-                }
-                if(MySettings.getHomeNetwork() != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                       fragment.connectToWifiNetwork2(MySettings.getHomeNetwork().getSsid(),MySettings.getHomeNetwork().getPassword());
+            if(statusCode==200) {
+                if (MainActivity.getInstance() != null) {
+                    if (fragment.mListener != null) {
+                        fragment.mListener.onStartListening();
                     }
-                    else {
-                        fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                    if (MySettings.getHomeNetwork() != null) {
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                            fragment.connectToWifiNetwork2(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
+                        } else {
+                            fragment.connectToWifiNetwork(MySettings.getHomeNetwork().getSsid(), MySettings.getHomeNetwork().getPassword());
 
+                        }
+                        // fragment.getStatusMQTT();
                     }
-                   // fragment.getStatusMQTT();
+
+
                 }
-
-
+            }
+            else
+            {
+                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
+                fragment.goToSearchFragment();
             }
         }
 

@@ -269,7 +269,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 controlsEnabled = true;
 
                 if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     if(item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1){
                         Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
                         if(currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
@@ -869,7 +869,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/){
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1137,7 +1137,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 }
 
                 if(item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/){
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1367,7 +1367,7 @@ public class DeviceAdapter extends ArrayAdapter {
                 controlsEnabled = true;
 
                 if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
                     if(item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1){
                         Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
                         if(currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
@@ -2637,6 +2637,7 @@ public class DeviceAdapter extends ArrayAdapter {
             }else{
                 Utils.showToast(activity, Utils.getString(activity, R.string.factory_reset_unit_failed), false);
             }
+            device=null;
         }
 
         @Override

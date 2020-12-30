@@ -78,6 +78,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
     BroadcastReceiver mWifiConnectionReceiver;
     android.support.v7.app.AlertDialog exitalertDialog;
     boolean ronixFound = false;
+    final ConnectivityManager connectivityManager=(ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
 
     CountDownTimer searchingCountDownTimer, connectingCountDownTimer;
 
@@ -382,9 +383,10 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
 
                 public void onFinish() {
-                    // DO something when 45 seconds are up
+                    // DO something when 40 seconds are up
                     if (MainActivity.getInstance() != null && MainActivity.isResumed) {
                         if (getFragmentManager() != null) {
+                            Utils.showToast(getActivity(),"Error connecting to smart controller. Please try again",false);
                             goToInfoFragment();
                         }
                     }
@@ -502,7 +504,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void connectToWifiNetwork2(String ssid, String pass) {
-       // registerReceiver(ssid,pass);
+
         final NetworkSpecifier specifier =
                 new WifiNetworkSpecifier.Builder()
                         .setSsid(ssid)
@@ -514,8 +516,6 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                         .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                         .setNetworkSpecifier(specifier)
                         .build();
-        final ConnectivityManager connectivityManager =
-                (ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
         final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
@@ -529,8 +529,6 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                             if (connectedSSID.toLowerCase().contains(ssid.toLowerCase())) {
                                 Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.connected_to) + " " + connectedSSID, true);
                                 connectingCountDownTimer.cancel();
-//                                progressTextView.append(Utils.getStringExtraText(getActivity(), R.string.add_device_connected, connectedSSID) + "\n");
-
                                 try {
                                     if (getActivity() != null) {
                                         getActivity().unregisterReceiver(mWifiConnectionReceiver);
@@ -807,14 +805,14 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 // DO something when 45 seconds are up
                 if(MainActivity.getInstance() != null && MainActivity.isResumed) {
                     if(getFragmentManager() != null) {
-                        getFragmentManager().popBackStack();
+                        Utils.showToast(getActivity(),"Error connecting to smart controller. Please try again",false);
+                        goToInfoFragment();
                     }
                 }
             }
         }.start();
 
         Utils.log(TAG, "User chose ssid " + network.getSsid(), true);
-     //   Device device = new Device();
         Device device = MySettings.getTempDevice();
         device.setMacAddress(network.getMacAddress());
         device.setName(network.getSsid());
@@ -834,7 +832,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                     connectToWifiNetwork2(network.getSsid(),network.getPassword());
                 }
                 else {

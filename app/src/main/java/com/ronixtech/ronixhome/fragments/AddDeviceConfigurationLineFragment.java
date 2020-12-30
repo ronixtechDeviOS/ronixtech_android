@@ -436,19 +436,28 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
 
                     currentLine.setPosition(LINE_POSITION);
 
-                    List<Line> tempDeviceLines = new ArrayList<>();
+                    ArrayList<Line> tempDeviceLines = new ArrayList<>();
                     tempDeviceLines.addAll(device.getLines());
+                  /*  if(tempDeviceLines.contains(currentLine))
+                    {
+                        device.getLines().remove(currentLine);
+
+                    }*/
                     int numberOfTempDeviceLines = tempDeviceLines.size();
                     for(int x = 0; x < numberOfTempDeviceLines; x++){
                         Line tempDeviceLine = tempDeviceLines.get(x);
                         if(tempDeviceLine.getPosition() == currentLine.getPosition()){
-                            if(device.getLines().size() > x)
-                            {
+                            try {
                                 device.getLines().remove(x);
+                            }
+                            catch(IndexOutOfBoundsException e)
+                            {
+                                Utils.log(TAG,"Multiple instances of same controller",true);
                             }
                             currentLine = tempDeviceLine;
                         }
                     }
+
 
                     if(lineNameEditText.getText().toString().length() >= 1){
                         currentLine.setName(lineNameEditText.getText().toString());
@@ -465,7 +474,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                     }
                     currentLine.setMode(lineMode);
                     if(lineMode == Line.MODE_SECONDARY){
-                        currentLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
+                     //  currentLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
+                        currentLine.setPrimaryDeviceChipID(MySettings.getTempDevice().getChipID());
                         currentLine.setPrimaryLinePosition(lineSelectedLine.getPosition());
                     }
 
@@ -479,10 +489,11 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         }
                     }*/
                     device.getLines().add(currentLine);
-                    MySettings.setTempDevice(device);
+
+                   MySettings.setTempDevice(device);
                     Utils.log(TAG, "TempDevice: deviceID " + MySettings.getTempDevice().getId(), true);
                     for (Line line:MySettings.getTempDevice().getLines()) {
-                        Utils.log(TAG, "TempDevice: Line: Pos: " + line.getPosition() + " - Name: " + line.getName() + " - DeviceID: " + line.getDeviceID(), true);
+                        Utils.log(TAG, "TempDevice: Line: Pos: " + line.getPosition() + " - Name: " + line.getName() + " - DeviceChipID: " + MySettings.getTempDevice().getChipID(), true);
                     }
 
                     int last = DEVICE_NUMBER_OF_LINES - 1;
@@ -492,9 +503,9 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                     }else{
 
 
-                        MySettings.addDevice(device);
+                        /*MySettings.addDevice(device);
                         MySettings.updateDeviceRoom(device, device.getRoomID());
-                        MySettings.updateDeviceName(device, device.getName());
+                        MySettings.updateDeviceName(device, device.getName());*/
                         Utils.log(TAG, "continueButton - move to data sending fragment!", true);
                         /*
                         FragmentTransaction fragmentTransaction = parentFragment.getFragmentManager().beginTransaction();
@@ -551,7 +562,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
             Room room;
             Floor floor;
             lineSelectedLine = line;
-            device = MySettings.getDeviceByID2(lineSelectedLine.getDeviceID());
+          //  device = MySettings.getDeviceByID2(lineSelectedLine.getDeviceID());
+            device=MySettings.getTempDevice();
             room = MySettings.getRoom(device.getRoomID());
             floor = MySettings.getFloor(room.getFloorID());
 
@@ -676,7 +688,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                 }
                 currentLine.setMode(lineMode);
                 if(lineMode == Line.MODE_SECONDARY){
-                    currentLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
+                  //  currentLine.setPrimaryDeviceChipID(MySettings.getDeviceByID2(lineSelectedLine.getDeviceID()).getChipID());
+                    currentLine.setPrimaryDeviceChipID(MySettings.getTempDevice().getChipID());
                     currentLine.setPrimaryLinePosition(lineSelectedLine.getPosition());
                 }
 
@@ -693,7 +706,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                 MySettings.setTempDevice(device);
                 Utils.log(TAG, "TempDevice: deviceID " + MySettings.getTempDevice().getId(), true);
                 for (Line line:MySettings.getTempDevice().getLines()) {
-                    Utils.log(TAG, "TempDevice: Line: Pos: " + line.getPosition() + " - Name: " + line.getName() + " - DeviceID: " + line.getDeviceID(), true);
+                    Utils.log(TAG, "TempDevice: Line: Pos: " + line.getPosition() + " - Name: " + line.getName() + " - DeviceChipID: " + MySettings.getTempDevice().getChipID(), true);
                 }
             }
         }else{

@@ -295,6 +295,7 @@
                 android:textSize="18sp"
                 android:checked="true"
                 android:textColor="@color/whiteColor"
+                android:visibility="gone"
                 android:text="@string/unit_static_ip_description"/>
 
             <Button

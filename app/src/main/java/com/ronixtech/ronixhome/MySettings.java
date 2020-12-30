@@ -364,21 +364,32 @@ public class MySettings {
         }
     }
 
-    public static void addDevice(Device device){
-        //save device into DB
-        if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+    public static void addDeviceOnly(Device device)
+    {
+        if (device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
                 device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
-            MySettings.initDB().deviceDAO().insertDeviceWithLines(device);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER){
-            MySettings.initDB().deviceDAO().insertDeviceWithSoundDeviceData(device);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR){
-            MySettings.initDB().deviceDAO().insertDeviceWithPIRData(device);
-        }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_SHUTTER){
-            MySettings.initDB().deviceDAO().insertShutter(device);
+            MySettings.initDB().deviceDAO().insertDevice(device);
         }
+    }
+
+    public static void addDevice(Device device){
+        //save device into DB
+            if (device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                    device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                MySettings.initDB().deviceDAO().insertDeviceWithLines(device);
+            } else if (device.getDeviceTypeID() == Device.DEVICE_TYPE_SOUND_SYSTEM_CONTROLLER) {
+                MySettings.initDB().deviceDAO().insertDeviceWithSoundDeviceData(device);
+            } else if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR) {
+                MySettings.initDB().deviceDAO().insertDeviceWithPIRData(device);
+            } else if (device.getDeviceTypeID() == Device.DEVICE_TYPE_SHUTTER) {
+                MySettings.initDB().deviceDAO().insertShutter(device);
+            }
     }
     public static void updateDeviceIP(Device device, String ipAddress){
         if(!ipAddress.matches("")) {

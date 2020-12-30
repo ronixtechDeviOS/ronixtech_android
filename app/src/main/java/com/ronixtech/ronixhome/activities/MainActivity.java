@@ -338,14 +338,14 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 Utils.showToast(mInstance, "Refreshing devices", true);
                 if(allDevices != null){
-                    for (Device dev : allDevices) {
+                   /* for (Device dev : allDevices) {
                         if(dev.getIpAddress() != null && dev.getIpAddress().length() >= 1) {
                             Utils.getDeviceInfo(dev);
                         }else{
                            // Utils.showToast(mInstance, "Connect to the internet to use devices", true);
                             //MySettings.scanNetwork();
                         }
-                    }
+                    }*/
 
                      new Utils.InternetChecker(MainActivity.getInstance(), new Utils.InternetChecker.OnConnectionCallback() {
                         @Override
@@ -986,14 +986,14 @@ public class MainActivity extends AppCompatActivity
                                                         Utils.log(TAG, "MQTT Publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
                                                         Utils.log(TAG, "MQTT Publish data: " + mqttMessage1, true);
                                                         mqttAndroidClient.publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage1);
-                                                        device.setDeviceMQTTReachable(true);
                                                     }catch (JSONException e){
                                                         Utils.log(TAG, "Exception: " + e.getMessage(), true);
                                                     }catch (MqttException e){
                                                         Utils.log(TAG, "Exception: " + e.getMessage(), true);
                                                     }
-                                                }
-                                            }
+                                               }
+                                           }
+                                            device.setDeviceMQTTReachable(true);
                                             if(wifiStatus.has("U_W_FWV")) {
                                                 String currentFirmwareVersion = wifiStatus.getString("U_W_FWV");
                                                 if (currentFirmwareVersion != null && currentFirmwareVersion.length() >= 1){

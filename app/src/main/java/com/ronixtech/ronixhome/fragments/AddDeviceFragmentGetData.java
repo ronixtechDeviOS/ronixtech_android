@@ -466,6 +466,12 @@ public class AddDeviceFragmentGetData extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+    }
+
     public interface HomeConnectedListenerInterface{
         void onStartListening();
     }
@@ -1168,16 +1174,17 @@ public class AddDeviceFragmentGetData extends Fragment {
 
                                     //create the lines then device.setLines/line.setDeviceID then MySettings.addDevice()
                                     Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
-
+/*
                                     if(dbDevice == null){
                                         MySettings.addDevice(device);
                                         dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
                                     }
 
                                     long deviceID = dbDevice.getId();
-                                    device.setId(deviceID);
+                                    device.setId(deviceID);*/
 
-                                    Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
+                                   // Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
+                                    Utils.log(TAG, "Adding device,  " + MySettings.getTempDevice().getChipID(), true);
 
                                     //loop over the number of lines
                                     if(firstLinePreset){
@@ -1191,7 +1198,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                       // line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1207,7 +1214,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                      //  line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1223,7 +1230,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                      //  line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1324,7 +1331,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     //create the lines then device.setLines/line.setDeviceID then MySettings.addDevice()
                                     Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
-                                    if(dbDevice == null){
+                                 /*   if(dbDevice == null){
                                         MySettings.addDevice(device);
                                         dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
                                     }
@@ -1332,7 +1339,8 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     long deviceID = dbDevice.getId();
                                     device.setId(deviceID);
 
-                                    Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
+                                    Utils.log(TAG, "Adding device, deviceID = " + deviceID, true); */
+                                    Utils.log(TAG, "Adding device, = " + MySettings.getTempDevice().getChipID(), true);
 
                                     //loop over the number of lines
                                     if(firstLinePreset){
@@ -1344,7 +1352,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                   //     line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1358,7 +1366,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                     //   line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1372,7 +1380,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                     //   line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1473,7 +1481,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     //create the lines then device.setLines/line.setDeviceID then MySettings.addDevice()
                                     Device dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
 
-                                    if(dbDevice == null){
+                                   /* if(dbDevice == null){
                                         MySettings.addDevice(device);
                                         dbDevice = MySettings.getDeviceByMAC(device.getMacAddress(), device.getDeviceTypeID());
                                     }
@@ -1481,7 +1489,8 @@ public class AddDeviceFragmentGetData extends Fragment {
                                     long deviceID = dbDevice.getId();
                                     device.setId(deviceID);
 
-                                    Utils.log(TAG, "Adding device, deviceID = " + deviceID, true);
+                                    Utils.log(TAG, "Adding device, deviceID = " + deviceID, true); */
+                                    Utils.log(TAG, "Adding device, deviceID = " + MySettings.getTempDevice().getChipID(), true);
 
                                     //loop over the number of lines
                                     if(firstLinePreset){
@@ -1493,7 +1502,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                     //   line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1507,7 +1516,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                      //  line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }
@@ -1521,7 +1530,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                                         line.setTypeID(lineType.getId());
                                         line.setMode(lineMode);
 
-                                        line.setDeviceID(deviceID);
+                                      //  line.setDeviceID(deviceID);
 
                                         device.getLines().add(line);
                                     }

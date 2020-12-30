@@ -478,8 +478,9 @@ public class WifiListFragment extends Fragment {
                                     network.setSsid(result.SSID);
                                     network.setSignal("" + result.level);
                                     if (!networks.contains(network)) {
-                                        networks.add(network);
-                                        networksAdapter.notifyDataSetChanged();
+                                         networks.add(network);
+                                         networksAdapter.notifyDataSetChanged();
+
                                     }
 
                                     //networks.add(network);
@@ -488,6 +489,7 @@ public class WifiListFragment extends Fragment {
                                         connectToWifiNetwork(result.SSID, preferredNetwork.getPassword());
                                     }*/
                                 }
+
                             }
 
                             if (networks.size() >= 1) {

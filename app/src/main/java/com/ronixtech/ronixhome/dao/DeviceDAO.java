@@ -85,6 +85,10 @@ public abstract class DeviceDAO {
         }
         insertDevice(device);
     }
+
+
+
+
     public Device getDeviceWithLinesByID(long id) {
         Device device = findByID(id);
         if(device != null) {

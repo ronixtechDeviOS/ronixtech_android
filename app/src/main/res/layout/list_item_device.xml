@@ -119,6 +119,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/mqtt_reachability_layout"
+                android:visibility="gone"
+
                 android:padding="4dp">
                 <ImageView
                     android:id="@+id/firmware_available_imageview"
