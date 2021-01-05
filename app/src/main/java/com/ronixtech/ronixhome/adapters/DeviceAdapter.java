@@ -1975,9 +1975,9 @@ public class DeviceAdapter extends ArrayAdapter {
         devices.remove(device);
         MySettings.removeDevice(device);
         DevicesInMemory.removeDevice(device);
-        notifyDataSetChanged();
         MainActivity.getInstance().removeDevice(device);
         MainActivity.getInstance().refreshDevicesListFromMemory();
+        notifyDataSetChanged();
         AlertDialog alertDialog = new AlertDialog.Builder(activity)
                 //set icon
                 .setIcon(android.R.drawable.ic_dialog_alert)

@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -17,10 +18,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -36,6 +40,7 @@ import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
 import com.ronixtech.ronixhome.entities.Type;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,7 +52,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
-                        TypePickerDialogFragment.OnTypeSelectedListener{
+                        TypePickerDialogFragment.OnTypeSelectedListener {
     private static final  String TAG = AddRoomFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
@@ -56,12 +61,14 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
     TextView placeNameTextView;
     ImageView placeImageView;
     TextView selectedFloorTextView;
-    Button incrementFloorButton, decremetnFloorButton;
     EditText roomNameEditText;
     RelativeLayout roomTypeSelectionLayout;
     TextView roomTypeNameTextView;
     ImageView roomTypeImageView;
     Button continueButton;
+    Spinner spinner;
+    ArrayAdapter floorArrayAdapter;
+    ArrayList floorList;
 
     Place selectedPlace;
     Floor selectedFloor;
@@ -104,13 +111,14 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         placeImageView = view.findViewById(R.id.selected_place_image_view);
         selectedFloorLayout = view.findViewById(R.id.floor_layout);
         selectedFloorTextView = view.findViewById(R.id.selected_floor_textview);
-        incrementFloorButton = view.findViewById(R.id.increment_button);
-        decremetnFloorButton = view.findViewById(R.id.decrement_button);
         roomNameEditText = view.findViewById(R.id.room_name_edittedxt);
         roomTypeSelectionLayout = view.findViewById(R.id.room_type_selection_layout);
         roomTypeNameTextView = view.findViewById(R.id.room_type_textview);
         roomTypeImageView = view.findViewById(R.id.room_type_imageview);
         continueButton = view.findViewById(R.id.continue_button);
+        spinner=view.findViewById(R.id.selected_floor_spinner);
+
+        floorList=new ArrayList();
 
         if(selectedPlace == null) {
             selectedPlace = MySettings.getCurrentPlace();
@@ -130,10 +138,30 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                     placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
                 }
             }
-            selectedFloorIndex = 0;
-            selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
-            selectedFloorTextView.setText(""+selectedFloor.getName());
+
+            for(int i=0;i<selectedPlace.getFloors().size();i++)
+            {
+                floorList.add(selectedPlace.getFloors().get(i).getName());
+            }
+
+            floorArrayAdapter=new ArrayAdapter<String>(MainActivity.getInstance(),R.layout.spinner_item,floorList);
+            floorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(floorArrayAdapter);
+            spinner.setSelection(MySettings.getCurrentFloor().getLevel()-1);
+
         }
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedFloor=selectedPlace.getFloors().get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         placeSelectionLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +183,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
         });
 
-        incrementFloorButton.setOnClickListener(new View.OnClickListener() {
+        /*incrementFloorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(selectedPlace != null){
@@ -167,8 +195,8 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                 }
             }
         });
-
-        decremetnFloorButton.setOnClickListener(new View.OnClickListener() {
+*/
+  /*      decremetnFloorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(selectedPlace != null){
@@ -180,7 +208,7 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
                 }
             }
         });
-
+*/
         roomNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -372,10 +400,15 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
         }
 
         if(selectedFloor == null){
+            inputsValid = false;
+            /*
             YoYo.with(Techniques.Shake)
                     .duration(700)
                     .repeat(1)
-                    .playOn(selectedFloorLayout);
+                    .playOn(selectedFloorLayout);*/
+            TextView errorText = (TextView)spinner.getSelectedView();
+            errorText.setError("");
+            errorText.setTextColor(Color.RED);//just to highlight that this is an error
         }
 
         if(!Utils.validateInputs(roomNameEditText)){
@@ -404,6 +437,11 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             mListener.onFragmentInteraction(uri);
         }
     }
+
+
+
+
+
 
     /*@Override
     public void onAttach(Context context) {

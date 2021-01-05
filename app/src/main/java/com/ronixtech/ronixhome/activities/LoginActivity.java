@@ -1,19 +1,14 @@
 package com.ronixtech.ronixhome.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -32,9 +27,6 @@ import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.fragments.LoginFragment;
 import com.ronixtech.ronixhome.fragments.VerificationFragment;
 
-/*
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-*/
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
 

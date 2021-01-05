@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome.dao;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
@@ -52,9 +53,8 @@ public abstract class DeviceDAO {
     @Query("UPDATE device SET device_type_id =:deviceType WHERE id =:deviceID")
     public abstract void updateDeviceTypeID(long deviceID, int deviceType);
 
-    @Query("DELETE from device WHERE id=:deviceID")
-    public abstract void removeDevice(long deviceID);
-
+    @Delete
+    public abstract void removeDevice(Device device);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertLines(List<Line> lines);
@@ -62,10 +62,8 @@ public abstract class DeviceDAO {
     @Query("SELECT * FROM line WHERE device_id =:deviceID")
     public abstract List<Line> getLinesList(long deviceID);
 
-    @Query("DELETE from line WHERE device_id=:deviceID")
-    public abstract void removeDeviceLines(long deviceID);
-
-
+    @Delete
+    public abstract void removeDeviceLines(Line line);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertPIRData(PIRData pirData);
@@ -114,8 +112,11 @@ public abstract class DeviceDAO {
         return device;
     }
     public void removeDeviceWithLines(Device device){
-        removeDeviceLines(device.getId());
-        removeDevice(device.getId());
+        for(int i=0;i<device.getLines().size();i++)
+        {
+            removeDeviceLines(device.getLines().get(i));
+        }
+        removeDevice(device);
     }
 
     public Device getDeviceWithDeviceName(String name)
@@ -169,7 +170,7 @@ public abstract class DeviceDAO {
     }
     public void removeDeviceWithSoundDeviceData(Device device){
         MySettings.removeSoundDeviceData(device.getId());
-        removeDevice(device.getId());
+         removeDevice(device);
     }
 
 
@@ -221,8 +222,11 @@ public abstract class DeviceDAO {
     }
     public void removeDeviceWithPIRData(Device device){
         removeDevicePIRData(device.getId());
-        removeDeviceLines(device.getId());
-        removeDevice(device.getId());
+        for(int i=0;i<device.getLines().size();i++)
+        {
+            removeDeviceLines(device.getLines().get(i));
+        }
+        removeDevice(device);
     }
 
 
@@ -242,6 +246,6 @@ public abstract class DeviceDAO {
         return device;
     }
     public void removeShutter(Device device){
-        removeDevice(device.getId());
+        removeDevice(device);
     }
 }

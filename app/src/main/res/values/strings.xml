@@ -38,9 +38,9 @@
     <string name="import_data">Import Data</string>
     <string name="logout">Logout</string>
 
-    <string name="about_description">This is the Smart Home App from RonixTech.\nYou can use it to monitor/control all your RonixTech Controllers in your home from your smart phone. Control can be done locally from your home or remotely from anywhere in the world through the internet.</string>
+    <string name="about_description">RonixTech is a Smart Home app offering comfort and luxurious lifestyle for both business and home owners to control and improve over the consumption of power in a ‘Simply Smart’ way anytime and everywhere while continuously monitoring from a single click all of your RonixTech Smart Controllers.</string>
     <string name="support_email_title">For support and technical assistance:</string>
-    <string name="support_email">technical@ronixtech.com</string>
+    <string name="support_email">support@ronixtech.com</string>
 
     <string name="welcome">Welcome</string>
 

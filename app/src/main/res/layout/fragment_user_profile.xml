@@ -1,25 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".fragments.UserProfileFragment">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/whiteColor">
-            <TextView
-                android:layout_width="wrap_content"
+            android:background="@drawable/background_dark">
+            <ImageView
+                android:id="@+id/logo_imageview"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:focusableInTouchMode="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="64dp"
+                android:src="@drawable/logo_text_big"/>
+
+            <Button
+                android:id="@+id/picture_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textColor="@color/blackColor"
+                android:layout_below="@id/logo_imageview"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
+                android:background="@drawable/button_background_round_white"
+                android:textAllCaps="false"
+                android:textColor="@color/darkBlueColor"
                 android:textSize="18sp"
-                android:text="Coming soon!"/>
+                android:text="Browse your Picture"/>
+
+
+
+            <LinearLayout
+                android:id="@+id/registration_edittexts_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/picture_button"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:orientation="vertical">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/whiteColor">
+                    <EditText
+                        android:id="@+id/registration_first_name_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/whiteColor"
+                        android:hint="@string/first_name"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/whiteColor">
+                    <EditText
+                        android:id="@+id/registration_last_name_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/whiteColor"
+                        android:hint="@string/last_name"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/whiteColor">
+                    <EditText
+                        android:id="@+id/registration_email_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/whiteColor"
+                        android:hint="@string/email"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp">
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/whiteColor">
+                        <EditText
+                            android:id="@+id/registration_password_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPassword"
+                            android:textColor="@color/whiteColor"
+                            android:textColorHint="@color/whiteColor"
+                            android:hint="@string/password"/>
+                    </android.support.design.widget.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/toggle_password_visibility_imageview"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/password_toggle_icon"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/save_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/registration_edittexts_layout"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
+                android:background="@drawable/button_background_round_white"
+                android:textAllCaps="false"
+                android:textColor="@color/darkBlueColor"
+                android:textSize="18sp"
+                android:text="Save"/>
+
         </RelativeLayout>
 
     </FrameLayout>
 </ScrollView>
+
+

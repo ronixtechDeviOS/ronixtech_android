@@ -124,52 +124,23 @@
                     android:textSize="18sp"
                     android:textColor="@color/whiteColor"
                     android:text="@string/floor_colon"/>
-
-                <TextView
-                    android:id="@+id/selected_floor_textview"
+                <Spinner
+                    android:id="@+id/selected_floor_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/floor_level_textview"
-                    android:layout_toRightOf="@id/floor_level_textview"
-                    android:layout_toStartOf="@id/floor_actions_layout"
-                    android:layout_toLeftOf="@id/floor_actions_layout"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:textAlignment="center"
                     android:textSize="18sp"
                     android:textColor="@color/whiteColor"
-                    android:text="1"/>
+                    android:backgroundTint="@color/white">
+                </Spinner>
 
-                <LinearLayout
-                    android:id="@+id/floor_actions_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/decrement_button"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_gray"
-                        android:textColor="@color/whiteColor"
-                        android:text="@string/minus_symbol"/>
-                    <android.support.v4.widget.Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0"/>
-                    <Button
-                        android:id="@+id/increment_button"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/button_background_round_border_gray"
-                        android:textColor="@color/whiteColor"
-                        android:text="@string/add_symbol"/>
-                </LinearLayout>
-            </RelativeLayout>
+
+
+             </RelativeLayout>
 
             <TextView
                 android:id="@+id/room_type_title_textview"

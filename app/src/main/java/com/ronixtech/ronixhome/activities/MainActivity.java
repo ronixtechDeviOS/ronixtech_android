@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity
 
         userImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {/*
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 UserProfileFragment userProfileFragment = new UserProfileFragment();
@@ -257,7 +257,8 @@ public class MainActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
                 fragmentTransaction.addToBackStack("userProfileFragment");
                 fragmentTransaction.commit();
-                drawer.closeDrawer(Gravity.START);
+                drawer.closeDrawer(Gravity.START);*/
+                Utils.showToast(MainActivity.getInstance(),"Coming Soon",true);
             }
         });
         /*logCounter = 0;
@@ -436,14 +437,15 @@ public class MainActivity extends AppCompatActivity
         navProfileLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                /*FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                 UserProfileFragment userProfileFragment = new UserProfileFragment();
                 fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragmentTransaction.replace(R.id.fragment_view, userProfileFragment, "userProfileFragment");
                 fragmentTransaction.addToBackStack("userProfileFragment");
                 fragmentTransaction.commit();
-                drawer.closeDrawer(Gravity.START);
+                drawer.closeDrawer(Gravity.START);*/
+                Utils.showToast(MainActivity.getInstance(),"Coming Soon",true);
             }
         });
         navLogoutLayout.setOnClickListener(new View.OnClickListener() {

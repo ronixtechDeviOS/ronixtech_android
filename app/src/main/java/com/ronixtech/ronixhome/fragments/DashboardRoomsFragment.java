@@ -411,6 +411,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                 if(MySettings.getAllPlaces() == null || MySettings.getAllPlaces().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_place_first), true);
                 }else{
+
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

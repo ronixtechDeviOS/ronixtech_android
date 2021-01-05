@@ -206,7 +206,6 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
         vHolder.networkRemoveImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(removeNetworkFromDB == Constants.REMOVE_NETWORK_FROM_DB_YES) {
                     android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
                             .setTitle(Utils.getString(activity, R.string.remove_wifi_network_question))
                             .setMessage(Utils.getString(activity, R.string.remove_wifi_network_description))
@@ -228,28 +227,6 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
                                 }
                             })
                             .show();
-                }else{
-                    android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                            .setTitle(Utils.getString(activity, R.string.remove_wifi_network_question))
-                            //set positive button
-                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    //set what would happen when positive button is clicked
-                                    networks.remove(item);
-                                    wifiNetworksListener.onNetworkDeleted();
-                                }
-                            })
-                            //set negative button
-                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    //set what should happen when negative button is clicked
-                                }
-                            })
-                            .show();
-                }
-
             }
         });
 
