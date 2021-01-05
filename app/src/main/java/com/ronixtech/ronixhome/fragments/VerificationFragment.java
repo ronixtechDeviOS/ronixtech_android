@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,7 +33,7 @@ import com.ronixtech.ronixhome.activities.LoginActivity;
  * Use the {@link VerificationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class VerificationFragment extends android.support.v4.app.Fragment {
+public class VerificationFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = VerificationFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

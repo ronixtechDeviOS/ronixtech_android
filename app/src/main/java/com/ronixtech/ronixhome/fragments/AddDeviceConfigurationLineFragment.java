@@ -4,8 +4,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -20,8 +18,12 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.material.textfield.TextInputEditText;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.GlideApp;
 import com.ronixtech.ronixhome.MySettings;
@@ -46,13 +48,13 @@ import pl.droidsonroids.gif.GifImageView;
  * Use the {@link AddDeviceConfigurationLineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceConfigurationLineFragment extends android.support.v4.app.Fragment implements TypePickerDialogFragment.OnTypeSelectedListener, PickLineDialogFragment.OnLineSelectedListener{
+public class AddDeviceConfigurationLineFragment extends androidx.fragment.app.Fragment implements TypePickerDialogFragment.OnTypeSelectedListener, PickLineDialogFragment.OnLineSelectedListener{
     private static final String TAG = AddDeviceConfigurationLineFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
     RelativeLayout lineLayout;
-    android.support.design.widget.TextInputEditText lineNameEditText;
+    TextInputEditText lineNameEditText;
     RadioGroup lineModeRadioGroup;
     RelativeLayout lineTypeSelectionLayout;
     RelativeLayout lineTypeLayout;
@@ -317,7 +319,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                             // in a transaction.  We also want to remove any currently showing
                             // dialog, so make our own transaction and take care of that here.
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                            androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
                             if (prev != null) {
                                 ft.remove(prev);
                             }
@@ -338,7 +340,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                             // in a transaction.  We also want to remove any currently showing
                             // dialog, so make our own transaction and take care of that here.
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                            androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
                             if (prev != null) {
                                 ft.remove(prev);
                             }
@@ -397,7 +399,7 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                         // in a transaction.  We also want to remove any currently showing
                         // dialog, so make our own transaction and take care of that here.
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
+                        androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
                         if (prev != null) {
                             ft.remove(prev);
                         }
@@ -462,7 +464,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                     if(lineNameEditText.getText().toString().length() >= 1){
                         currentLine.setName(lineNameEditText.getText().toString());
                     }else{
-                        currentLine.setName(lineNameEditText.getHint().toString());
+                        // Keep default name
+                    //    currentLine.setName(lineNameEditText.getHint().toString());
                     }
                     currentLine.setTypeID(lineType.getId());
                     currentLine.setLineTypeString(lineType.getName());
@@ -676,7 +679,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
                 if(lineNameEditText.getText().toString().length() >= 1){
                     currentLine.setName(lineNameEditText.getText().toString());
                 }else{
-                    currentLine.setName(lineNameEditText.getHint().toString());
+                    // Keep default name
+                  //  currentLine.setName(lineNameEditText.getHint().toString());
                 }
                 currentLine.setTypeID(lineType.getId());
                 currentLine.setLineTypeString(lineType.getName());
@@ -722,6 +726,8 @@ public class AddDeviceConfigurationLineFragment extends android.support.v4.app.F
             mListener.onFragmentInteraction(uri);
         }
     }
+
+
 
     /*@Override
     public void onAttach(Context context) {

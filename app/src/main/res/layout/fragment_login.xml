@@ -33,7 +33,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/whiteColor">
@@ -48,7 +48,7 @@
                         android:inputType="textEmailAddress"
                         android:textColor="@color/whiteColor"
                         android:hint="@string/email"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
                 <RelativeLayout
                     android:layout_width="45dp"
                     android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp">
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/whiteColor">
@@ -81,7 +81,7 @@
                         android:textColor="@color/whiteColor"
                         android:textColorHint="@color/whiteColor"
                         android:hint="@string/password"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
                 <ImageView
                     android:id="@+id/toggle_password_visibility_imageview"
                     android:layout_width="32dp"

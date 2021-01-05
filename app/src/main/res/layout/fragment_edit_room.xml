@@ -157,7 +157,7 @@
                         android:background="@drawable/button_background_round_border_gray"
                         android:textColor="@color/whiteColor"
                         android:text="@string/minus_symbol"/>
-                    <android.support.v4.widget.Space
+                    <androidx.legacy.widget.Space
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"/>
@@ -254,7 +254,7 @@
                 android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/room_name"/>
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/room_name_inputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -274,7 +274,7 @@
                     android:textColor="@color/whiteColor"
                     android:textColorHint="@color/whiteColor"
                     android:hint="@string/room_name"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/save_room_button"

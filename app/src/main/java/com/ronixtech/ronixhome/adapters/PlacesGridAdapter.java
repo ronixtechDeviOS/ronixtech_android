@@ -2,9 +2,9 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.PopupMenu;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -150,7 +150,7 @@ public class PlacesGridAdapter extends BaseAdapter {
                             fragmentTransaction.addToBackStack("editPlaceFragment");
                             fragmentTransaction.commit();
                         }else if(id == R.id.action_remove_place){
-                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
+                            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(activity)
                                     .setTitle(Utils.getString(activity, R.string.remove_place_question))
                                     .setMessage(Utils.getString(activity, R.string.remove_place_description))
                                     //set positive button

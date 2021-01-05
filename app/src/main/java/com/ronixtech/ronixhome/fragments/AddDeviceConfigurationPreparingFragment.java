@@ -5,13 +5,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
@@ -44,7 +45,7 @@ import java.net.URL;
  * Use the {@link AddDeviceConfigurationPreparingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceConfigurationPreparingFragment extends android.support.v4.app.Fragment {
+public class AddDeviceConfigurationPreparingFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = AddDeviceConfigurationPreparingFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

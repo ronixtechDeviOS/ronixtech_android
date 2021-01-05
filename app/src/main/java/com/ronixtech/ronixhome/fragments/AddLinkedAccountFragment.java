@@ -3,7 +3,7 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -36,7 +36,7 @@ import java.util.Map;
  * Use the {@link AddLinkedAccountFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddLinkedAccountFragment extends android.support.v4.app.Fragment {
+public class AddLinkedAccountFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = AddLinkedAccountFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

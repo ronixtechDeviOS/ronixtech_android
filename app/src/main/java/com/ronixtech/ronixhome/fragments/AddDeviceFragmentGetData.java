@@ -11,16 +11,17 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
@@ -742,7 +743,7 @@ public class AddDeviceFragmentGetData extends Fragment {
                 if(MySettings.getDeviceByChipID2(mChipID) != null){
                     //remove device and re-add it again, or just go back?
                     if(activity != null){
-                        android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
+                        androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(activity)
                                 //set icon
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 //set title
@@ -1071,6 +1072,10 @@ public class AddDeviceFragmentGetData extends Fragment {
                             if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                                     device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
                                     device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
+                               if (device.getLines().size()>0)
+                               {
+                                   device.getLines().clear();
+                               }
                                 if(unitStatus != null && unitStatus.has("U_H_STT")){
                                     JSONObject hardwareStatus = unitStatus.getJSONObject("U_H_STT");
 

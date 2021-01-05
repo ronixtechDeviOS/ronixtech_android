@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -45,7 +45,7 @@ import java.util.List;
  * Use the {@link EditRoomFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditRoomFragment extends android.support.v4.app.Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
+public class EditRoomFragment extends androidx.fragment.app.Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
         TypePickerDialogFragment.OnTypeSelectedListener{
     private static final String TAG = EditRoomFragment.class.getSimpleName();
 
@@ -168,7 +168,7 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
                 // in a transaction.  We also want to remove any currently showing
                 // dialog, so make our own transaction and take care of that here.
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
                 if (prev != null) {
                     ft.remove(prev);
                 }
@@ -215,7 +215,7 @@ public class EditRoomFragment extends android.support.v4.app.Fragment implements
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                    androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
                     if (prev != null) {
                         ft.remove(prev);
                     }

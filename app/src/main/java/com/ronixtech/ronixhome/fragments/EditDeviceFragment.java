@@ -3,10 +3,6 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -17,6 +13,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
@@ -34,7 +35,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
  * Use the {@link EditDeviceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditDeviceFragment extends android.support.v4.app.Fragment {
+public class EditDeviceFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = EditDeviceFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

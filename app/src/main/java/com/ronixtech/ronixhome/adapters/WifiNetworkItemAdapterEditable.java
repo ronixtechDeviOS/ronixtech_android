@@ -3,7 +3,7 @@ package com.ronixtech.ronixhome.adapters;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -206,7 +206,7 @@ public class WifiNetworkItemAdapterEditable extends ArrayAdapter {
         vHolder.networkRemoveImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                    androidx.appcompat.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
                             .setTitle(Utils.getString(activity, R.string.remove_wifi_network_question))
                             .setMessage(Utils.getString(activity, R.string.remove_wifi_network_description))
                             //set positive button

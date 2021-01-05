@@ -19,12 +19,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -79,7 +79,7 @@ public class AddDeviceFragmentSendData extends Fragment {
     Boolean check=false;
     AlertDialog alertDialog;
     AlertDialog.Builder dialogBuilder;
-    android.support.v7.app.AlertDialog exitalertDialog;
+    androidx.appcompat.app.AlertDialog exitalertDialog;
     MqttAndroidClient mqttAndroidClient;
     Device device;
     TextView textView;
@@ -313,7 +313,7 @@ public class AddDeviceFragmentSendData extends Fragment {
 
     public void showExitAlert()
     {
-        exitalertDialog =new android.support.v7.app.AlertDialog.Builder(MainActivity.getInstance())
+        exitalertDialog =new androidx.appcompat.app.AlertDialog.Builder(MainActivity.getInstance())
                 .setTitle("RonixTech")
                 .setMessage("This will terminate the process of adding the smart controller")
                 .setPositiveButton("Back", new DialogInterface.OnClickListener() {

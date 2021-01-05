@@ -212,7 +212,7 @@
                 android:textSize="18sp"
                 android:textColor="@color/whiteColor"
                 android:text="@string/room_name"/>
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/room_name_inputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -232,7 +232,7 @@
                     android:textColor="@color/whiteColor"
                     android:textColorHint="@color/whiteColor"
                     android:hint="@string/room_name"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
             <Button
                 android:id="@+id/continue_button"
                 android:layout_width="match_parent"

@@ -22,7 +22,7 @@ import pl.droidsonroids.gif.GifImageView;
  * Use the {@link DeviceConfigurationHintFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DeviceConfigurationHintFragment extends android.support.v4.app.Fragment {
+public class DeviceConfigurationHintFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = DeviceConfigurationHintFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

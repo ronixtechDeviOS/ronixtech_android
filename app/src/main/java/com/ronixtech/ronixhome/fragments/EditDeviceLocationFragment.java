@@ -7,10 +7,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.CompoundButtonCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +53,7 @@ import java.net.URL;
  * Use the {@link EditDeviceLocationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditDeviceLocationFragment extends android.support.v4.app.Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
+public class EditDeviceLocationFragment extends androidx.fragment.app.Fragment implements PickPlaceDialogFragment.OnPlaceSelectedListener,
         PickRoomDialogFragment.OnRoomSelectedListener,
         PickWifiNetworkDialogFragment.OnNetworkSelectedListener,
         WifiInfoFragment.OnNetworkAddedListener{
@@ -295,7 +295,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                             // in a transaction.  We also want to remove any currently showing
                             // dialog, so make our own transaction and take care of that here.
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
+                            androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
                             if (prev != null) {
                                 ft.remove(prev);
                             }
@@ -333,7 +333,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                             // in a transaction.  We also want to remove any currently showing
                             // dialog, so make our own transaction and take care of that here.
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("wifiNetworkPickerDialogFragment");
+                            androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("wifiNetworkPickerDialogFragment");
                             if (prev != null) {
                                 ft.remove(prev);
                             }
@@ -347,7 +347,7 @@ public class EditDeviceLocationFragment extends android.support.v4.app.Fragment 
                             fragment.show(ft, "wifiNetworkPickerDialogFragment");
                         }else{
                             //go to add wifi network sequence and then come back here
-                            android.support.v4.app.FragmentManager fragmentManager = getFragmentManager();
+                            FragmentManager fragmentManager = getFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
                             WifiInfoFragment wifiInfoFragment = new WifiInfoFragment();

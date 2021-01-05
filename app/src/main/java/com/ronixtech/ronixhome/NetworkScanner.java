@@ -3,7 +3,8 @@ package com.ronixtech.ronixhome;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
-import android.util.Log;
+
+import androidx.work.Worker;
 
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Count;
@@ -19,8 +20,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import androidx.work.Worker;
-
 public class NetworkScanner extends Worker {
     private static final String TAG = NetworkScanner.class.getSimpleName();
 
@@ -32,6 +31,10 @@ public class NetworkScanner extends Worker {
     int RANGE;
     int START_IP;
     int END_IP;
+
+    public NetworkScanner() {
+
+    }
 
     @Override
     public Worker.Result doWork(){
@@ -189,7 +192,7 @@ public class NetworkScanner extends Worker {
         }
 
         // Indicate success or failure with your return value:
-        return Result.SUCCESS;
+       return Result.SUCCESS;
 
         // (Returning RETRY tells WorkManager to try this task again
         // later; FAILURE says not to try again.)

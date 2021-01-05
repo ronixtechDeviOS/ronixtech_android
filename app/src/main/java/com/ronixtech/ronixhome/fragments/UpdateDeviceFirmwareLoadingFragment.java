@@ -6,8 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,7 +48,7 @@ import java.util.List;
  * Use the {@link UpdateDeviceFirmwareLoadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UpdateDeviceFirmwareLoadingFragment extends android.support.v4.app.Fragment {
+public class UpdateDeviceFirmwareLoadingFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = UpdateDeviceFirmwareLoadingFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

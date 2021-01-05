@@ -2,8 +2,9 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -173,7 +174,7 @@ public class PickLineDialogFragment extends DialogFragment implements PickPlaceD
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                    Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
                     if (prev != null) {
                         ft.remove(prev);
                     }
@@ -267,7 +268,7 @@ public class PickLineDialogFragment extends DialogFragment implements PickPlaceD
                         // in a transaction.  We also want to remove any currently showing
                         // dialog, so make our own transaction and take care of that here.
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
+                        Fragment prev = getFragmentManager().findFragmentByTag("pickRoomDialogFragment");
                         if (prev != null) {
                             ft.remove(prev);
                         }

@@ -9,11 +9,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -30,6 +25,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -195,8 +196,8 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                     }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines
                             || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
                         if(device.getLines() == null || device.getLines().size() != 3){
+                            Utils.log(TAG,"Deleting, device lines: "+device.getLines().size(),false);
                             MySettings.removeDevice(device);
-                            Utils.log(TAG,"Deleting, device lines: "+device.getLines(),false);
                         }
                     }
                 }
@@ -952,7 +953,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                                 // in a transaction.  We also want to remove any currently showing
                                 // dialog, so make our own transaction and take care of that here.
                                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                                Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
                                 if (prev != null) {
                                     ft.remove(prev);
                                 }

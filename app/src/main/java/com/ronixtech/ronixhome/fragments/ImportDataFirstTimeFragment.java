@@ -26,7 +26,7 @@ import com.ronixtech.ronixhome.activities.MainActivity;
  * Use the {@link ImportDataFirstTimeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ImportDataFirstTimeFragment extends android.support.v4.app.Fragment {
+public class ImportDataFirstTimeFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = ImportDataFirstTimeFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

@@ -1,8 +1,6 @@
 package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +11,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -218,7 +220,7 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
                     FragmentTransaction ft = fragmentManager.beginTransaction();
-                    android.support.v4.app.Fragment prev = fragmentManager.findFragmentByTag("dimmingControlDialogFragment");
+                    Fragment prev = fragmentManager.findFragmentByTag("dimmingControlDialogFragment");
                     if (prev != null) {
                         ft.remove(prev);
                     }

@@ -7,8 +7,8 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.material.textfield.TextInputEditText;
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
 import com.ronixtech.ronixhome.GlideApp;
@@ -65,13 +66,13 @@ import pl.droidsonroids.gif.GifImageView;
  * Use the {@link EditDeviceLineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditDeviceLineFragment extends android.support.v4.app.Fragment implements TypePickerDialogFragment.OnTypeSelectedListener, PickLineDialogFragment.OnLineSelectedListener{
+public class EditDeviceLineFragment extends androidx.fragment.app.Fragment implements TypePickerDialogFragment.OnTypeSelectedListener, PickLineDialogFragment.OnLineSelectedListener{
     private static final String TAG = EditDeviceLineFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
     RelativeLayout lineLayout;
-    android.support.design.widget.TextInputEditText lineNameEditText;
+    TextInputEditText lineNameEditText;
     RadioGroup lineModeRadioGroup;
     RelativeLayout lineTypeSelectionLayout;
     RelativeLayout lineTypeLayout;
@@ -392,7 +393,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                             // in a transaction.  We also want to remove any currently showing
                             // dialog, so make our own transaction and take care of that here.
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                            androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
                             if (prev != null) {
                                 ft.remove(prev);
                             }
@@ -413,7 +414,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                             // in a transaction.  We also want to remove any currently showing
                             // dialog, so make our own transaction and take care of that here.
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
+                            androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("typePickerDialogFragment");
                             if (prev != null) {
                                 ft.remove(prev);
                             }
@@ -483,7 +484,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         // in a transaction.  We also want to remove any currently showing
                         // dialog, so make our own transaction and take care of that here.
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
+                        androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
                         if (prev != null) {
                             ft.remove(prev);
                         }
@@ -554,7 +555,7 @@ public class EditDeviceLineFragment extends android.support.v4.app.Fragment impl
                         parentFragment.moveToNextFragment();
                     }else{
                         if(parentFragment.getUnsavedChanges()){
-                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(getActivity())
                                     //set icon
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     //set title

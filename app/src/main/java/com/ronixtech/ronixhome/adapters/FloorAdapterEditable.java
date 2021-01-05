@@ -3,7 +3,7 @@ package com.ronixtech.ronixhome.adapters;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -87,7 +87,7 @@ public class FloorAdapterEditable extends ArrayAdapter {
         vHolder.floorRemoveImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                androidx.appcompat.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
                         .setTitle(Utils.getString(activity, R.string.remove_floor_question))
                         .setMessage(Utils.getString(activity, R.string.remove_floor_description))
                         //set positive button

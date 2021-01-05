@@ -52,7 +52,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:orientation="vertical">
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/whiteColor">
@@ -64,9 +64,9 @@
                         android:inputType="textPersonName"
                         android:textColor="@color/whiteColor"
                         android:hint="@string/first_name"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/whiteColor">
@@ -78,9 +78,9 @@
                         android:inputType="textPersonName"
                         android:textColor="@color/whiteColor"
                         android:hint="@string/last_name"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/whiteColor">
@@ -92,13 +92,13 @@
                         android:inputType="textEmailAddress"
                         android:textColor="@color/whiteColor"
                         android:hint="@string/email"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginTop="8dp">
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/whiteColor">
@@ -111,7 +111,7 @@
                             android:textColor="@color/whiteColor"
                             android:textColorHint="@color/whiteColor"
                             android:hint="@string/password"/>
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
                     <ImageView
                         android:id="@+id/toggle_password_visibility_imageview"
                         android:layout_width="32dp"

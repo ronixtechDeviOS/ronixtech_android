@@ -3,10 +3,10 @@ package com.ronixtech.ronixhome.adapters;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.PopupMenu;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.cardview.widget.CardView;
+import androidx.appcompat.widget.PopupMenu;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -209,7 +209,7 @@ public class FloorsDashboardListAdapter extends BaseAdapter {
 
                             dialog.show();
                         }else if(id == R.id.action_remove_floor){
-                            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(activity)
+                            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(activity)
                                     .setTitle(Utils.getString(activity, R.string.remove_floor_question))
                                     .setMessage(Utils.getString(activity, R.string.remove_floor_description))
                                     //set positive button

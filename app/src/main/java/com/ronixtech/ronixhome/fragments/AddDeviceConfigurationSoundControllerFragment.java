@@ -3,8 +3,8 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +35,7 @@ import java.util.List;
  * Use the {@link AddDeviceConfigurationSoundControllerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceConfigurationSoundControllerFragment extends android.support.v4.app.Fragment {
+public class AddDeviceConfigurationSoundControllerFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = AddDeviceConfigurationSoundControllerFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

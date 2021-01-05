@@ -41,7 +41,7 @@ import java.util.List;
  * Use the {@link HomeNetworksFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeNetworksFragment extends android.support.v4.app.Fragment {
+public class HomeNetworksFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = HomeNetworksFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

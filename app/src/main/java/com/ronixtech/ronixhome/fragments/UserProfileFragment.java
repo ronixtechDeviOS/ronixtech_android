@@ -31,7 +31,7 @@ import com.ronixtech.ronixhome.entities.User;
  * Use the {@link UserProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UserProfileFragment extends android.support.v4.app.Fragment {
+public class UserProfileFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = UserProfileFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

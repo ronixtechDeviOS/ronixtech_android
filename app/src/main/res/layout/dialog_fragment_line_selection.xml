@@ -144,7 +144,7 @@
                     android:background="@drawable/button_background_round_border_blue"
                     android:textColor="@color/blackColor"
                     android:text="@string/minus_symbol"/>
-                <android.support.v4.widget.Space
+                <androidx.legacy.widget.Space
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"/>

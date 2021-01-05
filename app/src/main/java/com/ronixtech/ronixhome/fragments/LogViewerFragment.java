@@ -27,7 +27,7 @@ import java.io.InputStreamReader;
  * Use the {@link LogViewerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LogViewerFragment extends android.support.v4.app.Fragment {
+public class LogViewerFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = LogViewerFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

@@ -27,7 +27,7 @@
                 android:textColor="@color/whiteColor"
                 android:textAlignment="center"
                 android:text="@string/add_place_location_address_title"/>
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -44,9 +44,9 @@
                     android:maxLines="3"
                     android:textColor="@color/whiteColor"
                     android:hint="@string/place_address"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -62,9 +62,9 @@
                     android:inputType="textCapWords"
                     android:textColor="@color/whiteColor"
                     android:hint="@string/place_city"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -81,9 +81,9 @@
                     android:inputType="textCapWords"
                     android:textColor="@color/whiteColor"
                     android:hint="@string/place_state"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -99,9 +99,9 @@
                     android:inputType="textCapWords"
                     android:textColor="@color/whiteColor"
                     android:hint="@string/place_country"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -117,7 +117,7 @@
                     android:inputType="number"
                     android:textColor="@color/whiteColor"
                     android:hint="@string/place_zip_code"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/done_button"

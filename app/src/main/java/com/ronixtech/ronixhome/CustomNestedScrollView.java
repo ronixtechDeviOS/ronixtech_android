@@ -1,8 +1,8 @@
 package com.ronixtech.ronixhome;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.NestedScrollView;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.OverScroller;

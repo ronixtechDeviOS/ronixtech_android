@@ -25,14 +25,14 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,7 +76,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
     WifiManager mWifiManager;
     BroadcastReceiver mWifiScanReceiver;
     BroadcastReceiver mWifiConnectionReceiver;
-    android.support.v7.app.AlertDialog exitalertDialog;
+    androidx.appcompat.app.AlertDialog exitalertDialog;
     boolean ronixFound = false;
     final ConnectivityManager connectivityManager=(ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -469,7 +469,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
 
     public void showExitAlert()
     {
-        exitalertDialog =new android.support.v7.app.AlertDialog.Builder(MainActivity.getInstance())
+        exitalertDialog =new androidx.appcompat.app.AlertDialog.Builder(MainActivity.getInstance())
                 .setTitle("RonixTech")
                 .setMessage("No Smart Controllers wifi in range")
                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {

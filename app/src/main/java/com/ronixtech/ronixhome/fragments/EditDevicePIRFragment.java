@@ -5,8 +5,8 @@ import android.app.Fragment;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,7 +52,7 @@ import java.util.List;
  * Use the {@link EditDevicePIRFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditDevicePIRFragment extends android.support.v4.app.Fragment implements PickLineDialogFragment.OnLineSelectedListener{
+public class EditDevicePIRFragment extends androidx.fragment.app.Fragment implements PickLineDialogFragment.OnLineSelectedListener{
     private static final String TAG = EditDevicePIRFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
@@ -146,7 +146,7 @@ public class EditDevicePIRFragment extends android.support.v4.app.Fragment imple
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
+                    androidx.fragment.app.Fragment prev = getFragmentManager().findFragmentByTag("pickLineDialogFragment");
                     if (prev != null) {
                         ft.remove(prev);
                     }

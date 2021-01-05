@@ -3,8 +3,8 @@ package com.ronixtech.ronixhome.fragments;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +27,7 @@ import com.ronixtech.ronixhome.entities.Device;
  * Use the {@link AddDeviceConfigurationShutterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddDeviceConfigurationShutterFragment extends android.support.v4.app.Fragment {
+public class AddDeviceConfigurationShutterFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = AddDeviceConfigurationShutterFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

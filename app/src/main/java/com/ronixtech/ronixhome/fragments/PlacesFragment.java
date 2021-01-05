@@ -4,9 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -188,7 +188,7 @@ public class PlacesFragment extends Fragment implements PickPlaceDialogFragment.
                                     // in a transaction.  We also want to remove any currently showing
                                     // dialog, so make our own transaction and take care of that here.
                                     FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                    android.support.v4.app.Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
+                                    Fragment prev = getFragmentManager().findFragmentByTag("pickPlaceDialogFragment");
                                     if (prev != null) {
                                         ft.remove(prev);
                                     }

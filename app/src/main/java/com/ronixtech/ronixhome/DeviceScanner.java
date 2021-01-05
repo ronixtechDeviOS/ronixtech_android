@@ -21,6 +21,9 @@ import java.util.List;
 public class DeviceScanner extends Worker{
     private static final String TAG = DeviceScanner.class.getSimpleName();
 
+    public DeviceScanner() {
+    }
+
     @Override
     public Worker.Result doWork(){
         Utils.log(TAG, "doWork for DeviceScanner", true);
@@ -48,7 +51,8 @@ public class DeviceScanner extends Worker{
         }
 
         // Indicate success or failure with your return value:
-        return Result.SUCCESS;
+       return Result.SUCCESS;
+
 
         // (Returning RETRY tells WorkManager to try this task again
         // later; FAILURE says not to try again.)

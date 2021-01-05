@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/whiteColor">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/line_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -203,6 +203,6 @@
                     android:padding="8dp"/>
             </RelativeLayout>
         </RelativeLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

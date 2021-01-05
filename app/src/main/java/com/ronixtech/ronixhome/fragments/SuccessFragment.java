@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +31,7 @@ import com.ronixtech.ronixhome.entities.Device;
  * Use the {@link SuccessFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SuccessFragment extends android.support.v4.app.Fragment {
+public class SuccessFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = SuccessFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

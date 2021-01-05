@@ -14,10 +14,10 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +44,7 @@ import com.ronixtech.ronixhome.entities.WifiNetwork;
  * Use the {@link AddPlaceLocationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddPlaceLocationFragment extends android.support.v4.app.Fragment {
+public class AddPlaceLocationFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = AddPlaceLocationFragment.class.getSimpleName();
 
     private static final int PLACE_PICKER_REQUEST = 1000;

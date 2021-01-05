@@ -7,8 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,7 +44,7 @@ import java.net.URL;
  * Use the {@link UpdateDeviceAutoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UpdateDeviceAutoFragment extends android.support.v4.app.Fragment {
+public class UpdateDeviceAutoFragment extends androidx.fragment.app.Fragment {
     private static final String TAG = UpdateDeviceAutoFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;

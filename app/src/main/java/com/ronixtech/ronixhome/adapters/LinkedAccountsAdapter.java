@@ -2,8 +2,8 @@ package com.ronixtech.ronixhome.adapters;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +87,7 @@ public class LinkedAccountsAdapter extends ArrayAdapter {
         vHolder.removeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                android.support.v7.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                androidx.appcompat.app.AlertDialog alertDialog = new AlertDialog.Builder(activity)
                         .setTitle(Utils.getString(activity, R.string.remove_linked_account_question))
                         .setMessage(Utils.getString(activity, R.string.remove_linked_account_description))
                         //set positive button

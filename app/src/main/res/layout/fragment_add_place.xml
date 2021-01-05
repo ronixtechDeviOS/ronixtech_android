@@ -61,7 +61,7 @@
                 android:textColor="@color/whiteColor"
                 android:textSize="18sp"
                 android:text="@string/place_name"/>
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/place_name_inputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                     android:textColor="@color/whiteColor"
                     android:textColorHint="@color/whiteColor"
                     android:hint="@string/place_name"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/place_type_textview"
@@ -189,7 +189,7 @@
                         android:background="@drawable/button_background_round_border_gray"
                         android:textColor="@color/whiteColor"
                         android:text="@string/minus_symbol"/>
-                    <android.support.v4.widget.Space
+                    <androidx.legacy.widget.Space
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"/>
