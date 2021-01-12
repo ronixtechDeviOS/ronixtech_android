@@ -1004,6 +1004,9 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
             if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL) {
                 Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to LOCAL mode", true);
                 //startTimer in onResume
+                if(MainActivity.getInstance() != null && MainActivity.isResumed) {
+                    MainActivity.getInstance().refreshMqttClient();
+                }
             }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
                 Utils.log(TAG, "Current place " + MySettings.getCurrentPlace().getName() + " is set to REMOTE mode, using MQTT", true);
                 //refresh MQTT client

@@ -3,9 +3,6 @@ package com.ronixtech.ronixhome.fragments;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -174,15 +175,22 @@ public class DashboardDevicesFragment extends Fragment {
             public void onClick(View view) {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
-                }else{
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
-                    fragmentTransaction.addToBackStack("addDeviceSelectLocation");
-                    fragmentTransaction.commit();
+                }
+                else{
+                    Room room=MySettings.getCurrentRoom();
+                    if(room.getDevices().size() <= 3) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                        fragmentTransaction.addToBackStack("addDeviceSelectLocation");
+                        fragmentTransaction.commit();
+                    }
+                    else
+                    {
+                        Utils.showToast(getActivity(),"Maximum Limit Reached", true);
+                    }
                 }
             }
         });
@@ -193,14 +201,20 @@ public class DashboardDevicesFragment extends Fragment {
                 if(MySettings.getAllRooms() == null || MySettings.getAllRooms().size() < 1){
                     Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.add_room_first), true);
                 }else{
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                    AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-                    fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
-                    fragmentTransaction.addToBackStack("addDeviceSelectLocation");
-                    fragmentTransaction.commit();
+                    Room room=MySettings.getCurrentRoom();
+                    if(room.getDevices().size() <= 3) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                        AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                        fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                        fragmentTransaction.addToBackStack("addDeviceSelectLocation");
+                        fragmentTransaction.commit();
+                    }
+                    else
+                    {
+                        Utils.showToast(getActivity(),"Maximum Limit Reached", true);
+                    }
                 }
             }
         });
@@ -416,6 +430,7 @@ public class DashboardDevicesFragment extends Fragment {
             }*/
             }else if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_REMOTE){
                 //start MQTT in onStart
+
             }
         }
     }
@@ -521,13 +536,20 @@ public class DashboardDevicesFragment extends Fragment {
             fragmentTransaction.addToBackStack("addDeviceFragmentIntro");
             fragmentTransaction.commit();*/
 
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-            AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
-            fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
-            fragmentTransaction.addToBackStack("addDeviceSelectLocation");
-            fragmentTransaction.commit();
+            Room room=MySettings.getCurrentRoom();
+            if(room.getDevices().size() <= 3) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                AddDeviceSelectLocationFragment addDeviceSelectLocationFragment = new AddDeviceSelectLocationFragment();
+                fragmentTransaction.replace(R.id.fragment_view, addDeviceSelectLocationFragment, "addDeviceSelectLocation");
+                fragmentTransaction.addToBackStack("addDeviceSelectLocation");
+                fragmentTransaction.commit();
+            }
+            else
+            {
+                Utils.showToast(getActivity(),"Maximum Limit Reached", true);
+            }
         }
 
         return super.onOptionsItemSelected(item);

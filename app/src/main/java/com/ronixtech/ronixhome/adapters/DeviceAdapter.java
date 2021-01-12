@@ -6,9 +6,6 @@ import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.PopupMenu;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,6 +18,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.ronixtech.ronixhome.Constants;
@@ -1976,7 +1977,8 @@ public class DeviceAdapter extends ArrayAdapter {
         MySettings.removeDevice(device);
         DevicesInMemory.removeDevice(device);
         MainActivity.getInstance().removeDevice(device);
-        MainActivity.getInstance().refreshDevicesListFromMemory();
+       // MainActivity.getInstance().refreshDevicesListFromMemory();
+        MainActivity.getInstance().refreshDeviceListFromDatabase();
         notifyDataSetChanged();
         AlertDialog alertDialog = new AlertDialog.Builder(activity)
                 //set icon

@@ -19,12 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +26,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.DevicesInMemory;
@@ -129,8 +130,9 @@ public class AddDeviceFragmentSendData extends Fragment {
                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        check = true;
-                        mqttConnect();
+                      /*  check = true;
+                        mqttConnect();*/
+                        getStatusMQTT();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -241,6 +243,10 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
         }
 
+         // disconnectMQTT();
+
+        // unsubMQTT();
+
         if(alertDialog!=null && alertDialog.isShowing())
         {
             alertDialog.dismiss();
@@ -249,6 +255,16 @@ public class AddDeviceFragmentSendData extends Fragment {
         if(exitalertDialog!=null && exitalertDialog.isShowing())
         {
             exitalertDialog.dismiss();
+        }
+    }
+
+    private void unsubMQTT() {
+        if(MainActivity.getInstance().getMainMqttClient() != null){
+            try {
+                MainActivity.getInstance().unsubscribe(mqttAndroidClient, device);
+            }catch (MqttException e){
+                Utils.log(TAG, "Exception " + e.getMessage(), true);
+            }
         }
     }
 
@@ -264,7 +280,7 @@ public class AddDeviceFragmentSendData extends Fragment {
 
     }
 
-    private void showAlert() {
+    public void showAlert() {
      /*   myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -366,7 +382,6 @@ public class AddDeviceFragmentSendData extends Fragment {
     public void goToSuccessFragment(){
         if(MainActivity.getInstance() != null && MainActivity.isResumed){
             if(getFragmentManager() != null){
-
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
@@ -379,8 +394,25 @@ public class AddDeviceFragmentSendData extends Fragment {
         }
     }
 
+    private void disconnectMQTT() {
+        try {
+            if(MainActivity.getInstance().getMainMqttClient() != null)
+            {
+                MainActivity.getInstance().getMainMqttClient().disconnect();
+                MainActivity.getInstance().getMainMqttClient().unregisterResources();
+                MainActivity.getInstance().getMainMqttClient().close();
+            }
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void connectToWifiNetwork2(String ssid, String pass) {
         final NetworkSpecifier specifier =
                 new WifiNetworkSpecifier.Builder()
@@ -394,11 +426,13 @@ public class AddDeviceFragmentSendData extends Fragment {
                         .build();
         final ConnectivityManager connectivityManager =
                 (ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
-        final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+        ConnectivityManager.NetworkCallback networkCallback = null;
+        ConnectivityManager.NetworkCallback finalNetworkCallback = networkCallback;
+        networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
-                ((ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE))
-                        .bindProcessToNetwork(network);
+                connectivityManager.bindProcessToNetwork(network);
+
                 MainActivity.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -409,28 +443,31 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
             @Override
             public void onLost(@NonNull Network network) {
-                ((ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE))
-                        .bindProcessToNetwork(null);
+                /*((ConnectivityManager) MainActivity.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE))
+                        .bindProcessToNetwork(null);*/
+                connectivityManager.bindProcessToNetwork(null);
+
             }
         };
         connectivityManager.requestNetwork(request, networkCallback);
 
-        /*final WifiNetworkSuggestion suggestion1 =
+      /*  final WifiNetworkSuggestion suggestion1 =
                 new WifiNetworkSuggestion.Builder()
                         .setSsid(ssid)
                         .setWpa2Passphrase(pass)
-                        .setIsAppInteractionRequired(true) // Optional (Needs location permission)
+                       // .setIsAppInteractionRequired(true) // Optional (Needs location permission)
                         .build();
 
         final List<WifiNetworkSuggestion> suggestionsList = new ArrayList<WifiNetworkSuggestion>()
         {{ add(suggestion1);
         }};
 
-        final WifiManager wifiManager = (WifiManager) MyApp.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
+        final WifiManager wifiManager = (WifiManager) MainActivity.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiManager.disconnect();
         final int status = wifiManager.addNetworkSuggestions(suggestionsList);
         if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             // do error handling here…
+            Utils.log(TAG,"Suggested Successfully",false);
               }
 
     // Optional (Wait for post connection broadcast to one of your suggestions)
@@ -448,9 +485,17 @@ public class AddDeviceFragmentSendData extends Fragment {
                 // do post connect processing here...
             }
         };
-        MainActivity.getInstance().registerReceiver(broadcastReceiver, intentFilter);
-*/
+        MainActivity.getInstance().registerReceiver(broadcastReceiver, intentFilter);*/
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==3)
+        {
+            getStatusMQTT();
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -534,19 +579,36 @@ public class AddDeviceFragmentSendData extends Fragment {
         mListener = null;
     }
 
+    public interface toggleInterface
+    {
+        public void onSuccess();
+        public void onFail();
+    }
+
     private void getStatusMQTT() {
         textView.setText("Trying to connect to smart controller online");
 
         try {
-            String clientid = MqttClient.generateClientId();
-            initMqttClient(MainActivity.getInstance(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientid);
+            if(MainActivity.getInstance().getMainMqttClient() == null || !MainActivity.getInstance().getMainMqttClient().isConnected())
+            {
+                String clientid = MqttClient.generateClientId();
+                MainActivity.getInstance().initMqttClient(MainActivity.getInstance(), Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientid);
+            }
+            else
+            {
+             subscribeMQTT();
+            }
         }
         catch(Exception e)
         {
             Utils.log(TAG,"Mqtt initialization error: "+e.getMessage(),true);
         }
-        mqttConnect();
+       // mqttConnect();
 
+    }
+
+    public void subscribeMQTT() throws MqttException {
+        MainActivity.getInstance().subscribe(MainActivity.getInstance().getMainMqttClient(),device,1);
     }
 
     public interface HomeConnectedListenerInterface{
@@ -1334,6 +1396,17 @@ public class AddDeviceFragmentSendData extends Fragment {
                     Log.e(TAG, "MQTT unsubscribe onFailure: on " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()));
                 }
             });
+        }
+    }
+
+    public void checkIP(Device tempDevice)
+    {
+        if(tempDevice.getChipID().matches(device.getChipID()))
+        {
+            device.setIpAddress(tempDevice.getIpAddress());
+            MySettings.setTempDevice(device);
+            myHandler.removeCallbacksAndMessages(null);
+            goToSuccessFragment();
         }
     }
 

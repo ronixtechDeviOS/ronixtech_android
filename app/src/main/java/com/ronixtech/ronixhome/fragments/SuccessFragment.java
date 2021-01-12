@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.ronixtech.ronixhome.Constants;
 import com.ronixtech.ronixhome.MySettings;
@@ -116,6 +117,7 @@ public class SuccessFragment extends androidx.fragment.app.Fragment {
                     fragmentTransaction.commit();
                 }else if(successSource == Constants.SUCCESS_SOURCE_DEVICE){
                     //go to Rooms Dashboard
+                    MySettings.setTempDevice(null);
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

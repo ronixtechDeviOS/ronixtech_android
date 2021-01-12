@@ -19,9 +19,6 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +29,10 @@ import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -1966,7 +1967,7 @@ public class Utils {
                                         if (wifiStatus.has("R_W_IP_")) {
                                             String ipAddress = wifiStatus.getString("R_W_IP_");
                                             if (ipAddress != null && ipAddress.length() >= 1) {
-                                                device.setIpAddress(ipAddress);
+                                               // device.setIpAddress(ipAddress);
                                             }
                                         }
 
@@ -2572,7 +2573,7 @@ public class Utils {
                                     if(wifiStatus.has("R_W_IP_")){
                                         String ipAddress = wifiStatus.getString("R_W_IP_");
                                         if(ipAddress != null && ipAddress.length() >= 1){
-                                            device.setIpAddress(ipAddress);
+                                            //device.setIpAddress(ipAddress);
                                         }
                                     }
 
@@ -3153,7 +3154,7 @@ public class Utils {
                                     if(wifiStatus.has("R_W_IP_")){
                                         String ipAddress = wifiStatus.getString("R_W_IP_");
                                         if(ipAddress != null && ipAddress.length() >= 1){
-                                            device.setIpAddress(ipAddress);
+                                       //     device.setIpAddress(ipAddress);
                                         }
                                     }
 
@@ -3749,7 +3750,7 @@ public class Utils {
                                     if(wifiStatus.has("R_W_IP_")){
                                         String ipAddress = wifiStatus.getString("R_W_IP_");
                                         if(ipAddress != null && ipAddress.length() >= 1){
-                                            device.setIpAddress(ipAddress);
+                                       //     device.setIpAddress(ipAddress);
                                         }
                                     }
 
@@ -4530,7 +4531,7 @@ public class Utils {
                                 if(wifiStatus.has("R_W_IP_")){
                                     String ipAddress = wifiStatus.getString("R_W_IP_");
                                     if(ipAddress != null && ipAddress.length() >= 1){
-                                        device.setIpAddress(ipAddress);
+                                     //   device.setIpAddress(ipAddress);
                                     }
                                 }
 
@@ -5289,40 +5290,43 @@ public class Utils {
             }catch (MalformedURLException e){
                 Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
                   /*  device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                  */  //MySettings.updateDeviceErrorCount(device, 0);
+                  */
+                    MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (IOException e){
                 Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 device.setErrorCount(device.getErrorCount() + 1);
-                //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                 DevicesInMemory.updateDevice(device);
                 if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                     device.setErrorCount(0);
                     /*device.setIpAddress("");
                     DevicesInMemory.updateDevice(device);
                     MySettings.updateDeviceIP(device, "");
-                    *///MySettings.updateDeviceErrorCount(device, 0);
+                    */
+                    MySettings.updateDeviceErrorCount(device, 0);
                     //MySettings.scanNetwork();
                 }
             }catch (JSONException e){
                 Utils.log(TAG, "Exception: " + e.getMessage(), true);
                 if(!ronixUnit){
                     device.setErrorCount(device.getErrorCount() + 1);
-                    //MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
+                    MySettings.updateDeviceErrorCount(device, device.getErrorCount() + 1);
                     if(device.getErrorCount() >= Device.MAX_CONSECUTIVE_ERROR_COUNT) {
                         device.setErrorCount(0);
                       /*  device.setIpAddress("");
                         DevicesInMemory.updateDevice(device);
                         MySettings.updateDeviceIP(device, "");
-                      */  //MySettings.updateDeviceErrorCount(device, 0);
+                      */
+                        MySettings.updateDeviceErrorCount(device, 0);
                         //MySettings.scanNetwork();
                     }
                 }else{
@@ -5487,7 +5491,7 @@ public class Utils {
                         if(jsonObject.has("R_W_IP_")){
                             String ipAddress = jsonObject.getString("R_W_IP_");
                             if(ipAddress != null && ipAddress.length() >= 1){
-                                device.setIpAddress(ipAddress);
+                             //   device.setIpAddress(ipAddress);
                             }
                         }
 

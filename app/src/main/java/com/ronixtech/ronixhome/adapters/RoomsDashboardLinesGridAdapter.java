@@ -120,7 +120,7 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                     }
                 }else{
                     //vHolder.typeImageView.setColorFilter(ContextCompat.getColor(activity, R.color.redColor));
-                    vHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_error_background);
+                   vHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_error_background);
                 }
             }
         }else{
@@ -162,8 +162,14 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                 boolean clickable = false;
                 int mode = MySettings.getCurrentPlace().getMode();
                 Device device = MySettings.getDeviceByID2(item.getDeviceID());
-                if(mode == Place.PLACE_MODE_LOCAL && device.getIpAddress() != null && device.getIpAddress().length() >= 1){
-                    clickable = true;
+                if(mode == Place.PLACE_MODE_LOCAL ){
+                    if(device!=null) {
+                        if (device.getIpAddress() != null && device.getIpAddress().length() >= 1) {
+                            clickable = true;
+                        } else {
+                            Utils.showToast(activity, "Error connecting to smart controller. Refresh Devices", false);
+                        }
+                    }
                 }else if(mode == Place.PLACE_MODE_REMOTE && device.isDeviceMQTTReachable()){
                     clickable = true;
                 }
@@ -180,8 +186,9 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                             public void onToggleFail() {
                                 //tempViewHolder.typeImageView.setColorFilter(ContextCompat.getColor(activity, R.color.blueColor));
                                 //tempViewHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                                tempViewHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_error_background);
-                                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
+                               tempViewHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_error_background);
+                              //  Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
+                                Utils.showToast(activity,"Error connecting to smart controller. Refresh Devices", false);
                             }
                         });
                     }else if(item.getPowerState() == Line.LINE_STATE_OFF){
@@ -197,7 +204,8 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                                 //tempViewHolder.typeImageView.setColorFilter(ContextCompat.getColor(activity, R.color.lightGrayColor));
                                 //tempViewHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
                                 tempViewHolder.typeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_error_background);
-                                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
+                               // Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), false);
+                                Utils.showToast(activity,"Error connecting to smart controller. Refresh Devices", false);
                             }
                         });
                     }

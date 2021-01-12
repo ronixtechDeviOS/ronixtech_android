@@ -7,9 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -26,6 +23,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -147,8 +148,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             floorArrayAdapter=new ArrayAdapter<String>(MainActivity.getInstance(),R.layout.spinner_item,floorList);
             floorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(floorArrayAdapter);
-            spinner.setSelection(MySettings.getCurrentFloor().getLevel()-1);
-
+            if(MySettings.getCurrentFloor() != null) {
+                spinner.setSelection(MySettings.getCurrentFloor().getLevel() - 1);
+            }
         }
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

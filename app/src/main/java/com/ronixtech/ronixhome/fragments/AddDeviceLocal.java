@@ -4,15 +4,16 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import com.ronixtech.ronixhome.MyApp;
 import com.ronixtech.ronixhome.MySettings;
@@ -83,10 +84,6 @@ public class AddDeviceLocal extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.v(TAG,"Connected");
-         //       Toast.makeText(MainActivity.getInstance(),"Connected to Controller", LENGTH_SHORT).show();
-          /*      StatusGetter statusGetter=new StatusGetter(device,addDeviceLocal);
-                statusGetter.execute();
-*/
 
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
