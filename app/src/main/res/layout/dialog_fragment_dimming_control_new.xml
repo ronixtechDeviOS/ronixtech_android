@@ -72,6 +72,89 @@
             android:text="@string/done"/>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_marginLeft="3dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/line_dimmer_layout1"
+        android:layout_below="@+id/dimmer_layout">
+
+        <Button
+            android:id="@+id/line_dimmer1"
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
+            android:background="@drawable/dimming_button"
+            />
+
+        <TextView
+            android:id="@+id/line_dimmer1_name"
+            android:layout_below="@+id/line_dimmer1"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginLeft="25dp"
+            android:textColor="@color/white"
+            android:text="Line 1"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dimmer_layout"
+        android:id="@+id/line_dimmer_layout2"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@+id/line_dimmer_layout1"
+        >
+
+        <Button
+            android:id="@+id/line_dimmer2"
+            android:layout_width="wrap_content"
+            android:background="@drawable/dimming_button"
+            android:layout_height="10dp"
+            />
+
+        <TextView
+            android:id="@+id/line_dimmer2_name"
+            android:layout_below="@+id/line_dimmer2"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginLeft="25dp"
+            android:textColor="@color/white"
+            android:text="Line 2"
+            />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_marginRight="3dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dimmer_layout"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@+id/line_dimmer_layout2"
+        >
+
+        <Button
+            android:id="@+id/line_dimmer3"
+            android:layout_width="wrap_content"
+            android:background="@drawable/dimming_button"
+            android:layout_height="10dp"
+            />
+
+        <TextView
+            android:id="@+id/line_dimmer3_name"
+            android:layout_below="@+id/line_dimmer3"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginLeft="25dp"
+            android:textColor="@color/white"
+            android:text="Line 3"
+            />
+
+    </RelativeLayout>
+
 
 
 </RelativeLayout>

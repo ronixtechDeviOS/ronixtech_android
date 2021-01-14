@@ -34,6 +34,7 @@ import java.util.List;
 public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
     Activity activity;
     List<Line> lines;
+    List<Device> devices;
     ViewHolder vHolder = null;
     FragmentManager fragmentManager;
 
@@ -42,9 +43,10 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
         public void onRoomNameChanged();
     }
 
-    public RoomsDashboardLinesGridAdapter(Activity activity, List<Line> lines, FragmentManager fragmentManager) {
+    public RoomsDashboardLinesGridAdapter(Activity activity,List<Device> roomDevices, List<Line> lines, FragmentManager fragmentManager) {
         this.activity = activity;
         this.lines = lines;
+        this.devices=roomDevices;
         this.fragmentManager = fragmentManager;
     }
 
@@ -151,6 +153,8 @@ public class RoomsDashboardLinesGridAdapter extends BaseAdapter {
                 vHolder.typeImageView.setImageResource(item.getType().getImageResourceID());
             }
         }
+
+
 
         final ViewHolder tempViewHolder = vHolder;
         vHolder.lineLayout.setOnClickListener(new View.OnClickListener() {

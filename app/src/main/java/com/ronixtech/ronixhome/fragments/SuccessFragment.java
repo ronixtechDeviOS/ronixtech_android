@@ -163,10 +163,9 @@ public class SuccessFragment extends androidx.fragment.app.Fragment {
     private void addDevicetoDB() {
         MySettings.addDeviceOnly(device);
         device.setId(MySettings.getDeviceByChipID(device.getChipID(),device.getDeviceTypeID()).getId());
-        MySettings.addDevice(device);/*
-        MySettings.updateDeviceRoom(device, device.getRoomID());
-        MySettings.updateDeviceName(device, device.getName());
-        MySettings.updateDeviceIP(device,device.getIpAddress());*/
+        MySettings.addDevice(device);
+        Utils.log(TAG,"Device Lines: "+device.getLines().size(),false);
+        MainActivity.getInstance().addDevice(device);
 
     }
 

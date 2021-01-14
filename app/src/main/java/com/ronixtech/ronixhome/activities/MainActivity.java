@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
 
-    List<Device> allDevices;
+   public List<Device> allDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +190,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         allDevices = new ArrayList<>();
+
+        if(MySettings.getAllDevices() != null){
+            allDevices.addAll(MySettings.getAllDevices());
+        }
 
         /*if (savedInstanceState == null) {
             // only create fragment if activity is started for the first time
@@ -362,7 +366,8 @@ public class MainActivity extends AppCompatActivity
                                     Utils.log(TAG, "Exception " + e.getMessage(), true);
                                     for (Device device : allDevices) {
                                         device.setDeviceMQTTReachable(false);
-                                        MySettings.addDevice(device);
+                                        MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                                        //  MySettings.addDevice(device);
                                         DevicesInMemory.updateDevice(device);
                                     }
                                     MainActivity.getInstance().refreshDevicesListFromMemory();
@@ -666,10 +671,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onConnectionSuccess() {
                 MySettings.setInternetConnectivityState(true);
-                if(MySettings.getAllDevices() != null){
+               /* if(MySettings.getAllDevices() != null){
                     allDevices.addAll(MySettings.getAllDevices());
                 }
-                //start MQTT, when a control is sent from the DeviceAdapter or anywhere else, it will be synced here when the MQTT responds
+               */ //start MQTT, when a control is sent from the DeviceAdapter or anywhere else, it will be synced here when the MQTT responds
               /*  if(MySettings.getCurrentPlace() != null && MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
                     //don't start MQTT
                     checkingCellularConnection = false;
@@ -695,7 +700,8 @@ public class MainActivity extends AppCompatActivity
                             Utils.log(TAG, "Exception " + e.getMessage(), true);
                             for (Device device : allDevices) {
                                 device.setDeviceMQTTReachable(false);
-                                MySettings.addDevice(device);
+                                MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                                 // MySettings.addDevice(device);
                                 DevicesInMemory.updateDevice(device);
                             }
                             MainActivity.getInstance().refreshDevicesListFromMemory();
@@ -737,6 +743,11 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }).execute();
+    }
+
+    public void addDevice(Device device)
+    {
+        allDevices.add(device);
     }
 
     private void getLatestFirmwareVersion(){
@@ -882,13 +893,15 @@ public class MainActivity extends AppCompatActivity
         if(allDevices != null) {
             for (Device device : allDevices) {
                 device.setDeviceMQTTReachable(false);
-                MySettings.addDevice(device);
+                MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+              //  MySettings.addDevice(device);
             }
         }
         if(DevicesInMemory.getDevices() != null){
             for (Device device : DevicesInMemory.getDevices()) {
                 device.setDeviceMQTTReachable(false);
-                MySettings.addDevice(device);
+                MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                //  MySettings.addDevice(device);
             }
         }
         super.onDestroy();
@@ -975,7 +988,8 @@ public class MainActivity extends AppCompatActivity
                     if(allDevices != null) {
                         for (Device device : allDevices) {
                             device.setDeviceMQTTReachable(false);
-                            MySettings.addDevice(device);
+                            MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                            //MySettings.addDevice(device);
                             DevicesInMemory.updateDevice(device);
                         }
                         MainActivity.getInstance().refreshDevicesListFromMemory();
@@ -1021,7 +1035,6 @@ public class MainActivity extends AppCompatActivity
                                                              device.setIpAddress(wifiStatus.getString("R_W_IP_"));
                                                              MySettings.updateDeviceIP(device, wifiStatus.getString("R_W_IP_"));
                                                              DevicesInMemory.updateDevice(device);
-                                                             MySettings.addDevice(device);
                                                              Device localDevice = DevicesInMemory.getLocalDevice(device);
                                                              if (localDevice != null) {
                                                                  DevicesInMemory.updateLocalDevice(localDevice);
@@ -1352,7 +1365,8 @@ public class MainActivity extends AppCompatActivity
                                 if(allDevices != null) {
                                     for (Device device : allDevices) {
                                         device.setDeviceMQTTReachable(false);
-                                        MySettings.addDevice(device);
+                                        MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                                        //  MySettings.addDevice(device);
                                         DevicesInMemory.updateDevice(device);
                                     }
                                     MainActivity.getInstance().refreshDevicesListFromMemory();
@@ -1368,7 +1382,8 @@ public class MainActivity extends AppCompatActivity
                             if(allDevices != null) {
                                 for (Device device : allDevices) {
                                     device.setDeviceMQTTReachable(false);
-                                    MySettings.addDevice(device);
+                                    MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                                    // MySettings.addDevice(device);
                                     DevicesInMemory.updateDevice(device);
                                 }
                                 MainActivity.getInstance().refreshDevicesListFromMemory();
@@ -1384,7 +1399,8 @@ public class MainActivity extends AppCompatActivity
                 if(allDevices != null) {
                     for (Device device : allDevices) {
                         device.setDeviceMQTTReachable(false);
-                        MySettings.addDevice(device);
+                        MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                        // MySettings.addDevice(device);
                         DevicesInMemory.updateDevice(device);
                     }
                     MainActivity.getInstance().refreshDevicesListFromMemory();
@@ -1399,6 +1415,7 @@ public class MainActivity extends AppCompatActivity
 
     private void sendSuccess(String msg) {
         AddDeviceFragmentSendData addDeviceFragmentSendData = (AddDeviceFragmentSendData) getSupportFragmentManager().findFragmentByTag("addDeviceFragmentSendData");
+        Device device = MySettings.getTempDevice();
         if(addDeviceFragmentSendData != null && addDeviceFragmentSendData.isVisible())
             {
                 try {
@@ -1411,11 +1428,12 @@ public class MainActivity extends AppCompatActivity
                             if (wifiStatus != null) {
                                 if (wifiStatus.has("U_W_UID")) {
                                     String chipID = wifiStatus.getString("U_W_UID");
-                                    if (wifiStatus.getString("R_W_IP_") != "") {
-                                       Device device = MySettings.getTempDevice();
-                                       device.setIpAddress(wifiStatus.getString("R_W_IP_"));
-                                       MySettings.setTempDevice(device);
-                                        addDeviceFragmentSendData.goToSuccessFragment();
+                                    if(chipID.matches(device.getChipID())) {
+                                        if (wifiStatus.getString("R_W_IP_") != "") {
+                                            device.setIpAddress(wifiStatus.getString("R_W_IP_"));
+                                            MySettings.setTempDevice(device);
+                                            addDeviceFragmentSendData.goToSuccessFragment();
+                                        }
                                     }
                                 }
                             }
@@ -1624,7 +1642,8 @@ public class MainActivity extends AppCompatActivity
                                 Utils.log(TAG, "Exception " + e.getMessage(), true);
                                 for (Device device : allDevices) {
                                     device.setDeviceMQTTReachable(false);
-                                    MySettings.addDevice(device);
+                                    MySettings.updateDeviceMQTTreachable(device,device.isDeviceMQTTReachable());
+                                    // MySettings.addDevice(device);
                                     DevicesInMemory.updateDevice(device);
                                 }
                                 MainActivity.getInstance().refreshDevicesListFromMemory();

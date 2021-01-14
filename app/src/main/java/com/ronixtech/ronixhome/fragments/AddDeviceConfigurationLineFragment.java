@@ -509,7 +509,7 @@ public class AddDeviceConfigurationLineFragment extends androidx.fragment.app.Fr
                         /*MySettings.addDevice(device);
                         MySettings.updateDeviceRoom(device, device.getRoomID());
                         MySettings.updateDeviceName(device, device.getName());*/
-                        Utils.log(TAG, "continueButton - move to data sending fragment!", true);
+                        Utils.log(TAG, "continueButton - move to data sending fragment with "+device.getLines().size()+" lines", true);
                         /*
                         FragmentTransaction fragmentTransaction = parentFragment.getFragmentManager().beginTransaction();
                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);

@@ -138,7 +138,6 @@ public class AddDeviceFragmentSendData extends Fragment {
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        check = true;
                         showExitAlert();
                     }
                 })
@@ -382,14 +381,15 @@ public class AddDeviceFragmentSendData extends Fragment {
     public void goToSuccessFragment(){
         if(MainActivity.getInstance() != null && MainActivity.isResumed){
             if(getFragmentManager() != null){
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                SuccessFragment successFragment = new SuccessFragment();
-                successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_DEVICE);
-                fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
-                //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
-                fragmentTransaction.commitAllowingStateLoss();
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                    SuccessFragment successFragment = new SuccessFragment();
+                    successFragment.setSuccessSource(Constants.SUCCESS_SOURCE_DEVICE);
+                    fragmentTransaction.replace(R.id.fragment_view, successFragment, "successFragment");
+                    //fragmentTransaction.addToBackStack("addDeviceFragmentSendData");
+                    fragmentTransaction.commitAllowingStateLoss();
             }
         }
     }

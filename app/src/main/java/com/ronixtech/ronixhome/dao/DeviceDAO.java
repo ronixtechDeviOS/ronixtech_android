@@ -44,6 +44,9 @@ public abstract class DeviceDAO {
     @Query("UPDATE device SET name =:DeviceName WHERE id =:deviceID")
     public abstract void updateDeviceName(long deviceID, String DeviceName);
 
+    @Query("UPDATE device SET mqtt_reachable =:mqtt WHERE id =:deviceID")
+    public abstract void updateDeviceMQTTreachable(long deviceID,Integer mqtt);
+
     @Query("UPDATE device SET room_id =:roomID WHERE id =:deviceID")
     public abstract void updateDeviceRoom(long deviceID, long roomID);
 

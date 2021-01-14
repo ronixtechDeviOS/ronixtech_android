@@ -3,10 +3,6 @@ package com.ronixtech.ronixhome.adapters;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.net.Uri;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.cardview.widget.CardView;
-import androidx.appcompat.widget.PopupMenu;
 import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -19,6 +15,11 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.PopupMenu;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ronixtech.ronixhome.Constants;
@@ -43,6 +44,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
     private static final String TAG = RoomsDashboardListAdapter.class.getSimpleName();
     Activity activity ;
     List<Room> rooms;
+    List<Device> roomDevices;
     Map<Long, RoomsDashboardLinesGridAdapter> linesAdaptersMap;
     ViewHolder vHolder = null;
     FragmentManager fragmentManager;
@@ -193,7 +195,7 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
         List<Line> roomLines = new ArrayList<>();
 
         if(DevicesInMemory.getRoomDevices(item.getId()) != null && DevicesInMemory.getRoomDevices(item.getId()).size() >= 1/*MySettings.getRoomDevices(item.getId()) != null && MySettings.getRoomDevices(item.getId()).size() >= 1*/){
-            List<Device> roomDevices = DevicesInMemory.getRoomDevices(item.getId());
+            roomDevices = DevicesInMemory.getRoomDevices(item.getId());
             Utils.log(TAG, "Room " + item.getName() + " has " + roomDevices.size() + " devices", true);
 
 
@@ -231,12 +233,17 @@ public class RoomsDashboardListAdapter extends ArrayAdapter{
                 }*/
             vHolder.roomDevicesLayout.setVisibility(View.VISIBLE);
 
-            RoomsDashboardLinesGridAdapter adapter = new RoomsDashboardLinesGridAdapter(activity, roomLines, fragmentManager);
+          /*  RoomsDashboardLinesGridAdapter adapter = new RoomsDashboardLinesGridAdapter(activity, roomDevices,roomLines, fragmentManager);
             vHolder.roomLinesGridView.setAdapter(adapter);
             vHolder.roomLinesGridView.setNumColumns(adapter.getCount());
 
             Utils.setGridViewWidthBasedOnChildren(vHolder.roomLinesGridView);
+         */
+            RoomsDashboardDevicesGridAdapter adapter = new RoomsDashboardDevicesGridAdapter(activity,item, roomDevices,roomLines, fragmentManager);
+            vHolder.roomLinesGridView.setAdapter(adapter);
+            vHolder.roomLinesGridView.setNumColumns(adapter.getCount());
 
+            Utils.setGridViewWidthBasedOnChildren(vHolder.roomLinesGridView);
             //vHolder.scrollNextImageView.setImageResource(R.drawable.ic_keyboard_arrow_right_white_24dp);
             //vHolder.scrollPreviousImageView.setImageResource(R.drawable.ic_keyboard_arrow_left_white_24dp);
 

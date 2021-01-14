@@ -198,6 +198,7 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
                         if(device.getLines() == null || device.getLines().size() != 3){
                             Utils.log(TAG,"Deleting, device lines: "+device.getLines().size(),false);
                             MySettings.removeDevice(device);
+                            MainActivity.getInstance().removeDevice(device);
                         }
                     }
                 }

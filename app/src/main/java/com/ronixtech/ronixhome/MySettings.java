@@ -1,14 +1,14 @@
 package com.ronixtech.ronixhome;
 
-import androidx.sqlite.db.SupportSQLiteDatabase;
-import androidx.room.Room;
-import androidx.room.migration.Migration;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
@@ -400,6 +400,17 @@ public class MySettings {
     public static void updateDeviceName(Device device,String Name)
     {
         MySettings.initDB().deviceDAO().updateDeviceName(device.getId(),Name);
+    }
+    public static void updateDeviceMQTTreachable(Device device,Boolean MqttReachable)
+    {
+        if(MqttReachable)
+        {
+            MySettings.initDB().deviceDAO().updateDeviceMQTTreachable(device.getId(),1);
+        }
+        else
+        {
+            MySettings.initDB().deviceDAO().updateDeviceMQTTreachable(device.getId(),0 );
+        }
     }
     public static void updateDeviceRoom(Device device, long roomID){
         MySettings.initDB().deviceDAO().updateDeviceRoom(device.getId(), roomID);

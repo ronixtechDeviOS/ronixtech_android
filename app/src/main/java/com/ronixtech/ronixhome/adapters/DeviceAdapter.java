@@ -1977,6 +1977,7 @@ public class DeviceAdapter extends ArrayAdapter {
         MySettings.removeDevice(device);
         DevicesInMemory.removeDevice(device);
         MainActivity.getInstance().removeDevice(device);
+       // MainActivity.getInstance().allDevices.remove(device);
        // MainActivity.getInstance().refreshDevicesListFromMemory();
         MainActivity.getInstance().refreshDeviceListFromDatabase();
         notifyDataSetChanged();
