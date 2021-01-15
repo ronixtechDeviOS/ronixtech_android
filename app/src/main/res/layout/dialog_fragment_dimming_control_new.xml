@@ -131,6 +131,7 @@
         android:layout_marginRight="3dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/line_dimmer_layout3"
         android:layout_below="@+id/dimmer_layout"
         android:layout_marginLeft="30dp"
         android:layout_toRightOf="@+id/line_dimmer_layout2"

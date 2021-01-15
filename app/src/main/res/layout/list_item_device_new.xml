@@ -1,77 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <RelativeLayout
+        android:id="@+id/room_devices_layout"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentTop="true"
+        >
+        <HorizontalScrollView
+            android:id="@+id/room_lines_horizontal_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/scroll_next_imageview"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:background="@color/white">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <GridView
+                    android:id="@+id/room_devices_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/list_item_device_dashboard_line"
+                    android:columnWidth="56dp"
+                    android:gravity="center"
+                    android:numColumns="9"
+                    android:horizontalSpacing="0dp"
+                    android:verticalSpacing="0dp"
+                    android:scrollbarAlwaysDrawHorizontalTrack="false"
+                    android:scrollbarAlwaysDrawVerticalTrack="false"
+                    android:scrollbars="none"
+                    android:fadeScrollbars="false"
+                    android:scrollbarThumbVertical="@android:color/transparent"
+                    android:scrollbarThumbHorizontal="@android:color/transparent"
+                    android:scrollbarSize="0dp"
+                    android:stretchMode="none" />
+            </LinearLayout>
+        </HorizontalScrollView>
 
+        <ImageView
+            android:id="@+id/scroll_next_imageview"
+            android:layout_width="32dp"
+            android:layout_marginRight="10dp"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:src="@drawable/arrow_thick_right_white"
+            android:background="#e76616"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/room_devices_layout"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal">
-        <RelativeLayout
-            android:id="@+id/device_icon_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@color/deviceBackgroundDarkBlueColor">
-            <ImageView
-                android:id="@+id/device_icon_imageview"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:src="@drawable/switch_icon"
-                android:padding="8dp"/>
-        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blue_30_transparent_background">
-            <RelativeLayout
-                android:id="@+id/device_title_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <ImageView
-                    android:id="@+id/device_expand_imageview"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_centerVertical="true"
-                    android:padding="8dp"
-                    android:src="@drawable/arrow_thick_down_white" />
-
-                <ImageView
-                    android:id="@+id/device_advanced_options_button"
-                    android:layout_width="50dp"
-                    android:layout_height="42dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:padding="8dp"
-                    android:src="@drawable/dots_white"
-                    />
-
-                <TextView
-                    android:id="@+id/device_name_textview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@id/device_expand_imageview"
-                    android:layout_toRightOf="@id/device_expand_imageview"
-                    android:layout_toStartOf="@id/device_advanced_options_button"
-                    android:layout_toLeftOf="@id/device_advanced_options_button"
-                    android:text="DeviceName"
-                    android:textColor="@color/whiteColor"
-                    android:textSize="18sp" />
-            </RelativeLayout>
+            android:background="@color/white">
+            <!--   android:background="@color/blue_30_transparent_background"-->
 
             <RelativeLayout
                 android:id="@+id/scanning_network_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/device_title_layout"
                 android:padding="4dp">
                 <ProgressBar
                     android:id="@+id/scanning_network_progress_circle"
@@ -91,30 +97,6 @@
                     android:text="@string/scanning_network"/>
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/mqtt_reachability_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/scanning_network_layout"
-                android:padding="4dp">
-                <ImageView
-                    android:id="@+id/mqtt_reachability_imageview"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_dialog_alert"/>
-                <TextView
-                    android:id="@+id/mqtt_reachability_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/mqtt_reachability_imageview"
-                    android:layout_toRightOf="@id/mqtt_reachability_imageview"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:textSize="14sp"
-                    android:textColor="@color/redColor"
-                    android:text="@string/device_unreachable"/>
-            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/firmware_available_layout"
@@ -122,7 +104,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/mqtt_reachability_layout"
                 android:visibility="gone"
-
                 android:padding="4dp">
                 <ImageView
                     android:id="@+id/firmware_available_imageview"
@@ -147,6 +128,7 @@
                 android:id="@+id/last_seen_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_below="@id/firmware_available_layout"
                 android:padding="4dp">
                 <ImageView
@@ -154,7 +136,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/last_seen_clock_icon"
-                    android:tint="@color/whiteColor"/>
+                    android:tint="#E76616"/>
                 <TextView
                     android:id="@+id/last_seen_textview"
                     android:layout_width="wrap_content"
@@ -165,8 +147,32 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
                     android:textSize="14sp"
-                    android:textColor="@color/whiteColor"
+                    android:textColor="#E76616"
                     android:text="@string/last_seen"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/mqtt_reachability_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp">
+                <ImageView
+                    android:id="@+id/mqtt_reachability_imageview"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_dialog_alert"/>
+                <TextView
+                    android:id="@+id/mqtt_reachability_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/mqtt_reachability_imageview"
+                    android:layout_toRightOf="@id/mqtt_reachability_imageview"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/redColor"
+                    android:text="@string/device_unreachable"/>
             </RelativeLayout>
 
             <TextView
@@ -238,7 +244,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/lightestGrayColor"/>
+                    android:background="@color/darkestGrayColor"/>
 
                 <RelativeLayout
                     android:id="@+id/second_line_layout"
@@ -289,7 +295,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/lightestGrayColor"/>
+                    android:background="@color/darkestGrayColor"/>
 
                 <RelativeLayout
                     android:id="@+id/third_line_layout"
@@ -339,7 +345,51 @@
 
             </LinearLayout>
 
+            <RelativeLayout
+                android:layout_below="@+id/device_lines_layout"
+                android:id="@+id/device_title_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp">
+               <!-- <ImageView
+                    android:id="@+id/device_expand_imageview"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_centerVertical="true"
+                    android:padding="8dp"
+                    android:src="@drawable/arrow_thick_down_white" />-->
+
+                <ImageView
+                    android:id="@+id/device_advanced_options_button"
+                    android:layout_width="50dp"
+                    android:layout_height="42dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:padding="8dp"
+                    android:src="@drawable/dots_white"/>
+
+                <TextView
+                    android:id="@+id/device_name_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_toStartOf="@id/device_advanced_options_button"
+                    android:layout_toLeftOf="@id/device_advanced_options_button"
+                    android:text="DeviceName"
+                    android:textColor="#E76616"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+
+
+
         </RelativeLayout>
+
+
+
+
 
     </LinearLayout>
 

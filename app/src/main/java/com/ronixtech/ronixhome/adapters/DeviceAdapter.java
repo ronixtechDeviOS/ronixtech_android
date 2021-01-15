@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -164,9 +166,9 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
                 vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
                 vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
-                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
-
+           /*     vHolder.roomLinesHorizontalScrollView=rowView.findViewById(R.id.room_lines_horizontal_scrollview);
+               vHolder.roomDevicesGridView=rowView.findViewById(R.id.room_devices_gridview);
+*/
                 vHolder.firstLineSeekBar.setMax(100);
                 vHolder.secondLineSeekBar.setMax(100);
                 vHolder.thirdLineSeekBar.setMax(100);
@@ -176,6 +178,7 @@ public class DeviceAdapter extends ArrayAdapter {
             else{
                 vHolder = (ViewHolder) rowView.getTag();
             }
+
 
             if(item != null){
                 if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
@@ -212,7 +215,7 @@ public class DeviceAdapter extends ArrayAdapter {
                         //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
                         //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
-                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                       vHolder.scanningNetworkLayout.setVisibility(View.GONE);
                     }
                 }else if(placeMode == Place.PLACE_MODE_REMOTE){
                     vHolder.scanningNetworkLayout.setVisibility(View.GONE);
@@ -769,12 +772,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     public void onClick(View v) {
                         if(tempViewHolder.deviceLinesLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.deviceLinesLayout.setVisibility(View.GONE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.deviceLinesLayout.getVisibility() == View.GONE) {
                             tempViewHolder.deviceLinesLayout.setVisibility(View.VISIBLE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
@@ -802,8 +801,6 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
                 vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
                 vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
-                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 vHolder.speakerVolumeSeekBar.setMax(100);
 
@@ -1043,13 +1040,9 @@ public class DeviceAdapter extends ArrayAdapter {
                     public void onClick(View v) {
                         if(tempViewHolder.soundDeviceLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.soundDeviceLayout.setVisibility(View.GONE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
-                        }else if(tempViewHolder.soundDeviceLayout.getVisibility() == View.GONE) {
+                           }else if(tempViewHolder.soundDeviceLayout.getVisibility() == View.GONE) {
                             tempViewHolder.soundDeviceLayout.setVisibility(View.VISIBLE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
-                        }
+                          }
                     }
                 });
             }
@@ -1072,8 +1065,6 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
                 vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
                 vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
-                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 rowView.setTag(vHolder);
             }
@@ -1262,12 +1253,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     public void onClick(View v) {
                         if(tempViewHolder.pirLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.pirLayout.setVisibility(View.GONE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.pirLayout.getVisibility() == View.GONE) {
                             tempViewHolder.pirLayout.setVisibility(View.VISIBLE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
@@ -1292,8 +1279,6 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
                 vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
                 vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-                vHolder.expandImageView = rowView.findViewById(R.id.device_expand_imageview);
-                vHolder.deviceIconLayout = rowView.findViewById(R.id.device_icon_layout);
 
                 rowView.setTag(vHolder);
             }
@@ -1579,12 +1564,8 @@ public class DeviceAdapter extends ArrayAdapter {
                     public void onClick(View v) {
                         if(tempViewHolder.shutterLayout.getVisibility() == View.VISIBLE) {
                             tempViewHolder.shutterLayout.setVisibility(View.GONE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_right_white);
                         }else if(tempViewHolder.shutterLayout.getVisibility() == View.GONE) {
                             tempViewHolder.shutterLayout.setVisibility(View.VISIBLE);
-                            tempViewHolder.deviceIconLayout.setBackgroundColor(activity.getResources().getColor(R.color.deviceBackgroundDarkBlueColor));
-                            tempViewHolder.expandImageView.setImageResource(R.drawable.arrow_thick_down_white);
                         }
                     }
                 });
@@ -2121,8 +2102,12 @@ public class DeviceAdapter extends ArrayAdapter {
 
         RelativeLayout deviceTitleLayout;
         ImageView deviceAdvancedOptionsButton;
-        ImageView expandImageView;
-        RelativeLayout deviceIconLayout;
+
+        ImageView  scrollNextImageView;
+        HorizontalScrollView roomLinesHorizontalScrollView;
+
+        GridView roomDevicesGridView;
+
     }
 
     android.os.Handler mHandler;

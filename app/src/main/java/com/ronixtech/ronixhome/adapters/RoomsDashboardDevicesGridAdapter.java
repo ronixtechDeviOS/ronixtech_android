@@ -79,6 +79,36 @@ public class RoomsDashboardDevicesGridAdapter extends BaseAdapter {
         vHolder.nameTextView.setText("" + item.getName());
         vHolder.nameTextView.setSelected(true);
 
+        if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
+            GlideApp.with(activity)
+                    .load(activity.getResources().getDrawable(R.drawable.smart_sw))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.smart_sw))
+                    .into(vHolder.typeImageView);
+        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            GlideApp.with(activity)
+                    .load(activity.getResources().getDrawable(R.drawable.plug))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.plug))
+                    .into(vHolder.typeImageView);
+        }
+        else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines)
+        {
+            GlideApp.with(activity)
+                    .load(activity.getResources().getDrawable(R.drawable.magic_sw))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.magic_sw))
+                    .into(vHolder.typeImageView);
+        }
+        else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR)
+        {
+
+            GlideApp.with(activity)
+                    .load(activity.getResources().getDrawable(R.drawable.ir))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.ir))
+                    .into(vHolder.typeImageView);
+        }
+
+
+
         if(MySettings.getCurrentPlace() != null){
             if(MySettings.getCurrentPlace().getMode() == Place.PLACE_MODE_LOCAL){
                 if(item != null && item.getIpAddress() != null && item.getIpAddress().length() >= 1){
@@ -110,17 +140,6 @@ public class RoomsDashboardDevicesGridAdapter extends BaseAdapter {
                 }
         }
 
-        if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old){
-            GlideApp.with(activity)
-                    .load(activity.getResources().getDrawable(R.drawable.smart_sw))
-                    .placeholder(activity.getResources().getDrawable(R.drawable.smart_sw))
-                    .into(vHolder.typeImageView);
-        }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
-            GlideApp.with(activity)
-                    .load(activity.getResources().getDrawable(R.drawable.plug))
-                    .into(vHolder.typeImageView);
-        }
 
         final ViewHolder tempViewHolder = vHolder;
         vHolder.deviceLayout.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +163,6 @@ public class RoomsDashboardDevicesGridAdapter extends BaseAdapter {
             @Override
             public boolean onLongClick(View v) {
                 v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
                 FragmentTransaction ft = fragmentManager.beginTransaction();
                 Fragment prev = fragmentManager.findFragmentByTag("dimmingControlDialogFragment_new");
                 if (prev != null) {

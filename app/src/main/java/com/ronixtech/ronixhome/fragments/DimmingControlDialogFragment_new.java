@@ -8,24 +8,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Line;
 import com.ronixtech.ronixhome.entities.Room;
 import com.sdsmdg.harjot.crollerTest.Croller;
 import com.sdsmdg.harjot.crollerTest.OnCrollerChangeListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DimmingControlDialogFragment_new extends DialogFragment {
     private static final String TAG = DimmingControlDialogFragment_new.class.getSimpleName();
     Device device;
     List<Line> lines;
+    int currLine;
+    List<Button> buttons=new ArrayList<Button>();
+    List<TextView> textViews=new ArrayList<TextView>();
+    List<RelativeLayout> relativeLayouts=new ArrayList<RelativeLayout>();
     boolean isClicked[]=new boolean[3];
     boolean isEnabled[]=new boolean[3];
 
@@ -57,89 +64,103 @@ public class DimmingControlDialogFragment_new extends DialogFragment {
         Button doneButton = v.findViewById(R.id.done_button);
         TextView roomNameTextView = v.findViewById(R.id.room_name_textview);
         TextView lineNameTextView = v.findViewById(R.id.line_name_textview);
-        TextView lineName1TextView = v.findViewById(R.id.line_dimmer1_name);
-        TextView lineName2TextView = v.findViewById(R.id.line_dimmer2_name);
-        TextView lineName3TextView = v.findViewById(R.id.line_dimmer3_name);
-        Button lineButton1 = v.findViewById(R.id.line_dimmer1);
-        Button lineButton2 = v.findViewById(R.id.line_dimmer2);
-        Button lineButton3 = v.findViewById(R.id.line_dimmer3);
-
-        initClick();
+        textViews.add(v.findViewById(R.id.line_dimmer1_name));
+        textViews.add(v.findViewById(R.id.line_dimmer2_name));
+        textViews.add(v.findViewById(R.id.line_dimmer3_name));
+        buttons.add(v.findViewById(R.id.line_dimmer1));
+        buttons.add(v.findViewById(R.id.line_dimmer2));
+        buttons.add(v.findViewById(R.id.line_dimmer3));
+        relativeLayouts.add(v.findViewById(R.id.line_dimmer_layout1));
+        relativeLayouts.add(v.findViewById(R.id.line_dimmer_layout2));
+        relativeLayouts.add(v.findViewById(R.id.line_dimmer_layout3));
 
         int mode = MySettings.getCurrentPlace().getMode();
 //        Device device = MySettings.getDeviceByID2(line.getDeviceID());
         Room room = MySettings.getRoom(device.getRoomID());
 
         roomNameTextView.setText(""+room.getName());
+        lineNameTextView.setText(""+device.getName());
+        initTextview();
+        initisEnabled();
 
-        lineName1TextView.setText(lines.get(0).getName());
-
-        lineName2TextView.setText(lines.get(1).getName());
-
-        lineName3TextView.setText(lines.get(2).getName());
-
-        if(lines.get(0).getDimmingState() == Line.DIMMING_STATE_ON)
+        currLine=-1;
+        for(int i=0;i<device.getLines().size();i++)
         {
-            lineButton1.setBackgroundColor(lineButton1.getContext().getResources().getColor(R.color.greenColor));
-            isClicked[0]=true;
-            isEnabled[0]=true;
+            if(lines.get(i).getDimmingState()==Line.DIMMING_STATE_ON)
+            {
+                if(currLine == -1)
+                {
+                    isEnabled[i]=true;
+                    turnButtonOn(buttons.get(i));
+                    currLine= i;
+                    setConProg(croller);
+                }
+                else
+                {
+                    isEnabled[i]=true;
+                    turnButtonNeutral(buttons.get(i));
+                }
+            }
+            else
+            {
+                isEnabled[i]=false;
+                turnButtonOff(buttons.get(i));
+                textViews.get(i).setTextColor(textViews.get(i).getContext().getResources().getColor(R.color.lightGrayColor));
+            }
         }
-        else
-        {
-            lineButton1.setBackgroundColor(lineButton1.getContext().getResources().getColor(R.color.lightGrayColor));
 
-        }
 
-        if(lines.get(1).getDimmingState() == Line.DIMMING_STATE_ON)
-        {
-            lineButton2.setBackgroundColor(lineButton2.getContext().getResources().getColor(R.color.orangeColor));
-            isEnabled[1]=true;
-        }
-        else
-        {
-            lineButton2.setBackgroundColor(lineButton2.getContext().getResources().getColor(R.color.lightGrayColor));
-        }
-
-        if(lines.get(2).getDimmingState() == Line.DIMMING_STATE_ON)
-        {
-            lineButton3.setBackgroundColor(lineButton3.getContext().getResources().getColor(R.color.orangeColor));
-            isEnabled[2]=true;
-        }
-        else
-        {
-            lineButton3.setBackgroundColor(lineButton3.getContext().getResources().getColor(R.color.lightGrayColor));
-        }
-/*
-
-        lineButton1.setOnClickListener(new View.OnClickListener() {
+        relativeLayouts.get(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isEnabled[0]) {
-                    if (!isClicked[0]) {
-                        lineButton1.setBackgroundColor(lineButton1.getContext().getResources().getColor(R.color.greenColor));
-                        isClicked[0]=true;
-                    }
-                    else
+                if(isEnabled[0])
+                {
+                    if(currLine!=0)
                     {
-                        lineButton2.setBackgroundColor(lineButton2.getContext().getResources().getColor(R.color.orangeColor));
+                        turnButtonNeutral(buttons.get(currLine));
+                        turnButtonOn(buttons.get(0));
+                        currLine=0;
+                        setConProg(croller);
                     }
                 }
             }
         });
 
-        lineButton2.setOnClickListener(new View.OnClickListener() {
+
+        relativeLayouts.get(1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(isEnabled[1])
+                {
+                    if(currLine!=1)
+                    {
+                        turnButtonNeutral(buttons.get(currLine));
+                        turnButtonOn(buttons.get(1));
+                        currLine=1;
+                        setConProg(croller);
+                    }
+                }
             }
         });
-*/
 
-     //   lineNameTextView.setText(""+line.getName());
+        relativeLayouts.get(2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isEnabled[2])
+                {
+                    if(currLine!=2)
+                    {
+                        turnButtonNeutral(buttons.get(currLine));
+                        turnButtonOn(buttons.get(2));
+                        currLine=2;
+                        setConProg(croller);
+                    }
+                }
+            }
+        });
+
 
         //croller.setLabel(""+line.getName());
-//        croller.setProgress(line.getDimmingVvalue()*10);
-
 
 
         croller.setOnCrollerChangeListener(new OnCrollerChangeListener() {
@@ -149,7 +170,7 @@ public class DimmingControlDialogFragment_new extends DialogFragment {
                 MySettings.setControlState(true);
                 double progressValue = pro/10.0; //scale might be 1-360 not 1-100
                 int progress = (int) (progressValue);
-            /*    Utils.controlDimming(device, line.getPosition(), progress, mode, new Utils.DimmingController.DimmingControlCallback() {
+                Utils.controlDimming(device, currLine, progress, mode, new Utils.DimmingController.DimmingControlCallback() {
                     @Override
                     public void onDimmingSuccess() {
 
@@ -160,7 +181,7 @@ public class DimmingControlDialogFragment_new extends DialogFragment {
 
                     }
                 });
-            */}
+            }
 
             @Override
             public void onStartTrackingTouch(Croller croller) {
@@ -184,17 +205,45 @@ public class DimmingControlDialogFragment_new extends DialogFragment {
         return v;
     }
 
-    private void initClick() {
-        for(int i=0;i<3;i++)
-        {
-            isClicked[i]=false;
+    private void setConProg(Croller croller) {
+        if(currLine!=-1) {
+            croller.setProgress(lines.get(currLine).getDimmingVvalue() * 10);
         }
     }
+
+    private void initisEnabled() {
+        for(int i=0;i<3;i++)
+        {
+            isEnabled[i]=false;
+        }
+    }
+
+    private void initTextview() {
+        for(int i=0;i<device.getLines().size();i++)
+        {
+            textViews.get(i).setText(lines.get(i).getName());
+        }
+    }
+
 
     public void setLine(List<Line> lines){
         this.lines = lines;
     }
 
+    public void turnButtonOn(Button b)
+    {
+        b.setBackgroundColor(b.getContext().getResources().getColor(R.color.greenColor));
+    }
+
+    public void turnButtonNeutral(Button b)
+    {
+        b.setBackgroundColor(b.getContext().getResources().getColor(R.color.lightOrangeColor));
+    }
+
+    public void turnButtonOff(Button b)
+    {
+        b.setBackgroundColor(b.getContext().getResources().getColor(R.color.lightGrayColor));
+    }
     public void setDevice(Device device)
     {
         this.device=device;
