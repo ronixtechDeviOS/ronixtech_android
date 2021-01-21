@@ -608,7 +608,7 @@ public class AddDeviceFragmentSendData extends Fragment {
     }
 
     public void subscribeMQTT() throws MqttException {
-        MainActivity.getInstance().subscribe(MainActivity.getInstance().getMainMqttClient(),device,1);
+        MainActivity.getInstance().subscribe(MainActivity.getInstance().getMainMqttClient(),device,2);
     }
 
     public interface HomeConnectedListenerInterface{

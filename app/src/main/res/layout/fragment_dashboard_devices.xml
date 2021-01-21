@@ -6,7 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".fragments.DashboardDevicesFragment">
 
+    <!--<RelativeLayout
+        android:id="@+id/devices_layoutview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:background="@drawable/background_dark_2"/>-->
+
     <RelativeLayout
+        android:id="@+id/addDevices_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_dark_2">

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -72,6 +73,8 @@ public class DeviceAdapter extends ArrayAdapter {
     boolean layoutEnabled = true;
     FragmentManager fragmentManager;
     boolean controlsEnabled;
+    Runnable runnable;
+    Handler handler;
     int placeMode;
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
@@ -135,6 +138,7 @@ public class DeviceAdapter extends ArrayAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent){
         View rowView = convertView;
+        handler=new Handler();
         int viewType = getItemViewType(position);
         Device item = (Device) devices.get(position);
         //int deviceType = item.getDeviceTypeID();
@@ -166,9 +170,9 @@ public class DeviceAdapter extends ArrayAdapter {
                 vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
                 vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
                 vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-           /*     vHolder.roomLinesHorizontalScrollView=rowView.findViewById(R.id.room_lines_horizontal_scrollview);
-               vHolder.roomDevicesGridView=rowView.findViewById(R.id.room_devices_gridview);
-*/
+                vHolder.roomLinesHorizontalScrollView=rowView.findViewById(R.id.room_lines_horizontal_scrollview);
+                vHolder.roomDevicesGridView=rowView.findViewById(R.id.room_devices_gridview);
+
                 vHolder.firstLineSeekBar.setMax(100);
                 vHolder.secondLineSeekBar.setMax(100);
                 vHolder.thirdLineSeekBar.setMax(100);
@@ -471,17 +475,40 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }else{
                                     tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                                 }
-                                Utils.controlDimming(item, 0, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                    @Override
-                                    public void onDimmingSuccess() {
+                                if(placeMode==Place.PLACE_MODE_REMOTE) {
+                                    // dimming with delay
+                                    runnable=new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Utils.controlDimming(item, 0, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                                @Override
+                                                public void onDimmingSuccess() {
 
-                                    }
+                                                }
 
-                                    @Override
-                                    public void onDimmingFail() {
+                                                @Override
+                                                public void onDimmingFail() {
 
-                                    }
-                                });
+                                                }
+                                            });
+                                        }
+                                    };
+                                    handler.removeCallbacksAndMessages(null);
+                                    handler.postDelayed(runnable,100);
+                                }
+                                else {
+                                    Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                        @Override
+                                        public void onDimmingSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onDimmingFail() {
+
+                                        }
+                                    });
+                                }
                             }else{
                                 Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                             }
@@ -531,17 +558,40 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }else{
                                     tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                                 }
-                                Utils.controlDimming(item, 1, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                    @Override
-                                    public void onDimmingSuccess() {
+                                if(placeMode==Place.PLACE_MODE_REMOTE) {
+                                    // dimming with delay
+                                    runnable=new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Utils.controlDimming(item, 1, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                                @Override
+                                                public void onDimmingSuccess() {
 
-                                    }
+                                                }
 
-                                    @Override
-                                    public void onDimmingFail() {
+                                                @Override
+                                                public void onDimmingFail() {
 
-                                    }
-                                });
+                                                }
+                                            });
+                                        }
+                                    };
+                                    handler.removeCallbacksAndMessages(null);
+                                    handler.postDelayed(runnable,100);
+                                }
+                                else {
+                                    Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                        @Override
+                                        public void onDimmingSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onDimmingFail() {
+
+                                        }
+                                    });
+                                }
                             }else{
                                 Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                             }
@@ -591,17 +641,40 @@ public class DeviceAdapter extends ArrayAdapter {
                                 }else{
                                     tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
                                 }
-                                Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                    @Override
-                                    public void onDimmingSuccess() {
+                                if(placeMode==Place.PLACE_MODE_REMOTE) {
+                                 // dimming with delay
+                                    runnable=new Runnable() {
+                                     @Override
+                                     public void run() {
+                                         Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                             @Override
+                                             public void onDimmingSuccess() {
 
-                                    }
+                                             }
 
-                                    @Override
-                                    public void onDimmingFail() {
+                                             @Override
+                                             public void onDimmingFail() {
 
-                                    }
-                                });
+                                             }
+                                         });
+                                     }
+                                 };
+                                   handler.removeCallbacksAndMessages(null);
+                                   handler.postDelayed(runnable,100);
+                                }
+                                else {
+                                    Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                        @Override
+                                        public void onDimmingSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onDimmingFail() {
+
+                                        }
+                                    });
+                                }
                             }else{
                                 Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                             }

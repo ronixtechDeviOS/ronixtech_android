@@ -728,14 +728,20 @@ public class DashboardRoomsFragment extends Fragment implements PickPlaceDialogF
     }
 
     public void loadDevicesFromMemory(){
-        if(listHandler != null) {
+      /*  if(listHandler != null) {
             listHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    putDevicesIntoListView();
+
                 }
             });
-        }
+        }*/
+        MainActivity.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                putDevicesIntoListView();
+            }
+        });
     }
 
     private void putDevicesIntoListView(){

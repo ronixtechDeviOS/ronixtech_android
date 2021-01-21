@@ -52,7 +52,7 @@ public class DashboardDevicesFragment extends Fragment {
 
     FloatingActionMenu addFabMenu;
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
-    RelativeLayout addDeviceLayout;
+    RelativeLayout addDeviceLayout,deviceLayout;
     LinearLayout addLayout;
 
     static ListView devicesListView;
@@ -115,12 +115,14 @@ public class DashboardDevicesFragment extends Fragment {
         listHandler = new Handler();
 
         addLayout = view.findViewById(R.id.add_layout);
-        addDeviceLayout = view.findViewById(R.id.add_new_device_layout);
+      //  addDeviceLayout = view.findViewById(R.id.addDevices_layout);
+        addDeviceLayout=view.findViewById(R.id.add_new_device_layout);
 
         addFabMenu = view.findViewById(R.id.add_fab_menu);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
+//        deviceLayout = view.findViewById(R.id.devices_layoutview);
 
         devicesListViewLongPressHint = view.findViewById(R.id.devices_listview_long_press_hint_textview);
 
@@ -336,6 +338,15 @@ public class DashboardDevicesFragment extends Fragment {
             }
         }
 
+        if(showAddDeviceLayout)
+        {
+            addDeviceLayout.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            //deviceLayout.setVisibility(View.VISIBLE);
+            addDeviceLayout.setVisibility(View.GONE);
+        }
         if(showAddDeviceLayout){
             addDeviceLayout.setVisibility(View.VISIBLE);
         }else{
@@ -380,13 +391,19 @@ public class DashboardDevicesFragment extends Fragment {
 
     public void loadDevicesFromMemory(){
         if(listHandler != null) {
-            listHandler.post(new Runnable() {
+           /* listHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     putDevicesIntoListView();
                 }
-            });
+            });*/
         }
+        MainActivity.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                putDevicesIntoListView();
+            }
+        });
     }
 
     private void putDevicesIntoListView(){

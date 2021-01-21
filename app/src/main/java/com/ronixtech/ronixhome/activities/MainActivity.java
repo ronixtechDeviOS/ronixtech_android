@@ -59,6 +59,7 @@ import com.ronixtech.ronixhome.fragments.AddDeviceFragmentGetData;
 import com.ronixtech.ronixhome.fragments.AddDeviceFragmentSendData;
 import com.ronixtech.ronixhome.fragments.DashboardDevicesFragment;
 import com.ronixtech.ronixhome.fragments.DashboardRoomsFragment;
+import com.ronixtech.ronixhome.fragments.DimmingControlDialogFragment_new;
 import com.ronixtech.ronixhome.fragments.ExportDataFragment;
 import com.ronixtech.ronixhome.fragments.HomeNetworksFragment;
 import com.ronixtech.ronixhome.fragments.ImportDataFragment;
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity
     FragmentManager fragmentManager;
     DashboardDevicesFragment dashboardDevicesFragment;
     DashboardRoomsFragment dashboardRoomsFragment;
+    DimmingControlDialogFragment_new dimmingControlDialogFragment_new;
 
 
     BroadcastReceiver myWifiReceiver;
@@ -360,7 +362,7 @@ public class MainActivity extends AppCompatActivity
                             if(mqttAndroidClient != null && mqttAndroidClient.isConnected()){
                                 try {
                                     for (Device device : allDevices) {
-                                        subscribe(mqttAndroidClient, device, 1);
+                                        subscribe(mqttAndroidClient, device, 2);
                                     }
                                 }catch (MqttException e){
                                     Utils.log(TAG, "Exception " + e.getMessage(), true);
@@ -694,7 +696,7 @@ public class MainActivity extends AppCompatActivity
                         checkingCellularConnection = false;
                         try {
                             for (Device device : allDevices) {
-                                subscribe(mqttAndroidClient, device, 1);
+                                subscribe(mqttAndroidClient, device, 2);
                             }
                         }catch (MqttException e){
                             Utils.log(TAG, "Exception " + e.getMessage(), true);
@@ -819,8 +821,20 @@ public class MainActivity extends AppCompatActivity
             if(dashboardRoomsFragment != null) {
                 dashboardRoomsFragment.loadDevicesFromMemory();
             }
+
         }
     }
+
+    private void refreshDimmerDialog(Device device) {
+
+            dimmingControlDialogFragment_new=(DimmingControlDialogFragment_new) fragmentManager.findFragmentByTag("dimmingControlDialogFragment_new");
+
+        if(dimmingControlDialogFragment_new != null && dimmingControlDialogFragment_new.isVisible())
+        {
+            dimmingControlDialogFragment_new.setDevice(device);
+        }
+    }
+
 
     public void refreshDeviceListFromDatabase(){
         if(fragmentManager != null) {
@@ -1334,6 +1348,7 @@ public class MainActivity extends AppCompatActivity
                                 DevicesInMemory.updateLocalDevice(localDevice);
                             }
                             MainActivity.getInstance().refreshDevicesListFromMemory();
+                            MainActivity.getInstance().refreshDimmerDialog(device);
                         }
                       //  MySettings.setGetStatusState(false);
                        }
@@ -1357,7 +1372,7 @@ public class MainActivity extends AppCompatActivity
                             try {
                                 if(allDevices != null) {
                                     for (Device device : allDevices) {
-                                        subscribe(mqttAndroidClient, device, 1);
+                                        subscribe(mqttAndroidClient, device, 2);
                                     }
                                 }
                             }catch (MqttException e){
@@ -1636,7 +1651,7 @@ public class MainActivity extends AppCompatActivity
                         if(mqttAndroidClient != null && mqttAndroidClient.isConnected()){
                             try {
                                 for (Device device : allDevices) {
-                                    subscribe(mqttAndroidClient, device, 1);
+                                    subscribe(mqttAndroidClient, device, 2);
                                 }
                             }catch (MqttException e){
                                 Utils.log(TAG, "Exception " + e.getMessage(), true);

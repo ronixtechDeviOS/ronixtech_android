@@ -9,6 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dimmer_layout"
+        android:layout_marginTop="100dp"
         android:layout_margin="48dp">
 
         <com.sdsmdg.harjot.crollerTest.Croller
@@ -16,10 +17,9 @@
             android:layout_width="225dp"
             android:layout_height="225dp"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="90dp"
             app:min="0"
-            app:max="100"
+            app:max="10"
             app:start_offset="45"
             app:sweep_angle="300"
             app:progress_primary_color="@color/blueColor"
@@ -42,9 +42,9 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@id/dimming_croller"
             android:layout_marginTop="0dp"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textColor="@color/blueColor"
-            android:textStyle="bold"
+            android:fontFamily="Arial"
             android:text="RoomName" />
 
         <TextView
@@ -81,17 +81,18 @@
 
         <Button
             android:id="@+id/line_dimmer1"
-            android:layout_width="wrap_content"
+            android:layout_width="270px"
+            android:layout_marginTop="162px"
             android:layout_height="10dp"
-            android:background="@drawable/dimming_button"
             />
 
         <TextView
             android:id="@+id/line_dimmer1_name"
             android:layout_below="@+id/line_dimmer1"
             android:layout_width="wrap_content"
+            android:layout_marginTop="52px"
             android:layout_height="20dp"
-            android:layout_marginLeft="25dp"
+            android:layout_marginLeft="30dp"
             android:textColor="@color/white"
             android:text="Line 1"
             />
@@ -103,14 +104,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/dimmer_layout"
         android:id="@+id/line_dimmer_layout2"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="20dp"
         android:layout_toRightOf="@+id/line_dimmer_layout1"
         >
 
         <Button
             android:id="@+id/line_dimmer2"
-            android:layout_width="wrap_content"
-            android:background="@drawable/dimming_button"
+            android:layout_width="270px"
+            android:layout_marginTop="162px"
             android:layout_height="10dp"
             />
 
@@ -119,6 +120,7 @@
             android:layout_below="@+id/line_dimmer2"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
+            android:layout_marginTop="52px"
             android:layout_marginLeft="25dp"
             android:textColor="@color/white"
             android:text="Line 2"
@@ -133,14 +135,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/line_dimmer_layout3"
         android:layout_below="@+id/dimmer_layout"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="20dp"
         android:layout_toRightOf="@+id/line_dimmer_layout2"
         >
 
         <Button
             android:id="@+id/line_dimmer3"
-            android:layout_width="wrap_content"
-            android:background="@drawable/dimming_button"
+            android:layout_width="270px"
+            android:layout_marginTop="162px"
             android:layout_height="10dp"
             />
 
@@ -149,6 +151,7 @@
             android:layout_below="@+id/line_dimmer3"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
+            android:layout_marginTop="52px"
             android:layout_marginLeft="25dp"
             android:textColor="@color/white"
             android:text="Line 3"

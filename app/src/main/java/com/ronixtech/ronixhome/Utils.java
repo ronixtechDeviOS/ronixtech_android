@@ -92,6 +92,7 @@ public class Utils {
     public static final int ANIMATION_TYPE_FADE = 1;
     private final static String PATTERN = "yyyy/MM/dd hh:mm:ss";
 
+    private static int dimmerVal;
     private static CustomProgressDialog customProgressDialog;
 
     private static FirebaseAnalytics mFirebaseAnalytics;
@@ -1684,62 +1685,68 @@ public class Utils {
             }else{
                 MySettings.setControlState(false);
             }
-        }else if(mode == Place.PLACE_MODE_REMOTE){
+        }else if(mode == Place.PLACE_MODE_REMOTE) {
             //send command usint MQTT
-            if(MainActivity.getInstance().getMainMqttClient()!= null){
-                try{
-                    JSONObject jsonObject = new JSONObject();
-                    if(device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                            device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround){
-                        switch(position){
-                            case 0:
-                                if(value == 10){
-                                    jsonObject.put("L_0_DIM", ":");
-                                }else{
-                                    jsonObject.put("L_0_DIM", ""+value);
-                                }
-                                break;
-                            case 1:
-                                if(value == 10){
-                                    jsonObject.put("L_1_DIM", ":");
-                                }else{
-                                    jsonObject.put("L_1_DIM", ""+value);
-                                }
-                                break;
-                            case 2:
-                                if(value == 10){
-                                    jsonObject.put("L_2_DIM", ":");
-                                }else{
-                                    jsonObject.put("L_2_DIM", ""+value);
-                                }
-                                break;
+            if (value != dimmerVal) {
+                dimmerVal=value;
+                if (MainActivity.getInstance().getMainMqttClient() != null) {
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        if (device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                            switch (position) {
+                                case 0:
+                                    if (value == 10) {
+                                        jsonObject.put("L_0_DIM", ":");
+                                    } else {
+                                        jsonObject.put("L_0_DIM", "" + value);
+                                    }
+                                    break;
+                                case 1:
+                                    if (value == 10) {
+                                        jsonObject.put("L_1_DIM", ":");
+                                    } else {
+                                        jsonObject.put("L_1_DIM", "" + value);
+                                    }
+                                    break;
+                                case 2:
+                                    if (value == 10) {
+                                        jsonObject.put("L_2_DIM", ":");
+                                    } else {
+                                        jsonObject.put("L_2_DIM", "" + value);
+                                    }
+                                    break;
+                            }
+                        } else if (device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                                device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                            //no dimming controls for these device types
                         }
-                    }else if(device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                            device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
-                        //no dimming controls for these device types
+                        jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
+                        jsonObject.put("R_M_ALV","0");
+                        MqttMessage mqttMessage = new MqttMessage();
+                        mqttMessage.setPayload(jsonObject.toString().getBytes());
+                        mqttMessage.setQos(2);
+                        Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
+                        Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
+                        MainActivity.getInstance().getMainMqttClient().publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
+                        callback.onDimmingSuccess();
+                    } catch (JSONException e) {
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                        MySettings.setControlState(false);
+                        callback.onDimmingFail();
+                    } catch (MqttException e) {
+                        Utils.log(TAG, "Exception: " + e.getMessage(), true);
+                        MySettings.setControlState(false);
+                        callback.onDimmingFail();
                     }
-                    jsonObject.put(Constants.PARAMETER_ACCESS_TOKEN, device.getAccessToken());
-                    MqttMessage mqttMessage = new MqttMessage();
-                    mqttMessage.setPayload(jsonObject.toString().getBytes());
-                    Utils.log(TAG, "MQTT publish topic: " + String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), true);
-                    Utils.log(TAG, "MQTT publish data: " + mqttMessage, true);
-                    MainActivity.getInstance().getMainMqttClient().publish(String.format(Constants.MQTT_TOPIC_CONTROL, device.getChipID()), mqttMessage);
-                    callback.onDimmingSuccess();
-                }catch (JSONException e){
-                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                    MySettings.setControlState(false);
-                    callback.onDimmingFail();
-                }catch (MqttException e){
-                    Utils.log(TAG, "Exception: " + e.getMessage(), true);
-                    MySettings.setControlState(false);
+                } else {
+                    Utils.log(TAG, "mqttAndroidClient is null", true);
                     callback.onDimmingFail();
                 }
-            }else{
-                Utils.log(TAG, "mqttAndroidClient is null", true);
-                callback.onDimmingFail();
+
+                MySettings.setControlState(false);
             }
-            MySettings.setControlState(false);
         }
     }
 
