@@ -6,35 +6,93 @@
     android:layout_height="match_parent"
     tools:context=".fragments.DashboardDevicesFragment">
 
-    <!--<RelativeLayout
-        android:id="@+id/devices_layoutview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:background="@drawable/background_dark_2"/>-->
-
     <RelativeLayout
-        android:id="@+id/addDevices_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_dark_2">
-        <ListView
-            android:id="@+id/devices_listview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:clipToPadding="false"
-            tools:listitem="@layout/list_item_device"/>
 
-        <TextView
+        <RelativeLayout
+            android:id="@+id/devices_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+
+            <RelativeLayout
+                android:id="@+id/room_devices_layout"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_height="84dp"
+                android:layout_marginTop="35dp"
+                android:layout_alignParentTop="true"
+                >
+                <HorizontalScrollView
+                    android:id="@+id/room_lines_horizontal_scrollview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+                    android:layout_toLeftOf="@+id/scroll_next_imageview"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:background="@color/white">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <GridView
+                            android:id="@+id/room_devices_gridview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:listitem="@layout/list_item_device_dashboard"
+                            android:columnWidth="84dp"
+                            android:gravity="center"
+                            android:numColumns="9"
+                            android:horizontalSpacing="0dp"
+                            android:verticalSpacing="0dp"
+                            android:scrollbarAlwaysDrawHorizontalTrack="false"
+                            android:scrollbarAlwaysDrawVerticalTrack="false"
+                            android:scrollbars="none"
+                            android:fadeScrollbars="false"
+                            android:scrollbarThumbVertical="@android:color/transparent"
+                            android:scrollbarThumbHorizontal="@android:color/transparent"
+                            android:scrollbarSize="0dp"
+                            android:stretchMode="none" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <ImageView
+                    android:id="@+id/scroll_next_imageview"
+                    android:layout_width="32dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_height="match_parent"
+                    android:padding="12dp"
+                    android:src="@drawable/arrow_thick_right_white"
+                    android:background="#e76616"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+
+             <ListView
+                 android:id="@+id/devices_listview"
+                 android:layout_below="@+id/room_devices_layout"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="30dp"
+                 android:paddingBottom="0dp"
+                 android:clipToPadding="false"
+                 tools:listitem="@layout/list_item_device_new"/>
+        </RelativeLayout>
+
+
+        <!--<TextView
             android:id="@+id/devices_listview_long_press_hint_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/devices_listview"
+            android:layout_below="@id/devices_view"
             android:textColor="@color/darkGrayColor"
             android:textSize="16sp"
-            android:text="@string/unit_long_press_hint"/>
+            android:text="@string/unit_long_press_hint"/>-->
 
         <LinearLayout
             android:id="@+id/add_layout"
@@ -132,5 +190,6 @@
                 app:fab_label="@string/device"/>
         </com.github.clans.fab.FloatingActionMenu>
     </RelativeLayout>
+
 
 </FrameLayout>

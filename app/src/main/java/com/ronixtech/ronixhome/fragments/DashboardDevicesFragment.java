@@ -11,10 +11,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,6 +28,7 @@ import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.adapters.DeviceAdapter;
+import com.ronixtech.ronixhome.adapters.DevicesDashboardGridAdapter;
 import com.ronixtech.ronixhome.entities.Device;
 import com.ronixtech.ronixhome.entities.Place;
 import com.ronixtech.ronixhome.entities.Room;
@@ -57,8 +58,11 @@ public class DashboardDevicesFragment extends Fragment {
 
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
+    static int selectedDevice=0;
+    static DevicesDashboardGridAdapter devicesDashboardGridAdapter;
+    static GridView devicesGrid;
     static List<Device> devices;
-    TextView devicesListViewLongPressHint;
+   // TextView devicesListViewLongPressHint;
 
     Handler listHandler;
 
@@ -115,26 +119,31 @@ public class DashboardDevicesFragment extends Fragment {
         listHandler = new Handler();
 
         addLayout = view.findViewById(R.id.add_layout);
-      //  addDeviceLayout = view.findViewById(R.id.addDevices_layout);
+       // addDeviceLayout = view.findViewById(R.id.addDevices_layout);
         addDeviceLayout=view.findViewById(R.id.add_new_device_layout);
 
+        devicesGrid=view.findViewById(R.id.room_devices_gridview);
         addFabMenu = view.findViewById(R.id.add_fab_menu);
         addPlaceFab = view.findViewById(R.id.add_place_fab);
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
-//        deviceLayout = view.findViewById(R.id.devices_layoutview);
-
-        devicesListViewLongPressHint = view.findViewById(R.id.devices_listview_long_press_hint_textview);
+        deviceLayout=view.findViewById(R.id.devices_view);
+       // devicesListViewLongPressHint = view.findViewById(R.id.devices_listview_long_press_hint_textview);
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = DevicesInMemory.getDevices();
+
+
         if(MySettings.getCurrentPlace() != null){
             deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
-        }else{
+           }
+        else {
             deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL);
         }
-
         devicesListView.setAdapter(deviceAdapter);
+
+        devicesDashboardGridAdapter=new DevicesDashboardGridAdapter(MainActivity.getInstance(),room,devices,getFragmentManager(),selectedDevice);
+        devicesGrid.setAdapter(devicesDashboardGridAdapter);
 
         loadDevicesFromDatabase();
 
@@ -338,15 +347,6 @@ public class DashboardDevicesFragment extends Fragment {
             }
         }
 
-        if(showAddDeviceLayout)
-        {
-            addDeviceLayout.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            //deviceLayout.setVisibility(View.VISIBLE);
-            addDeviceLayout.setVisibility(View.GONE);
-        }
         if(showAddDeviceLayout){
             addDeviceLayout.setVisibility(View.VISIBLE);
         }else{
@@ -355,16 +355,18 @@ public class DashboardDevicesFragment extends Fragment {
 
         if(showAddDeviceLayout){
             addFabMenu.setVisibility(View.GONE);
-            devicesListView.setVisibility(View.GONE);
-            devicesListViewLongPressHint.setVisibility(View.GONE);
+            deviceLayout.setVisibility(View.GONE);
+           // devicesListView.setVisibility(View.GONE);
+           // devicesListViewLongPressHint.setVisibility(View.GONE);
 
             addLayout.setVisibility(View.VISIBLE);
         }else{
             //addFabMenu.setVisibility(View.VISIBLE);
             addFabMenu.setVisibility(View.GONE);
-            devicesListView.setVisibility(View.VISIBLE);
+          deviceLayout.setVisibility(View.VISIBLE);
+            //  devicesListView.setVisibility(View.VISIBLE);
             //devicesListViewLongPressHint.setVisibility(View.VISIBLE);
-            devicesListViewLongPressHint.setVisibility(View.GONE);
+         //   devicesListViewLongPressHint.setVisibility(View.GONE);
 
             addLayout.setVisibility(View.GONE);
         }

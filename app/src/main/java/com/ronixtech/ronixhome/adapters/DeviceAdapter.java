@@ -80,7 +80,7 @@ public class DeviceAdapter extends ArrayAdapter {
     MqttAndroidClient mqttAndroidClient;
 
     public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode){
-        super(activity, R.layout.list_item_device, devices);
+        super(activity, R.layout.list_item_device_new, devices);
         this.activity = activity;
         this.devices = devices;
         mHandler = new android.os.Handler();
@@ -145,7 +145,7 @@ public class DeviceAdapter extends ArrayAdapter {
         if(viewType == 0){
             if(rowView == null){
                 LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.list_item_device, null);
+                rowView = inflater.inflate(R.layout.list_item_device_new, null);
                 vHolder = new ViewHolder();
                 vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
                 vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);

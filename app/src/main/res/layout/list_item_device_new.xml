@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <!--<RelativeLayout
         android:id="@+id/room_devices_layout"
         android:layout_width="match_parent"
         android:layout_marginLeft="10dp"
@@ -58,11 +58,10 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+    </RelativeLayout>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/room_devices_layout"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="50dp"
@@ -367,7 +366,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:padding="8dp"
-                    android:src="@drawable/dots_white"/>
+                    android:src="@drawable/dots_orange"/>
 
                 <TextView
                     android:id="@+id/device_name_textview"

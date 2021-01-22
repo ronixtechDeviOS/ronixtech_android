@@ -3,11 +3,6 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.CompoundButtonCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +15,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.CompoundButtonCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -138,6 +139,10 @@ public class AddDeviceSelectLocationFragment extends Fragment implements PickPla
                     placeImageView.setImageResource(selectedPlace.getType().getImageResourceID());
                 }
             }
+
+            selectedRoom=MySettings.getCurrentRoom();
+
+            MySettings.setCurrentFloor(selectedPlace.getFloors().get(Integer.parseInt(selectedRoom.getFloorLevel())-1));
 
             if(MySettings.getCurrentFloor() != null){
                 selectedFloor = MySettings.getFloor(MySettings.getCurrentFloor().getId());
