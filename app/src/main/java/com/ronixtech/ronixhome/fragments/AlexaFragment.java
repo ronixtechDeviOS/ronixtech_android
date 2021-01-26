@@ -3,8 +3,6 @@ package com.ronixtech.ronixhome.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,8 +11,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.amazon.identity.auth.device.api.workflow.RequestContext;
 import com.ronixtech.ronixhome.MySettings;
+import com.ronixtech.ronixhome.R;
+import com.ronixtech.ronixhome.Utils;
+import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.alexa.ApiResponse;
 import com.ronixtech.ronixhome.alexa.AudioPlayer;
 import com.ronixtech.ronixhome.alexa.AvsItem;
@@ -22,9 +25,6 @@ import com.ronixtech.ronixhome.alexa.AvsSpeakItem;
 import com.ronixtech.ronixhome.alexa.AvsTemplateItem;
 import com.ronixtech.ronixhome.alexa.ConnectManager;
 import com.ronixtech.ronixhome.alexa.LoginManager;
-import com.ronixtech.ronixhome.R;
-import com.ronixtech.ronixhome.Utils;
-import com.ronixtech.ronixhome.activities.MainActivity;
 import com.ronixtech.ronixhome.entities.Device;
 
 import org.json.JSONObject;
@@ -66,7 +66,7 @@ public class AlexaFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestContext=RequestContext.create(this);
+        requestContext=RequestContext.create(MainActivity.getInstance());
     }
 
     @Override

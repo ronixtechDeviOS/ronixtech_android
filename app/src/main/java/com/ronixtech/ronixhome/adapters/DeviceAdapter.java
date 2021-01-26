@@ -75,17 +75,19 @@ public class DeviceAdapter extends ArrayAdapter {
     boolean controlsEnabled;
     Runnable runnable;
     Handler handler;
+    int selectedDevice;
     int placeMode;
     //Stuff for remote/MQTT mode
     MqttAndroidClient mqttAndroidClient;
 
-    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode){
+    public DeviceAdapter(Activity activity, List devices, FragmentManager fragmentManager, int mode,int selectedDevice){
         super(activity, R.layout.list_item_device_new, devices);
         this.activity = activity;
         this.devices = devices;
         mHandler = new android.os.Handler();
         this.fragmentManager = fragmentManager;
         this.placeMode = mode;
+        this.selectedDevice=selectedDevice;
         //String clientId = MqttClient.generateClientId();
         //getMqttClient(activity, Constants.MQTT_URL + ":" + Constants.MQTT_PORT, clientId);
         mqttAndroidClient = MainActivity.getInstance().getMainMqttClient();
@@ -136,394 +138,403 @@ public class DeviceAdapter extends ArrayAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent){
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
-        handler=new Handler();
+        handler = new Handler();
         int viewType = getItemViewType(position);
         Device item = (Device) devices.get(position);
         //int deviceType = item.getDeviceTypeID();
-        if(viewType == 0){
-            if(rowView == null){
-                LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.list_item_device_new, null);
-                vHolder = new ViewHolder();
-                vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
-                vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
-                vHolder.firstLineLayout = rowView.findViewById(R.id.first_line_layout);
-                vHolder.secondLineLayout = rowView.findViewById(R.id.second_line_layout);
-                vHolder.thirdLineLayout = rowView.findViewById(R.id.third_line_layout);
-                vHolder.firstLineTextView = rowView.findViewById(R.id.first_line_textvie);
-                vHolder.secondLineTextView = rowView.findViewById(R.id.second_line_textview);
-                vHolder.thirdLineTextView = rowView.findViewById(R.id.third_line_textview);
-                vHolder.firstLineSeekBar = rowView.findViewById(R.id.first_line_seekbar);
-                vHolder.secondLineSeekBar = rowView.findViewById(R.id.second_line_seekbar);
-                vHolder.thirdLineSeekBar = rowView.findViewById(R.id.third_line_seekbar);
-                vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
-                vHolder.firstLineTypeImageView = rowView.findViewById(R.id.first_line_type_imageview);
-                vHolder.secondLineTypeImageView = rowView.findViewById(R.id.second_line_type_imageview);
-                vHolder.thirdLineTypeImageView = rowView.findViewById(R.id.third_line_type_imageview);
-                vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
-                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
-                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
-                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
-                vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
-                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
-                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
-                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-                vHolder.roomLinesHorizontalScrollView=rowView.findViewById(R.id.room_lines_horizontal_scrollview);
-                vHolder.roomDevicesGridView=rowView.findViewById(R.id.room_devices_gridview);
+            if (viewType == 0) {
+                if (rowView == null) {
+                    LayoutInflater inflater = activity.getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.list_item_device_new, null);
+                    vHolder = new ViewHolder();
+                    vHolder.mainLayout = rowView.findViewById(R.id.main_parent);
+                    vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                    vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
+                    vHolder.firstLineLayout = rowView.findViewById(R.id.first_line_layout);
+                    vHolder.secondLineLayout = rowView.findViewById(R.id.second_line_layout);
+                    vHolder.thirdLineLayout = rowView.findViewById(R.id.third_line_layout);
+                    vHolder.firstLineTextView = rowView.findViewById(R.id.first_line_textvie);
+                    vHolder.secondLineTextView = rowView.findViewById(R.id.second_line_textview);
+                    vHolder.thirdLineTextView = rowView.findViewById(R.id.third_line_textview);
+                    vHolder.firstLineSeekBar = rowView.findViewById(R.id.first_line_seekbar);
+                    vHolder.secondLineSeekBar = rowView.findViewById(R.id.second_line_seekbar);
+                    vHolder.thirdLineSeekBar = rowView.findViewById(R.id.third_line_seekbar);
+                    vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
+                    vHolder.firstLineTypeImageView = rowView.findViewById(R.id.first_line_type_imageview);
+                    vHolder.secondLineTypeImageView = rowView.findViewById(R.id.second_line_type_imageview);
+                    vHolder.thirdLineTypeImageView = rowView.findViewById(R.id.third_line_type_imageview);
+                    vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                    vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                    vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                    vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
+                    vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                    vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                    vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                    vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+                    vHolder.roomLinesHorizontalScrollView = rowView.findViewById(R.id.room_lines_horizontal_scrollview);
+                    vHolder.roomDevicesGridView = rowView.findViewById(R.id.room_devices_gridview);
 
-                vHolder.firstLineSeekBar.setMax(100);
-                vHolder.secondLineSeekBar.setMax(100);
-                vHolder.thirdLineSeekBar.setMax(100);
+                    vHolder.firstLineSeekBar.setMax(100);
+                    vHolder.secondLineSeekBar.setMax(100);
+                    vHolder.thirdLineSeekBar.setMax(100);
 
-                rowView.setTag(vHolder);
-            }
-            else{
-                vHolder = (ViewHolder) rowView.getTag();
-            }
-
-
-            if(item != null){
-                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines){
-                    vHolder.firstLineLayout.setVisibility(View.VISIBLE);
-                    vHolder.secondLineLayout.setVisibility(View.GONE);
-                    vHolder.thirdLineLayout.setVisibility(View.GONE);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines){
-                    vHolder.firstLineLayout.setVisibility(View.VISIBLE);
-                    vHolder.secondLineLayout.setVisibility(View.VISIBLE);
-                    vHolder.thirdLineLayout.setVisibility(View.GONE);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
-                    vHolder.firstLineLayout.setVisibility(View.VISIBLE);
-                    vHolder.secondLineLayout.setVisibility(View.VISIBLE);
-                    vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
+                    rowView.setTag(vHolder);
+                    if(position!=selectedDevice)
+                    {
+                        vHolder.mainLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    vHolder = (ViewHolder) rowView.getTag();
                 }
 
-                if(placeMode == Place.PLACE_MODE_LOCAL){
-                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
 
-                    if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
-                    }else{
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                       vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                if (item != null) {
+                    if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines) {
+                        vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+                        vHolder.secondLineLayout.setVisibility(View.GONE);
+                        vHolder.thirdLineLayout.setVisibility(View.GONE);
+                    } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines) {
+                        vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+                        vHolder.secondLineLayout.setVisibility(View.VISIBLE);
+                        vHolder.thirdLineLayout.setVisibility(View.GONE);
+                    } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                        vHolder.firstLineLayout.setVisibility(View.VISIBLE);
+                        vHolder.secondLineLayout.setVisibility(View.VISIBLE);
+                        vHolder.thirdLineLayout.setVisibility(View.VISIBLE);
                     }
-                }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                    vHolder.scanningNetworkLayout.setVisibility(View.GONE);
 
-                    if(item.isDeviceMQTTReachable()){
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
+                    if (placeMode == Place.PLACE_MODE_LOCAL) {
                         vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-                    }else{
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-                        //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
-                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
-                    }
-                }
+                        if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                            //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                            //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
+                            vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                            //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                            //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
-                if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+                            vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                        }
+                    } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
 
-                    //show full date if not same day (if it's a new day)
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    long currentTimestamp = cal2.getTimeInMillis();
-                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
-                    cal2.setTimeInMillis(currentTimestamp);
-                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-                    if (!sameDay) {
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
-                    }else{
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
-                    }
+                        if (item.isDeviceMQTTReachable()) {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                            //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+                            //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
-                }else{
-                    //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-                }
+                            vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                        } else {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.firstLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                            //vHolder.secondLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+                            //vHolder.thirdLineLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
-                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
-                    populateLineData(item);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
-                    populatePlugLineData(item);
-                }
-
-                controlsEnabled = true;
-
-                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
-                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
-                    if(item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1){
-                        Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
-                        if(currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                            controlsEnabled = false;
+                            vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                         }
                     }
-                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                MySettings.setTempDevice(item);
 
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                fragmentTransaction.commit();
-                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+
+                    if (item.getLastSeenTimestamp() != 0) {
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+
+                        //show full date if not same day (if it's a new day)
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        long currentTimestamp = cal2.getTimeInMillis();
+                        cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                        cal2.setTimeInMillis(currentTimestamp);
+                        boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                        if (!sameDay) {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                        } else {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                        }
+
+                    } else {
+                        //vHolder.lastSeenLayout.setVisibility(View.GONE);
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                        populateLineData(item);
+                    } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                        populatePlugLineData(item);
+                    }
+
+                    controlsEnabled = true;
+
+                    if (item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()) {
+                        //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                        if (item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1) {
+                            Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
+                            if (currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION) {
+                                controlsEnabled = false;
                             }
                         }
-                    });
-                }else{
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
-                }
+                        vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (placeMode == Place.PLACE_MODE_LOCAL) {
+                                    MySettings.setTempDevice(item);
 
-                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
-                }
-
-                final ViewHolder tempViewHolder = vHolder;
-                vHolder.firstLineTypeImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                        if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
-                            //turn on this line
-                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                            tempViewHolder.firstLineSeekBar.setProgress(100);
-                            Utils.toggleLine(item, 0, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
-                                @Override
-                                public void onToggleSuccess() {
-                                    item.getLines().get(0).setPowerState(Line.LINE_STATE_ON);
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                    fragmentTransaction.commit();
+                                } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                 }
-                                @Override
-                                public void onToggleFail() {
-                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                                    tempViewHolder.firstLineSeekBar.setProgress(0);
-                                }
-                            });
-                        } else {
-                            //turn off this line
-                            tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                            tempViewHolder.firstLineSeekBar.setProgress(0);
-                            Utils.toggleLine(item, 0, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
-                                @Override
-                                public void onToggleSuccess() {
-                                    item.getLines().get(0).setPowerState(Line.LINE_STATE_OFF);
-                                }
-                                @Override
-                                public void onToggleFail() {
-                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                                    tempViewHolder.firstLineSeekBar.setProgress(100);
-                                }
-                            });
-                        }
-                        if(controlsEnabled){
-
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
-                        }
-                    }
-                });
-                vHolder.firstLineLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tempViewHolder.firstLineTypeImageView.performClick();
-                    }
-                });
-                vHolder.secondLineTypeImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                        if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
-                            //turn on this line
-                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                            tempViewHolder.secondLineSeekBar.setProgress(100);
-                            Utils.toggleLine(item, 1, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
-                                @Override
-                                public void onToggleSuccess() {
-                                    item.getLines().get(1).setPowerState(Line.LINE_STATE_ON);
-                                }
-                                @Override
-                                public void onToggleFail() {
-                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                                    tempViewHolder.secondLineSeekBar.setProgress(0);
-                                }
-                            });
-                        } else {
-                            //turn off this line
-                            tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                            tempViewHolder.secondLineSeekBar.setProgress(0);
-                            Utils.toggleLine(item, 1, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
-                                @Override
-                                public void onToggleSuccess() {
-                                    item.getLines().get(1).setPowerState(Line.LINE_STATE_OFF);
-                                }
-                                @Override
-                                public void onToggleFail() {
-                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                                    tempViewHolder.secondLineSeekBar.setProgress(100);
-                                }
-                            });
-                        }
-                        if(controlsEnabled) {
-
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
-                        }
+                            }
+                        });
+                    } else {
+                        vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                     }
 
-                });
-                vHolder.secondLineLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tempViewHolder.secondLineTypeImageView.performClick();
+                    if (item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                        vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                     }
 
-                });
-                vHolder.thirdLineTypeImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                        if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
-                            //turn on this line
-                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                            tempViewHolder.thirdLineSeekBar.setProgress(100);
-                            Utils.toggleLine(item, 2, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
-                                @Override
-                                public void onToggleSuccess() {
-                                    item.getLines().get(2).setPowerState(Line.LINE_STATE_ON);
-                                }
-                                @Override
-                                public void onToggleFail() {
-                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                                    tempViewHolder.thirdLineSeekBar.setProgress(0);
-                                }
-                            });
-                        } else {
-                            //turn off this line
-                            tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                            tempViewHolder.thirdLineSeekBar.setProgress(0);
-                            Utils.toggleLine(item, 2, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
-                                @Override
-                                public void onToggleSuccess() {
-                                    item.getLines().get(2).setPowerState(Line.LINE_STATE_OFF);
-                                }
-                                @Override
-                                public void onToggleFail() {
-                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                                    tempViewHolder.thirdLineSeekBar.setProgress(100);
-                                }
-                            });
-                        }
-                        if(controlsEnabled) {
+                    final ViewHolder tempViewHolder = vHolder;
+                    vHolder.firstLineTypeImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            if (item.getLines().get(0).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                tempViewHolder.firstLineSeekBar.setProgress(100);
+                                Utils.toggleLine(item, 0, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                    @Override
+                                    public void onToggleSuccess() {
+                                        item.getLines().get(0).setPowerState(Line.LINE_STATE_ON);
+                                    }
 
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
-                        }
-                    }
-                });
-                vHolder.thirdLineLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tempViewHolder.thirdLineTypeImageView.performClick();
-                    }
-                });
+                                    @Override
+                                    public void onToggleFail() {
+                                        tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                        tempViewHolder.firstLineSeekBar.setProgress(0);
+                                    }
+                                });
+                            } else {
+                                //turn off this line
+                                tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                tempViewHolder.firstLineSeekBar.setProgress(0);
+                                Utils.toggleLine(item, 0, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                    @Override
+                                    public void onToggleSuccess() {
+                                        item.getLines().get(0).setPowerState(Line.LINE_STATE_OFF);
+                                    }
 
-                vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            if(controlsEnabled) {
-                                MySettings.setControlState(true);
-                                int x = seekBar.getProgress();
-                                double progressValue = x/10.0;
-                                int progress = (int) (progressValue);
-                                if(progress == 0){
-                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                                }else{
-                                    tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
-                                }
-                                if(placeMode==Place.PLACE_MODE_REMOTE) {
-                                    // dimming with delay
-                                    runnable=new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Utils.controlDimming(item, 0, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                                @Override
-                                                public void onDimmingSuccess() {
+                                    @Override
+                                    public void onToggleFail() {
+                                        tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                        tempViewHolder.firstLineSeekBar.setProgress(100);
+                                    }
+                                });
+                            }
+                            if (controlsEnabled) {
 
-                                                }
-
-                                                @Override
-                                                public void onDimmingFail() {
-
-                                                }
-                                            });
-                                        }
-                                    };
-                                    handler.removeCallbacksAndMessages(null);
-                                    handler.postDelayed(runnable,100);
-                                }
-                                else {
-                                    Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                        @Override
-                                        public void onDimmingSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onDimmingFail() {
-
-                                        }
-                                    });
-                                }
-                            }else{
+                            } else {
                                 Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                             }
                         }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        if(controlsEnabled) {
-                            MySettings.setControlState(true);
+                    });
+                    vHolder.firstLineLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tempViewHolder.firstLineTypeImageView.performClick();
                         }
-                    }
+                    });
+                    vHolder.secondLineTypeImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            if (item.getLines().get(1).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                tempViewHolder.secondLineSeekBar.setProgress(100);
+                                Utils.toggleLine(item, 1, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                    @Override
+                                    public void onToggleSuccess() {
+                                        item.getLines().get(1).setPowerState(Line.LINE_STATE_ON);
+                                    }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                                    @Override
+                                    public void onToggleFail() {
+                                        tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                        tempViewHolder.secondLineSeekBar.setProgress(0);
+                                    }
+                                });
+                            } else {
+                                //turn off this line
+                                tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                tempViewHolder.secondLineSeekBar.setProgress(0);
+                                Utils.toggleLine(item, 1, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                    @Override
+                                    public void onToggleSuccess() {
+                                        item.getLines().get(1).setPowerState(Line.LINE_STATE_OFF);
+                                    }
+
+                                    @Override
+                                    public void onToggleFail() {
+                                        tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                        tempViewHolder.secondLineSeekBar.setProgress(100);
+                                    }
+                                });
+                            }
+                            if (controlsEnabled) {
+
+                            } else {
+                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                            }
+                        }
+
+                    });
+                    vHolder.secondLineLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tempViewHolder.secondLineTypeImageView.performClick();
+                        }
+
+                    });
+                    vHolder.thirdLineTypeImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            if (item.getLines().get(2).getPowerState() == Line.LINE_STATE_OFF) {
+                                //turn on this line
+                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                tempViewHolder.thirdLineSeekBar.setProgress(100);
+                                Utils.toggleLine(item, 2, Line.LINE_STATE_ON, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                    @Override
+                                    public void onToggleSuccess() {
+                                        item.getLines().get(2).setPowerState(Line.LINE_STATE_ON);
+                                    }
+
+                                    @Override
+                                    public void onToggleFail() {
+                                        tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                        tempViewHolder.thirdLineSeekBar.setProgress(0);
+                                    }
+                                });
+                            } else {
+                                //turn off this line
+                                tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                tempViewHolder.thirdLineSeekBar.setProgress(0);
+                                Utils.toggleLine(item, 2, Line.LINE_STATE_OFF, placeMode, new Utils.LineToggler.ToggleCallback() {
+                                    @Override
+                                    public void onToggleSuccess() {
+                                        item.getLines().get(2).setPowerState(Line.LINE_STATE_OFF);
+                                    }
+
+                                    @Override
+                                    public void onToggleFail() {
+                                        tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                        tempViewHolder.thirdLineSeekBar.setProgress(100);
+                                    }
+                                });
+                            }
+                            if (controlsEnabled) {
+
+                            } else {
+                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                            }
+                        }
+                    });
+                    vHolder.thirdLineLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tempViewHolder.thirdLineTypeImageView.performClick();
+                        }
+                    });
+
+                    vHolder.firstLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            if (b) {
+                                if (controlsEnabled) {
+                                    MySettings.setControlState(true);
+                                    int x = seekBar.getProgress();
+                                    double progressValue = x / 10.0;
+                                    int progress = (int) (progressValue);
+                                    if (progress == 0) {
+                                        tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                    } else {
+                                        tempViewHolder.firstLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                    }
+                                    if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                        // dimming with delay
+                                        runnable = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Utils.controlDimming(item, 0, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                                    @Override
+                                                    public void onDimmingSuccess() {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onDimmingFail() {
+
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        handler.removeCallbacksAndMessages(null);
+                                        handler.postDelayed(runnable, 100);
+                                    } else {
+                                        Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                            @Override
+                                            public void onDimmingSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onDimmingFail() {
+
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                            if (controlsEnabled) {
+                                MySettings.setControlState(true);
+                            }
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
                         /*if(controlsEnabled) {
                             int i = seekBar.getProgress();
                             double progressValue = i/10.0;
@@ -542,71 +553,70 @@ public class DeviceAdapter extends ArrayAdapter {
                         }else{
                             Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }*/
-                    }
-                });
-                vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            if(controlsEnabled) {
-                                MySettings.setControlState(true);
-                                int x = seekBar.getProgress();
-                                double progressValue = x/10.0;
-                                int progress = (int) (progressValue);
-                                if(progress == 0){
-                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                                }else{
-                                    tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                        }
+                    });
+                    vHolder.secondLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            if (b) {
+                                if (controlsEnabled) {
+                                    MySettings.setControlState(true);
+                                    int x = seekBar.getProgress();
+                                    double progressValue = x / 10.0;
+                                    int progress = (int) (progressValue);
+                                    if (progress == 0) {
+                                        tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                    } else {
+                                        tempViewHolder.secondLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                    }
+                                    if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                        // dimming with delay
+                                        runnable = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Utils.controlDimming(item, 1, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                                    @Override
+                                                    public void onDimmingSuccess() {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onDimmingFail() {
+
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        handler.removeCallbacksAndMessages(null);
+                                        handler.postDelayed(runnable, 100);
+                                    } else {
+                                        Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                            @Override
+                                            public void onDimmingSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onDimmingFail() {
+
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                                 }
-                                if(placeMode==Place.PLACE_MODE_REMOTE) {
-                                    // dimming with delay
-                                    runnable=new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Utils.controlDimming(item, 1, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                                @Override
-                                                public void onDimmingSuccess() {
-
-                                                }
-
-                                                @Override
-                                                public void onDimmingFail() {
-
-                                                }
-                                            });
-                                        }
-                                    };
-                                    handler.removeCallbacksAndMessages(null);
-                                    handler.postDelayed(runnable,100);
-                                }
-                                else {
-                                    Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                        @Override
-                                        public void onDimmingSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onDimmingFail() {
-
-                                        }
-                                    });
-                                }
-                            }else{
-                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                             }
                         }
-                    }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        if(controlsEnabled) {
-                            MySettings.setControlState(true);
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                            if (controlsEnabled) {
+                                MySettings.setControlState(true);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
                         /*if(controlsEnabled) {
                             int i = seekBar.getProgress();
                             double progressValue = i/10.0;
@@ -625,71 +635,70 @@ public class DeviceAdapter extends ArrayAdapter {
                         }else{
                             Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }*/
-                    }
-                });
-                vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            if(controlsEnabled) {
-                                MySettings.setControlState(true);
-                                int x = seekBar.getProgress();
-                                double progressValue = x/10.0;
-                                int progress = (int) (progressValue);
-                                if(progress == 0){
-                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
-                                }else{
-                                    tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                        }
+                    });
+                    vHolder.thirdLineSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            if (b) {
+                                if (controlsEnabled) {
+                                    MySettings.setControlState(true);
+                                    int x = seekBar.getProgress();
+                                    double progressValue = x / 10.0;
+                                    int progress = (int) (progressValue);
+                                    if (progress == 0) {
+                                        tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_off_background);
+                                    } else {
+                                        tempViewHolder.thirdLineTypeImageView.setBackgroundResource(R.drawable.rooms_dashboard_line_on_background);
+                                    }
+                                    if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                        // dimming with delay
+                                        runnable = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                                    @Override
+                                                    public void onDimmingSuccess() {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onDimmingFail() {
+
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        handler.removeCallbacksAndMessages(null);
+                                        handler.postDelayed(runnable, 100);
+                                    } else {
+                                        Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                            @Override
+                                            public void onDimmingSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onDimmingFail() {
+
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                                 }
-                                if(placeMode==Place.PLACE_MODE_REMOTE) {
-                                 // dimming with delay
-                                    runnable=new Runnable() {
-                                     @Override
-                                     public void run() {
-                                         Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                             @Override
-                                             public void onDimmingSuccess() {
-
-                                             }
-
-                                             @Override
-                                             public void onDimmingFail() {
-
-                                             }
-                                         });
-                                     }
-                                 };
-                                   handler.removeCallbacksAndMessages(null);
-                                   handler.postDelayed(runnable,100);
-                                }
-                                else {
-                                    Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
-                                        @Override
-                                        public void onDimmingSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onDimmingFail() {
-
-                                        }
-                                    });
-                                }
-                            }else{
-                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                             }
                         }
-                    }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        if(controlsEnabled) {
-                            MySettings.setControlState(true);
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                            if (controlsEnabled) {
+                                MySettings.setControlState(true);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
                         /*if(controlsEnabled) {
                             int i = seekBar.getProgress();
                             double progressValue = i/10.0;
@@ -708,944 +717,948 @@ public class DeviceAdapter extends ArrayAdapter {
                         }else{
                             Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }*/
-                    }
-                });
+                        }
+                    });
 
-                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
+                    vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            PopupMenu popup = new PopupMenu(activity, view);
+                            popup.getMenuInflater().inflate(R.menu.menu_line, popup.getMenu());
 
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.action_device_info){
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                                    deviceInfoFragment.setDevice(item);
-                                    deviceInfoFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
-                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device){
-                                    MySettings.setTempDevice(item);
-
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
-                                    editDeviceFragment.setPlaceMode(placeMode);
-                                    editDeviceFragment.setMqttClient(mqttAndroidClient);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device_location){
-                                    MySettings.setTempDevice(item);
-
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
-                                    editDeviceLocationFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_update_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item1) {
+                                    int id = item1.getItemId();
+                                    if (id == R.id.action_device_info) {
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                        deviceInfoFragment.setDevice(item);
+                                        deviceInfoFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                        fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                        fragmentTransaction.commit();
+                                    } else if (id == R.id.action_edit_device) {
                                         MySettings.setTempDevice(item);
 
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        EditDeviceFragment editDeviceFragment = new EditDeviceFragment();
+                                        editDeviceFragment.setPlaceMode(placeMode);
+                                        editDeviceFragment.setMqttClient(mqttAndroidClient);
+                                        fragmentTransaction.replace(R.id.fragment_view, editDeviceFragment, "editDeviceFragment");
+                                        fragmentTransaction.addToBackStack("editDeviceFragment");
                                         fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                    } else if (id == R.id.action_edit_device_location) {
+                                        MySettings.setTempDevice(item);
+
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                        editDeviceLocationFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                        fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                        fragmentTransaction.commit();
+                                    } else if (id == R.id.action_update_device) {
+                                        if (placeMode == Place.PLACE_MODE_LOCAL) {
+                                            MySettings.setTempDevice(item);
+
+                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                            UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                            fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                            fragmentTransaction.commit();
+                                        } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                            Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                        }
+                                    } else if (id == R.id.action_remove_device) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                                //set icon
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                //set title
+                                                .setTitle(Utils.getString(activity, R.string.remove_unit_question))
+                                                //set message
+                                                .setMessage(Utils.getString(activity, R.string.remove_unit_message))
+                                                //set positive button
+                                                .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what would happen when positive button is clicked
+                                                        removeDevice(item);
+                                                    }
+                                                })
+                                                //set negative button
+                                                .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what should happen when negative button is clicked
+                                                    }
+                                                })
+                                                .show();
                                     }
-                                }else if(id == R.id.action_remove_device){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                            //set icon
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            //set title
-                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
-                                            //set message
-                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
-                                            //set positive button
-                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what would happen when positive button is clicked
-                                                    removeDevice(item);
-                                                }
-                                            })
-                                            //set negative button
-                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what should happen when negative button is clicked
-                                                }
-                                            })
-                                            .show();
+                                    return true;
                                 }
-                                return true;
+                            });
+                        }
+                    });
+
+                    vHolder.firstLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.firstLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.secondLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.secondLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.thirdLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.thirdLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+
+                    vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (tempViewHolder.deviceLinesLayout.getVisibility() == View.VISIBLE) {
+                                tempViewHolder.deviceLinesLayout.setVisibility(View.GONE);
+                            } else if (tempViewHolder.deviceLinesLayout.getVisibility() == View.GONE) {
+                                tempViewHolder.deviceLinesLayout.setVisibility(View.VISIBLE);
                             }
-                        });
-                    }
-                });
+                        }
+                    });
+                }
+            } else if (viewType == 1) {
+                if (rowView == null) {
+                    LayoutInflater inflater = activity.getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.list_item_device_sound_system_controller, null);
+                    vHolder = new ViewHolder();
+                    vHolder.soundDeviceLayout = rowView.findViewById(R.id.device_layout);
+                    vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                    vHolder.soundDeviceNameTextView = rowView.findViewById(R.id.sound_device_name_textview);
+                    vHolder.speakerVolumeSeekBar = rowView.findViewById(R.id.device_volume_seekbar);
+                    vHolder.speakersLayout = rowView.findViewById(R.id.speakers_layout);
+                    vHolder.deviceModeLayout = rowView.findViewById(R.id.active_mode_layout);
+                    vHolder.deviceModeTextView = rowView.findViewById(R.id.device_active_mode_textview);
+                    vHolder.deviceModeArrowImageView = rowView.findViewById(R.id.mode_arrow_imageview);
+                    vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
+                    vHolder.soundDeviceTypeImageView = rowView.findViewById(R.id.device_type_imageview);
+                    vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                    vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                    vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                    vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
+                    vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                    vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                    vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                    vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
 
-                vHolder.firstLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.firstLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.secondLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.secondLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.thirdLineTypeImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.thirdLineLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
+                    vHolder.speakerVolumeSeekBar.setMax(100);
 
-                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(tempViewHolder.deviceLinesLayout.getVisibility() == View.VISIBLE) {
-                            tempViewHolder.deviceLinesLayout.setVisibility(View.GONE);
-                        }else if(tempViewHolder.deviceLinesLayout.getVisibility() == View.GONE) {
-                            tempViewHolder.deviceLinesLayout.setVisibility(View.VISIBLE);
+                    rowView.setTag(vHolder);
+                } else {
+                    vHolder = (ViewHolder) rowView.getTag();
+                }
+
+                if (item != null) {
+                    populateSoundSystemDeviceData(item);
+
+                    if (placeMode == Place.PLACE_MODE_LOCAL) {
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+
+                        if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                            vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                            vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                        }
+                    } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+
+                        if (item.isDeviceMQTTReachable()) {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                            vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                        } else {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                            vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                         }
                     }
-                });
-            }
-        }else if(viewType == 1){
-            if(rowView == null){
-                LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.list_item_device_sound_system_controller, null);
-                vHolder = new ViewHolder();
-                vHolder.soundDeviceLayout = rowView.findViewById(R.id.device_layout);
-                vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
-                vHolder.soundDeviceNameTextView = rowView.findViewById(R.id.sound_device_name_textview);
-                vHolder.speakerVolumeSeekBar = rowView.findViewById(R.id.device_volume_seekbar);
-                vHolder.speakersLayout = rowView.findViewById(R.id.speakers_layout);
-                vHolder.deviceModeLayout = rowView.findViewById(R.id.active_mode_layout);
-                vHolder.deviceModeTextView = rowView.findViewById(R.id.device_active_mode_textview);
-                vHolder.deviceModeArrowImageView = rowView.findViewById(R.id.mode_arrow_imageview);
-                vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
-                vHolder.soundDeviceTypeImageView = rowView.findViewById(R.id.device_type_imageview);
-                vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
-                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
-                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
-                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
-                vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
-                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
-                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
-                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
 
-                vHolder.speakerVolumeSeekBar.setMax(100);
+                    if (item.getLastSeenTimestamp() != 0) {
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
 
-                rowView.setTag(vHolder);
-            }
-            else{
-                vHolder = (ViewHolder) rowView.getTag();
-            }
+                        //show full date if not same day (if it's a new day)
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        long currentTimestamp = cal2.getTimeInMillis();
+                        cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                        cal2.setTimeInMillis(currentTimestamp);
+                        boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                        if (!sameDay) {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                        } else {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                        }
 
-            if(item != null){
-                populateSoundSystemDeviceData(item);
-
-                if(placeMode == Place.PLACE_MODE_LOCAL) {
-                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-
-                    if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                     } else {
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
-                    }
-                }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                    vHolder.scanningNetworkLayout.setVisibility(View.GONE);
-
-                    if(item.isDeviceMQTTReachable()){
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-                    }else{
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.soundDeviceLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-
-                    //show full date if not same day (if it's a new day)
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    long currentTimestamp = cal2.getTimeInMillis();
-                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
-                    cal2.setTimeInMillis(currentTimestamp);
-                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-                    if (!sameDay) {
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
-                    }else{
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                        //vHolder.lastSeenLayout.setVisibility(View.GONE);
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                     }
 
-                }else{
-                    //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-                }
-
-                if(item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/){
-                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
-                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                MySettings.setTempDevice(item);
-
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                fragmentTransaction.commit();
-                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
-                            }
-                        }
-                    });
-                }else{
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
-                }
-
-                final ViewHolder tempViewHolder = vHolder;
-                vHolder.deviceModeArrowImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_mode_switcher, popup.getMenu());
-
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    if (item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/) {
+                        //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                        vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.mode_line_1){
-                                    changeMode(item, SoundDeviceData.MODE_LINE_IN);
-                                }else if(id == R.id.mode_line_2){
-                                    changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
-                                }else if(id == R.id.mode_upnp){
-                                    changeMode(item, SoundDeviceData.MODE_UPNP);
-                                }else if(id == R.id.mode_usb){
-                                    changeMode(item, SoundDeviceData.MODE_USB);
-                                }
-                                return true;
-                            }
-                        });
-                    }
-                });
-                vHolder.deviceModeLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tempViewHolder.deviceModeArrowImageView.performClick();
-                    }
-                });
-                vHolder.soundDeviceLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tempViewHolder.deviceModeArrowImageView.performClick();
-                    }
-                });
-                vHolder.speakerVolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        if(b) {
-                            if(!MySettings.isControlActive()){
-                                //controlDimming(item, 0, i);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        MySettings.setControlState(true);
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        int i = seekBar.getProgress();
-                        controlVolume(item, 0, i); //control Volume
-                    }
-                });
-                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_device_sound_system, popup.getMenu());
-
-                        popup.getMenu().findItem(R.id.action_update_device).setVisible(false);
-
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.action_device_info){
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                                    deviceInfoFragment.setDevice(item);
-                                    deviceInfoFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
-                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device_location){
+                            public void onClick(View v) {
+                                if (placeMode == Place.PLACE_MODE_LOCAL) {
                                     MySettings.setTempDevice(item);
 
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
-                                    editDeviceLocationFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                     fragmentTransaction.commit();
-                                }else if(id == R.id.action_update_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                        MySettings.setTempDevice(item);
-
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                        fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
-                                    }
-                                }else if(id == R.id.action_remove_device){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                            //set icon
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            //set title
-                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
-                                            //set message
-                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
-                                            //set positive button
-                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what would happen when positive button is clicked
-                                                    removeDevice(item);
-                                                }
-                                            })
-                                            //set negative button
-                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what should happen when negative button is clicked
-                                                }
-                                            })
-                                            .show();
+                                } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
                                 }
-                                return true;
                             }
                         });
-                    }
-                });
-
-                vHolder.soundDeviceLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-
-                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(tempViewHolder.soundDeviceLayout.getVisibility() == View.VISIBLE) {
-                            tempViewHolder.soundDeviceLayout.setVisibility(View.GONE);
-                           }else if(tempViewHolder.soundDeviceLayout.getVisibility() == View.GONE) {
-                            tempViewHolder.soundDeviceLayout.setVisibility(View.VISIBLE);
-                          }
-                    }
-                });
-            }
-        }else if(viewType == 2){
-            if(rowView == null){
-                LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.list_item_device_pir_sensor, null);
-                vHolder = new ViewHolder();
-                vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
-                vHolder.pirDeviceNameTextView = rowView.findViewById(R.id.pir_textvie);
-                vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
-                vHolder.pirLayout = rowView.findViewById(R.id.pir_layout);
-                vHolder.pirTypeImageView = rowView.findViewById(R.id.pir_type_imageview);
-                vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
-                vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
-                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
-                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
-                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
-                vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
-                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
-                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
-                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
-
-                rowView.setTag(vHolder);
-            }
-            else{
-                vHolder = (ViewHolder) rowView.getTag();
-            }
-
-            if(item != null){
-                populatePIRData(item);
-
-                if(placeMode == Place.PLACE_MODE_LOCAL) {
-                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-
-                    if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
                     } else {
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
-                    }
-                }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                    vHolder.scanningNetworkLayout.setVisibility(View.GONE);
-
-                    if(item.isDeviceMQTTReachable()){
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-                    }else{
-                        //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-
-                    //show full date if not same day (if it's a new day)
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    long currentTimestamp = cal2.getTimeInMillis();
-                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
-                    cal2.setTimeInMillis(currentTimestamp);
-                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-                    if (!sameDay) {
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
-                    }else{
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                        vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                     }
 
-                }else{
-                    //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-                }
-
-                if(item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/){
-                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
-                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                    final ViewHolder tempViewHolder = vHolder;
+                    vHolder.deviceModeArrowImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View v) {
-                            if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                MySettings.setTempDevice(item);
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                fragmentTransaction.commit();
-                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
-                            }
+                            PopupMenu popup = new PopupMenu(activity, view);
+                            popup.getMenuInflater().inflate(R.menu.menu_mode_switcher, popup.getMenu());
+
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item1) {
+                                    int id = item1.getItemId();
+                                    if (id == R.id.mode_line_1) {
+                                        changeMode(item, SoundDeviceData.MODE_LINE_IN);
+                                    } else if (id == R.id.mode_line_2) {
+                                        changeMode(item, SoundDeviceData.MODE_LINE_IN_2);
+                                    } else if (id == R.id.mode_upnp) {
+                                        changeMode(item, SoundDeviceData.MODE_UPNP);
+                                    } else if (id == R.id.mode_usb) {
+                                        changeMode(item, SoundDeviceData.MODE_USB);
+                                    }
+                                    return true;
+                                }
+                            });
                         }
                     });
-                }else{
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
-                }
+                    vHolder.deviceModeLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tempViewHolder.deviceModeArrowImageView.performClick();
+                        }
+                    });
+                    vHolder.soundDeviceLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tempViewHolder.deviceModeArrowImageView.performClick();
+                        }
+                    });
+                    vHolder.speakerVolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            if (b) {
+                                if (!MySettings.isControlActive()) {
+                                    //controlDimming(item, 0, i);
+                                }
+                            }
+                        }
 
-                final ViewHolder tempViewHolder = vHolder;
-                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_pir, popup.getMenu());
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                            MySettings.setControlState(true);
+                        }
 
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.action_device_info){
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                                    deviceInfoFragment.setDevice(item);
-                                    deviceInfoFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
-                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+                            int i = seekBar.getProgress();
+                            controlVolume(item, 0, i); //control Volume
+                        }
+                    });
+                    vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            PopupMenu popup = new PopupMenu(activity, view);
+                            popup.getMenuInflater().inflate(R.menu.menu_device_sound_system, popup.getMenu());
+
+                            popup.getMenu().findItem(R.id.action_update_device).setVisible(false);
+
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item1) {
+                                    int id = item1.getItemId();
+                                    if (id == R.id.action_device_info) {
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                        deviceInfoFragment.setDevice(item);
+                                        deviceInfoFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                        fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                        fragmentTransaction.commit();
+                                    } else if (id == R.id.action_edit_device_location) {
                                         MySettings.setTempDevice(item);
 
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        EditDevicePIRFragment editDevicePIRFragment = new EditDevicePIRFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, editDevicePIRFragment, "editDevicePIRFragment");
-                                        fragmentTransaction.addToBackStack("editDevicePIRFragment");
+                                        EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                        editDeviceLocationFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                        fragmentTransaction.addToBackStack("editDeviceLocationFragment");
                                         fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                    } else if (id == R.id.action_update_device) {
+                                        if (placeMode == Place.PLACE_MODE_LOCAL) {
+                                            MySettings.setTempDevice(item);
+
+                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                            UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                            fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                            fragmentTransaction.commit();
+                                        } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                            Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                        }
+                                    } else if (id == R.id.action_remove_device) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                                //set icon
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                //set title
+                                                .setTitle(Utils.getString(activity, R.string.remove_unit_question))
+                                                //set message
+                                                .setMessage(Utils.getString(activity, R.string.remove_unit_message))
+                                                //set positive button
+                                                .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what would happen when positive button is clicked
+                                                        removeDevice(item);
+                                                    }
+                                                })
+                                                //set negative button
+                                                .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what should happen when negative button is clicked
+                                                    }
+                                                })
+                                                .show();
                                     }
-                                }else if(id == R.id.action_edit_device_location){
+                                    return true;
+                                }
+                            });
+                        }
+                    });
+
+                    vHolder.soundDeviceLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+
+                    vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (tempViewHolder.soundDeviceLayout.getVisibility() == View.VISIBLE) {
+                                tempViewHolder.soundDeviceLayout.setVisibility(View.GONE);
+                            } else if (tempViewHolder.soundDeviceLayout.getVisibility() == View.GONE) {
+                                tempViewHolder.soundDeviceLayout.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+            } else if (viewType == 2) {
+                if (rowView == null) {
+                    LayoutInflater inflater = activity.getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.list_item_device_pir_sensor, null);
+                    vHolder = new ViewHolder();
+                    vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                    vHolder.pirDeviceNameTextView = rowView.findViewById(R.id.pir_textvie);
+                    vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
+                    vHolder.pirLayout = rowView.findViewById(R.id.pir_layout);
+                    vHolder.pirTypeImageView = rowView.findViewById(R.id.pir_type_imageview);
+                    vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
+                    vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                    vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                    vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                    vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
+                    vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                    vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                    vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                    vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+
+                    rowView.setTag(vHolder);
+                } else {
+                    vHolder = (ViewHolder) rowView.getTag();
+                }
+
+                if (item != null) {
+                    populatePIRData(item);
+
+                    if (placeMode == Place.PLACE_MODE_LOCAL) {
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+
+                        if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                            vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                            vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                        }
+                    } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+
+                        if (item.isDeviceMQTTReachable()) {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
+
+                            vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                        } else {
+                            //vHolder.soundDeviceNameTextView.setPaintFlags(vHolder.soundDeviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.pirLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                            vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    if (item.getLastSeenTimestamp() != 0) {
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+
+                        //show full date if not same day (if it's a new day)
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        long currentTimestamp = cal2.getTimeInMillis();
+                        cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                        cal2.setTimeInMillis(currentTimestamp);
+                        boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                        if (!sameDay) {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                        } else {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
+                        }
+
+                    } else {
+                        //vHolder.lastSeenLayout.setVisibility(View.GONE);
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    if (item.isFirmwareUpdateAvailable() /*|| item.isHwFirmwareUpdateAvailable()*/) {
+                        //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                        vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (placeMode == Place.PLACE_MODE_LOCAL) {
                                     MySettings.setTempDevice(item);
 
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
-                                    editDeviceLocationFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                     fragmentTransaction.commit();
-                                }else if(id == R.id.action_update_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                }
+                            }
+                        });
+                    } else {
+                        vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
+                    }
+
+                    final ViewHolder tempViewHolder = vHolder;
+                    vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            PopupMenu popup = new PopupMenu(activity, view);
+                            popup.getMenuInflater().inflate(R.menu.menu_pir, popup.getMenu());
+
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item1) {
+                                    int id = item1.getItemId();
+                                    if (id == R.id.action_device_info) {
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                        deviceInfoFragment.setDevice(item);
+                                        deviceInfoFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                        fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                        fragmentTransaction.commit();
+                                    } else if (id == R.id.action_edit_device) {
+                                        if (placeMode == Place.PLACE_MODE_LOCAL) {
+                                            MySettings.setTempDevice(item);
+
+                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                            EditDevicePIRFragment editDevicePIRFragment = new EditDevicePIRFragment();
+                                            fragmentTransaction.replace(R.id.fragment_view, editDevicePIRFragment, "editDevicePIRFragment");
+                                            fragmentTransaction.addToBackStack("editDevicePIRFragment");
+                                            fragmentTransaction.commit();
+                                        } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                            Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                        }
+                                    } else if (id == R.id.action_edit_device_location) {
                                         MySettings.setTempDevice(item);
 
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                        editDeviceLocationFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                        fragmentTransaction.addToBackStack("editDeviceLocationFragment");
                                         fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                    } else if (id == R.id.action_update_device) {
+                                        if (placeMode == Place.PLACE_MODE_LOCAL) {
+                                            MySettings.setTempDevice(item);
+
+                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                            UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                            fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                            fragmentTransaction.commit();
+                                        } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                            Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                        }
+                                    } else if (id == R.id.action_remove_device) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                                //set icon
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                //set title
+                                                .setTitle(Utils.getString(activity, R.string.remove_unit_question))
+                                                //set message
+                                                .setMessage(Utils.getString(activity, R.string.remove_unit_message))
+                                                //set positive button
+                                                .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what would happen when positive button is clicked
+                                                        removeDevice(item);
+                                                    }
+                                                })
+                                                //set negative button
+                                                .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what should happen when negative button is clicked
+                                                    }
+                                                })
+                                                .show();
                                     }
-                                }else if(id == R.id.action_remove_device){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                            //set icon
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            //set title
-                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
-                                            //set message
-                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
-                                            //set positive button
-                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what would happen when positive button is clicked
-                                                    removeDevice(item);
-                                                }
-                                            })
-                                            //set negative button
-                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what should happen when negative button is clicked
-                                                }
-                                            })
-                                            .show();
+                                    return true;
                                 }
-                                return true;
-                            }
-                        });
-                    }
-                });
-
-                vHolder.pirLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-
-                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(tempViewHolder.pirLayout.getVisibility() == View.VISIBLE) {
-                            tempViewHolder.pirLayout.setVisibility(View.GONE);
-                        }else if(tempViewHolder.pirLayout.getVisibility() == View.GONE) {
-                            tempViewHolder.pirLayout.setVisibility(View.VISIBLE);
+                            });
                         }
-                    }
-                });
-            }
-        }else if(viewType == 3){
-            if(rowView == null){
-                LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.list_item_device_shutter, null);
-                vHolder = new ViewHolder();
-                vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
-                vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
-                vHolder.shutterLayout = rowView.findViewById(R.id.shutter_layout);
-                vHolder.deviceAdvancedOptionsButton= rowView.findViewById(R.id.device_advanced_options_button);
-                vHolder.shutterDownImageView = rowView.findViewById(R.id.shutter_down_imageview);
-                vHolder.shutterStopImageView = rowView.findViewById(R.id.shutter_stop_imageview);
-                vHolder.shutterUpImageView = rowView.findViewById(R.id.shutter_up_imageview);
-                vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
-                vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
-                vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
-                vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
-                vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
-                vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
-                vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
-                vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+                    });
 
-                rowView.setTag(vHolder);
-            }
-            else{
-                vHolder = (ViewHolder) rowView.getTag();
-            }
-
-            if(item != null){
-                if(placeMode == Place.PLACE_MODE_LOCAL){
-                    vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-
-                    if(item.getIpAddress() == null || item.getIpAddress().length() <= 1){
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
-                    }else{
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
-                    }
-                }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                    vHolder.scanningNetworkLayout.setVisibility(View.GONE);
-
-                    if(item.isDeviceMQTTReachable()){
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
-
-                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
-                    }else{
-                        vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
-
-                        vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-
-
-                if(item.getLastSeenTimestamp() != 0) {
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-
-                    //show full date if not same day (if it's a new day)
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    long currentTimestamp = cal2.getTimeInMillis();
-                    cal1.setTimeInMillis(item.getLastSeenTimestamp());
-                    cal2.setTimeInMillis(currentTimestamp);
-                    boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-                    if (!sameDay) {
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
-                    }else{
-                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
-                    }
-
-                }else{
-                    //vHolder.lastSeenLayout.setVisibility(View.GONE);
-                    vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
-                    vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
-                }
-
-                if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
-                    populateLineData(item);
-                }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
-                        item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines|| item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines){
-                    populatePlugLineData(item);
-                }
-
-                controlsEnabled = true;
-
-                if(item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()){
-                 //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
-                    if(item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1){
-                        Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
-                        if(currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION){
-                            controlsEnabled = false;
+                    vHolder.pirLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
                         }
-                    }
-                    vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
+                    });
+
+                    vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(placeMode == Place.PLACE_MODE_LOCAL) {
-                                MySettings.setTempDevice(item);
-
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
-                                fragmentTransaction.commit();
-                            }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                            if (tempViewHolder.pirLayout.getVisibility() == View.VISIBLE) {
+                                tempViewHolder.pirLayout.setVisibility(View.GONE);
+                            } else if (tempViewHolder.pirLayout.getVisibility() == View.GONE) {
+                                tempViewHolder.pirLayout.setVisibility(View.VISIBLE);
                             }
                         }
                     });
-                }else{
-                    vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
+                }
+            } else if (viewType == 3) {
+                if (rowView == null) {
+                    LayoutInflater inflater = activity.getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.list_item_device_shutter, null);
+                    vHolder = new ViewHolder();
+                    vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                    vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
+                    vHolder.shutterLayout = rowView.findViewById(R.id.shutter_layout);
+                    vHolder.deviceAdvancedOptionsButton = rowView.findViewById(R.id.device_advanced_options_button);
+                    vHolder.shutterDownImageView = rowView.findViewById(R.id.shutter_down_imageview);
+                    vHolder.shutterStopImageView = rowView.findViewById(R.id.shutter_stop_imageview);
+                    vHolder.shutterUpImageView = rowView.findViewById(R.id.shutter_up_imageview);
+                    vHolder.scanningNetworkLayout = rowView.findViewById(R.id.scanning_network_layout);
+                    vHolder.lastSeenLayout = rowView.findViewById(R.id.last_seen_layout);
+                    vHolder.lastSeenTextView = rowView.findViewById(R.id.last_seen_textview);
+                    vHolder.lastSeenImageView = rowView.findViewById(R.id.last_seen_imageview);
+                    vHolder.firmwareUpadteAvailableLayout = rowView.findViewById(R.id.firmware_available_layout);
+                    vHolder.mqttReachabilityLayout = rowView.findViewById(R.id.mqtt_reachability_layout);
+                    vHolder.deviceLinesLayout = rowView.findViewById(R.id.device_lines_layout);
+                    vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
+
+                    rowView.setTag(vHolder);
+                } else {
+                    vHolder = (ViewHolder) rowView.getTag();
                 }
 
-                vHolder.deviceNameTextView.setText(""+item.getName());
+                if (item != null) {
+                    if (placeMode == Place.PLACE_MODE_LOCAL) {
+                        vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
 
+                        if (item.getIpAddress() == null || item.getIpAddress().length() <= 1) {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
 
-                final ViewHolder tempViewHolder = vHolder;
-                vHolder.shutterDownImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                        //shutter down
-                        Utils.toggleShutter(item, Device.SHUTTER_ACTION_DOWN, placeMode, new Utils.ShutterToggler.ToggleCallback() {
-                            @Override
-                            public void onToggleSuccess() {
+                            vHolder.scanningNetworkLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
-                            }
-                            @Override
-                            public void onToggleFail() {
+                            vHolder.scanningNetworkLayout.setVisibility(View.GONE);
+                        }
+                    } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                        vHolder.scanningNetworkLayout.setVisibility(View.GONE);
 
-                            }
-                        });
-                        if(controlsEnabled){
+                        if (item.isDeviceMQTTReachable()) {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.whiteColor));
 
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                            vHolder.mqttReachabilityLayout.setVisibility(View.GONE);
+                        } else {
+                            vHolder.deviceNameTextView.setPaintFlags(vHolder.deviceNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            //vHolder.shutterLayout.setBackgroundColor(activity.getResources().getColor(R.color.lightestGrayColor));
+
+                            vHolder.mqttReachabilityLayout.setVisibility(View.VISIBLE);
                         }
                     }
-                });
-                vHolder.shutterStopImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                        //shutter stop
-                        Utils.toggleShutter(item, Device.SHUTTER_ACTION_STOP, placeMode, new Utils.ShutterToggler.ToggleCallback() {
-                            @Override
-                            public void onToggleSuccess() {
 
-                            }
-                            @Override
-                            public void onToggleFail() {
 
-                            }
-                        });
-                        if(controlsEnabled){
+                    if (item.getLastSeenTimestamp() != 0) {
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
 
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                        //show full date if not same day (if it's a new day)
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        long currentTimestamp = cal2.getTimeInMillis();
+                        cal1.setTimeInMillis(item.getLastSeenTimestamp());
+                        cal2.setTimeInMillis(currentTimestamp);
+                        boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+                        if (!sameDay) {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringDateHoursMinutes(item.getLastSeenTimestamp())));
+                        } else {
+                            vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, Utils.getTimeStringHoursMinutesSeconds(item.getLastSeenTimestamp())));
                         }
+
+                    } else {
+                        //vHolder.lastSeenLayout.setVisibility(View.GONE);
+                        vHolder.lastSeenTextView.setText(Utils.getStringExtraText(activity, R.string.last_seen, "--:--"));
+                        vHolder.lastSeenLayout.setVisibility(View.VISIBLE);
                     }
-                });
-                vHolder.shutterUpImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
-                        //shutter up
-                        Utils.toggleShutter(item, Device.SHUTTER_ACTION_UP, placeMode, new Utils.ShutterToggler.ToggleCallback() {
-                            @Override
-                            public void onToggleSuccess() {
 
+                    if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_workaround) {
+                        populateLineData(item);
+                    } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines ||
+                            item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                        populatePlugLineData(item);
+                    }
+
+                    controlsEnabled = true;
+
+                    if (item.isFirmwareUpdateAvailable() || item.isHwFirmwareUpdateAvailable()) {
+                        //   vHolder.firmwareUpadteAvailableLayout.setVisibility(View.VISIBLE);
+                        if (item.getFirmwareVersion() != null && item.getFirmwareVersion().length() >= 1) {
+                            Integer currentVersion = Integer.valueOf(item.getFirmwareVersion());
+                            if (currentVersion <= Device.SYNC_CONTROLS_STATUS_FIRMWARE_VERSION) {
+                                controlsEnabled = false;
                             }
-                            @Override
-                            public void onToggleFail() {
-
-                            }
-                        });
-                        if(controlsEnabled){
-
-                        }else{
-                            Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
                         }
-                    }
-                });
-
-                vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.menu_shutter, popup.getMenu());
-
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        vHolder.firmwareUpadteAvailableLayout.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public boolean onMenuItemClick(MenuItem item1) {
-                                int id = item1.getItemId();
-                                if(id == R.id.action_device_info){
-                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                    fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                                    deviceInfoFragment.setDevice(item);
-                                    deviceInfoFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
-                                    fragmentTransaction.addToBackStack("deviceInfoFragment");
-                                    fragmentTransaction.commit();
-                                }else if(id == R.id.action_edit_device_location){
+                            public void onClick(View v) {
+                                if (placeMode == Place.PLACE_MODE_LOCAL) {
                                     MySettings.setTempDevice(item);
 
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                     fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                    EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
-                                    editDeviceLocationFragment.setPlaceMode(placeMode);
-                                    fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
-                                    fragmentTransaction.addToBackStack("editDeviceLocationFragment");
+                                    UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                    fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                    fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
                                     fragmentTransaction.commit();
-                                }else if(id == R.id.action_update_device){
-                                    if(placeMode == Place.PLACE_MODE_LOCAL) {
+                                } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                    Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                }
+                            }
+                        });
+                    } else {
+                        vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
+                    }
+
+                    vHolder.deviceNameTextView.setText("" + item.getName());
+
+
+                    final ViewHolder tempViewHolder = vHolder;
+                    vHolder.shutterDownImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            //shutter down
+                            Utils.toggleShutter(item, Device.SHUTTER_ACTION_DOWN, placeMode, new Utils.ShutterToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+
+                                @Override
+                                public void onToggleFail() {
+
+                                }
+                            });
+                            if (controlsEnabled) {
+
+                            } else {
+                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                            }
+                        }
+                    });
+                    vHolder.shutterStopImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            //shutter stop
+                            Utils.toggleShutter(item, Device.SHUTTER_ACTION_STOP, placeMode, new Utils.ShutterToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+
+                                @Override
+                                public void onToggleFail() {
+
+                                }
+                            });
+                            if (controlsEnabled) {
+
+                            } else {
+                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                            }
+                        }
+                    });
+                    vHolder.shutterUpImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.image_on_click_animation));
+                            //shutter up
+                            Utils.toggleShutter(item, Device.SHUTTER_ACTION_UP, placeMode, new Utils.ShutterToggler.ToggleCallback() {
+                                @Override
+                                public void onToggleSuccess() {
+
+                                }
+
+                                @Override
+                                public void onToggleFail() {
+
+                                }
+                            });
+                            if (controlsEnabled) {
+
+                            } else {
+                                Utils.showToast(activity, Utils.getString(activity, R.string.firmware_update_required), true);
+                            }
+                        }
+                    });
+
+                    vHolder.deviceAdvancedOptionsButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            PopupMenu popup = new PopupMenu(activity, view);
+                            popup.getMenuInflater().inflate(R.menu.menu_shutter, popup.getMenu());
+
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item1) {
+                                    int id = item1.getItemId();
+                                    if (id == R.id.action_device_info) {
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                        DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                                        deviceInfoFragment.setDevice(item);
+                                        deviceInfoFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, deviceInfoFragment, "deviceInfoFragment");
+                                        fragmentTransaction.addToBackStack("deviceInfoFragment");
+                                        fragmentTransaction.commit();
+                                    } else if (id == R.id.action_edit_device_location) {
                                         MySettings.setTempDevice(item);
 
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
-                                        UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
-                                        fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
-                                        fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                        EditDeviceLocationFragment editDeviceLocationFragment = new EditDeviceLocationFragment();
+                                        editDeviceLocationFragment.setPlaceMode(placeMode);
+                                        fragmentTransaction.replace(R.id.fragment_view, editDeviceLocationFragment, "editDeviceLocationFragment");
+                                        fragmentTransaction.addToBackStack("editDeviceLocationFragment");
                                         fragmentTransaction.commit();
-                                    }else if(placeMode == Place.PLACE_MODE_REMOTE){
-                                        Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                    } else if (id == R.id.action_update_device) {
+                                        if (placeMode == Place.PLACE_MODE_LOCAL) {
+                                            MySettings.setTempDevice(item);
+
+                                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                            fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                                            UpdateDeviceIntroFragment updateDeviceIntroFragment = new UpdateDeviceIntroFragment();
+                                            fragmentTransaction.replace(R.id.fragment_view, updateDeviceIntroFragment, "updateDeviceIntroFragment");
+                                            fragmentTransaction.addToBackStack("updateDeviceIntroFragment");
+                                            fragmentTransaction.commit();
+                                        } else if (placeMode == Place.PLACE_MODE_REMOTE) {
+                                            Utils.showToast(activity, Utils.getString(activity, R.string.device_update_disabled_only_local_mode), true);
+                                        }
+                                    } else if (id == R.id.action_remove_device) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                                                //set icon
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                //set title
+                                                .setTitle(Utils.getString(activity, R.string.remove_unit_question))
+                                                //set message
+                                                .setMessage(Utils.getString(activity, R.string.remove_unit_message))
+                                                //set positive button
+                                                .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what would happen when positive button is clicked
+                                                        removeDevice(item);
+                                                    }
+                                                })
+                                                //set negative button
+                                                .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        //set what should happen when negative button is clicked
+                                                    }
+                                                })
+                                                .show();
                                     }
-                                }else if(id == R.id.action_remove_device){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(activity)
-                                            //set icon
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            //set title
-                                            .setTitle(Utils.getString(activity, R.string.remove_unit_question))
-                                            //set message
-                                            .setMessage(Utils.getString(activity, R.string.remove_unit_message))
-                                            //set positive button
-                                            .setPositiveButton(Utils.getString(activity, R.string.yes), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what would happen when positive button is clicked
-                                                    removeDevice(item);
-                                                }
-                                            })
-                                            //set negative button
-                                            .setNegativeButton(Utils.getString(activity, R.string.no), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    //set what should happen when negative button is clicked
-                                                }
-                                            })
-                                            .show();
+                                    return true;
                                 }
-                                return true;
-                            }
-                        });
-                    }
-                });
-
-                vHolder.shutterDownImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.shutterStopImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.shutterUpImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-                vHolder.shutterLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        tempViewHolder.deviceAdvancedOptionsButton.performClick();
-                        return true;
-                    }
-                });
-
-                vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(tempViewHolder.shutterLayout.getVisibility() == View.VISIBLE) {
-                            tempViewHolder.shutterLayout.setVisibility(View.GONE);
-                        }else if(tempViewHolder.shutterLayout.getVisibility() == View.GONE) {
-                            tempViewHolder.shutterLayout.setVisibility(View.VISIBLE);
+                            });
                         }
-                    }
-                });
-            }
-        }
+                    });
 
+                    vHolder.shutterDownImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.shutterStopImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.shutterUpImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+                    vHolder.shutterLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            tempViewHolder.deviceAdvancedOptionsButton.performClick();
+                            return true;
+                        }
+                    });
+
+                    vHolder.deviceTitleLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (tempViewHolder.shutterLayout.getVisibility() == View.VISIBLE) {
+                                tempViewHolder.shutterLayout.setVisibility(View.GONE);
+                            } else if (tempViewHolder.shutterLayout.getVisibility() == View.GONE) {
+                                tempViewHolder.shutterLayout.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+            }
         return rowView;
+    }
+
+    public void setSelectedDevice(int selectedPos)
+    {
+        selectedDevice=selectedPos;
     }
 
     private void populateLineData(Device item){
@@ -2148,7 +2161,7 @@ public class DeviceAdapter extends ArrayAdapter {
         ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
         LinearLayout deviceLinesLayout;
 
-        RelativeLayout soundDeviceLayout;
+        RelativeLayout soundDeviceLayout,mainLayout;
         TextView soundDeviceNameTextView;
         ImageView soundDeviceTypeImageView;
         RelativeLayout deviceModeLayout;

@@ -169,7 +169,7 @@ public class Utils {
         for (int i = 0; i < gridViewAdapter.getCount(); i++) {
             View gridItem = gridViewAdapter.getView(i, null, vg);
             gridItem.measure(0, 0);
-            totalWidth += gridItem.getMeasuredHeight(); //Hack: use getMeasuredHeight instead of getMeasuredWidth as each grid item is square anyway, becauase of ScrollingTextviews variable width
+            totalWidth += gridItem.getMeasuredWidth(); //Hack: use getMeasuredHeight instead of getMeasuredWidth as each grid item is square anyway, becauase of ScrollingTextviews variable width
         }
 
         ViewGroup.LayoutParams params = gridView.getLayoutParams();

@@ -21,7 +21,7 @@
                 android:id="@+id/room_devices_layout"
                 android:layout_width="match_parent"
                 android:layout_marginLeft="10dp"
-                android:layout_height="84dp"
+                android:layout_height="74dp"
                 android:layout_marginTop="35dp"
                 android:layout_alignParentTop="true"
                 >
@@ -29,7 +29,7 @@
                     android:id="@+id/room_lines_horizontal_scrollview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginRight="10dp"
                     android:layout_toLeftOf="@+id/scroll_next_imageview"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
@@ -37,7 +37,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        >
                         <GridView
                             android:id="@+id/room_devices_gridview"
                             android:layout_width="match_parent"
@@ -61,26 +62,44 @@
 
                 <ImageView
                     android:id="@+id/scroll_next_imageview"
-                    android:layout_width="32dp"
+                    android:layout_width="15dp"
                     android:layout_marginRight="10dp"
                     android:layout_height="match_parent"
-                    android:padding="12dp"
                     android:src="@drawable/arrow_thick_right_white"
-                    android:background="#e76616"
+                    android:background="@drawable/rounded_border_small"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
 
+            <ImageView
+                android:id="@+id/devices_connector"
+                android:layout_width="130dp"
+                android:layout_height="52dp"
+                android:layout_marginLeft="8dp"
+                android:layout_below="@+id/room_devices_layout"
+                android:src="@drawable/devices_connector"
+                />
              <ListView
                  android:id="@+id/devices_listview"
                  android:layout_below="@+id/room_devices_layout"
                  android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="30dp"
+                 android:layout_height="match_parent"
+                 android:layout_marginTop="50dp"
+                 android:layout_marginRight="10dp"
                  android:paddingBottom="0dp"
                  android:clipToPadding="false"
                  tools:listitem="@layout/list_item_device_new"/>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="369dp"
+                android:layout_below="@+id/room_devices_layout"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="330dp"
+                android:layout_marginTop="50dp"
+                android:layout_toRightOf="@+id/devices_listview"
+                android:background="@drawable/rounded_border" />
         </RelativeLayout>
 
 

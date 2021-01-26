@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -55,6 +56,7 @@ public class DashboardDevicesFragment extends Fragment {
     FloatingActionButton addPlaceFab, addRoomFab, addDeviceFab;
     RelativeLayout addDeviceLayout,deviceLayout;
     LinearLayout addLayout;
+    ImageView connector;
 
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
@@ -62,6 +64,7 @@ public class DashboardDevicesFragment extends Fragment {
     static DevicesDashboardGridAdapter devicesDashboardGridAdapter;
     static GridView devicesGrid;
     static List<Device> devices;
+    static List<Device> devicesForGrid;
    // TextView devicesListViewLongPressHint;
 
     Handler listHandler;
@@ -128,6 +131,7 @@ public class DashboardDevicesFragment extends Fragment {
         addRoomFab = view.findViewById(R.id.add_room_fab);
         addDeviceFab = view.findViewById(R.id.add_device_fab);
         deviceLayout=view.findViewById(R.id.devices_view);
+        connector=view.findViewById(R.id.devices_connector);
        // devicesListViewLongPressHint = view.findViewById(R.id.devices_listview_long_press_hint_textview);
 
         devicesListView = view.findViewById(R.id.devices_listview);
@@ -135,15 +139,21 @@ public class DashboardDevicesFragment extends Fragment {
 
 
         if(MySettings.getCurrentPlace() != null){
-            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode(),selectedDevice);
            }
         else {
-            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL);
+            deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL,selectedDevice);
         }
         devicesListView.setAdapter(deviceAdapter);
 
         devicesDashboardGridAdapter=new DevicesDashboardGridAdapter(MainActivity.getInstance(),room,devices,getFragmentManager(),selectedDevice);
         devicesGrid.setAdapter(devicesDashboardGridAdapter);
+        devicesGrid.setNumColumns(devicesDashboardGridAdapter.getCount());
+       /* ViewGroup.LayoutParams params = devicesGrid.getLayoutParams();
+        params.width = 500;
+        devicesGrid.setLayoutParams(params);*/
+
+        Utils.setGridViewWidthBasedOnChildren(devicesGrid);
 
         loadDevicesFromDatabase();
 
@@ -152,6 +162,35 @@ public class DashboardDevicesFragment extends Fragment {
         setLayoutVisibility();
 
         //startTimer();
+
+
+
+        devicesGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+/*
+                View prevView=parent.getChildAt(selectedDevice);
+                ImageView prevImg=prevView.findViewById(R.id.line_type_imageview);
+                if(devicesDashboardGridAdapter.getItem(selectedDevice).getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                        item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old) {
+                    GlideApp.with(MainActivity.getInstance())
+                            .load(MainActivity.getInstance().getResources().getDrawable(R.drawable.switch_gray))
+                            .placeholder(MainActivity.getInstance().getResources().getDrawable(R.drawable.switch_gray))
+                            .into(prevImg);
+                }
+                ImageView img = view.findViewById(R.id.line_type_imageview);*/
+
+
+                connector.animate().translationX(view.getX());
+                selectedDevice=position;
+                devicesDashboardGridAdapter.setSelectedDevice(selectedDevice);
+                devicesDashboardGridAdapter.notifyDataSetChanged();
+                updateUI();
+            }
+        });
+
+
+
 
         addPlaceFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,9 +287,9 @@ public class DashboardDevicesFragment extends Fragment {
             }
 
             if(MySettings.getCurrentPlace() != null) {
-                deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode());
+                deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode(),selectedDevice);
             }else{
-                deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL);
+                deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL,selectedDevice);
             }
             devicesListView.setAdapter(deviceAdapter);
 

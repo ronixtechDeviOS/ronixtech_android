@@ -87,15 +87,15 @@ public class DevicesDashboardGridAdapter extends BaseAdapter {
                     .into(vHolder.typeImageView);
         }else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
             GlideApp.with(activity)
-                    .load(activity.getResources().getDrawable(R.drawable.plug))
-                    .placeholder(activity.getResources().getDrawable(R.drawable.plug))
+                    .load(activity.getResources().getDrawable(R.drawable.plug_gray))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.plug_gray))
                     .into(vHolder.typeImageView);
         }
         else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines)
         {
             GlideApp.with(activity)
-                    .load(activity.getResources().getDrawable(R.drawable.magic_sw))
-                    .placeholder(activity.getResources().getDrawable(R.drawable.magic_sw))
+                    .load(activity.getResources().getDrawable(R.drawable.magic_gray))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.magic_gray))
                     .into(vHolder.typeImageView);
         }
         else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR)
@@ -109,29 +109,41 @@ public class DevicesDashboardGridAdapter extends BaseAdapter {
 
         if(position==selectedDevice)
         {
+            vHolder.nameTextView.setTextColor(ContextCompat.getColor(MainActivity.getInstance(), R.color.orangeColor2));
+
             //currently selected device
+            if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+                    item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old) {
+                GlideApp.with(activity)
+                        .load(activity.getResources().getDrawable(R.drawable.switch_orange))
+                        .placeholder(activity.getResources().getDrawable(R.drawable.switch_orange))
+                        .into(vHolder.typeImageView);
 
-            GlideApp.with(activity)
-                    .load(activity.getResources().getDrawable(R.drawable.switch_orange))
-                    .placeholder(activity.getResources().getDrawable(R.drawable.switch_orange))
-                    .into(vHolder.typeImageView);
+            }
+            else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines)
+            {
+                GlideApp.with(activity)
+                        .load(activity.getResources().getDrawable(R.drawable.magic_orange))
+                        .placeholder(activity.getResources().getDrawable(R.drawable.magic_orange))
+                        .into(vHolder.typeImageView);
 
-            vHolder.nameTextView.setTextColor(ContextCompat.getColor(MainActivity.getInstance(),R.color.orangeColor2));
+            }
 
+            else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+                GlideApp.with(activity)
+                        .load(activity.getResources().getDrawable(R.drawable.plug_orange))
+                        .placeholder(activity.getResources().getDrawable(R.drawable.plug_orange))
+                        .into(vHolder.typeImageView);
+            }
         }
 
 
-
-        final DevicesDashboardGridAdapter.ViewHolder tempViewHolder = vHolder;
-        vHolder.deviceLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-
         return rowView;
+    }
+
+    public void setSelectedDevice(int devicePos)
+    {
+        selectedDevice=devicePos;
     }
 
     private boolean getDeviceLinesState(Device item) {
@@ -145,7 +157,7 @@ public class DevicesDashboardGridAdapter extends BaseAdapter {
         return false;
     }
 
-  private static class ViewHolder{
+    private static class ViewHolder{
     TextView nameTextView;
     ImageView typeImageView;
     LinearLayout deviceLayout;
