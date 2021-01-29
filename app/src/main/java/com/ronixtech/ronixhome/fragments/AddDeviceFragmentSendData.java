@@ -80,6 +80,8 @@ public class AddDeviceFragmentSendData extends Fragment {
     Boolean check=false;
     AlertDialog alertDialog;
     AlertDialog.Builder dialogBuilder;
+    AlertDialog alertdialog2;
+    AlertDialog.Builder dialogBuilder2;
     androidx.appcompat.app.AlertDialog exitalertDialog;
     MqttAndroidClient mqttAndroidClient;
     Device device;
@@ -120,6 +122,8 @@ public class AddDeviceFragmentSendData extends Fragment {
         sendConfigurationToDevice();
         dialogInit();
         alertDialog=dialogBuilder.create();
+        alertMagicSwitchBuilder();
+        alertdialog2 = dialogBuilder2.create();
         return view;
     }
 
@@ -251,6 +255,12 @@ public class AddDeviceFragmentSendData extends Fragment {
             alertDialog.dismiss();
         }
 
+        if(alertdialog2!=null && alertdialog2.isShowing())
+        {
+            alertdialog2.dismiss();
+
+        }
+
         if(exitalertDialog!=null && exitalertDialog.isShowing())
         {
             exitalertDialog.dismiss();
@@ -321,8 +331,14 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
         },15000); // Show after 15 Seconds only for the first time
 */
-    if(!alertDialog.isShowing()) {
-        alertDialog.show();
+        if(device.getDeviceTypeID()==Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || device.getDeviceTypeID()==Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || device.getDeviceTypeID()==Device.DEVICE_TYPE_MAGIC_SWITCH_3lines)
+        {
+            showAlertForMagicSwitch();
+        }
+        else {
+            if (!alertDialog.isShowing()) {
+                alertDialog.show();
+            }
         }
     }
 
@@ -609,6 +625,30 @@ public class AddDeviceFragmentSendData extends Fragment {
 
     public void subscribeMQTT() throws MqttException {
         MainActivity.getInstance().subscribe(MainActivity.getInstance().getMainMqttClient(),device,2);
+    }
+
+    public void showAlertForMagicSwitch()
+    {
+        if (alertDialog.isShowing()) {
+            alertDialog.dismiss();
+        }
+        if(!alertdialog2.isShowing())
+        {
+            alertdialog2.show();
+        }
+    }
+
+    public void alertMagicSwitchBuilder() {
+         dialogBuilder2=new AlertDialog.Builder(MainActivity.getInstance())
+                .setTitle("RonixTech")
+                .setMessage("The smart controller type is not supported for local use. Please make sure your router is accessible from the internet and try again")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        goToSearchFragment();
+                    }
+                });
+
     }
 
     public interface HomeConnectedListenerInterface{
@@ -1593,8 +1633,13 @@ public class AddDeviceFragmentSendData extends Fragment {
             }
             else
             {
-                Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
-                fragment.goToSearchFragment();
+                if(fragment.device.getDeviceTypeID()==Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || fragment.device.getDeviceTypeID()==Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || fragment.device.getDeviceTypeID()==Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
+                   fragment.showAlertForMagicSwitch();
+                }
+                else {
+                    Utils.showToast(activity, Utils.getString(activity, R.string.smart_controller_connection_error), true);
+                    fragment.goToSearchFragment();
+                }
             }
         }
 

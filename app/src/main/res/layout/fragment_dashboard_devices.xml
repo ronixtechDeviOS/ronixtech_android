@@ -92,6 +92,7 @@
                  tools:listitem="@layout/list_item_device_new"/>
 
             <ImageView
+                android:id="@+id/orange_border"
                 android:layout_width="20dp"
                 android:layout_height="369dp"
                 android:layout_below="@+id/room_devices_layout"

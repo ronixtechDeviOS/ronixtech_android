@@ -962,6 +962,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
             exitalertDialog.dismiss();
         }
 
+        searchingCountDownTimer.cancel();
     }
 
 

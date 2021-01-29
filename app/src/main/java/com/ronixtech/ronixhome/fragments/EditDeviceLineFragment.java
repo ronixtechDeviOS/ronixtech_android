@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -22,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -444,7 +445,7 @@ public class EditDeviceLineFragment extends androidx.fragment.app.Fragment imple
             @Override
             public void onClick(View v) {
                 //try to sync with device
-                sendDimmingControls();
+                //sendDimmingControls();
                 //lineDimmingCheckBox.performClick();
             }
         });
@@ -452,7 +453,7 @@ public class EditDeviceLineFragment extends androidx.fragment.app.Fragment imple
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                sendDimmingControls();
+               sendDimmingControls();
                /* if(isChecked){
                     lineDimmingTextView.setText(Utils.getString(getActivity(), R.string.line_dimming_on));
                 }else{
@@ -861,6 +862,7 @@ public class EditDeviceLineFragment extends androidx.fragment.app.Fragment imple
 
     public class DimmingSyncer extends AsyncTask<Void, Void, Void> {
         int statusCode;
+        int responseState;
 
         Activity activity;
         Device device;
@@ -962,6 +964,7 @@ public class EditDeviceLineFragment extends androidx.fragment.app.Fragment imple
                     while((dataLine = bufferedReader.readLine()) != null) {
                         result.append(dataLine);
                     }
+                    setResponse(result);
                     urlConnection.disconnect();
                     Utils.log(TAG, "syncDimmingState response: " + result.toString(), true);
                 }catch (MalformedURLException e){
@@ -979,6 +982,19 @@ public class EditDeviceLineFragment extends androidx.fragment.app.Fragment imple
             }
 
             return null;
+        }
+
+        private void setResponse(StringBuilder result) throws JSONException {
+            JSONObject jsonObject1 = new JSONObject(String.valueOf(result));
+            JSONObject hardwareStatus = jsonObject1.getJSONObject("UNIT_STATUS");
+            if(line.getPosition() == 0){
+                responseState = hardwareStatus.getInt("L_0_D_S");
+            }else if(line.getPosition() == 1){
+                responseState = hardwareStatus.getInt("L_1_D_S");
+            }else if(line.getPosition() == 2){
+                responseState = hardwareStatus.getInt("L_2_D_S");
+            }
+            Utils.log(TAG, "response state: " + responseState, true);
         }
     }
 

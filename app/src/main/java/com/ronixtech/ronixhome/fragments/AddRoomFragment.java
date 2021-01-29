@@ -359,7 +359,9 @@ public class AddRoomFragment extends Fragment implements PickPlaceDialogFragment
             }
             selectedFloorIndex = 0;
             selectedFloor = selectedPlace.getFloors().get(selectedFloorIndex);
-            selectedFloorTextView.setText(""+selectedFloor.getName());
+            if(selectedFloorTextView!=null) {
+                selectedFloorTextView.setText("" + selectedFloor.getName());
+            }
         }
     }
 

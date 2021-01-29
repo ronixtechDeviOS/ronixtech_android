@@ -2,10 +2,6 @@ package com.ronixtech.ronixhome.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +9,18 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.ronixtech.ronixhome.MySettings;
 import com.ronixtech.ronixhome.R;
 import com.ronixtech.ronixhome.Utils;
 import com.ronixtech.ronixhome.adapters.PlaceAdapter;
 import com.ronixtech.ronixhome.entities.Place;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PickPlaceDialogFragment extends DialogFragment {
@@ -61,8 +63,9 @@ public class PickPlaceDialogFragment extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         ListView listView = new ListView(getActivity());
-        places = MySettings.getAllPlaces();
-
+       //places = MySettings.getAllPlaces();
+        places=new ArrayList<>();
+        places.add(MySettings.getCurrentPlace());
         adapter = new PlaceAdapter(getActivity(), places);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_place_footer, null, false);
         listView.addFooterView(footerView, null, false);

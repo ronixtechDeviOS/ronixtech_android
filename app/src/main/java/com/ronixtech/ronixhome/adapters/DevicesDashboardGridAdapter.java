@@ -102,37 +102,37 @@ public class DevicesDashboardGridAdapter extends BaseAdapter {
         {
 
             GlideApp.with(activity)
-                    .load(activity.getResources().getDrawable(R.drawable.ir))
-                    .placeholder(activity.getResources().getDrawable(R.drawable.ir))
+                    .load(activity.getResources().getDrawable(R.drawable.ir_gray))
+                    .placeholder(activity.getResources().getDrawable(R.drawable.ir_gray))
                     .into(vHolder.typeImageView);
         }
 
-        if(position==selectedDevice)
-        {
+        if(position==selectedDevice) {
             vHolder.nameTextView.setTextColor(ContextCompat.getColor(MainActivity.getInstance(), R.color.orangeColor2));
 
             //currently selected device
-            if(item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
+            if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines ||
                     item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_2lines_old || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_3lines_old) {
                 GlideApp.with(activity)
                         .load(activity.getResources().getDrawable(R.drawable.switch_orange))
                         .placeholder(activity.getResources().getDrawable(R.drawable.switch_orange))
                         .into(vHolder.typeImageView);
 
-            }
-            else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines)
-            {
+            } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
                 GlideApp.with(activity)
                         .load(activity.getResources().getDrawable(R.drawable.magic_orange))
                         .placeholder(activity.getResources().getDrawable(R.drawable.magic_orange))
                         .into(vHolder.typeImageView);
 
-            }
-
-            else if(item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines){
+            } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_PLUG_3lines) {
                 GlideApp.with(activity)
                         .load(activity.getResources().getDrawable(R.drawable.plug_orange))
                         .placeholder(activity.getResources().getDrawable(R.drawable.plug_orange))
+                        .into(vHolder.typeImageView);
+            } else if (item.getDeviceTypeID() == Device.DEVICE_TYPE_PIR_MOTION_SENSOR) {
+                GlideApp.with(activity)
+                        .load(activity.getResources().getDrawable(R.drawable.ir_orange))
+                        .placeholder(activity.getResources().getDrawable(R.drawable.ir_orange))
                         .into(vHolder.typeImageView);
             }
         }

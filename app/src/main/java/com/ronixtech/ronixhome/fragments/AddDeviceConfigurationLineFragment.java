@@ -133,6 +133,8 @@ public class AddDeviceConfigurationLineFragment extends androidx.fragment.app.Fr
         continueButton = view.findViewById(R.id.continue_button);
 
         device = MySettings.getTempDevice();
+       // device.getLines().clear();
+
 
         if(device == null){
             Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.error_adding_smart_controller), true);

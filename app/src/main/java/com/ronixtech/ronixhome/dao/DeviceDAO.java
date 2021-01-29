@@ -78,7 +78,7 @@ public abstract class DeviceDAO {
 
     public void insertDeviceWithLines(Device device) {
         List<Line> lines = device.getLines();
-        if(lines != null) {
+        if(lines != null && lines.size()<=3) {
             for (int i = 0; i < lines.size(); i++) {
                 lines.get(i).setDeviceID(device.getId());
             }

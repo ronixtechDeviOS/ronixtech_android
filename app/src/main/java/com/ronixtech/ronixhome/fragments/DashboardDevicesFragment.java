@@ -60,11 +60,11 @@ public class DashboardDevicesFragment extends Fragment {
 
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
-    static int selectedDevice=0;
+     int selectedDevice;
     static DevicesDashboardGridAdapter devicesDashboardGridAdapter;
     static GridView devicesGrid;
     static List<Device> devices;
-    static List<Device> devicesForGrid;
+    static ImageView border;
    // TextView devicesListViewLongPressHint;
 
     Handler listHandler;
@@ -132,11 +132,13 @@ public class DashboardDevicesFragment extends Fragment {
         addDeviceFab = view.findViewById(R.id.add_device_fab);
         deviceLayout=view.findViewById(R.id.devices_view);
         connector=view.findViewById(R.id.devices_connector);
+        border=view.findViewById(R.id.orange_border);
        // devicesListViewLongPressHint = view.findViewById(R.id.devices_listview_long_press_hint_textview);
 
         devicesListView = view.findViewById(R.id.devices_listview);
         devices = DevicesInMemory.getDevices();
 
+        selectedDevice=0;
 
         if(MySettings.getCurrentPlace() != null){
             deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), MySettings.getCurrentPlace().getMode(),selectedDevice);
@@ -149,11 +151,11 @@ public class DashboardDevicesFragment extends Fragment {
         devicesDashboardGridAdapter=new DevicesDashboardGridAdapter(MainActivity.getInstance(),room,devices,getFragmentManager(),selectedDevice);
         devicesGrid.setAdapter(devicesDashboardGridAdapter);
         devicesGrid.setNumColumns(devicesDashboardGridAdapter.getCount());
-       /* ViewGroup.LayoutParams params = devicesGrid.getLayoutParams();
-        params.width = 500;
-        devicesGrid.setLayoutParams(params);*/
-
         Utils.setGridViewWidthBasedOnChildren(devicesGrid);
+
+    //    connector.setTranslationX(devicesGrid.getChildAt(selectedDevice).getX());
+
+
 
         loadDevicesFromDatabase();
 
@@ -179,6 +181,12 @@ public class DashboardDevicesFragment extends Fragment {
                             .into(prevImg);
                 }
                 ImageView img = view.findViewById(R.id.line_type_imageview);*/
+
+
+                /*ViewGroup.LayoutParams border2=border.getLayoutParams();
+                ViewGroup.LayoutParams list = (ViewGroup.LayoutParams) devicesListView.getChildAt(selectedDevice).getLayoutParams();
+                border2.height=list.;
+                border.setLayoutParams(border2);*/
 
 
                 connector.animate().translationX(view.getX());
@@ -466,6 +474,7 @@ public class DashboardDevicesFragment extends Fragment {
             /*if(devices.size() >= 1) {
                 Collections.sort(devices);
             }*/
+            devicesDashboardGridAdapter.notifyDataSetChanged();
             deviceAdapter.notifyDataSetChanged();
         }
     }

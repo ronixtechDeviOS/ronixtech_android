@@ -508,7 +508,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         handler.removeCallbacksAndMessages(null);
                                         handler.postDelayed(runnable, 100);
                                     } else {
-                                        Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                        Utils.controlDimming(item, 0, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
                                             @Override
                                             public void onDimmingSuccess() {
 
@@ -590,7 +590,7 @@ public class DeviceAdapter extends ArrayAdapter {
                                         handler.removeCallbacksAndMessages(null);
                                         handler.postDelayed(runnable, 100);
                                     } else {
-                                        Utils.controlDimming(item, 2, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
+                                        Utils.controlDimming(item, 1, progress, placeMode, new Utils.DimmingController.DimmingControlCallback() {
                                             @Override
                                             public void onDimmingSuccess() {
 
@@ -1133,6 +1133,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     rowView = inflater.inflate(R.layout.list_item_device_pir_sensor, null);
                     vHolder = new ViewHolder();
                     vHolder.deviceNameTextView = rowView.findViewById(R.id.device_name_textview);
+                    vHolder.mainLayout = rowView.findViewById(R.id.main_parent);
                     vHolder.pirDeviceNameTextView = rowView.findViewById(R.id.pir_textvie);
                     vHolder.deviceLocationTextView = rowView.findViewById(R.id.device_location_textview);
                     vHolder.pirLayout = rowView.findViewById(R.id.pir_layout);
@@ -1148,6 +1149,10 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
 
                     rowView.setTag(vHolder);
+                    if(position!=selectedDevice)
+                    {
+                        vHolder.mainLayout.setVisibility(View.GONE);
+                    }
                 } else {
                     vHolder = (ViewHolder) rowView.getTag();
                 }
@@ -2045,7 +2050,7 @@ public class DeviceAdapter extends ArrayAdapter {
         DevicesInMemory.removeDevice(device);
         MainActivity.getInstance().removeDevice(device);
        // MainActivity.getInstance().allDevices.remove(device);
-       // MainActivity.getInstance().refreshDevicesListFromMemory();
+        MainActivity.getInstance().refreshDevicesListFromMemory();
         MainActivity.getInstance().refreshDeviceListFromDatabase();
         notifyDataSetChanged();
         AlertDialog alertDialog = new AlertDialog.Builder(activity)

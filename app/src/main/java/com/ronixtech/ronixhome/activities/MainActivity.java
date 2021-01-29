@@ -1450,6 +1450,10 @@ public class MainActivity extends AppCompatActivity
                                             addDeviceFragmentSendData.goToSuccessFragment();
                                         }
                                     }
+                                    else
+                                    {
+                                        showDialog();
+                                    }
                                 }
                             }
                         }
