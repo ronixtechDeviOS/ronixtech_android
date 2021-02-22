@@ -175,6 +175,7 @@ public class DeviceAdapter extends ArrayAdapter {
                     vHolder.deviceTitleLayout = rowView.findViewById(R.id.device_title_layout);
                     vHolder.roomLinesHorizontalScrollView = rowView.findViewById(R.id.room_lines_horizontal_scrollview);
                     vHolder.roomDevicesGridView = rowView.findViewById(R.id.room_devices_gridview);
+                    vHolder.corner=rowView.findViewById(R.id.orange_border);
 
                     vHolder.firstLineSeekBar.setMax(100);
                     vHolder.secondLineSeekBar.setMax(100);
@@ -188,7 +189,6 @@ public class DeviceAdapter extends ArrayAdapter {
                 } else {
                     vHolder = (ViewHolder) rowView.getTag();
                 }
-
 
                 if (item != null) {
                     if (item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line || item.getDeviceTypeID() == Device.DEVICE_TYPE_wifi_1line_old ||
@@ -315,6 +315,7 @@ public class DeviceAdapter extends ArrayAdapter {
                             item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_1lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_2lines || item.getDeviceTypeID() == Device.DEVICE_TYPE_MAGIC_SWITCH_3lines) {
                         vHolder.firmwareUpadteAvailableLayout.setVisibility(View.GONE);
                     }
+
 
                     final ViewHolder tempViewHolder = vHolder;
                     vHolder.firstLineTypeImageView.setOnClickListener(new View.OnClickListener() {
@@ -2166,7 +2167,8 @@ public class DeviceAdapter extends ArrayAdapter {
         ImageView firstLineTypeImageView, secondLineTypeImageView, thirdLineTypeImageView;
         LinearLayout deviceLinesLayout;
 
-        RelativeLayout soundDeviceLayout,mainLayout;
+        RelativeLayout soundDeviceLayout;
+        LinearLayout mainLayout;
         TextView soundDeviceNameTextView;
         ImageView soundDeviceTypeImageView;
         RelativeLayout deviceModeLayout;
@@ -2198,6 +2200,8 @@ public class DeviceAdapter extends ArrayAdapter {
         HorizontalScrollView roomLinesHorizontalScrollView;
 
         GridView roomDevicesGridView;
+
+        ImageView corner;
 
     }
 

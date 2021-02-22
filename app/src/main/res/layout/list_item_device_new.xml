@@ -5,10 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-<RelativeLayout
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/main_parent">
+    android:id="@+id/main_parent"
+    android:orientation="horizontal">
 
     <!--<RelativeLayout
         android:id="@+id/room_devices_layout"
@@ -64,16 +65,14 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="30dp"
-        android:orientation="horizontal">
+
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/relative_main"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
             android:background="@color/white">
             <!--   android:background="@color/blue_30_transparent_background"-->
 
@@ -435,7 +434,7 @@
 
 
 
-    </LinearLayout>
+
 
     <!--<LinearLayout
         android:id="@+id/first_two_buttons_layout"
@@ -570,5 +569,18 @@
                 android:layout_toRightOf="@id/fourth_line_dimming_checkbox"/>
         </RelativeLayout>
     </LinearLayout>-->
-</RelativeLayout>
+
+    <ImageView
+        android:id="@+id/orange_border"
+        android:layout_width="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_border"
+        />
+
+
+</LinearLayout>
+
+
+
 </FrameLayout>

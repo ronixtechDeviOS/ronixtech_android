@@ -86,12 +86,11 @@
                  android:layout_width="match_parent"
                  android:layout_height="match_parent"
                  android:layout_marginTop="50dp"
-                 android:layout_marginRight="10dp"
                  android:paddingBottom="0dp"
                  android:clipToPadding="false"
                  tools:listitem="@layout/list_item_device_new"/>
 
-            <ImageView
+           <!-- <ImageView
                 android:id="@+id/orange_border"
                 android:layout_width="20dp"
                 android:layout_height="369dp"
@@ -100,7 +99,7 @@
                 android:layout_marginStart="330dp"
                 android:layout_marginTop="50dp"
                 android:layout_toRightOf="@+id/devices_listview"
-                android:background="@drawable/rounded_border" />
+                android:background="@drawable/rounded_border" />-->
         </RelativeLayout>
 
 

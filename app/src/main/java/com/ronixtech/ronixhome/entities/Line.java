@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey;
 import com.ronixtech.ronixhome.MySettings;
 
 //This is an entity that represents a specific AC line
+//(indices = {@Index(value = {"id"}, unique = true)})
 @Entity
 public class Line {
     public static final int LINE_STATE_OFF = 0;

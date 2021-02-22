@@ -57,6 +57,7 @@ public class DashboardDevicesFragment extends Fragment {
     RelativeLayout addDeviceLayout,deviceLayout;
     LinearLayout addLayout;
     ImageView connector;
+    ImageView border;
 
     static ListView devicesListView;
     static DeviceAdapter deviceAdapter;
@@ -64,7 +65,6 @@ public class DashboardDevicesFragment extends Fragment {
     static DevicesDashboardGridAdapter devicesDashboardGridAdapter;
     static GridView devicesGrid;
     static List<Device> devices;
-    static ImageView border;
    // TextView devicesListViewLongPressHint;
 
     Handler listHandler;
@@ -147,6 +147,9 @@ public class DashboardDevicesFragment extends Fragment {
             deviceAdapter = new DeviceAdapter(getActivity(), devices, getFragmentManager(), Place.PLACE_MODE_LOCAL,selectedDevice);
         }
         devicesListView.setAdapter(deviceAdapter);
+
+//        border.getLayoutParams().height=devicesListView.getLayoutParams().height;
+
 
         devicesDashboardGridAdapter=new DevicesDashboardGridAdapter(MainActivity.getInstance(),room,devices,getFragmentManager(),selectedDevice);
         devicesGrid.setAdapter(devicesDashboardGridAdapter);
