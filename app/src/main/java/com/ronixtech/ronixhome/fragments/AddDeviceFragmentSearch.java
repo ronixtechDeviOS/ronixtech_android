@@ -1,6 +1,7 @@
 package com.ronixtech.ronixhome.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,14 +26,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,6 +33,15 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.ronixtech.ronixhome.Constants;
@@ -505,6 +507,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void connectToWifiNetwork2(String ssid, String pass) {
 
+        @SuppressLint({"NewApi", "LocalSuppress"})
         final NetworkSpecifier specifier =
                 new WifiNetworkSpecifier.Builder()
                         .setSsid(ssid)
@@ -957,7 +960,7 @@ public class AddDeviceFragmentSearch extends Fragment implements PickSSIDDialogF
                 Utils.log(TAG, "Already unregistered - " + e.getMessage(), true);
             }
         }
-        if(exitalertDialog!=null && exitalertDialog.isShowing())
+        if(exitalertDialog!=null && exitalertDialog.equals("") && exitalertDialog.isShowing())
         {
             exitalertDialog.dismiss();
         }
