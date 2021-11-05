@@ -7,9 +7,14 @@ android {
         applicationId "com.ronixtech.ronixhome"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 98
-        versionName "0.98"
+        versionCode 99
+        versionName "0.99"
         multiDexEnabled true
+
+        // KEY-STORE-PASS WORD FOR ANDROID
+        // @Ronixtech123
+        // KEY-STORE-PATH FOR ANDROID As Per Ur System where u keep this folder.
+        //  D:\RonixTech\ronixtech_android\keystore_signing_key_droid.ronixtech.jks
     }
     buildTypes {
         release {
